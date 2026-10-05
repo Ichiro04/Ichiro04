@@ -1,0 +1,13 @@
+# Large or binary CAD files
+*.sldprt
+*.sldasm
+*.slddrw
+*.dwg
+*.dxf
+*.step
+*.stp
+*.stl
+# OS and editor
+.DS_Store
+Thumbs.db
+*.tmp
