@@ -5,14 +5,14 @@ Work through the stages in order. Each stage ends with a self-test. Do not move 
 Mark each topic: `[ ]` not started, `[~]` in progress, `[x]` can explain and solve.
 
 ## Stage 1: Fundamentals (hand calculation first)
-- [ ] Statics: free-body diagrams, equilibrium, reactions
-- [ ] Mechanics of materials: stress, strain, axial, torsion, bending, shear
+- [~] Statics: free-body diagrams, equilibrium, reactions
+- [~] Mechanics of materials: stress, strain, axial, torsion, bending, shear
 - [ ] Stress transformation, Mohr's circle, principal stresses
 - [ ] Failure theories: von Mises, Tresca, max normal stress
-- [ ] Beam deflection, buckling
-- [ ] Stress concentration
+- [~] Beam deflection, buckling
+- [~] Stress concentration
 - [ ] Fatigue basics: S-N curves, endurance limit, mean stress
-- [ ] Material properties and selection basics
+- [x] Material properties and selection basics
 - Self-test: size a shaft or bracket by hand, with units and a safety factor.
 
 ## Stage 2: Machine design
