@@ -16,9 +16,9 @@ A plain-text memory for my engineering studies and career. Everything is Markdow
 | `courses/` | One folder per course: lectures, assignments, exam prep. |
 | `ideas/` | Ideas and inventions, one file each. |
 | `projects/` | One folder per project. Copy `projects/_template`. |
-| `knowledge/` | Long-lived reference: formulas, materials, design rules, lessons learned. |
+| `knowledge/` | Long-lived reference: `roadmap/` (study plan), `simulation/`, `design-rules/`, `cad-practice/`, formulas, materials, lessons learned. |
 | `cad/` | Notes and scripts for SolidWorks and AutoCAD. Keep large CAD files outside Git. |
-| `career/` | Goals, skills, internships, contacts, reading list. |
+| `career/` | Goals, skills, internships, contacts, reading list. `portfolio/` holds finished projects. |
 | `reference/` | Standards, datasheets, links. |
 | `templates/` | Note templates. |
 | `agent/` | Instructions and permission rules for the AI companion. |
@@ -28,3 +28,5 @@ A plain-text memory for my engineering studies and career. Everything is Markdow
 1. Open `templates/daily.md`, copy it to `daily/<date>.md`.
 2. Capture thoughts in `inbox/` during the day.
 3. Once a week, run the weekly review (`templates/weekly-review.md`).
+4. Study from `knowledge/roadmap/README.md` using `templates/study-session.md`.
+5. Log each simulation with `templates/simulation-log.md` and review designs with `templates/design-review.md`.
