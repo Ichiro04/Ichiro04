@@ -2,6 +2,9 @@
 
 A plain-text memory for my engineering studies and career. Everything is Markdown so it can be read by any tool, now or in 20 years.
 
+## Start here
+Read `HUB.md`. It is the single master file with routes for vault, study, CAD and simulation, OmniRoute, and career.
+
 ## Rules
 1. Raw notes are never deleted or rewritten by the agent. It may add summaries and links next to them.
 2. Everything lives in files in this repo. No notes are locked inside an app.
