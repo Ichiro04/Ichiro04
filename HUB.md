@@ -9,12 +9,12 @@ Repo: Ichiro04/Ichiro04 (branch claude/capabilities-overview-83xgc2)
 | Route | Use it for | Starter message |
 |---|---|---|
 | A. Vault and companion | Notes, memory, organising the vault | "Read HUB.md route A, then help me with the vault." |
-| B. Study | Roadmap lessons and self-tests | "Read HUB.md route B and knowledge/roadmap/README.md, then continue my lesson." |
-| C. CAD and simulation | SolidWorks, AutoCAD, FEA/CFD work | "Read HUB.md route C, then help me with CAD or simulation." |
+| B. Study | Roadmap lessons and self-tests | "Read README.md, agent/INSTRUCTIONS.md and HUB.md route B, then continue my lesson." |
+| C. CAD and simulation | SolidWorks, AutoCAD, FEA/CFD work | "Read README.md, agent/INSTRUCTIONS.md and HUB.md route C, then help me with CAD or simulation." |
 | D. OmniRoute | The AI gateway on my PC | "Read HUB.md route D, then help me with OmniRoute." |
 | E. Career and portfolio | Goals, projects, portfolio | "Read HUB.md route E, then help me with my portfolio." |
 
-For any chat, first say: "Also read README.md and agent/INSTRUCTIONS.md."
+Study and CAD chats start by reading README.md and agent/INSTRUCTIONS.md. The other routes only need their own HUB.md section.
 
 ---
 
