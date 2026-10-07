@@ -315,6 +315,7 @@ const GEO = (() => {
       const before = T.length; extrude(hex, p.k); const head = T.splice(before); for (const t of head) T.push(t.map(q => [q[0], q[2] + p.k / 2, q[1]]));
       lathe([[0, 0], [p.d / 2, 0], [p.d / 2, -p.L], [0, -p.L]], 40);
       return 3 * Math.sqrt(3) / 2 * Math.pow(p.s / Math.sqrt(3), 2) * p.k + P * p.d * p.d / 4 * p.L; },
+    poly(p) { return extrude(p.pts, p.depth); },
     take() { const out = T.splice(0); return out; }
   };
 })();
@@ -393,5 +394,119 @@ TOOLS.shapes = {
   }
 };
 
-const TOOL_ORDER = ["shapes", "beam", "section", "mohr", "buckling", "spring", "gears", "units"];
+
+/* ---------- Car assembly (simplified, generic sports sedan, NOT BMW M3 geometry) ---------- */
+TOOLS.car = {
+  title: "Car assembly (simplified sedan)",
+  render(root) {
+    root.append($t("p", {}, "A simplified sports-sedan assembly built from basic solids: body panels, glass, four wheel corners (tyre, rim, brake disc, caliper), chassis, driveline, engine, seats and lights. Overall length, width, height and wheelbase default to the 2025 BMW M3 figures you supplied (from CarsGuide and Edmunds, not checked by me; use the low end of each range here). Wheel radius, tyre width and ground clearance are examples with no source. The shapes are a generic layout, not BMW M3 geometry. Replace any value with your own source (service manual, spec sheet, measurement). Use the slider to explode the assembly, and the list to hide or highlight parts."));
+    const D = [["L", "Overall length (2025 M3 range 4794 to 4801)", 4794], ["W", "Overall width (range 1887 to 1918)", 1887], ["H", "Overall height (range 1393 to 1447)", 1393], ["WB", "Wheelbase (about 2857, not exact)", 2857], ["R", "Wheel outer radius (example, not sourced)", 345], ["tw", "Tyre width (example, not sourced)", 255], ["gc", "Ground clearance (example, not sourced)", 110]];
+    const dims = $t("div", { class: "tool-form" });
+    for (const [k, l, v] of D) { const r = $t("label", { class: "tool-field" }, l + " (mm) "); r.append($t("input", { type: "number", step: "any", id: "car-" + k, value: v })); dims.append(r); }
+    root.append(dims);
+    const bar = $t("div", { class: "tool-form" });
+    const ex = $t("input", { type: "range", min: 0, max: 100, value: 0, id: "car-explode" }), exl = $t("label", { class: "tool-field" }, "Exploded view "); exl.append(ex);
+    const wf = $t("input", { type: "checkbox", id: "car-wf" }), wl = $t("label", { class: "tool-field" }); wl.append(wf, document.createTextNode(" Wireframe"));
+    const rs = $t("button", { type: "button", class: "icon-btn" }, "Reset view"), zi = $t("button", { type: "button", class: "icon-btn" }, "Zoom in"), zo = $t("button", { type: "button", class: "icon-btn" }, "Zoom out");
+    bar.append(exl, wl, zi, zo, rs); root.append(bar);
+    const cv = $t("canvas", { width: 900, height: 520, "aria-label": "3D view of the car assembly" }); cv.style.cssText = "max-width:100%;height:auto;border:1px solid var(--rule);touch-action:none;cursor:grab;display:block;margin:.8rem 0";
+    const info = $t("p"), list = $t("div", { class: "tool-out" });
+    root.append(cv, info, list);
+    const ctx = cv.getContext("2d");
+    let parts = [], ry = -0.6, rx = -0.3, zoom = 1, ext = 1, hidden = new Set(), hi = -1;
+
+    const place = (tris, o) => tris.map(tr => tr.map(q => { let [x, y, z] = q; if (o.orient === "z") [y, z] = [z, y]; else if (o.orient === "x") [x, y] = [y, x]; return [x + o.at[0], y + o.at[1], z + o.at[2]]; }));
+    const add = (name, group, build, o) => { GEO.take(); build(); parts.push({ name, group, tris: place(GEO.take(), o), dir: o.dir || [0, 1, 0], tone: o.tone ?? 0 }); };
+    const bx = (w, h, d) => () => GEO.box({ w, h, d });
+    const cyl = (r, h) => () => GEO.cylinder({ r, h });
+
+    function build() {
+      parts = [];
+      const v = {}; for (const [k] of D) v[k] = parseFloat(document.getElementById("car-" + k).value);
+      const { L, W, H, WB, R, tw, gc } = v;
+      if (Object.values(v).some(x => !(x > 0)) || gc >= R || R * 2 >= H * 0.6 || WB >= L || tw * 2 >= W) { info.textContent = "Check dimensions: all positive, ground clearance below wheel radius, wheelbase below length, wheel under 60% of height."; list.innerHTML = ""; return false; }
+      const xf = WB / 2, xr = -WB / 2, Ra = R + 30, al = Math.asin((R - gc) / Ra), zs = W / 2 - 25, tz = W / 2 - tw / 2 - 40, bel = 0.52 * H;
+      const arc = cx => { const o = []; for (let i = 0; i <= 16; i++) { const th = Math.PI + al - (2 * al + Math.PI) * i / 16; o.push([cx + Ra * Math.cos(th), R + Ra * Math.sin(th)]); } return o; };
+      const side = [[-L / 2, gc], ...arc(xr), ...arc(xf), [L / 2, gc], [L / 2, 0.40 * H], [0.2 * L, bel], [-0.35 * L, bel], [-L / 2, 0.45 * H]];
+      for (const s of [1, -1]) {
+        add(s > 0 ? "Body side panel, left" : "Body side panel, right", "Body", () => GEO.poly({ pts: side, depth: 40 }), { at: [0, 0, s * zs], dir: [0, 0, s * 1.2], tone: 0.1 });
+        add(s > 0 ? "Door glass, left" : "Door glass, right", "Glass", () => GEO.poly({ pts: [[0.12 * L, bel], [0.0, H], [-0.2 * L, H], [-0.3 * L, bel]], depth: 20 }), { at: [0, 0, s * (zs - 70)], dir: [0, 0.6, s * 1.6], tone: 0.55 });
+      }
+      add("Floor pan", "Chassis", bx(L * 0.98, 40, W - 100), { at: [0, gc + 20, 0], dir: [0, -1, 0], tone: -0.2 });
+      add("Hood", "Body", bx(0.32 * L, 24, W - 140), { at: [0.34 * L, 0.46 * H, 0], dir: [0.4, 1.4, 0], tone: 0.2 });
+      add("Trunk lid", "Body", bx(0.2 * L, 24, W - 140), { at: [-0.4 * L, bel - 6, 0], dir: [-0.4, 1.4, 0], tone: 0.2 });
+      add("Roof", "Body", bx(0.2 * L, 24, W - 260), { at: [-0.1 * L, H - 12, 0], dir: [0, 1.8, 0], tone: 0.2 });
+      add("Front bumper", "Body", bx(80, 0.3 * H, W - 60), { at: [L / 2 - 40, gc + 0.16 * H + 30, 0], dir: [1.5, 0, 0], tone: 0 });
+      add("Rear bumper", "Body", bx(80, 0.3 * H, W - 60), { at: [-L / 2 + 40, gc + 0.16 * H + 30, 0], dir: [-1.5, 0, 0], tone: 0 });
+      for (const s of [1, -1]) {
+        const side_ = s > 0 ? "left" : "right";
+        add("Headlight, " + side_, "Lights", bx(120, 60, 220), { at: [L / 2 - 80, 0.36 * H, s * (W / 2 - 280)], dir: [1.3, 0.3, s * 0.3], tone: 0.7 });
+        add("Tail light, " + side_, "Lights", bx(60, 60, 260), { at: [-L / 2 + 40, 0.42 * H, s * (W / 2 - 280)], dir: [-1.3, 0.3, s * 0.3], tone: 0.7 });
+        add("Mirror, " + side_, "Body", bx(120, 80, 40), { at: [0.12 * L, bel + 60, s * (W / 2 + 40)], dir: [0, 0.4, s * 1.8], tone: 0.1 });
+      }
+      for (const [xp, nm] of [[xf, "front"], [xr, "rear"]]) {
+        add("Axle, " + nm, "Chassis", cyl(25, W - 2 * tw * 0.0 - 520), { at: [xp, R, 0], orient: "z", dir: [0, -1, 0], tone: -0.3 });
+        for (const s of [1, -1]) {
+          const w = nm + " " + (s > 0 ? "left" : "right"), outward = [0, 0, s];
+          add("Tyre, " + w, "Wheel", () => GEO.tube({ ro: R, ri: R - 0.3 * tw * 0.9 - 10, h: tw }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.2], tone: -0.6 });
+          add("Rim, " + w, "Wheel", () => GEO.tube({ ro: R - 0.3 * tw * 0.9 - 10, ri: R * 0.55, h: tw * 0.8 }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.0], tone: 0.4 });
+          for (let k = 0; k < 5; k++) { const a = 2 * Math.PI * k / 5; add("Rim spoke " + (k + 1) + ", " + w, "Wheel", bx(R * 0.5, 30, tw * 0.6), { at: [xp + Math.cos(a) * R * 0.38, R + Math.sin(a) * R * 0.38, s * tz], dir: [0, 0, s * 2.0], tone: 0.4 }); parts[parts.length - 1].tris = parts[parts.length - 1].tris.map(tr => tr.map(q => { const dx = q[0] - (xp + Math.cos(a) * R * 0.38), dy = q[1] - (R + Math.sin(a) * R * 0.38); return [xp + Math.cos(a) * R * 0.38 + dx * Math.cos(a) - dy * Math.sin(a), R + Math.sin(a) * R * 0.38 + dx * Math.sin(a) + dy * Math.cos(a), q[2]]; })); }
+          add("Brake disc, " + w, "Brakes", cyl(R * 0.52, 28), { at: [xp, R, s * (tz - tw * 0.3)], orient: "z", dir: [0, 0, s * 1.2], tone: 0.0 });
+          add("Brake caliper, " + w, "Brakes", bx(R * 0.3, R * 0.35, 60), { at: [xp, R + R * 0.45, s * (tz - tw * 0.3)], dir: [0, 0.6, s * 1.0], tone: 0.3 });
+          add("Hub, " + w, "Wheel", cyl(R * 0.14, 80), { at: [xp, R, s * (tz - tw * 0.35)], orient: "z", dir: [0, 0, s * 0.8], tone: -0.1 });
+        }
+      }
+      add("Engine block", "Powertrain", bx(0.2 * L, 0.18 * H, 0.32 * W), { at: [xf - 100, gc + 0.18 * H + 60, 0], dir: [0.8, 0.8, 0], tone: -0.1 });
+      add("Gearbox", "Powertrain", bx(0.13 * L, 0.14 * H, 0.18 * W), { at: [xf - 0.2 * L - 20, gc + 0.14 * H + 60, 0], dir: [0, -0.6, 0], tone: -0.1 });
+      add("Driveshaft", "Powertrain", cyl(35, WB * 0.55), { at: [-0.05 * L, gc + 0.14 * H + 60, 0], orient: "x", dir: [0, -1.2, 0], tone: -0.3 });
+      add("Differential", "Powertrain", bx(0.08 * L, 0.1 * H, 0.2 * W), { at: [xr, R, 0], dir: [-0.4, -0.8, 0], tone: -0.1 });
+      add("Exhaust pipe", "Powertrain", cyl(32, 0.8 * L), { at: [0, gc + 70, 0.2 * W], orient: "x", dir: [0, -1.8, 0.4], tone: 0.2 });
+      add("Fuel tank", "Chassis", bx(0.14 * L, 0.1 * H, 0.5 * W), { at: [xr + 0.1 * L, gc + 0.1 * H + 50, 0], dir: [-0.6, -1.2, 0], tone: -0.2 });
+      for (const [xs, nm] of [[0.0, "front"], [-0.2 * L, "rear"]]) for (const s of [1, -1]) { const w = nm + (s > 0 ? " left" : " right"); add("Seat base, " + w, "Interior", bx(0.1 * L, 120, 0.2 * W), { at: [xs, gc + 140, s * 0.2 * W], dir: [0, 0.8, s * 0.3], tone: -0.1 }); add("Seat back, " + w, "Interior", bx(60, 0.18 * H, 0.2 * W), { at: [xs - 0.06 * L, gc + 140 + 0.1 * H, s * 0.2 * W], dir: [0, 1.0, s * 0.3], tone: -0.1 }); }
+      add("Dashboard", "Interior", bx(0.08 * L, 0.1 * H, W - 300), { at: [0.12 * L, 0.5 * H - 60, 0], dir: [0.4, 0.8, 0], tone: -0.2 });
+      add("Steering wheel", "Interior", () => GEO.torus({ R: 170, r: 14 }), { at: [0.08 * L, 0.5 * H + 30, 0.2 * W], orient: "z", dir: [0.6, 1.0, 0.2], tone: -0.3 });
+      ext = L * 0.62; hidden = new Set([...hidden].filter(i => i < parts.length));
+      const n = parts.reduce((a, p) => a + p.tris.length, 0);
+      info.textContent = parts.length + " parts, " + n + " triangles. Sizes and positions follow the dimensions above. Simplified shapes only: no engine internals, no wiring, no fasteners.";
+      return true;
+    }
+    function listUI() {
+      const groups = {}; parts.forEach((p, i) => (groups[p.group] ||= []).push(i));
+      list.innerHTML = "<h3>Parts</h3>" + Object.keys(groups).map(g => `<details><summary>${g} (${groups[g].length})</summary><ul style="list-style:none;padding-left:.2rem">${groups[g].map(i => `<li><label><input type="checkbox" data-i="${i}" ${hidden.has(i) ? "" : "checked"}> <a href="#/tool/car" data-hi="${i}">${esc(parts[i].name)}</a></label></li>`).join("")}</ul></details>`).join("");
+    }
+    list.addEventListener("change", e => { const i = e.target.dataset.i; if (i === undefined) return; e.target.checked ? hidden.delete(+i) : hidden.add(+i); draw(); });
+    list.addEventListener("click", e => { const a = e.target.closest("a[data-hi]"); if (!a) return; e.preventDefault(); hi = hi === +a.dataset.hi ? -1 : +a.dataset.hi; draw(); });
+    function draw() {
+      const W = cv.width, H = cv.height, sc = Math.min(W, H) / (2.2 * ext) * zoom * 1.6, cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx), cam = 4 * ext, e = parseFloat(ex.value) / 100 * 700;
+      const rot = q => { const x = q[0] * cy + q[2] * sy, z0 = -q[0] * sy + q[2] * cy, y = q[1] * cx - z0 * sx, z = q[1] * sx + z0 * cx; return [x, y, z]; };
+      const ctr = [0, 600, 0], light = [0.35, 0.65, 0.55], ll = Math.hypot(...light), L3 = light.map(x => x / ll);
+      const dark = matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.dataset.theme !== "light" || document.documentElement.dataset.theme === "dark";
+      const items = [];
+      parts.forEach((p, i) => { if (hidden.has(i)) return; const off = p.dir.map(d => d * e);
+        for (const t of p.tris) { const q = t.map(pt => rot([pt[0] + off[0] - ctr[0], pt[1] + off[1] - ctr[1], pt[2] + off[2] - ctr[2]]));
+          const u = [q[1][0] - q[0][0], q[1][1] - q[0][1], q[1][2] - q[0][2]], w = [q[2][0] - q[0][0], q[2][1] - q[0][1], q[2][2] - q[0][2]];
+          let n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]]; const nl = Math.hypot(...n) || 1;
+          items.push({ z: (q[0][2] + q[1][2] + q[2][2]) / 3, s: Math.abs((n[0] * L3[0] + n[1] * L3[1] + n[2] * L3[2]) / nl), p: q.map(pt => { const k = cam / (cam + pt[2]); return [W / 2 + pt[0] * sc * k, H / 2 - pt[1] * sc * k]; }), tone: p.tone, hi: i === hi }); } });
+      items.sort((a, b) => b.z - a.z);
+      ctx.fillStyle = css("--bg"); ctx.fillRect(0, 0, W, H);
+      for (const t of items) {
+        let g = (dark ? 70 : 100) + t.s * (dark ? 140 : 120) + t.tone * 90; g = Math.max(20, Math.min(250, Math.round(g)));
+        const col = t.hi ? (dark ? "rgb(255,255,255)" : "rgb(0,0,0)") : `rgb(${g},${g},${g})`;
+        ctx.beginPath(); ctx.moveTo(...t.p[0]); ctx.lineTo(...t.p[1]); ctx.lineTo(...t.p[2]); ctx.closePath();
+        if (wf.checked) { ctx.strokeStyle = t.hi ? col : css("--fg"); ctx.lineWidth = 0.5; ctx.stroke(); } else { ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 0.6; ctx.stroke(); }
+      }
+    }
+    let drag = null;
+    cv.addEventListener("pointerdown", e => { drag = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing"; });
+    cv.addEventListener("pointermove", e => { if (!drag) return; ry += (e.clientX - drag[0]) * 0.01; rx = Math.max(-1.5, Math.min(1.5, rx + (e.clientY - drag[1]) * 0.01)); drag = [e.clientX, e.clientY]; draw(); });
+    cv.addEventListener("pointerup", () => { drag = null; cv.style.cursor = "grab"; });
+    cv.addEventListener("wheel", e => { e.preventDefault(); zoom = Math.max(0.3, Math.min(4, zoom * (e.deltaY < 0 ? 1.1 : 0.9))); draw(); }, { passive: false });
+    zi.onclick = () => { zoom = Math.min(4, zoom * 1.2); draw(); }; zo.onclick = () => { zoom = Math.max(0.3, zoom / 1.2); draw(); }; rs.onclick = () => { ry = -0.6; rx = -0.3; zoom = 1; ex.value = 0; draw(); };
+    ex.addEventListener("input", draw); wf.addEventListener("change", draw);
+    dims.addEventListener("input", () => { if (build()) { listUI(); draw(); } });
+    if (build()) { listUI(); draw(); }
+  }
+};
+
+const TOOL_ORDER = ["car", "shapes", "beam", "section", "mohr", "buckling", "spring", "gears", "units"];
 if (typeof module !== "undefined") module.exports = { MATH, UNITS };
