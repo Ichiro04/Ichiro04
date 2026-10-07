@@ -60,6 +60,11 @@ main { min-width: 0; padding: 1.2rem clamp(1rem, 3vw, 2.5rem) 4rem; }
 .hit p { margin: .2rem 0 0; font-size: .92rem; color: var(--muted); }
 .results { max-width: 46rem; }
 mark { background: #ffe58a; color: #111; }
+.tool-form { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin: .8rem 0; align-items: end; }
+.tool-field { display: flex; flex-direction: column; gap: .2rem; font-size: .9rem; min-width: 0; }
+.tool-field input, .tool-field select { padding: .35rem .5rem; border: 1px solid var(--rule); background: var(--bg); color: var(--fg); font: inherit; max-width: 100%; }
+.tool-field input[type="checkbox"] { width: auto; }
+.tool-out canvas { display: block; margin: .6rem 0; }
 .foot { margin-top: 2rem; color: var(--muted); font-size: .85rem; }
 @media (max-width: 70rem) { .shell { grid-template-columns: 15rem minmax(0, 1fr); } .toc { display: none; } }
 @media (max-width: 48rem) {
@@ -85,6 +90,9 @@ mark { background: #ffe58a; color: #111; }
   <aside class="toc" id="toc" aria-label="On this page"></aside>
 </div>
 
+<script>
+/*__TOOLS__*/
+</script>
 <script>
 const DATA = /*__DATA__*/null;
 const NOTES = DATA.notes;
@@ -198,6 +206,8 @@ function buildTree(current) {
     html += `<div class="tree-h">${FOLDER_LABEL[g] || g}</div>`;
     for (const n of groups[g]) html += `<a href="#/${encodeURI(n.path)}" ${n.path === current ? 'aria-current="page"' : ""}>${esc(n.title)}<small>${esc(n.path)}</small></a>`;
   }
+  html += `<div class="tree-h">Tools</div>`;
+  for (const id of TOOL_ORDER) html += `<a href="#/tool/${id}" ${current === "tool/" + id ? 'aria-current="page"' : ""}>${esc(TOOLS[id].title)}</a>`;
   $("#tree").innerHTML = html;
 }
 function home() {
@@ -211,6 +221,8 @@ function home() {
       <li>${NOTES.length} notes in ${new Set(NOTES.map(n => folderOf(n.path))).size} folders</li>
       <li>Checklist items: ${tally.done} done, ${tally.wip} in progress, ${tally.todo} not started (of ${total})</li>
     </ul>
+    <h2>Tools</h2>
+    <ul>${TOOL_ORDER.map(id => `<li><a href="#/tool/${id}">${esc(TOOLS[id].title)}</a></li>`).join("")}</ul>
     <h2>Start here</h2>
     <ul>${routes.map(n => `<li><a href="#/${encodeURI(n.path)}">${esc(n.title)}</a> (${esc(n.path)}). ${blurb[n.path] || ""}</li>`).join("")}</ul>
     <p class="foot">Revision ${esc(DATA.rev)}. Rebuild after editing notes: python3 site/build.py</p>
@@ -250,7 +262,11 @@ function results(q) {
 function route() {
   document.body.classList.remove("nav-open");
   const path = decodeURI(location.hash.replace(/^#\/?/, ""));
-  if (path && BY_PATH[path]) { buildTree(path); note(path); document.title = BY_PATH[path].title + " · Life Vault"; }
+  if (path.startsWith("tool/") && TOOLS[path.slice(5)]) {
+    const id = path.slice(5); buildTree(path);
+    $("#main").innerHTML = `<article class="doc"><h1>${esc(TOOLS[id].title)}</h1><div id="tool-root"></div></article>`;
+    $("#toc").innerHTML = ""; TOOLS[id].render($("#tool-root")); document.title = TOOLS[id].title + " · Life Vault";
+  } else if (path && BY_PATH[path]) { buildTree(path); note(path); document.title = BY_PATH[path].title + " · Life Vault"; }
   else { buildTree(""); home(); document.title = "Life Vault"; }
   window.scrollTo(0, 0);
 }

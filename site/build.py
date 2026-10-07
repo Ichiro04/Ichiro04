@@ -27,6 +27,7 @@ except Exception:
     rev = "unknown"
 
 data = json.dumps({"notes": notes, "rev": rev}, ensure_ascii=False).replace("</", "<\\/")
-html = (HERE / "template.html").read_text(encoding="utf-8").replace("/*__DATA__*/null", data)
+tools = (HERE / "tools.js").read_text(encoding="utf-8").replace("</script", "<\\/script")
+html = (HERE / "template.html").read_text(encoding="utf-8").replace("/*__DATA__*/null", data).replace("/*__TOOLS__*/", tools)
 (HERE / "index.html").write_text(html, encoding="utf-8")
 print(f"Built site/index.html with {len(notes)} notes (rev {rev})")
