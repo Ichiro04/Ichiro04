@@ -396,11 +396,8 @@ TOOLS.shapes = {
 
 
 /* ---------- Car assembly (simplified, generic sports sedan, NOT BMW M3 geometry) ---------- */
-TOOLS.car = {
-  title: "Car assembly (simplified sedan)",
-  render(root) {
-    root.append($t("p", {}, "A simplified sports-sedan assembly built from basic solids: body panels, glass, four wheel corners (tyre, rim, brake disc, caliper), chassis, driveline, engine, seats and lights. Overall length, width, height and wheelbase default to the 2025 BMW M3 figures you supplied (from CarsGuide and Edmunds, not checked by me; use the low end of each range here). Wheel radius, tyre width and ground clearance are examples with no source. The shapes are a generic layout, not BMW M3 geometry. Replace any value with your own source (service manual, spec sheet, measurement). Use the slider to explode the assembly, and the list to hide or highlight parts."));
-    const D = [["L", "Overall length (2025 M3 range 4794 to 4801)", 4794], ["W", "Overall width (range 1887 to 1918)", 1887], ["H", "Overall height (range 1393 to 1447)", 1393], ["WB", "Wheelbase (about 2857, not exact)", 2857], ["R", "Wheel outer radius (example, not sourced)", 345], ["tw", "Tyre width (example, not sourced)", 255], ["gc", "Ground clearance (example, not sourced)", 110]];
+function carViewer(root, intro, D, cfg) {
+    root.append($t("p", {}, intro));
     const dims = $t("div", { class: "tool-form" });
     for (const [k, l, v] of D) { const r = $t("label", { class: "tool-field" }, l + " (mm) "); r.append($t("input", { type: "number", step: "any", id: "car-" + k, value: v })); dims.append(r); }
     root.append(dims);
@@ -423,49 +420,9 @@ TOOLS.car = {
     function build() {
       parts = [];
       const v = {}; for (const [k] of D) v[k] = parseFloat(document.getElementById("car-" + k).value);
-      const { L, W, H, WB, R, tw, gc } = v;
-      if (Object.values(v).some(x => !(x > 0)) || gc >= R || R * 2 >= H * 0.6 || WB >= L || tw * 2 >= W) { info.textContent = "Check dimensions: all positive, ground clearance below wheel radius, wheelbase below length, wheel under 60% of height."; list.innerHTML = ""; return false; }
-      const xf = WB / 2, xr = -WB / 2, Ra = R + 30, al = Math.asin((R - gc) / Ra), zs = W / 2 - 25, tz = W / 2 - tw / 2 - 40, bel = 0.52 * H;
-      const arc = cx => { const o = []; for (let i = 0; i <= 16; i++) { const th = Math.PI + al - (2 * al + Math.PI) * i / 16; o.push([cx + Ra * Math.cos(th), R + Ra * Math.sin(th)]); } return o; };
-      const side = [[-L / 2, gc], ...arc(xr), ...arc(xf), [L / 2, gc], [L / 2, 0.40 * H], [0.2 * L, bel], [-0.35 * L, bel], [-L / 2, 0.45 * H]];
-      for (const s of [1, -1]) {
-        add(s > 0 ? "Body side panel, left" : "Body side panel, right", "Body", () => GEO.poly({ pts: side, depth: 40 }), { at: [0, 0, s * zs], dir: [0, 0, s * 1.2], tone: 0.1 });
-        add(s > 0 ? "Door glass, left" : "Door glass, right", "Glass", () => GEO.poly({ pts: [[0.12 * L, bel], [0.0, H], [-0.2 * L, H], [-0.3 * L, bel]], depth: 20 }), { at: [0, 0, s * (zs - 70)], dir: [0, 0.6, s * 1.6], tone: 0.55 });
-      }
-      add("Floor pan", "Chassis", bx(L * 0.98, 40, W - 100), { at: [0, gc + 20, 0], dir: [0, -1, 0], tone: -0.2 });
-      add("Hood", "Body", bx(0.32 * L, 24, W - 140), { at: [0.34 * L, 0.46 * H, 0], dir: [0.4, 1.4, 0], tone: 0.2 });
-      add("Trunk lid", "Body", bx(0.2 * L, 24, W - 140), { at: [-0.4 * L, bel - 6, 0], dir: [-0.4, 1.4, 0], tone: 0.2 });
-      add("Roof", "Body", bx(0.2 * L, 24, W - 260), { at: [-0.1 * L, H - 12, 0], dir: [0, 1.8, 0], tone: 0.2 });
-      add("Front bumper", "Body", bx(80, 0.3 * H, W - 60), { at: [L / 2 - 40, gc + 0.16 * H + 30, 0], dir: [1.5, 0, 0], tone: 0 });
-      add("Rear bumper", "Body", bx(80, 0.3 * H, W - 60), { at: [-L / 2 + 40, gc + 0.16 * H + 30, 0], dir: [-1.5, 0, 0], tone: 0 });
-      for (const s of [1, -1]) {
-        const side_ = s > 0 ? "left" : "right";
-        add("Headlight, " + side_, "Lights", bx(120, 60, 220), { at: [L / 2 - 80, 0.36 * H, s * (W / 2 - 280)], dir: [1.3, 0.3, s * 0.3], tone: 0.7 });
-        add("Tail light, " + side_, "Lights", bx(60, 60, 260), { at: [-L / 2 + 40, 0.42 * H, s * (W / 2 - 280)], dir: [-1.3, 0.3, s * 0.3], tone: 0.7 });
-        add("Mirror, " + side_, "Body", bx(120, 80, 40), { at: [0.12 * L, bel + 60, s * (W / 2 + 40)], dir: [0, 0.4, s * 1.8], tone: 0.1 });
-      }
-      for (const [xp, nm] of [[xf, "front"], [xr, "rear"]]) {
-        add("Axle, " + nm, "Chassis", cyl(25, W - 2 * tw * 0.0 - 520), { at: [xp, R, 0], orient: "z", dir: [0, -1, 0], tone: -0.3 });
-        for (const s of [1, -1]) {
-          const w = nm + " " + (s > 0 ? "left" : "right"), outward = [0, 0, s];
-          add("Tyre, " + w, "Wheel", () => GEO.tube({ ro: R, ri: R - 0.3 * tw * 0.9 - 10, h: tw }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.2], tone: -0.6 });
-          add("Rim, " + w, "Wheel", () => GEO.tube({ ro: R - 0.3 * tw * 0.9 - 10, ri: R * 0.55, h: tw * 0.8 }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.0], tone: 0.4 });
-          for (let k = 0; k < 5; k++) { const a = 2 * Math.PI * k / 5; add("Rim spoke " + (k + 1) + ", " + w, "Wheel", bx(R * 0.5, 30, tw * 0.6), { at: [xp + Math.cos(a) * R * 0.38, R + Math.sin(a) * R * 0.38, s * tz], dir: [0, 0, s * 2.0], tone: 0.4 }); parts[parts.length - 1].tris = parts[parts.length - 1].tris.map(tr => tr.map(q => { const dx = q[0] - (xp + Math.cos(a) * R * 0.38), dy = q[1] - (R + Math.sin(a) * R * 0.38); return [xp + Math.cos(a) * R * 0.38 + dx * Math.cos(a) - dy * Math.sin(a), R + Math.sin(a) * R * 0.38 + dx * Math.sin(a) + dy * Math.cos(a), q[2]]; })); }
-          add("Brake disc, " + w, "Brakes", cyl(R * 0.52, 28), { at: [xp, R, s * (tz - tw * 0.3)], orient: "z", dir: [0, 0, s * 1.2], tone: 0.0 });
-          add("Brake caliper, " + w, "Brakes", bx(R * 0.3, R * 0.35, 60), { at: [xp, R + R * 0.45, s * (tz - tw * 0.3)], dir: [0, 0.6, s * 1.0], tone: 0.3 });
-          add("Hub, " + w, "Wheel", cyl(R * 0.14, 80), { at: [xp, R, s * (tz - tw * 0.35)], orient: "z", dir: [0, 0, s * 0.8], tone: -0.1 });
-        }
-      }
-      add("Engine block", "Powertrain", bx(0.2 * L, 0.18 * H, 0.32 * W), { at: [xf - 100, gc + 0.18 * H + 60, 0], dir: [0.8, 0.8, 0], tone: -0.1 });
-      add("Gearbox", "Powertrain", bx(0.13 * L, 0.14 * H, 0.18 * W), { at: [xf - 0.2 * L - 20, gc + 0.14 * H + 60, 0], dir: [0, -0.6, 0], tone: -0.1 });
-      add("Driveshaft", "Powertrain", cyl(35, WB * 0.55), { at: [-0.05 * L, gc + 0.14 * H + 60, 0], orient: "x", dir: [0, -1.2, 0], tone: -0.3 });
-      add("Differential", "Powertrain", bx(0.08 * L, 0.1 * H, 0.2 * W), { at: [xr, R, 0], dir: [-0.4, -0.8, 0], tone: -0.1 });
-      add("Exhaust pipe", "Powertrain", cyl(32, 0.8 * L), { at: [0, gc + 70, 0.2 * W], orient: "x", dir: [0, -1.8, 0.4], tone: 0.2 });
-      add("Fuel tank", "Chassis", bx(0.14 * L, 0.1 * H, 0.5 * W), { at: [xr + 0.1 * L, gc + 0.1 * H + 50, 0], dir: [-0.6, -1.2, 0], tone: -0.2 });
-      for (const [xs, nm] of [[0.0, "front"], [-0.2 * L, "rear"]]) for (const s of [1, -1]) { const w = nm + (s > 0 ? " left" : " right"); add("Seat base, " + w, "Interior", bx(0.1 * L, 120, 0.2 * W), { at: [xs, gc + 140, s * 0.2 * W], dir: [0, 0.8, s * 0.3], tone: -0.1 }); add("Seat back, " + w, "Interior", bx(60, 0.18 * H, 0.2 * W), { at: [xs - 0.06 * L, gc + 140 + 0.1 * H, s * 0.2 * W], dir: [0, 1.0, s * 0.3], tone: -0.1 }); }
-      add("Dashboard", "Interior", bx(0.08 * L, 0.1 * H, W - 300), { at: [0.12 * L, 0.5 * H - 60, 0], dir: [0.4, 0.8, 0], tone: -0.2 });
-      add("Steering wheel", "Interior", () => GEO.torus({ R: 170, r: 14 }), { at: [0.08 * L, 0.5 * H + 30, 0.2 * W], orient: "z", dir: [0.6, 1.0, 0.2], tone: -0.3 });
-      ext = L * 0.62; hidden = new Set([...hidden].filter(i => i < parts.length));
+      const err = cfg.make(v, { add, bx, cyl, GEO, last: () => parts[parts.length - 1] });
+      if (err) { info.textContent = err; list.innerHTML = ""; return false; }
+      ext = cfg.ext(v); hidden = new Set([...hidden].filter(i => i < parts.length));
       const n = parts.reduce((a, p) => a + p.tris.length, 0);
       info.textContent = parts.length + " parts, " + n + " triangles. Sizes and positions follow the dimensions above. Simplified shapes only: no engine internals, no wiring, no fasteners.";
       return true;
@@ -505,8 +462,119 @@ TOOLS.car = {
     ex.addEventListener("input", draw); wf.addEventListener("change", draw);
     dims.addEventListener("input", () => { if (build()) { listUI(); draw(); } });
     if (build()) { listUI(); draw(); }
+}
+function makeSedan(v, api) {
+  const { add, bx, cyl, GEO, last } = api;
+      const { L, W, H, WB, R, tw, gc } = v;
+      if (Object.values(v).some(x => !(x > 0)) || gc >= R || R * 2 >= H * 0.6 || WB >= L || tw * 2 >= W) return "Check dimensions: all positive, ground clearance below wheel radius, wheelbase below length, wheel under 60% of height.";
+      const xf = WB / 2, xr = -WB / 2, Ra = R + 30, al = Math.asin((R - gc) / Ra), zs = W / 2 - 25, tz = W / 2 - tw / 2 - 40, bel = 0.52 * H;
+      const arc = cx => { const o = []; for (let i = 0; i <= 16; i++) { const th = Math.PI + al - (2 * al + Math.PI) * i / 16; o.push([cx + Ra * Math.cos(th), R + Ra * Math.sin(th)]); } return o; };
+      const side = [[-L / 2, gc], ...arc(xr), ...arc(xf), [L / 2, gc], [L / 2, 0.40 * H], [0.2 * L, bel], [-0.35 * L, bel], [-L / 2, 0.45 * H]];
+      for (const s of [1, -1]) {
+        add(s > 0 ? "Body side panel, left" : "Body side panel, right", "Body", () => GEO.poly({ pts: side, depth: 40 }), { at: [0, 0, s * zs], dir: [0, 0, s * 1.2], tone: 0.1 });
+        add(s > 0 ? "Door glass, left" : "Door glass, right", "Glass", () => GEO.poly({ pts: [[0.12 * L, bel], [0.0, H], [-0.2 * L, H], [-0.3 * L, bel]], depth: 20 }), { at: [0, 0, s * (zs - 70)], dir: [0, 0.6, s * 1.6], tone: 0.55 });
+      }
+      add("Floor pan", "Chassis", bx(L * 0.98, 40, W - 100), { at: [0, gc + 20, 0], dir: [0, -1, 0], tone: -0.2 });
+      add("Hood", "Body", bx(0.32 * L, 24, W - 140), { at: [0.34 * L, 0.46 * H, 0], dir: [0.4, 1.4, 0], tone: 0.2 });
+      add("Trunk lid", "Body", bx(0.2 * L, 24, W - 140), { at: [-0.4 * L, bel - 6, 0], dir: [-0.4, 1.4, 0], tone: 0.2 });
+      add("Roof", "Body", bx(0.2 * L, 24, W - 260), { at: [-0.1 * L, H - 12, 0], dir: [0, 1.8, 0], tone: 0.2 });
+      add("Front bumper", "Body", bx(80, 0.3 * H, W - 60), { at: [L / 2 - 40, gc + 0.16 * H + 30, 0], dir: [1.5, 0, 0], tone: 0 });
+      add("Rear bumper", "Body", bx(80, 0.3 * H, W - 60), { at: [-L / 2 + 40, gc + 0.16 * H + 30, 0], dir: [-1.5, 0, 0], tone: 0 });
+      for (const s of [1, -1]) {
+        const side_ = s > 0 ? "left" : "right";
+        add("Headlight, " + side_, "Lights", bx(120, 60, 220), { at: [L / 2 - 80, 0.36 * H, s * (W / 2 - 280)], dir: [1.3, 0.3, s * 0.3], tone: 0.7 });
+        add("Tail light, " + side_, "Lights", bx(60, 60, 260), { at: [-L / 2 + 40, 0.42 * H, s * (W / 2 - 280)], dir: [-1.3, 0.3, s * 0.3], tone: 0.7 });
+        add("Mirror, " + side_, "Body", bx(120, 80, 40), { at: [0.12 * L, bel + 60, s * (W / 2 + 40)], dir: [0, 0.4, s * 1.8], tone: 0.1 });
+      }
+      for (const [xp, nm] of [[xf, "front"], [xr, "rear"]]) {
+        add("Axle, " + nm, "Chassis", cyl(25, W - 2 * tw * 0.0 - 520), { at: [xp, R, 0], orient: "z", dir: [0, -1, 0], tone: -0.3 });
+        for (const s of [1, -1]) {
+          const w = nm + " " + (s > 0 ? "left" : "right"), outward = [0, 0, s];
+          add("Tyre, " + w, "Wheel", () => GEO.tube({ ro: R, ri: R - 0.3 * tw * 0.9 - 10, h: tw }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.2], tone: -0.6 });
+          add("Rim, " + w, "Wheel", () => GEO.tube({ ro: R - 0.3 * tw * 0.9 - 10, ri: R * 0.55, h: tw * 0.8 }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.0], tone: 0.4 });
+          for (let k = 0; k < 5; k++) { const a = 2 * Math.PI * k / 5; add("Rim spoke " + (k + 1) + ", " + w, "Wheel", bx(R * 0.5, 30, tw * 0.6), { at: [xp + Math.cos(a) * R * 0.38, R + Math.sin(a) * R * 0.38, s * tz], dir: [0, 0, s * 2.0], tone: 0.4 }); last().tris = last().tris.map(tr => tr.map(q => { const dx = q[0] - (xp + Math.cos(a) * R * 0.38), dy = q[1] - (R + Math.sin(a) * R * 0.38); return [xp + Math.cos(a) * R * 0.38 + dx * Math.cos(a) - dy * Math.sin(a), R + Math.sin(a) * R * 0.38 + dx * Math.sin(a) + dy * Math.cos(a), q[2]]; })); }
+          add("Brake disc, " + w, "Brakes", cyl(R * 0.52, 28), { at: [xp, R, s * (tz - tw * 0.3)], orient: "z", dir: [0, 0, s * 1.2], tone: 0.0 });
+          add("Brake caliper, " + w, "Brakes", bx(R * 0.3, R * 0.35, 60), { at: [xp, R + R * 0.45, s * (tz - tw * 0.3)], dir: [0, 0.6, s * 1.0], tone: 0.3 });
+          add("Hub, " + w, "Wheel", cyl(R * 0.14, 80), { at: [xp, R, s * (tz - tw * 0.35)], orient: "z", dir: [0, 0, s * 0.8], tone: -0.1 });
+        }
+      }
+      add("Engine block", "Powertrain", bx(0.2 * L, 0.18 * H, 0.32 * W), { at: [xf - 100, gc + 0.18 * H + 60, 0], dir: [0.8, 0.8, 0], tone: -0.1 });
+      add("Gearbox", "Powertrain", bx(0.13 * L, 0.14 * H, 0.18 * W), { at: [xf - 0.2 * L - 20, gc + 0.14 * H + 60, 0], dir: [0, -0.6, 0], tone: -0.1 });
+      add("Driveshaft", "Powertrain", cyl(35, WB * 0.55), { at: [-0.05 * L, gc + 0.14 * H + 60, 0], orient: "x", dir: [0, -1.2, 0], tone: -0.3 });
+      add("Differential", "Powertrain", bx(0.08 * L, 0.1 * H, 0.2 * W), { at: [xr, R, 0], dir: [-0.4, -0.8, 0], tone: -0.1 });
+      add("Exhaust pipe", "Powertrain", cyl(32, 0.8 * L), { at: [0, gc + 70, 0.2 * W], orient: "x", dir: [0, -1.8, 0.4], tone: 0.2 });
+      add("Fuel tank", "Chassis", bx(0.14 * L, 0.1 * H, 0.5 * W), { at: [xr + 0.1 * L, gc + 0.1 * H + 50, 0], dir: [-0.6, -1.2, 0], tone: -0.2 });
+      for (const [xs, nm] of [[0.0, "front"], [-0.2 * L, "rear"]]) for (const s of [1, -1]) { const w = nm + (s > 0 ? " left" : " right"); add("Seat base, " + w, "Interior", bx(0.1 * L, 120, 0.2 * W), { at: [xs, gc + 140, s * 0.2 * W], dir: [0, 0.8, s * 0.3], tone: -0.1 }); add("Seat back, " + w, "Interior", bx(60, 0.18 * H, 0.2 * W), { at: [xs - 0.06 * L, gc + 140 + 0.1 * H, s * 0.2 * W], dir: [0, 1.0, s * 0.3], tone: -0.1 }); }
+      add("Dashboard", "Interior", bx(0.08 * L, 0.1 * H, W - 300), { at: [0.12 * L, 0.5 * H - 60, 0], dir: [0.4, 0.8, 0], tone: -0.2 });
+      add("Steering wheel", "Interior", () => GEO.torus({ R: 170, r: 14 }), { at: [0.08 * L, 0.5 * H + 30, 0.2 * W], orient: "z", dir: [0.6, 1.0, 0.2], tone: -0.3 });
+  return null;
+}
+TOOLS.car = {
+  title: "Car assembly (simplified sedan)",
+  render(root) {
+    carViewer(root, "A simplified sports-sedan assembly built from basic solids: body panels, glass, four wheel corners (tyre, rim, brake disc, caliper), chassis, driveline, engine, seats and lights. Overall length, width, height and wheelbase default to the 2025 BMW M3 figures you supplied (from CarsGuide and Edmunds, not checked by me; use the low end of each range here). Wheel radius, tyre width and ground clearance are examples with no source. The shapes are a generic layout, not BMW M3 geometry. Replace any value with your own source (service manual, spec sheet, measurement). Use the slider to explode the assembly, and the list to hide or highlight parts.", [["L", "Overall length (2025 M3 range 4794 to 4801)", 4794], ["W", "Overall width (range 1887 to 1918)", 1887], ["H", "Overall height (range 1393 to 1447)", 1393], ["WB", "Wheelbase (about 2857, not exact)", 2857], ["R", "Wheel outer radius (example, not sourced)", 345], ["tw", "Tyre width (example, not sourced)", 255], ["gc", "Ground clearance (example, not sourced)", 110]], { make: makeSedan, ext: v => v.L * 0.62 });
   }
 };
 
-const TOOL_ORDER = ["car", "shapes", "beam", "section", "mohr", "buckling", "spring", "gears", "units"];
+/* ---------- Formula One car (simplified, generic, NOT any team's geometry) ---------- */
+function makeF1(v, api) {
+  const { add, bx, cyl, GEO, last } = api;
+  const { L, W, H, WB, Rf, Rr, twf, twr } = v;
+  if (Object.values(v).some(x => !(x > 0)) || WB >= L || Rr * 2 >= H * 0.9 || Rf * 2 >= H * 0.9 || twr * 2 >= W * 0.5 || twf * 2 >= W * 0.5) return "Check dimensions: all positive, wheelbase below length, tyres smaller than the car height, tyres narrower than half the width.";
+  const rim = 228.6; // 18 inch rim diameter / 2, exact conversion of 18 in
+  const xf = WB / 2, xr = -WB / 2, ov = L - WB, noseX = xf + ov * 0.45, tailX = xr - ov * 0.55;
+  const tubX0 = -0.28 * WB, tubX1 = 0.42 * WB, tubW = 0.17 * W, y0 = 50;
+  add("Monocoque (survival cell)", "Chassis", () => GEO.poly({ pts: [[tubX0, y0 + 20], [noseX, y0 + 70], [noseX, y0 + 190], [tubX1, 0.34 * H], [0.12 * WB, 0.52 * H], [-0.1 * WB, 0.52 * H], [tubX0, 0.60 * H]], depth: tubW }), { at: [0, 0, 0], dir: [0, 0, 0], tone: -0.1 });
+  add("Nose cone", "Chassis", () => GEO.poly({ pts: [[xf + ov * 0.1, y0 + 70], [noseX + 40, y0 + 85], [noseX + 40, y0 + 160], [xf + ov * 0.1, y0 + 190]], depth: tubW * 0.7 }), { at: [0, 0, 0], dir: [1.2, 0.2, 0], tone: 0.1 });
+  add("Floor", "Aero", bx(0.84 * WB, 18, 0.82 * W), { at: [-0.02 * WB, y0, 0], dir: [0, -1.2, 0], tone: -0.2 });
+  add("Diffuser", "Aero", () => GEO.poly({ pts: [[0, 0], [ov * 0.3 + 300, 0], [ov * 0.3 + 300, 0.16 * H], [0, 0.03 * H]], depth: 0.5 * W }), { at: [xr - 0.1 * WB + 120, y0, 0], dir: [-1.2, -1.2, 0], tone: -0.1 });
+  add("Front wing main plane", "Aero", bx(330, 18, 0.88 * W), { at: [noseX + 30, y0 + 20, 0], dir: [1.6, 0, 0], tone: 0.2 });
+  add("Front wing flap", "Aero", bx(260, 14, 0.82 * W), { at: [noseX - 220, y0 + 80, 0], dir: [1.6, 0.7, 0], tone: 0.3 });
+  add("Rear wing main plane", "Aero", bx(380, 18, 0.7 * W), { at: [tailX + 260, 0.95 * H, 0], dir: [-1.4, 1.2, 0], tone: 0.2 });
+  add("Rear wing flap (DRS)", "Aero", bx(260, 14, 0.68 * W), { at: [tailX + 250, 0.95 * H + 150, 0], dir: [-1.4, 1.8, 0], tone: 0.3 });
+  add("Rear wing pylon", "Aero", bx(60, 0.5 * H, 60), { at: [tailX + 330, 0.70 * H, 0], dir: [-1.4, 0.6, 0], tone: -0.1 });
+  add("Beam wing", "Aero", bx(220, 14, 0.5 * W), { at: [tailX + 340, 0.30 * H, 0], dir: [-1.4, 0.2, 0], tone: 0.2 });
+  add("Engine cover", "Body", () => GEO.poly({ pts: [[-0.05 * WB, 0.45 * H], [-0.05 * WB, 0.95 * H], [-0.15 * WB, H], [-0.45 * WB, 0.78 * H], [tailX + 100, 0.55 * H], [-0.45 * WB, 0.45 * H]], depth: 0.2 * W }), { at: [0, 0, 0], dir: [-0.4, 1.4, 0], tone: 0.1 });
+  add("Airbox intake", "Body", bx(0.12 * WB, 0.14 * H, 0.14 * W), { at: [0.0, 0.88 * H, 0], dir: [0, 1.8, 0], tone: -0.3 });
+  add("Halo, front pillar", "Safety", bx(30, 0.3 * H, 40), { at: [0.17 * WB, 0.66 * H, 0], dir: [0.3, 1.5, 0], tone: 0.4 });
+  for (const s of [1, -1]) {
+    const sd = s > 0 ? "left" : "right";
+    add("Halo, side bar " + sd, "Safety", bx(0.26 * WB, 24, 24), { at: [0.0, 0.78 * H, s * 0.1 * W], dir: [0, 1.7, s * 0.4], tone: 0.4 });
+    add("Sidepod, " + sd, "Body", bx(0.3 * WB, 0.2 * H, 0.15 * W), { at: [-0.1 * WB, 0.2 * H + y0, s * 0.27 * W], dir: [0, 0.2, s * 1.4], tone: 0.1 });
+    add("Front wing endplate, " + sd, "Aero", bx(480, 0.1 * H, 12), { at: [noseX - 50, y0 + 110, s * 0.46 * W], dir: [1.6, 0.4, s * 1.2], tone: 0.4 });
+    add("Rear wing endplate, " + sd, "Aero", bx(560, 0.28 * H, 12), { at: [tailX + 270, 0.98 * H, s * 0.36 * W], dir: [-1.4, 1.3, s * 1.2], tone: 0.4 });
+    add("Mirror, " + sd, "Body", bx(100, 60, 20), { at: [0.2 * WB, 0.58 * H, s * 0.22 * W], dir: [0.2, 1.2, s * 1.6], tone: 0.5 });
+  }
+  add("Driver helmet", "Driver", () => GEO.sphere({ r: 130 }), { at: [-0.02 * WB, 0.64 * H, 0], dir: [0, 2.4, 0], tone: 0.6 });
+  add("Steering wheel", "Driver", bx(40, 110, 280), { at: [0.17 * WB, 0.5 * H, 0], dir: [0.5, 1.4, 0], tone: -0.3 });
+  add("Fuel cell", "Powertrain", bx(0.2 * WB, 0.12 * H, 0.15 * W), { at: [-0.1 * WB, 0.22 * H + y0, 0], dir: [0, -1.4, 0], tone: -0.2 });
+  add("Power unit (engine)", "Powertrain", bx(0.22 * WB, 0.2 * H, 0.15 * W), { at: [-0.34 * WB, 0.3 * H + y0, 0], dir: [-0.6, 0.5, 0], tone: -0.2 });
+  add("Energy store (battery)", "Powertrain", bx(0.14 * WB, 0.1 * H, 0.14 * W), { at: [-0.15 * WB, 0.4 * H + y0, 0], dir: [0, 1.0, 0], tone: -0.2 });
+  add("Gearbox", "Powertrain", bx(0.15 * WB, 0.18 * H, 0.13 * W), { at: [-0.5 * WB + 150, 0.26 * H + y0, 0], dir: [-0.9, -0.3, 0], tone: -0.1 });
+  add("Exhaust", "Powertrain", cyl(40, 0.5 * ov + 400), { at: [tailX + 0.5 * ov * 0.5 + 300, 0.52 * H, 0], orient: "x", dir: [-1.2, 1.0, 0], tone: 0.2 });
+  for (const [xp, nm, R, tw] of [[xf, "front", Rf, twf], [xr, "rear", Rr, twr]]) {
+    const tz = W / 2 - tw / 2;
+    for (const s of [1, -1]) {
+      const w = nm + " " + (s > 0 ? "left" : "right");
+      add("Tyre, " + w, "Wheel", () => GEO.tube({ ro: R, ri: rim, h: tw }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.2], tone: -0.6 });
+      add("Rim, " + w, "Wheel", () => GEO.tube({ ro: rim, ri: rim * 0.55, h: tw * 0.8 }), { at: [xp, R, s * tz], orient: "z", dir: [0, 0, s * 2.0], tone: 0.4 });
+      add("Hub and wheel nut, " + w, "Wheel", cyl(rim * 0.3, 90), { at: [xp, R, s * (tz - tw * 0.25)], orient: "z", dir: [0, 0, s * 1.6], tone: 0.1 });
+      add("Brake disc, " + w, "Brakes", cyl(rim * 0.9, 32), { at: [xp, R, s * (tz - tw * 0.3)], orient: "z", dir: [0, 0, s * 1.2], tone: 0.0 });
+      add("Brake caliper, " + w, "Brakes", bx(rim * 0.5, rim * 0.5, 70), { at: [xp, R + rim * 0.75, s * (tz - tw * 0.3)], dir: [0, 0.6, s * 1.0], tone: 0.3 });
+      const inner = tubW / 2 + 40, span = tz - tw * 0.3 - inner;
+      for (const [yy, lab] of [[R + 90, "upper"], [R - 110, "lower"]]) add("Wishbone " + lab + ", " + w, "Suspension", cyl(11, span), { at: [xp, yy, s * (inner + span / 2)], orient: "z", dir: [0, lab === "upper" ? 0.8 : -0.8, s * 0.8], tone: -0.2 });
+    }
+  }
+  return null;
+}
+TOOLS.f1 = {
+  title: "Formula One car assembly (simplified)",
+  render(root) {
+    carViewer(root, "A simplified Formula One car built from basic solids: monocoque, nose, front and rear wings, floor and diffuser, sidepods, halo, driver, power unit, and four wheel corners with brakes and wishbones. Width and wheelbase default to the 2026 regulation maximums as reported by the press (<a href=\"https://www.the-race.com/formula-1/f1-2026-new-car-rules-explained/\" target=\"_blank\" rel=\"noopener\">The Race</a>, <a href=\"https://racer.com/2024/06/06/fia-unveils-nimble-car-details-of-2026-f1-regulations/\" target=\"_blank\" rel=\"noopener\">Racer</a>): 1900 mm and 3400 mm. I did not read the FIA document, so confirm in the current FIA Formula 1 technical regulations. The rim radius is exact (18 inch rims). Length, height, tyre sizes and every shape are examples, not any team's real geometry. Replace any value with your own source.",
+      [["L", "Overall length (example, not sourced)", 5500], ["W", "Overall width (2026 maximum, press-reported)", 1900], ["H", "Overall height (example, not sourced)", 1000], ["WB", "Wheelbase (2026 maximum, press-reported)", 3400], ["Rf", "Front tyre outer radius (example)", 330], ["Rr", "Rear tyre outer radius (example)", 345], ["twf", "Front tyre width (example)", 280], ["twr", "Rear tyre width (example)", 375]],
+      { make: makeF1, ext: v => v.L * 0.6 });
+  }
+};
+
+const TOOL_ORDER = ["car", "f1", "shapes", "beam", "section", "mohr", "buckling", "spring", "gears", "units"];
 if (typeof module !== "undefined") module.exports = { MATH, UNITS };
