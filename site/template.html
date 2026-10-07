@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Life Vault</title>
+<style>
+/* Plain layout: tree on the left, note in the middle, outline on the right. System fonts, no decoration. */
+:root { --bg:#ffffff; --fg:#111111; --muted:#555555; --rule:#cccccc; --link:#0b3d91; --sel:#e8e8e8; --code:#f2f2f2; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#111111; --fg:#eeeeee; --muted:#aaaaaa; --rule:#444444; --link:#8ab4f8; --sel:#2a2a2a; --code:#1c1c1c; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg:#111111; --fg:#eeeeee; --muted:#aaaaaa; --rule:#444444; --link:#8ab4f8; --sel:#2a2a2a; --code:#1c1c1c; color-scheme: dark; }
+* { box-sizing: border-box; }
+html { scroll-padding-top: 4rem; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
+a { color: var(--link); }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+button { font: inherit; color: inherit; }
+.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 1rem; padding: .5rem 1rem; background: var(--bg); border-bottom: 1px solid var(--rule); }
+.brand { font-weight: 700; color: var(--fg); text-decoration: none; white-space: nowrap; }
+.search { flex: 1; max-width: 32rem; }
+.search input { width: 100%; padding: .4rem .6rem; border: 1px solid var(--rule); background: var(--bg); color: var(--fg); font: inherit; }
+.icon-btn { border: 1px solid var(--rule); background: var(--bg); padding: .35rem .7rem; cursor: pointer; }
+#menu-btn { display: none; }
+.shell { display: grid; grid-template-columns: 16rem minmax(0, 1fr) 13rem; max-width: 88rem; margin: 0 auto; align-items: start; }
+.rail { position: sticky; top: 3.1rem; height: calc(100vh - 3.1rem); overflow-y: auto; padding: 1rem; border-right: 1px solid var(--rule); background: var(--bg); }
+.toc { position: sticky; top: 3.1rem; padding: 1rem; font-size: .9rem; max-height: calc(100vh - 3.1rem); overflow-y: auto; }
+.toc h4 { margin: 0 0 .4rem; font-size: .9rem; }
+.toc a { display: block; padding: .1rem 0; color: var(--link); }
+.toc a.l3 { padding-left: 1rem; }
+main { min-width: 0; padding: 1.2rem clamp(1rem, 3vw, 2.5rem) 4rem; }
+.tree-h { font-weight: 700; margin: 1rem 0 .2rem; }
+.tree a { display: block; padding: .15rem .4rem; color: var(--fg); text-decoration: none; font-size: .92rem; line-height: 1.35; }
+.tree a:hover { text-decoration: underline; }
+.tree a[aria-current="page"] { background: var(--sel); font-weight: 600; }
+.tree a small { display: block; color: var(--muted); font-size: .75rem; overflow-wrap: anywhere; }
+.crumbs { color: var(--muted); font-size: .85rem; margin-bottom: .5rem; overflow-wrap: anywhere; }
+.doc { max-width: 46rem; overflow-wrap: break-word; }
+.doc h1 { font-size: 1.8rem; line-height: 1.2; margin: 0 0 1rem; }
+.doc h2 { font-size: 1.35rem; margin: 2rem 0 .5rem; }
+.doc h3 { font-size: 1.1rem; margin: 1.5rem 0 .4rem; }
+.doc h4 { font-size: 1rem; margin: 1.2rem 0 .3rem; }
+.doc li.task { list-style: none; margin-left: -1.4rem; }
+.doc code { font-family: ui-monospace, Consolas, monospace; font-size: .9em; background: var(--code); padding: .1em .3em; }
+.doc pre { background: var(--code); padding: .8rem 1rem; overflow-x: auto; }
+.doc pre code { background: none; padding: 0; }
+.doc blockquote { margin: 1rem 0; padding-left: 1rem; border-left: 3px solid var(--rule); color: var(--muted); }
+.doc hr { border: 0; border-top: 1px solid var(--rule); margin: 1.5rem 0; }
+.tbl { overflow-x: auto; margin: 1rem 0; }
+.tbl table { border-collapse: collapse; }
+.tbl th, .tbl td { padding: .4rem .7rem; text-align: left; border: 1px solid var(--rule); vertical-align: top; }
+.chip { font-family: ui-monospace, Consolas, monospace; margin-right: .4rem; }
+.backlinks { max-width: 46rem; margin-top: 2rem; font-size: .9rem; color: var(--muted); }
+.backlinks a { margin-right: 1rem; }
+.home { max-width: 46rem; }
+.home h1 { font-size: 1.8rem; margin: 0 0 .5rem; }
+.stats { padding-left: 1.2rem; }
+.hit { display: block; padding: .6rem 0; border-bottom: 1px solid var(--rule); color: var(--fg); text-decoration: none; }
+.hit b { color: var(--link); text-decoration: underline; }
+.hit small { display: block; color: var(--muted); }
+.hit p { margin: .2rem 0 0; font-size: .92rem; color: var(--muted); }
+.results { max-width: 46rem; }
+mark { background: #ffe58a; color: #111; }
+.tool-form { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin: .8rem 0; align-items: end; }
+.tool-field { display: flex; flex-direction: column; gap: .2rem; font-size: .9rem; min-width: 0; }
+.tool-field input, .tool-field select { padding: .35rem .5rem; border: 1px solid var(--rule); background: var(--bg); color: var(--fg); font: inherit; max-width: 100%; }
+.tool-field input[type="checkbox"] { width: auto; }
+.tool-out canvas { display: block; margin: .6rem 0; }
+.foot { margin-top: 2rem; color: var(--muted); font-size: .85rem; }
+@media (max-width: 70rem) { .shell { grid-template-columns: 15rem minmax(0, 1fr); } .toc { display: none; } }
+@media (max-width: 48rem) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  #menu-btn { display: block; }
+  .rail { position: fixed; z-index: 30; top: 3.1rem; left: 0; bottom: 0; width: min(20rem, 88vw); height: auto; translate: -100% 0; }
+  body.nav-open .rail { translate: 0 0; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="icon-btn" id="menu-btn" aria-label="Toggle navigation">Menu</button>
+  <a class="brand" href="#/">Life Vault</a>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search every note" autocomplete="off" aria-label="Search every note">
+  </div>
+  <button class="icon-btn" id="theme-btn">Theme</button>
+</header>
+<div class="shell">
+  <nav class="rail tree" id="tree" aria-label="Vault notes"></nav>
+  <main id="main"></main>
+  <aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<script>
+/*__TOOLS__*/
+</script>
+<script>
+const DATA = /*__DATA__*/null;
+const NOTES = DATA.notes;
+const BY_PATH = Object.fromEntries(NOTES.map(n => [n.path, n]));
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/* ---------- Markdown ---------- */
+function resolve(from, href) {
+  const parts = from.split("/").slice(0, -1);
+  for (const seg of href.split("/")) {
+    if (seg === "..") parts.pop(); else if (seg !== "." && seg !== "") parts.push(seg);
+  }
+  return parts.join("/");
+}
+function inline(s, from) {
+  const codes = [];
+  s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return "\u0000" + (codes.length - 1) + "\u0000"; });
+  s = esc(s);
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, href) => {
+    href = href.replace(/&amp;/g, "&");
+    if (/^https?:/.test(href)) return `<a href="${esc(href)}" target="_blank" rel="noopener">${text}</a>`;
+    const [file, frag] = href.split("#");
+    const target = file ? resolve(from, file) : from;
+    if (BY_PATH[target]) return `<a href="#/${encodeURI(target)}">${text}</a>`;
+    return `<span title="Not in vault: ${esc(href)}">${text}</span>`;
+  });
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/(^|[\s(])\*([^*\s][^*]*)\*(?=[\s).,;:]|$)/g, "$1<em>$2</em>");
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[i])}</code>`);
+}
+function parseList(lines, i, from) {
+  const indentOf = l => l.match(/^ */)[0].length;
+  const base = indentOf(lines[i]);
+  const ordered = /^\s*\d+[.)]\s/.test(lines[i]);
+  let out = `<${ordered ? "ol" : "ul"}>`;
+  while (i < lines.length) {
+    const l = lines[i], ind = indentOf(l);
+    const m = l.match(/^\s*(?:[-*+]|\d+[.)])\s+(.*)$/);
+    if (!m || ind < base) break;
+    if (ind > base) { const [html, ni] = parseList(lines, i, from); out = out.replace(/<\/li>$/, html + "</li>"); i = ni; continue; }
+    let body = m[1], cls = "";
+    const t = body.match(/^\[([ x~X])\]\s+(.*)$/);
+    if (t) {
+      const k = t[1] === " " ? "[ ]" : t[1] === "~" ? "[~]" : "[x]";
+      body = `<span class="chip">${k}</span>` + inline(t[2], from); cls = ' class="task"';
+    } else body = inline(body, from);
+    out += `<li${cls}>${body}</li>`; i++;
+  }
+  return [out + `</${ordered ? "ol" : "ul"}>`, i];
+}
+function render(md, from) {
+  const lines = md.replace(/\r\n/g, "\n").split("\n"), out = [], heads = [];
+  let i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^```/.test(l)) {
+      const buf = []; i++;
+      while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
+      i++; out.push(`<pre><code>${esc(buf.join("\n"))}</code></pre>`); continue;
+    }
+    const h = l.match(/^(#{1,4})\s+(.*)$/);
+    if (h) {
+      const n = h[1].length, id = "h" + heads.length;
+      heads.push({ n, id, text: h[2].replace(/[`*]/g, "") });
+      out.push(`<h${n} id="${id}">${inline(h[2], from)}</h${n}>`); i++; continue;
+    }
+    if (/^\s*([-*_])\1{2,}\s*$/.test(l)) { out.push("<hr>"); i++; continue; }
+    if (/^\s*\|/.test(l) && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1] || "")) {
+      const cells = r => r.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+      const head = cells(l); i += 2; const rows = [];
+      while (i < lines.length && /^\s*\|/.test(lines[i])) rows.push(cells(lines[i++]));
+      out.push(`<div class="tbl"><table><thead><tr>${head.map(c => `<th>${inline(c, from)}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${inline(c, from)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`);
+      continue;
+    }
+    if (/^>\s?/.test(l)) {
+      const buf = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, ""));
+      out.push(`<blockquote>${inline(buf.join(" "), from)}</blockquote>`); continue;
+    }
+    if (/^\s*(?:[-*+]|\d+[.)])\s+/.test(l)) { const [html, ni] = parseList(lines, i, from); out.push(html); i = ni; continue; }
+    if (!l.trim()) { i++; continue; }
+    const buf = [];
+    while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|>\s?|\s*(?:[-*+]|\d+[.)])\s+|\s*\|)/.test(lines[i])) buf.push(lines[i++]);
+    out.push(`<p>${inline(buf.join(" "), from)}</p>`);
+  }
+  return { html: out.join("\n"), heads };
+}
+
+/* ---------- Derived data ---------- */
+const FOLDER_LABEL = { "": "Root", agent: "Agent", cad: "CAD", career: "Career", courses: "Courses", daily: "Daily", ideas: "Ideas", inbox: "Inbox", knowledge: "Knowledge", log: "Log", projects: "Projects", reference: "Reference", templates: "Templates" };
+const folderOf = p => p.includes("/") ? p.split("/")[0] : "";
+const backlinks = {};
+for (const n of NOTES) {
+  for (const m of n.text.matchAll(/\[[^\]]+\]\(([^)\s#]+)(?:#[^)]*)?\)/g)) {
+    if (/^https?:/.test(m[1])) continue;
+    const t = resolve(n.path, m[1]);
+    if (BY_PATH[t] && t !== n.path) (backlinks[t] ||= new Set()).add(n.path);
+  }
+}
+const tally = { done: 0, wip: 0, todo: 0 };
+for (const n of NOTES) for (const m of n.text.matchAll(/^\s*[-*]\s+\[([ x~X])\]/gm)) tally[m[1] === " " ? "todo" : m[1] === "~" ? "wip" : "done"]++;
+
+/* ---------- Views ---------- */
+function buildTree(current) {
+  const groups = {};
+  for (const n of NOTES) (groups[folderOf(n.path)] ||= []).push(n);
+  const order = ["", ...Object.keys(FOLDER_LABEL).filter(k => k && groups[k])];
+  let html = `<a href="#/" ${current === "" ? 'aria-current="page"' : ""}>Home</a>`;
+  for (const g of order) {
+    if (!groups[g]) continue;
+    html += `<div class="tree-h">${FOLDER_LABEL[g] || g}</div>`;
+    for (const n of groups[g]) html += `<a href="#/${encodeURI(n.path)}" ${n.path === current ? 'aria-current="page"' : ""}>${esc(n.title)}<small>${esc(n.path)}</small></a>`;
+  }
+  html += `<div class="tree-h">Tools</div>`;
+  for (const id of TOOL_ORDER) html += `<a href="#/tool/${id}" ${current === "tool/" + id ? 'aria-current="page"' : ""}>${esc(TOOLS[id].title)}</a>`;
+  $("#tree").innerHTML = html;
+}
+function home() {
+  const total = tally.done + tally.wip + tally.todo || 1;
+  const routes = NOTES.filter(n => ["HUB.md", "README.md", "knowledge/roadmap/README.md", "agent/INSTRUCTIONS.md", "career/portfolio/README.md", "knowledge/simulation/setup-checklist.md"].includes(n.path));
+  const blurb = { "HUB.md": "Master file. Routes for vault, study, CAD, OmniRoute, career.", "README.md": "Rules and folder layout of the vault.", "knowledge/roadmap/README.md": "Five-stage study plan for mechanical design.", "agent/INSTRUCTIONS.md": "How the AI companion works with the vault.", "career/portfolio/README.md": "Finished projects and portfolio plan.", "knowledge/simulation/setup-checklist.md": "Checks before trusting a simulation result." };
+  $("#main").innerHTML = `<div class="home">
+    <h1>Life Vault</h1>
+    <p>Plain-text notes for mechanical design and simulation studies, rendered from the Markdown files in the repository.</p>
+    <ul class="stats">
+      <li>${NOTES.length} notes in ${new Set(NOTES.map(n => folderOf(n.path))).size} folders</li>
+      <li>Checklist items: ${tally.done} done, ${tally.wip} in progress, ${tally.todo} not started (of ${total})</li>
+    </ul>
+    <h2>Tools</h2>
+    <ul>${TOOL_ORDER.map(id => `<li><a href="#/tool/${id}">${esc(TOOLS[id].title)}</a></li>`).join("")}</ul>
+    <h2>Start here</h2>
+    <ul>${routes.map(n => `<li><a href="#/${encodeURI(n.path)}">${esc(n.title)}</a> (${esc(n.path)}). ${blurb[n.path] || ""}</li>`).join("")}</ul>
+    <p class="foot">Revision ${esc(DATA.rev)}. Rebuild after editing notes: python3 site/build.py</p>
+  </div>`;
+  $("#toc").innerHTML = "";
+}
+function note(path) {
+  const n = BY_PATH[path];
+  const { html, heads } = render(n.text, n.path);
+  const bl = [...(backlinks[path] || [])].map(p => `<a href="#/${encodeURI(p)}">${esc(BY_PATH[p].title)}</a>`).join("");
+  const crumbs = n.path.split("/").join(" / ");
+  $("#main").innerHTML = `<div class="crumbs">${esc(crumbs)}</div><article class="doc">${html}</article>${bl ? `<div class="backlinks">Linked from: ${bl}</div>` : ""}`;
+  const items = heads.filter(h => h.n === 2 || h.n === 3);
+  $("#toc").innerHTML = items.length ? `<h4>On this page</h4>` + items.map(h => `<a class="l${h.n}" href="#/${encodeURI(path)}" data-id="${h.id}">${esc(h.text)}</a>`).join("") : "";
+}
+function results(q) {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const hits = NOTES.map(n => {
+    const t = n.title.toLowerCase(), p = n.path.toLowerCase(), x = n.text.toLowerCase();
+    let score = 0;
+    for (const w of terms) {
+      const c = x.split(w).length - 1;
+      if (!c && !t.includes(w) && !p.includes(w)) return null;
+      score += (t.includes(w) ? 10 : 0) + (p.includes(w) ? 3 : 0) + Math.min(c, 10);
+    }
+    const at = x.indexOf(terms[0]);
+    let snip = at < 0 ? n.text.slice(0, 140) : n.text.slice(Math.max(0, at - 60), at + 120);
+    snip = esc(snip.replace(/\s+/g, " "));
+    for (const w of terms) snip = snip.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), m => `<mark>${m}</mark>`);
+    return { n, score, snip };
+  }).filter(Boolean).sort((a, b) => b.score - a.score);
+  $("#main").innerHTML = `<div class="results"><h2>${hits.length} result${hits.length === 1 ? "" : "s"} for "${esc(q)}"</h2>${hits.map(h => `<a class="hit" href="#/${encodeURI(h.n.path)}"><b>${esc(h.n.title)}</b><small>${esc(h.n.path)}</small><p>${h.snip}</p></a>`).join("") || "<p>No notes match. Try fewer words.</p>"}</div>`;
+  $("#toc").innerHTML = "";
+}
+
+/* ---------- Routing ---------- */
+function route() {
+  document.body.classList.remove("nav-open");
+  const path = decodeURI(location.hash.replace(/^#\/?/, ""));
+  if (path.startsWith("tool/") && TOOLS[path.slice(5)]) {
+    const id = path.slice(5); buildTree(path);
+    $("#main").innerHTML = `<article class="doc"><h1>${esc(TOOLS[id].title)}</h1><div id="tool-root"></div></article>`;
+    $("#toc").innerHTML = ""; TOOLS[id].render($("#tool-root")); document.title = TOOLS[id].title + " · Life Vault";
+  } else if (path && BY_PATH[path]) { buildTree(path); note(path); document.title = BY_PATH[path].title + " · Life Vault"; }
+  else { buildTree(""); home(); document.title = "Life Vault"; }
+  window.scrollTo(0, 0);
+}
+addEventListener("hashchange", route);
+$("#toc").addEventListener("click", e => {
+  const a = e.target.closest("a[data-id]"); if (!a) return;
+  e.preventDefault(); document.getElementById(a.dataset.id)?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+});
+$("#q").addEventListener("input", e => { const q = e.target.value.trim(); if (q) results(q); else route(); });
+addEventListener("keydown", e => {
+  if (e.key === "/" && document.activeElement !== $("#q")) { e.preventDefault(); $("#q").focus(); }
+  if (e.key === "Escape") { $("#q").value = ""; $("#q").blur(); route(); }
+});
+$("#menu-btn").addEventListener("click", () => document.body.classList.toggle("nav-open"));
+$("#theme-btn").addEventListener("click", () => {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const cur = document.documentElement.dataset.theme || (dark ? "dark" : "light");
+  const next = cur === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("vault-theme", next); } catch (e) {}
+});
+try { const t = localStorage.getItem("vault-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+route();
+</script>
+</body>
+</html>
