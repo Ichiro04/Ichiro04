@@ -11,6 +11,10 @@ Created 2026-10-11 by the assistant. Raw notes were not changed. Links are relat
 ## Study (Route B)
 - [knowledge/roadmap/README.md](../knowledge/roadmap/README.md): 5-stage roadmap with progress checkboxes
 - [stage1-01-statics.md](../knowledge/roadmap/lessons/stage1-01-statics.md): statics lesson, self-test Q1-Q3 unanswered
+- [stage1-02-mechanics-of-materials.md](../knowledge/roadmap/lessons/stage1-02-mechanics-of-materials.md): draft lesson (new)
+- [stage1-05-beam-deflection-buckling.md](../knowledge/roadmap/lessons/stage1-05-beam-deflection-buckling.md): draft lesson (new)
+- [stage1-06-stress-concentration.md](../knowledge/roadmap/lessons/stage1-06-stress-concentration.md): draft lesson (new)
+- [stage1-diagrams.md](../knowledge/diagrams/stage1-diagrams.md): text diagrams for Stage 1 (new)
 - [stage1-03-mohrs-circle.md](../knowledge/roadmap/lessons/stage1-03-mohrs-circle.md): draft lesson (new)
 - [stage1-04-failure-theories.md](../knowledge/roadmap/lessons/stage1-04-failure-theories.md): draft lesson (new)
 - [stage1-07-fatigue.md](../knowledge/roadmap/lessons/stage1-07-fatigue.md): draft lesson (new)
@@ -43,7 +47,6 @@ Created 2026-10-11 by the assistant. Raw notes were not changed. Links are relat
 courses/, daily/ (until the new plan), ideas/, reference/, knowledge/materials/, cad/solidworks/, cad/autocad/
 
 ## Gaps I noticed
-- No lesson yet for mechanics of materials (stage1-02), beam deflection and buckling, stress concentration.
 - Stage 2-5 progress is not recorded.
 - knowledge/materials/ is empty. Material values should be added only from sources.
 - HUB.md names branch claude/capabilities-overview-83xgc2; this session used claude/cool-edison-jcrkmq.
