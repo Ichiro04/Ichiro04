@@ -39,7 +39,8 @@ html = html.replace(/<script src="([^"]+)"><\/script>\n?/g, (_, src) => {
 // --- sanity ------------------------------------------------------------------
 if (/<link rel="stylesheet"|<script src=/.test(html)) throw new Error('unresolved external reference left in the build');
 const external = html.match(/https?:\/\/[^"'\s)]+/g) || [];
-const suspicious = external.filter(u => !u.startsWith('http://www.w3.org/'));
+// plain hyperlinks to the user's own artifact pages are navigation, not dependencies
+const suspicious = external.filter(u => !u.startsWith('http://www.w3.org/') && !u.startsWith('https://claude.ai/artifact/'));
 
 mkdirSync(resolve(root, 'dist'), { recursive: true });
 const out = resolve(root, 'dist/daily-coach.html');

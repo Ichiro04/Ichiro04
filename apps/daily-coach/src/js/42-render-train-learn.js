@@ -121,6 +121,7 @@ function renderLearn(){
   if (learnTab==='know') body = learnKnowHTML();
   if (learnTab==='words') body = learnWordsHTML();
   if (learnTab==='career') body = learnCareerHTML();
+  if (learnTab==='know' || learnTab==='career') body = labCardHTML() + body;
   return `<div class="learnwrap">
     <div class="seg" role="tablist" aria-label="Learning modes">
       ${seg.map(([id,label])=>`<button role="tab" class="${learnTab===id?'on':''}" aria-selected="${learnTab===id}" data-a="learn-tab" data-id="${id}">${label}</button>`).join('')}
@@ -184,7 +185,7 @@ function learnEssayHTML(){
 
   <div class="h2">Band 7 non-negotiables</div>
   <div class="glass list">
-    ${BAND7_RULES.map(r=>`<div class="lrow"><span class="lic" style="color:#1F7F80;background:rgba(53,159,160,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(r)}</span></span></div>`).join('')}
+    ${BAND7_RULES.map(r=>`<div class="lrow"><span class="lic" style="color:#B00515;background:rgba(192,4,24,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(r)}</span></span></div>`).join('')}
   </div>
   </div>`;
 }
@@ -198,7 +199,7 @@ function learnSpeakHTML(){
   <div class="glass card">
     <div class="week">${days.map((k,i)=>{
       const d = parseKey(k), isT = k===dkey(), on = !!state.ielts.speaking[k];
-      return `<div class="dcell ${isT?'today':''}"><span class="dow">${DAYS[i][0]}</span><span class="orb ${on?'':''}" style="${on?'background:linear-gradient(150deg,#359FA0,#8AD6D1)':''}"><b style="${on?'color:#fff':''}">${on?'✓':d.getDate()}</b></span></div>`;
+      return `<div class="dcell ${isT?'today':''}"><span class="dow">${DAYS[i][0]}</span><span class="orb ${on?'':''}" style="${on?'background:linear-gradient(150deg,#C00418,#D5D9E0)':''}"><b style="${on?'color:#fff':''}">${on?'✓':d.getDate()}</b></span></div>`;
     }).join('')}</div>
     <div class="tiny" style="margin-top:14px">Speaking improves by being recorded. Use your phone’s voice memo, play it back once, then name one thing to fix — speed, verb endings, or filler words.</div>
   </div>
@@ -223,7 +224,7 @@ function learnKnowHTML(){
   return `
   <div class="glass kp" data-tilt>
     <div class="glare"></div>
-    <div class="kptop"><span class="badge">${pack.tag.toUpperCase()}</span><span class="tiny" style="margin-left:auto">Today’s pack</span></div>
+    <div class="kptop"><span class="badge">${esc(pack.tag.charAt(0).toUpperCase()+pack.tag.slice(1).toLowerCase())}</span><span class="tiny" style="margin-left:auto">Today’s pack</span></div>
     <div class="h2" style="margin:2px 0 0;font-size:20px">${esc(pack.title)}</div>
     <ul>${pack.points.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>
     <div class="sf"><b>Ask yourself:</b> ${esc(pack.ask)}</div>
@@ -235,7 +236,7 @@ function learnKnowHTML(){
   <div class="h2">Bring this to the shop floor</div>
   <div class="glass card">
     <div class="row" style="gap:10px;align-items:flex-start">
-      <span class="lic" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,140,82,.16);color:#B24A16;flex:0 0 auto">${ic('bolt',18)}</span>
+      <span class="lic" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,199,0,.16);color:#8A6400;flex:0 0 auto">${ic('bolt',18)}</span>
       <div><div class="h3" style="font-size:14.5px">One question for the floor</div><div class="tiny" style="margin-top:3px">${esc(pack.new)}</div></div>
     </div>
     <div class="callout" style="margin-top:12px">${ic('info',14)} You are not learning this for an exam. You are learning it so that on the floor, when something goes wrong, you have a second explanation before anyone speaks.</div>
@@ -290,7 +291,7 @@ function learnCareerHTML(){
   <div class="h2">Huhtamaki application <span class="side">${hDone} of ${HUHT_STAGES.length} stages</span></div>
   <div class="glass list">
     ${HUHT_STAGES.map(x=>`<button class="lrow" data-a="huht" data-id="${x.id}" aria-pressed="${!!hs[x.id]}">
-      <span class="lic" style="${hs[x.id]?'background:linear-gradient(150deg,var(--teal),var(--lteal));color:#03302F':''}">${hs[x.id]?ic('check',17):ic('bolt',17)}</span>
+      <span class="lic" style="${hs[x.id]?'background:linear-gradient(150deg,var(--teal),var(--lteal));color:#FFFFFF':''}">${hs[x.id]?ic('check',17):ic('bolt',17)}</span>
       <span class="lt"><span class="a" style="font-size:14.5px;${hs[x.id]?'color:var(--ink-3)':''}">${esc(x.t)}</span><span class="b">${esc(x.d)}</span></span>
     </button>`).join('')}
     <div class="callout" style="margin:0 12px 12px">${hNext?'Next: '+esc(hNext.t.toLowerCase())+'. Tap a stage when you pass it.':'Offer received. Well done.'}</div>
@@ -316,7 +317,7 @@ function learnCareerHTML(){
   <div class="h2">Portfolio <span class="side">tap to tick</span></div>
   <div class="glass list">
     ${PORTFOLIO.map(p=>`<button class="lrow" data-a="pf" data-id="${p.id}" aria-pressed="${!!pf[p.id]}">
-      <span class="lic" style="${pf[p.id]?'background:linear-gradient(150deg,var(--teal),var(--lteal));color:#03302F':''}">${pf[p.id]?ic('check',17):ic('edit',17)}</span>
+      <span class="lic" style="${pf[p.id]?'background:linear-gradient(150deg,var(--teal),var(--lteal));color:#FFFFFF':''}">${pf[p.id]?ic('check',17):ic('edit',17)}</span>
       <span class="lt"><span class="a" style="font-size:14.5px;${pf[p.id]?'color:var(--ink-3)':''}">${esc(p.t)}</span><span class="b">${esc(p.d)}</span></span>
     </button>`).join('')}
   </div>
@@ -350,12 +351,12 @@ function learnCareerHTML(){
 
   <div class="h2">What is already strong</div>
   <div class="glass list">
-    ${CV_STRENGTHS.map(x=>`<div class="lrow"><span class="lic" style="color:#1F7F80;background:rgba(53,159,160,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
+    ${CV_STRENGTHS.map(x=>`<div class="lrow"><span class="lic" style="color:#B00515;background:rgba(192,4,24,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
   </div>
 
   <div class="h2">Fix these on the CV <span class="side">before the next application</span></div>
   <div class="glass list">
-    ${CV_FIXES.map(x=>`<div class="lrow"><span class="lic" style="color:#B24A16;background:rgba(255,140,82,.16)">${ic('bolt',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
+    ${CV_FIXES.map(x=>`<div class="lrow"><span class="lic" style="color:#8A6400;background:rgba(255,199,0,.16)">${ic('bolt',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
   </div>
 
   <div class="glass card" style="margin-top:12px">
@@ -363,3 +364,14 @@ function learnCareerHTML(){
   </div>`;
 }
 
+
+const LAB_URL = 'https://claude.ai/artifact/6GYxLTF3Ppb6Ro475RAztd';
+function labCardHTML(){
+  const s = [['trends','Trends'],['path','Path'],['cad','CAD theory'],['tests','Test bench'],['career','Licences'],['data','Data']];
+  return `<div class="glass labcard" data-tilt>
+    <div class="labtop"><span class="labic">${ic('bolt',20)}</span>
+      <div style="flex:1;min-width:0"><div class="h3" style="font-size:16px">Mechanical engineering lab</div>
+      <div class="tiny" style="margin-top:2px">3D CAD walkthrough, a test bench with real load cases, and a Beginner to Advanced path. Opens your lab page.</div></div></div>
+    <div class="labchips"><a class="go" href="${LAB_URL}#tests" target="_blank" rel="noopener">Open the lab</a>${s.map(([h,l])=>`<a href="${LAB_URL}#${h}" target="_blank" rel="noopener">${l}</a>`).join('')}</div>
+  </div>`;
+}

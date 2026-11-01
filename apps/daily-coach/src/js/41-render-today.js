@@ -82,9 +82,9 @@ function renderToday(){
     </div>
     <div class="tideart">${tideArt(k)}<div class="glow"></div></div>
     <div class="tidefoot">
-      <span class="legend"><i style="background:#359FA0"></i>tides = tasks</span>
-      <span class="legend"><i style="background:#086288"></i>seabed = streak days</span>
-      <span class="legend"><i style="background:#FF8C52"></i>sun = all done</span>
+      <span class="legend"><i style="background:#C00418"></i>tides = tasks</span>
+      <span class="legend"><i style="background:#E1061B"></i>seabed = streak days</span>
+      <span class="legend"><i style="background:#FFC700"></i>sun = all done</span>
     </div>
   </div>
 

@@ -61,12 +61,12 @@ function ring(pct, size=112, sw=9, opts={}){
   return `<div class="ringwrap" style="width:${size}px;height:${size}px">
     <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">
       <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="${opts.c1||'#359FA0'}"/><stop offset="55%" stop-color="${opts.c2||'#8AD6D1'}"/><stop offset="100%" stop-color="${opts.c3||'#97D7FF'}"/>
+        <stop offset="0%" stop-color="${opts.c1||'#C00418'}"/><stop offset="55%" stop-color="${opts.c2||'#D5D9E0'}"/><stop offset="100%" stop-color="${opts.c3||'#FF4D57'}"/>
       </linearGradient></defs>
       <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--track)" stroke-width="${sw}"/>
       <circle class="ringfg" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#${id})" stroke-width="${sw}"
         stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${dash.toFixed(1)}"
-        style="--full:${from.toFixed(1)}px;--dash:${dash.toFixed(1)}px;filter:drop-shadow(0 3px 6px rgba(53,159,160,.35))"/>
+        style="--full:${from.toFixed(1)}px;--dash:${dash.toFixed(1)}px;filter:drop-shadow(0 3px 6px rgba(192,4,24,.35))"/>
     </svg>
     <div class="ringmid"><b>${label}${opts.pct!==false?'%':''}</b>${sub?`<span>${sub}</span>`:''}</div>
   </div>`;
@@ -88,12 +88,12 @@ function sparkline(points, opts={}){
   const gid = 'sg'+(++gradSeq);
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
     <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#4D8DBA" stop-opacity=".32"/><stop offset="100%" stop-color="#4D8DBA" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#8A94A6" stop-opacity=".32"/><stop offset="100%" stop-color="#8A94A6" stop-opacity="0"/>
     </linearGradient></defs>
     <path d="${area}" fill="url(#${gid})"/>
-    ${target?`<line x1="0" x2="${w}" y1="${Y(target).toFixed(1)}" y2="${Y(target).toFixed(1)}" stroke="#FF8C52" stroke-width="1.4" stroke-dasharray="5 5" opacity=".8"/>`:''}
-    <path d="${line}" fill="none" stroke="#086288" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-    ${vals.map((v,i)=> i===vals.length-1 ? `<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="4" fill="#359FA0" stroke="#fff" stroke-width="2"/>` : '').join('')}
+    ${target?`<line x1="0" x2="${w}" y1="${Y(target).toFixed(1)}" y2="${Y(target).toFixed(1)}" stroke="#FFC700" stroke-width="1.4" stroke-dasharray="5 5" opacity=".8"/>`:''}
+    <path d="${line}" fill="none" stroke="#E1061B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    ${vals.map((v,i)=> i===vals.length-1 ? `<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="4" fill="#C00418" stroke="#fff" stroke-width="2"/>` : '').join('')}
   </svg>`;
 }
 
@@ -102,7 +102,7 @@ function sparkline(points, opts={}){
    one tide per finished task · one seabed layer per streak day
    all tasks done = orange sun · seeded by date
    ============================================================ */
-const TIDE_COLORS = ['#359FA0','#4D8DBA','#97D7FF','#8AD6D1','#086288','#FF8C52','#6FC2C3','#3C7EA8'];
+const TIDE_COLORS = ['#C00418','#8A94A6','#FF4D57','#D5D9E0','#E1061B','#FFC700','#A855F7','#C9CED6'];
 function tideArt(k){
   const done = countDone(k);
   const total = tasksForDay(k).length || 1;
@@ -123,7 +123,7 @@ function tideArt(k){
   for (let i=0;i<layers;i++){
     const y = base - 4 - i*6.2;
     const amp = 2.4 + rnd()*3.2, wl = 70 + rnd()*90, ph = rnd()*6.28;
-    const col = ['#086288','#359FA0','#4D8DBA','#2E7C7D'][i%4];
+    const col = ['#E1061B','#C00418','#8A94A6','#4B5060'][i%4];
     const op = 0.14 + (i/layers)*0.4;
     seabed += `<path d="${wavePath(y,amp,wl,ph)} L${W},${H} L0,${H} Z" fill="${col}" opacity="${(op*0.5).toFixed(2)}"/>`;
     seabed += `<path d="${wavePath(y,amp,wl,ph)}" fill="none" stroke="${col}" stroke-width="1.1" opacity="${op.toFixed(2)}"/>`;
@@ -148,7 +148,7 @@ function tideArt(k){
   for (let i=0;i<3;i++){
     const y = base - 2 - i*3.4;
     const amp = 1.6 + rnd()*2.0, wl = 110 + rnd()*80, ph = rnd()*6.28;
-    swell += `<path d="${wavePath(y,amp,wl,ph)}" fill="none" stroke="#FFF6DC" stroke-width="1" opacity="${(0.16 - i*0.04).toFixed(2)}"/>`;
+    swell += `<path d="${wavePath(y,amp,wl,ph)}" fill="none" stroke="#F5F5F7" stroke-width="1" opacity="${(0.16 - i*0.04).toFixed(2)}"/>`;
   }
 
   // sun when everything is done
@@ -158,7 +158,7 @@ function tideArt(k){
       <circle cx="292" cy="46" r="46" fill="url(#sunGlow)" opacity=".85"/>
       <circle cx="292" cy="46" r="19" fill="url(#sunCore)"/>
       ${Array.from({length:12},(_,i)=>{ const a = i*Math.PI/6; const x1=292+Math.cos(a)*25, y1=46+Math.sin(a)*25, x2=292+Math.cos(a)*33, y2=46+Math.sin(a)*33;
-        return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#FF8C52" stroke-width="2.2" stroke-linecap="round" opacity=".8"/>`; }).join('')}
+        return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#FFC700" stroke-width="2.2" stroke-linecap="round" opacity=".8"/>`; }).join('')}
     </g>`;
   } else {
     sun = `<circle cx="292" cy="46" r="13" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.4" stroke-dasharray="3 5" opacity=".7"/>`;
@@ -168,18 +168,18 @@ function tideArt(k){
   let motes = '';
   for (let i=0;i<done*3;i++){
     const x = 14 + rnd()*(W-28), y = 12 + rnd()*(H*0.6), r = 0.8 + rnd()*1.5;
-    motes += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#FFF0C5" opacity="${(0.25+rnd()*0.5).toFixed(2)}"/>`;
+    motes += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#F4F4F6" opacity="${(0.25+rnd()*0.5).toFixed(2)}"/>`;
   }
 
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Tide art: ${done} of ${total} tasks complete, ${streak} day streak${all?', sun risen':''}">
     <defs>
       <linearGradient id="tideSky" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#97D7FF" stop-opacity=".55"/>
-        <stop offset="55%" stop-color="#4D8DBA" stop-opacity=".30"/>
-        <stop offset="100%" stop-color="#086288" stop-opacity=".50"/>
+        <stop offset="0%" stop-color="#FF4D57" stop-opacity=".55"/>
+        <stop offset="55%" stop-color="#8A94A6" stop-opacity=".30"/>
+        <stop offset="100%" stop-color="#E1061B" stop-opacity=".50"/>
       </linearGradient>
-      <radialGradient id="sunGlow"><stop offset="0%" stop-color="#FF8C52" stop-opacity=".85"/><stop offset="60%" stop-color="#FF8C52" stop-opacity=".22"/><stop offset="100%" stop-color="#FF8C52" stop-opacity="0"/></radialGradient>
-      <radialGradient id="sunCore"><stop offset="0%" stop-color="#FFF0C5"/><stop offset="55%" stop-color="#FFC98A"/><stop offset="100%" stop-color="#FF8C52"/></radialGradient>
+      <radialGradient id="sunGlow"><stop offset="0%" stop-color="#FFC700" stop-opacity=".85"/><stop offset="60%" stop-color="#FFC700" stop-opacity=".22"/><stop offset="100%" stop-color="#FFC700" stop-opacity="0"/></radialGradient>
+      <radialGradient id="sunCore"><stop offset="0%" stop-color="#F4F4F6"/><stop offset="55%" stop-color="#FFE89A"/><stop offset="100%" stop-color="#FFC700"/></radialGradient>
     </defs>
     <rect width="${W}" height="${H}" fill="url(#tideSky)"/>
     <path d="M0,${base-2} C60,${base-8} 120,${base+4} 180,${base-3} S300,${base-9} 360,${base-1}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/>

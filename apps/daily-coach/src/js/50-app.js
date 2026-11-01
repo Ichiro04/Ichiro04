@@ -8,7 +8,7 @@ function applyTheme(){
   const want = state.theme === 'auto' ? (mqDark.matches ? 'dark' : 'light') : state.theme;
   document.documentElement.setAttribute('data-theme', want);
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', want === 'dark' ? '#04121C' : '#F7F2E4');
+  if (meta) meta.setAttribute('content', want === 'dark' ? '#0A0A0D' : '#F3F4F6');
 }
 function applyMotion(){
   const on = state.reduceMotion || REDUCE_QUERY.matches;
@@ -563,7 +563,7 @@ document.addEventListener('click', e=>{
         <p class="tiny">This clears every task, weigh-in, expense and essay stored in this browser. It cannot be undone.</p>
         <div class="row" style="gap:8px;margin-top:6px">
           <button class="btn btn-soft" data-a="close-sheet" style="flex:1">Keep my data</button>
-          <button class="btn btn-deep" data-a="reset-confirm" style="flex:1;background:linear-gradient(165deg,#FF8C52,#D8663A)">Reset</button>
+          <button class="btn btn-deep" data-a="reset-confirm" style="flex:1;background:linear-gradient(165deg,#FFC700,#D9A400)">Reset</button>
         </div>`});
       break;
     }

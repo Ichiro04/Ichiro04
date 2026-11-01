@@ -8,7 +8,7 @@ function renderCoach(){
   <div class="glass card" data-tilt>
     <div class="glare"></div>
     <div class="row" style="gap:12px">
-      <div class="upic" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(150deg,var(--sky),var(--lteal));color:#04252F;box-shadow:0 10px 22px -12px rgba(8,98,136,.7)">${ic('sparkles',24)}</div>
+      <div class="upic" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(150deg,var(--sky),var(--lteal));color:#1A0A0C;box-shadow:0 10px 22px -12px rgba(225,6,27,.7)">${ic('sparkles',24)}</div>
       <div style="flex:1"><div class="h3">Daily Coach</div><div class="tiny">Reads your numbers, tells you the next move</div></div>
     </div>
     <div class="divider"></div>
@@ -65,7 +65,7 @@ function renderCoach(){
     <div class="row wrapflex" style="gap:8px">
       <button class="btn btn-soft btn-sm" data-a="export">${ic('download',15)} Copy backup</button>
       <button class="btn btn-soft btn-sm" data-a="import">${ic('upload',15)} Import</button>
-      <button class="btn btn-soft btn-sm" data-a="reset" style="color:#B24A16">${ic('trash',15)} Reset all</button>
+      <button class="btn btn-soft btn-sm" data-a="reset" style="color:#8A6400">${ic('trash',15)} Reset all</button>
     </div>
     <div class="tiny" style="margin-top:10px">Everything lives in this browser only. No accounts, no servers, no tracking. Export a backup before you clear site data.</div>
   </div>`;
@@ -76,8 +76,8 @@ function chatBubble(m){
     <div style="max-width:88%;padding:10px 13px;border-radius:${me?'16px 16px 5px 16px':'16px 16px 16px 5px'};
       font-size:14px;line-height:1.5;white-space:pre-wrap;
       background:${me?'linear-gradient(155deg,var(--sky),var(--lteal))':'rgba(255,255,255,.55)'};
-      color:${me?'#04252F':'var(--ink)'};
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 8px 18px -14px rgba(8,98,136,.6)">${esc(m.text)}</div>
+      color:${me?'#1A0A0C':'var(--ink)'};
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 8px 18px -14px rgba(225,6,27,.6)">${esc(m.text)}</div>
   </div>`;
 }
 function coachRead(){
