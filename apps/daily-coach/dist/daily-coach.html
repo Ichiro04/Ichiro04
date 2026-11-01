@@ -2809,9 +2809,9 @@ function packDiagram(id){
 
 /* ---------- time zones ---------- */
 const CLOCKS = [
-  { zone:'Europe/London', city:'Southsea', note:'You' },
-  { zone:'Asia/Yangon',   city:'Yangon',   note:'Myanmar' },
-  { zone:'UTC',           city:'UTC',      note:'Reference' }
+  { zone:'Europe/London', city:'UK',      note:'Southsea' },
+  { zone:'Asia/Yangon',   city:'Myanmar', note:'Yangon' },
+  { zone:'Asia/Tokyo',    city:'Japan',   note:'Tokyo' }
 ];
 function tzOffsetMin(zone, d=new Date()){
   const local = new Date(d.toLocaleString('en-US', { timeZone:zone }));
@@ -2827,7 +2827,8 @@ function tzParts(zone, d=new Date()){
   const offTxt = 'UTC' + sign + Math.floor(a/60) + (a % 60 ? ':' + pad2(a % 60) : '');
   const h = +new Intl.DateTimeFormat('en-GB', { timeZone:zone, hour:'numeric', hour12:false }).format(d) % 24;
   const m = +new Intl.DateTimeFormat('en-GB', { timeZone:zone, minute:'numeric' }).format(d);
-  return { t, date, abbr: abbr.startsWith('GMT+') || abbr.startsWith('GMT-') ? offTxt : abbr, offTxt, h, m, s:d.getSeconds(), off };
+  const named = { 'Asia/Yangon':'MMT', 'Asia/Tokyo':'JST' }[zone];
+  return { t, date, abbr: named || (abbr.startsWith('GMT+') || abbr.startsWith('GMT-') ? offTxt : abbr), offTxt, h, m, s:d.getSeconds(), off };
 }
 function fmtDiff(min){ const a = Math.abs(min), h = Math.floor(a/60), m = a % 60; return `${h} h${m ? ' ' + m + ' min' : ''}`; }
 function dialSVG(p){
@@ -2842,8 +2843,8 @@ function clocksHTML(){
   const now = new Date(), home = tzParts(CLOCKS[0].zone, now);
   return `<div class="glass clockcard" id="clockCard" data-tilt>
     <div class="clockrow">${CLOCKS.map((c,i)=>{ const p = tzParts(c.zone, now);
-      return `<div class="clk" data-zone="${c.zone}">${dialSVG(p)}<div class="clk-txt"><b class="num">${p.t}</b><span class="clk-city">${esc(c.city)} <em>${esc(p.abbr)}</em></span><span class="clk-date">${esc(p.date)}</span></div></div>`; }).join('')}</div>
-    <div class="clocknote">${(()=>{ const y = tzParts('Asia/Yangon', now); const d = y.off - home.off; return `Yangon is <b>${fmtDiff(d)}</b> ${d>=0?'ahead of':'behind'} Southsea today (${home.abbr==='BST'?'British Summer Time':'Greenwich Mean Time'}). UK clocks go forward in late March and back in late October.`; })()}</div>
+      return `<div class="clk" data-zone="${c.zone}">${dialSVG(p)}<div class="clk-txt"><b class="num">${p.t}</b><span class="clk-city">${esc(c.city)} <em>${esc(p.abbr)}</em></span><span class="clk-date">${esc(c.note)}</span><span class="clk-date">${esc(p.date)}</span></div></div>`; }).join('')}</div>
+    <div class="clocknote">${(()=>{ const y = tzParts('Asia/Yangon', now), j = tzParts('Asia/Tokyo', now); return `Myanmar is <b>${fmtDiff(y.off-home.off)}</b> and Japan <b>${fmtDiff(j.off-home.off)}</b> ahead of the UK today (${home.abbr==='BST'?'British Summer Time':'Greenwich Mean Time'}). The UK changes its clocks in late March and late October; Myanmar and Japan never do.`; })()}</div>
   </div>`;
 }
 function tickClocks(){
