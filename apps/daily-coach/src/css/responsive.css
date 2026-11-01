@@ -1,0 +1,113 @@
+/* ============================================================
+   COLUMN COMPOSITION
+   mobile: single flow. wide: two real columns.
+   ============================================================ */
+.tcol, .lcol{display:block}
+.learngrid{display:block}
+.learnwrap > .seg{position:relative;z-index:3}
+
+@media(min-width:900px){
+  .wrap{max-width:1060px;padding-left:28px;padding-right:28px}
+  /* real two-column composition: each column stacks its own sections,
+     so a short card never leaves a hole under it */
+  .view.wide{display:flex;gap:24px;align-items:flex-start}
+  .view.wide > .tcol{flex:1 1 0;min-width:0;display:block}
+  .view.wide > .tcol > *:first-child{margin-top:0}
+  .view.wide .h2{margin-top:22px}
+
+  .view.wide .learnwrap{display:block}
+  .view.wide .learngrid{display:flex;gap:24px;align-items:flex-start}
+  .view.wide .learngrid > .lcol{flex:1 1 0;min-width:0;display:block}
+  .view.wide .learngrid .lcol > *:first-child{margin-top:0}
+  .view.wide .learngrid .h2{margin-top:22px}
+
+  .grid2{display:flex;gap:24px;align-items:flex-start}
+  .grid2 > div{flex:1 1 0;min-width:0}
+  .grid2.gap > div > .h2:first-child{margin-top:0}
+
+  .hero{padding-top:34px}
+  .hero h1{font-size:52px}
+  .hero .sub{font-size:16px;max-width:52ch}
+  .tabbar{width:620px}
+  .fabwrap{right:calc(50% - 330px + 18px)}
+  .tideart{min-height:0}
+  .wrap{padding-bottom:calc(120px + var(--safe-b))}
+}
+
+/* kv tidy: label left, value right, both allowed to breathe */
+.kv{align-items:baseline;flex-wrap:wrap}
+.kv > span:first-child{flex:1 1 45%;min-width:0}
+.kv > b{flex:0 1 auto;text-align:right;max-width:60%}
+.kv.stack{display:grid;gap:1px}
+.kv.stack > b{text-align:left;max-width:100%;color:var(--ink-2)}
+
+/* small tag under the train day orb */
+.dtag{font-size:9.5px;font-weight:700;color:var(--ink-3);letter-spacing:.02em;
+  width:16px;height:16px;border-radius:5px;display:grid;place-items:center;background:var(--track)}
+.dcell.done .dtag{background:rgba(53,159,160,.3);color:#146B6B}
+html[data-theme="dark"] .dcell.done .dtag{color:var(--lteal);background:rgba(53,159,160,.28)}
+
+/* condensed chrome should not fight the hero */
+.topbar{transition:opacity .34s var(--ease-out), transform .44s var(--ease-spring)}
+.hero{transition:opacity .26s var(--ease-out), transform .34s var(--ease-out), filter .26s}
+
+/* up next: align the button with the text block */
+@media(min-width:420px){
+  .upnext{flex-wrap:nowrap;align-items:center}
+  .upnext .uptext{flex:1 1 auto}
+}
+
+/* tide art gets a fixed, cinematic height once it has real width */
+@media(min-width:900px){
+  .tideart{height:300px}
+  .tideart svg{width:100%;height:100%;aspect-ratio:auto}
+  .toasts{bottom:calc(110px + var(--safe-b))}
+}
+
+/* the hidden attribute must always win over any display rule */
+.view[hidden]{display:none !important}
+[hidden]{display:none !important}
+
+/* desktop chrome alignment with the content column */
+@media(min-width:900px){
+  .topbar{padding-left:calc(50% - 530px + 28px);padding-right:calc(50% - 530px + 28px)}
+}
+
+@media(min-width:900px){
+  .learnwrap > .seg{max-width:440px}
+}
+
+/* word reveal: keep natural spacing between masked words */
+.reveal-w{margin-right:.28em}
+.reveal-w:last-child{margin-right:0}
+
+/* section sublabels stay sentence case and quiet */
+.h2 .side{font-weight:560;letter-spacing:0}
+
+/* stat cards read as glass, not haze */
+.glass.stat{background:linear-gradient(158deg,rgba(255,255,255,.70),rgba(255,255,255,.44) 62%,rgba(255,255,255,.62))}
+html[data-theme="dark"] .glass.stat{background:linear-gradient(158deg,rgba(151,215,255,.16),rgba(77,141,186,.09) 62%,rgba(151,215,255,.12))}
+
+/* fab gets out of the way while you read */
+.fabwrap{transition:opacity .3s var(--ease-out), transform .4s var(--ease-out)}
+.fabwrap.tucked{opacity:0;transform:translateY(24px) scale(.9);pointer-events:none}
+
+/* toasts stack tidily and never sit on top of the lens */
+.toasts{gap:7px}
+
+/* calm base swell so the tide canvas is never dead empty */
+.tideart svg{background:transparent}
+
+/* floating actions sit above toasts; toasts step aside while the menu is open */
+.fabwrap{z-index:112}
+body.fab-open .toasts{opacity:0;pointer-events:none}
+.toasts{transition:opacity .24s var(--ease-out)}
+.fabmenu button{min-height:40px}
+
+/* prefix inputs: never let the unit collide with the value */
+.input-prefix .pfx{left:16px;font-variant-numeric:tabular-nums}
+.input-prefix .input{padding-left:46px}
+.input-prefix .pfx + .input{padding-left:46px}
+@media(max-width:380px){ .input-prefix .input{padding-left:52px} }
+
+

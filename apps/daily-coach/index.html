@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6F1E3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#04121C" media="(prefers-color-scheme: dark)">
+<title>Personal Growth Project</title>
+  <link rel="stylesheet" href="src/css/tokens.css">
+  <link rel="stylesheet" href="src/css/components.css">
+  <link rel="stylesheet" href="src/css/views.css">
+  <link rel="stylesheet" href="src/css/responsive.css">
+  <link rel="stylesheet" href="src/css/motion.css">
+</head>
+
+</head>
+<body>
+<!-- real edge refraction: SVG displacement map fed to backdrop-filter on Chromium -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:fixed;pointer-events:none">
+  <defs>
+    <filter id="liquidRefract" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.013" numOctaves="3" seed="11" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="7" result="soft"/>
+      <feDisplacementMap in="SourceGraphic" in2="soft" scale="24" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="sky-field" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="motes" id="motes" aria-hidden="true"></div>
+<div class="cursorlight" id="cursorlight" aria-hidden="true"></div>
+
+<!-- condensed glass title bar -->
+<header class="topbar" id="topbar">
+  <div class="groove">
+    <div class="mini-mark" id="miniMark" aria-hidden="true"></div>
+    <div class="mini-title" id="miniTitle">Today</div>
+    <div class="mini-since" id="miniSince"></div>
+    <div class="mini-dot" id="miniDot" aria-hidden="true"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero" id="hero">
+    <div class="eyebrow"><span class="pip"></span><span id="heroEyebrow">Sunday, 1 November</span></div>
+    <h1 id="heroTitle">Today</h1>
+    <p class="sub" id="heroSub">Small, boring, repeated. That is the whole method.</p>
+  </div>
+
+  <main id="main">
+    <section class="view" id="view-today" role="tabpanel" aria-labelledby="tab-today"></section>
+    <section class="view" id="view-train" role="tabpanel" aria-labelledby="tab-train" hidden></section>
+    <section class="view" id="view-learn" role="tabpanel" aria-labelledby="tab-learn" hidden></section>
+    <section class="view" id="view-money" role="tabpanel" aria-labelledby="tab-money" hidden></section>
+    <section class="view" id="view-progress" role="tabpanel" aria-labelledby="tab-progress" hidden></section>
+    <section class="view" id="view-coach" role="tabpanel" aria-labelledby="tab-coach" hidden></section>
+  </main>
+</div>
+
+<!-- floating glass tab bar -->
+<nav class="tabbar" id="tabbar" role="tablist" aria-label="Sections">
+  <div class="lens" id="lens" aria-hidden="true"></div>
+</nav>
+
+<!-- rest timer -->
+<div class="restbar" id="restbar" role="status" aria-live="polite">
+  <div class="rt" id="restTime">0:00</div>
+  <div class="prog"><i id="restProg" style="width:0%"></i></div>
+  <div class="rl" id="restLabel">Rest</div>
+  <button class="btn btn-soft btn-sm" id="restSkip" aria-label="Skip rest">Skip</button>
+</div>
+
+<!-- fab plus -> menu morph (money) -->
+<div class="fabwrap" id="fabwrap" aria-hidden="false">
+  <div class="fabmenu" id="fabmenu">
+    <button data-fab="expense"><span class="mi" data-ic="cart"></span>Log spending</button>
+    <button data-fab="saving"><span class="mi" data-ic="piggy"></span>Add to savings</button>
+  </div>
+  <button class="fab" id="fab" aria-label="Add money entry" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden></div>
+
+<script src="src/js/00-core.js"></script>
+<script src="src/js/10-content-training.js"></script>
+<script src="src/js/20-content-learn.js"></script>
+<script src="src/js/25-content-packs.js"></script>
+<script src="src/js/26-content-career.js"></script>
+<script src="src/js/30-content-money.js"></script>
+<script src="src/js/40-render-icons.js"></script>
+<script src="src/js/41-render-today.js"></script>
+<script src="src/js/42-render-train-learn.js"></script>
+<script src="src/js/44-render-money-progress.js"></script>
+<script src="src/js/46-render-coach.js"></script>
+<script src="src/js/50-app.js"></script>
+<script src="src/js/60-coach-engine.js"></script>
+<script src="src/js/70-boot.js"></script>
+</body>
+</html>
