@@ -39,7 +39,7 @@ const KNOWLEDGE_PACKS = [
     ],
     ask:'Every twentieth lid wrinkles at the same corner. Tooling, film or product — how would you prove which?',
     new:'Ask to see the seal-integrity reject rate for last month. If nobody knows the number, that is a finding in itself.' },
-  { id:'thermo', title:'Thermoforming, from sheet to part', tag:'Your current plant',
+  { id:'thermo', title:'Thermoforming, from sheet to part', tag:'Your application',
     points:[
       'Heat, form, cool. Most of the cycle is cooling, so the cooling system is usually the bottleneck — not the heater.',
       'Stretching thins the sheet. Draw ratios above roughly 2:1 need planning: plug assists, pre-stretch, generous corner radii.',

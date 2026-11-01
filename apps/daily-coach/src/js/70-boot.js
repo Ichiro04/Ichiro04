@@ -36,6 +36,7 @@ function boot(){
   renderView(activeTab);
   $('#fabwrap').style.display = 'none';
   buildMotes();
+  startLights();
   requestAnimationFrame(()=>{ moveLens(); });
   updateChrome();
   onScroll();

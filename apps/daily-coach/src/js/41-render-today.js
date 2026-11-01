@@ -1,6 +1,7 @@
 /* ============================================================
    VIEW · TODAY
    ============================================================ */
+function all(d,t){ return t>0 && d>=t; }
 function renderToday(){
   const k = dkey();
   const list = tasksForDay(k);
@@ -11,80 +12,68 @@ function renderToday(){
   const ws = startOfWeek();
 
   const weekCells = Array.from({length:7},(_,i)=>{
-    const d = addDays(ws,i), key = dkey(d), sc = dayScore(key), n = countDone(key);
+    const d = addDays(ws,i), key = dkey(d), n = countDone(key), tot = tasksForDay(key).length;
     const isToday = key === k, future = d > new Date() && !isToday;
-    const cls = [n>0 && n>=tasksForDay(key).length ? 'done' : (n>0?'part':''), isToday?'today':'', future?'future':''].filter(Boolean).join(' ');
-    return `<div class="dcell ${cls}">
-      <span class="dow">${DAYS[i][0]}</span>
-      <span class="orb"><b>${d.getDate()}</b></span>
+    const st = future ? 'future' : (tot && n>=tot) ? 'best' : n>=4 ? 'pb' : n>0 ? 'slow' : 'none';
+    return `<div class="wk ${st} ${isToday?'today':''}" aria-label="${DAYS[i]}: ${n} of ${tot}">
+      <i style="--f:${tot? (n/tot).toFixed(2) : 0}"></i><span>${DAYS[i][0]}</span><b class="num">${d.getDate()}</b>
     </div>`;
   }).join('');
 
-  const last7 = Array.from({length:7},(_,i)=>isStreakDay(dkey(addDays(new Date(), i-6))));
-
+  const nextId = next ? next.id : null;
   const rows = list.map((t,i)=>{
-    const isDone = taskDone(k,t.id);
-    return `<button class="task ${isDone?'done':''}" data-a="task" data-id="${t.id}" aria-pressed="${isDone}" style="--i:${i}">
+    const isDone = taskDone(k,t.id), isNext = !isDone && t.id===nextId;
+    return `<button class="task tt-row ${isDone?'done':''} ${isNext?'next':''}" data-a="task" data-id="${t.id}" aria-pressed="${isDone}" style="--i:${i}">
+      <span class="pos num">P${i+1}</span>
       <span class="kind" style="background:${t.color}"></span>
       <span class="cbx" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M4 10.5l4 4L16 6"/></svg></span>
       <span class="tbody">
         <span class="tname">${esc(t.name)}</span>
         <span class="tmeta">${esc(t.meta)}</span>
       </span>
+      <span class="sector" aria-hidden="true"><i></i><i></i><i></i></span>
       ${t.go && t.go!=='today' ? `<span class="tgo" data-a="go" data-go="${t.go}" aria-hidden="true">${ic('arrowRight',16)}</span>`:''}
     </button>`;
   }).join('');
 
+  const head = done===total&&total ? 'Chequered flag.' : done===0 ? 'On the grid.' : `${total-done} to the flag`;
+  const sub = done===total&&total ? 'Every task done. The day is yours.' : done>=4 ? 'Streak day secured. Push for the flag.' : `${Math.max(0,4-done)} more for a streak day.`;
+
   return `
   <div class="tcol a">
-  <div class="glass ringcard" data-tilt>
+  <div class="glass pw-hero" data-tilt>
     <div class="glare"></div>
-    <div class="ringrow">
-      ${ring(pct,112,9,{label:Math.round(pct*100), sub:`${done} of ${total}`, fromTo:true})}
-      <div class="ringmeta">
-        <div class="big">${done===total&&total? 'Day cleared.' : done===0 ? 'Nothing done yet.' : `${total-done} left today`}</div>
-        <div class="tiny">${done===total&&total? 'Sun is up. Rest is earned.' : 'Four tasks counts as a streak day.'}</div>
-        <div class="lines">
-          <div class="row" style="gap:6px">${ic('flame',15)}<b class="mono" style="font-size:14px">${streak}</b><span class="tiny">day streak${streak===1?'':'s'}</span></div>
-          <div class="streakpips">${last7.map(on=>`<i class="${on?'on':''}"></i>`).join('')}</div>
-        </div>
+    <div class="pw-top">
+      ${revGauge(done,total)}
+      <div class="pw-meta">
+        <div class="big">${head}</div>
+        <div class="tiny">${sub}</div>
+        <div class="pw-streak"><span class="purple-dot"></span><b class="num">${streak}</b><span class="tiny">day streak · personal best in purple</span></div>
       </div>
     </div>
-    <div class="week">${weekCells}</div>
+    <div class="pw-week">${weekCells}</div>
   </div>
 
-  ${next ? `<div class="h2">Up next <span class="side">${esc(next.meta)}</span></div>
-  <div class="upnext" data-tilt>
-    <div class="glare"></div>
-    <div class="upic">${ic(next.icon,22)}</div>
-    <div class="uptext">
-      <div class="lbl">${done===0?'Start here':'Next'}</div>
-      <div class="name">${esc(next.name)}</div>
-      <div class="meta">${esc(next.meta)}</div>
-    </div>
+  ${next ? `<div class="racectl">
+    <span class="rc-tag">${ic('flag',14)} Race control</span>
+    <span class="rc-msg"><b>${esc(next.name)}</b><span>${esc(next.meta)}</span></span>
     <button class="btn btn-primary btn-sm" data-a="start" data-id="${next.id}" data-go="${next.go||'today'}">Start</button>
   </div>`:''}
-  <div class="h2">Checklist <span class="side">${done}/${total}</span></div>
-  <div class="glass tasks">${rows || '<div class="tiny" style="padding:14px">Rest day. Nothing scheduled.</div>'}</div>
+  <div class="h2">Timing tower <span class="side num">${done}/${total}</span></div>
+  <div class="glass tasks tower ${all(done,total)?'allclear':''}">${rows || '<div class="tiny" style="padding:14px">Rest day. Nothing scheduled.</div>'}</div>
 
   </div>
   <div class="tcol b">
 
-  <div class="h2">Today’s tide <span class="side">${done}/${total} tides</span></div>
-  <div class="glass tidecard" data-tilt>
+  <div class="h2">Today’s lap <span class="side">${all(done,total)?'flag out':'one task, one stint'}</span></div>
+  <div class="glass lapcard" data-tilt>
     <div class="glare"></div>
-    <div class="tidehead">
-      <div>
-        <div class="h3">Tidal accretion</div>
-        <div class="tiny">${done===0?'The sea is flat. Complete a task to raise a tide.':done===total?'The sun has risen on a finished day.':`${done} tide${done===1?'':'s'} raised · ${streak} seabed layer${streak===1?'':'s'}`}</div>
-      </div>
-      ${done===total&&total?`<span class="chip chip-orange">${ic('flame',13)} Full day</span>`:`<span class="chip chip-teal">${ic('wave',13)} ${total-done} to sun</span>`}
-    </div>
-    <div class="tideart">${tideArt(k)}<div class="glow"></div></div>
+    <div class="lapart">${lapArt(k)}</div>
     <div class="tidefoot">
-      <span class="legend"><i style="background:#C00418"></i>tides = tasks</span>
-      <span class="legend"><i style="background:#E1061B"></i>seabed = streak days</span>
-      <span class="legend"><i style="background:#FFC700"></i>sun = all done</span>
+      <span class="legend"><i class="lg-trace"></i>each task drives a stint</span>
+      <span class="legend"><i class="lg-pb"></i>sector cleared</span>
+      <span class="legend"><i class="lg-best"></i>all done</span>
+      <span class="legend"><i class="lg-chq"></i>flag = full day</span>
     </div>
   </div>
 

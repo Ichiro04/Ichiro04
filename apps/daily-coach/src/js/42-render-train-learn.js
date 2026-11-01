@@ -226,6 +226,7 @@ function learnKnowHTML(){
     <div class="glare"></div>
     <div class="kptop"><span class="badge">${esc(pack.tag.charAt(0).toUpperCase()+pack.tag.slice(1).toLowerCase())}</span><span class="tiny" style="margin-left:auto">Today’s pack</span></div>
     <div class="h2" style="margin:2px 0 0;font-size:20px">${esc(pack.title)}</div>
+    ${packDiagram(pack.id)}
     <ul>${pack.points.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>
     <div class="sf"><b>Ask yourself:</b> ${esc(pack.ask)}</div>
     <div class="row" style="margin-top:12px;gap:8px">

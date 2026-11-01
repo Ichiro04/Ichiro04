@@ -9,7 +9,7 @@ function renderCoach(){
     <div class="glare"></div>
     <div class="row" style="gap:12px">
       <div class="upic" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(150deg,var(--sky),var(--lteal));color:#1A0A0C;box-shadow:0 10px 22px -12px rgba(225,6,27,.7)">${ic('sparkles',24)}</div>
-      <div style="flex:1"><div class="h3">Daily Coach</div><div class="tiny">Reads your numbers, tells you the next move</div></div>
+      <div style="flex:1"><div class="h3">Race engineer</div><div class="tiny">Team radio: reads your numbers, calls the next move</div></div>
     </div>
     <div class="divider"></div>
     <div class="stream" id="coachRead" style="min-height:56px">${coachRead()}</div>
@@ -27,7 +27,7 @@ function renderCoach(){
       <div id="chatStreamMount"></div>
     </div>
     <form data-form="chat" class="row" style="margin-top:14px;gap:8px">
-      <input class="input" name="msg" placeholder="Ask your coach…" aria-label="Message" autocomplete="off" style="flex:1">
+      <input class="input" name="msg" placeholder="Radio your engineer…" aria-label="Message" autocomplete="off" style="flex:1">
       <button class="btn btn-primary" type="submit" aria-label="Send">${ic('arrowRight',18)}</button>
     </form>
     <div class="row between" style="margin-top:8px">
@@ -70,15 +70,12 @@ function renderCoach(){
     <div class="tiny" style="margin-top:10px">Everything lives in this browser only. No accounts, no servers, no tracking. Export a backup before you clear site data.</div>
   </div>`;
 }
+function radioHead(me){
+  return `<div class="radio-head"><span>${me?'You':'Race engineer'}</span><span class="radio-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>`;
+}
 function chatBubble(m){
   const me = m.role === 'user';
-  return `<div style="display:flex;justify-content:${me?'flex-end':'flex-start'}">
-    <div style="max-width:88%;padding:10px 13px;border-radius:${me?'16px 16px 5px 16px':'16px 16px 16px 5px'};
-      font-size:14px;line-height:1.5;white-space:pre-wrap;
-      background:${me?'linear-gradient(155deg,var(--sky),var(--lteal))':'rgba(255,255,255,.55)'};
-      color:${me?'#1A0A0C':'var(--ink)'};
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 8px 18px -14px rgba(225,6,27,.6)">${esc(m.text)}</div>
-  </div>`;
+  return `<div class="radio-row ${me?'me':''}"><div class="radio ${me?'me':'eng'}">${radioHead(me)}<div class="radio-body">${esc(m.text)}</div></div></div>`;
 }
 function coachRead(){
   const done = todayDone(), total = todayTotal(), next = upNext();

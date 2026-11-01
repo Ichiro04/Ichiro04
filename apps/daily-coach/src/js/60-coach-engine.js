@@ -146,13 +146,13 @@ async function sendMessage(text){
   log.scrollTop = log.scrollHeight;
 
   const slot = document.createElement('div');
-  slot.innerHTML = `<div class="thinking"><span class="dots"><i></i><i></i><i></i></span><span>Reading your numbers…</span></div>`;
+  slot.innerHTML = `<div class="thinking"><span class="dots"><i></i><i></i><i></i></span><span>Engineer is checking the data…</span></div>`;
   $('#chatStreamMount').before(slot);
   log.scrollTop = log.scrollHeight;
 
   await new Promise(r=>setTimeout(r, REDUCE_QUERY.matches ? 0 : 520));
   const reply = generateReply(text);
-  slot.innerHTML = `<div style="display:flex"><div class="stream" id="liveStream" style="max-width:92%;padding:11px 13px;border-radius:16px 16px 16px 5px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)"><span id="liveText"></span><span class="cursor" id="liveCursor"></span></div></div>`;
+  slot.innerHTML = `<div class="radio-row"><div class="radio eng">${radioHead(false)}<div class="radio-body stream" id="liveStream"><span id="liveText"></span><span class="caret" id="liveCursor"></span></div></div></div>`;
   const liveText = slot.querySelector('#liveText');
   const cursor = slot.querySelector('#liveCursor');
   if (REDUCE_QUERY.matches || state.reduceMotion){

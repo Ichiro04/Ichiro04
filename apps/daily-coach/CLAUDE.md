@@ -169,3 +169,25 @@ his weight or his money — state the number and the next action.
 - Don't split `state` — one store, one save function.
 - Don't ship a change without building `dist/` and testing that file on a 390×844 viewport.
 - Don't put identity documents, passport/licence numbers or the CV PDF into this repo.
+
+---
+
+## Pit wall design layer (current look, November 2026)
+
+The liquid-glass cream and blue look has been replaced. Two stylesheets load last and win:
+`src/css/f1.css` (colour remap) then `src/css/pitwall.css` (surfaces, components, motion).
+
+- **Language:** F1 broadcast graphics. Layered carbon panels (no backdrop blur on cards), white
+  figures with tabular numerals, grey labels, a short red line on each panel's top-left corner,
+  skewed red bar before section headings, red-and-white kerb stripe on the tab bar and hero title.
+- **Timing colours mean something:** purple = best / streak, green = personal best / done,
+  yellow = slower / up next, red = live / action. Do not use them decoratively.
+- **Today:** rev-counter gauge (`revGauge`), week as sector bars, race-control strip (up next),
+  timing tower (task list), and Today's lap (`lapArt`) — a circuit generated from the date where
+  each finished task drives a stint and all done shows the chequered flag. It replaces the tide art.
+- **Atmosphere:** asphalt grid background, floodlight glow, occasional speed streaks, start lights
+  once per session (`startLights`, skipped with reduced motion).
+- **Diagrams:** `PACK_DIAGRAMS` in `43-render-pitwall.js` draws one schematic per knowledge pack;
+  lines use `pathLength="1"` and draw in with a stagger.
+- **Coach** is styled as team radio (`radioHead`, `.radio`).
+- **Lab tab:** the engineering lab (`lab/lab.html`) is embedded at build time by `lab/embed.mjs`.

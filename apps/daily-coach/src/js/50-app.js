@@ -29,13 +29,13 @@ REDUCE_QUERY.addEventListener('change', applyMotion);
 
 /* ---------- tabs ---------- */
 const TABS = [
-  { id:'today',    name:'Today',    icon:'today',    title:'Today',    sub:'Small, boring, repeated. That is the whole method.' },
-  { id:'train',    name:'Train',    icon:'dumbbell', title:'Train',    sub:'Three sessions a week, no equipment, add a rep.' },
+  { id:'today',    name:'Today',    icon:'flag',     title:'Today',    sub:'Small, boring, repeated. That is the whole method.' },
+  { id:'train',    name:'Train',    icon:'stopwatch',title:'Train',    sub:'Three sessions a week, no equipment, add a rep.' },
   { id:'learn',    name:'Learn',    icon:'book',     title:'Learn',    sub:'Band 7+ English and the engineering that gets you hired.' },
-  { id:'lab',      name:'Lab',      icon:'gears',    title:'Lab',      sub:'CAD, a real test bench and your engineering path.' },
-  { id:'money',    name:'Money',    icon:'wallet',   title:'Money',    sub:'£25,000 in twelve months, one logged coffee at a time.' },
+  { id:'lab',      name:'Lab',      icon:'wrench',   title:'Lab',      sub:'CAD, a real test bench and your engineering path.' },
+  { id:'money',    name:'Money',    icon:'pound',    title:'Money',    sub:'£25,000 in twelve months, one logged coffee at a time.' },
   { id:'progress', name:'Progress', icon:'chart',    title:'Progress', sub:'Evidence, not vibes.' },
-  { id:'coach',    name:'Coach',    icon:'sparkles', title:'Coach',    sub:'The honest read on your week.' }
+  { id:'coach',    name:'Coach',    icon:'headset',  title:'Coach',    sub:'The honest read on your week.' }
 ];
 let activeTab = 'today';
 
@@ -63,7 +63,7 @@ function moveLens(){
 function heroHTML(tab){
   const t = TABS.find(x=>x.id===tab);
   const words = t.sub.split(' ');
-  return `<div class="eyebrow"><span class="pip"></span><span>${esc(prettyDate())}</span></div>
+  return `${statusBar()}
     <h1 class="rise">${esc(t.title)}</h1>
     <p class="sub">${words.map((w,i)=>`<span class="reveal-w"><span style="--i:${Math.min(i,14)}">${esc(w)}</span></span>`).join(' ')}</p>`;
 }
@@ -124,6 +124,7 @@ function updateChrome(){
   }[activeTab] || '';
   $('#miniTitle').textContent = (TABS.find(t=>t.id===activeTab)||{title:''}).title;
   $('#miniSince').textContent = since;
+  { const sb = document.querySelector('#hero .statusbar'); if (sb) sb.outerHTML = statusBar(); }
   $('#miniMark').innerHTML = ic((TABS.find(t=>t.id===activeTab)||{icon:'today'}).icon, 19);
   $('#miniDot').style.display = activeTab==='today' && upNext() ? '' : 'none';
 }
