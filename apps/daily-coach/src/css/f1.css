@@ -81,6 +81,9 @@ html[data-theme="dark"] .upnext{background:linear-gradient(120deg,rgba(225,6,27,
 .labcard .labtop{display:flex;align-items:center;gap:12px}
 .labcard .labic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;color:#fff;background:linear-gradient(150deg,var(--red-hi),var(--red) 60%,#8E0411);box-shadow:0 8px 16px -8px rgba(225,6,27,.7)}
 .labcard .labchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.labcard .labchips a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px;color:var(--ink);background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1px var(--hair)}
-html[data-theme="dark"] .labcard .labchips a{background:rgba(255,255,255,.06)}
-.labcard .labchips a.go,html[data-theme="dark"] .labcard .labchips a.go{background:var(--red);color:#fff;box-shadow:0 8px 18px -8px rgba(225,6,27,.6)}
+.labcard .labchips button,.labcard .labchips a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px;color:var(--ink);background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1px var(--hair)}
+html[data-theme="dark"] .labcard .labchips button,.labcard .labchips a{background:rgba(255,255,255,.06)}
+.labcard .labchips .go,html[data-theme="dark"] .labcard .labchips .go{background:var(--red);color:#fff;box-shadow:0 8px 18px -8px rgba(225,6,27,.6)}
+
+.labwrap{padding:6px;border-radius:var(--r-lg);overflow:hidden}
+.labframe{display:block;width:100%;border:0;border-radius:calc(var(--r-lg) - 6px);background:transparent}

@@ -9,6 +9,7 @@ function applyTheme(){
   document.documentElement.setAttribute('data-theme', want);
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', want === 'dark' ? '#0A0A0D' : '#F3F4F6');
+  syncLabTheme();
 }
 function applyMotion(){
   const on = state.reduceMotion || REDUCE_QUERY.matches;
@@ -31,6 +32,7 @@ const TABS = [
   { id:'today',    name:'Today',    icon:'today',    title:'Today',    sub:'Small, boring, repeated. That is the whole method.' },
   { id:'train',    name:'Train',    icon:'dumbbell', title:'Train',    sub:'Three sessions a week, no equipment, add a rep.' },
   { id:'learn',    name:'Learn',    icon:'book',     title:'Learn',    sub:'Band 7+ English and the engineering that gets you hired.' },
+  { id:'lab',      name:'Lab',      icon:'gears',    title:'Lab',      sub:'CAD, a real test bench and your engineering path.' },
   { id:'money',    name:'Money',    icon:'wallet',   title:'Money',    sub:'£25,000 in twelve months, one logged coffee at a time.' },
   { id:'progress', name:'Progress', icon:'chart',    title:'Progress', sub:'Evidence, not vibes.' },
   { id:'coach',    name:'Coach',    icon:'sparkles', title:'Coach',    sub:'The honest read on your week.' }
@@ -67,6 +69,7 @@ function heroHTML(tab){
 }
 function renderView(tab){
   const el = $('#view-'+tab);
+  if (tab === 'lab'){ el.className = 'view'; mountLab(el); return; }
   const wide = { today:true, learn:true, progress:true }[tab] ? ' wide' : '';
   el.className = 'view' + wide + (motionOff() ? '' : ' cascade');
   const map = { today:renderToday, train:renderTrain, learn:renderLearn, money:renderMoney, progress:renderProgress, coach:renderCoach };
@@ -454,6 +457,7 @@ document.addEventListener('click', e=>{
       break;
     }
     case 'words-toggle': wordsShow = !wordsShow; renderView('learn'); break;
+    case 'lab-open': openLab(el.dataset.id); break;
     case 'pf': {
       state.career = state.career || { portfolio:{} };
       state.career.portfolio = state.career.portfolio || {};
@@ -683,3 +687,37 @@ function openExpenseSheet(){
   </form>`});
 }
 
+
+
+/* ---------- Lab tab: the engineering lab runs in its own frame ---------- */
+let labPending = null;
+function labFrame(){ return document.querySelector('iframe.labframe'); }
+function syncLabTheme(){
+  const f = labFrame(); if (!f) return;
+  try { f.contentDocument.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') || 'light'); } catch(e){}
+}
+function sizeLab(){
+  const f = labFrame(); if (!f) return;
+  const bar = document.getElementById('tabbar');
+  const h = window.innerHeight - 72 - (bar ? bar.offsetHeight : 64) - 34;
+  f.style.height = Math.max(440, h) + 'px';
+}
+function mountLab(el){
+  if (!labFrame()){
+    if (!window.LAB_HTML){ el.innerHTML = '<div class="glass card"><div class="tiny">The lab is added by the build. Run <b>npm run build</b> and open dist/daily-coach.html.</div></div>'; return; }
+    el.innerHTML = '<div class="glass labwrap"><iframe class="labframe" title="Mechanical engineering lab" loading="eager"></iframe></div>';
+    const f = labFrame();
+    f.addEventListener('load', ()=>{
+      syncLabTheme();
+      if (labPending){ try { f.contentWindow.go(labPending); } catch(e){} labPending = null; }
+    });
+    f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';<\/script>');
+  }
+  sizeLab();
+}
+function openLab(section){
+  const f = labFrame();
+  if (activeTab !== 'lab') { labPending = section; setTab('lab'); }
+  if (f && f.contentWindow && typeof f.contentWindow.go === 'function'){ try { f.contentWindow.go(section); } catch(e){} labPending = null; }
+}
+window.addEventListener('resize', sizeLab);

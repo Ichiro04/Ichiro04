@@ -11,6 +11,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { embedLab } from './lab/embed.mjs';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -41,6 +42,14 @@ if (/<link rel="stylesheet"|<script src=/.test(html)) throw new Error('unresolve
 const external = html.match(/https?:\/\/[^"'\s)]+/g) || [];
 // plain hyperlinks to the user's own artifact pages are navigation, not dependencies
 const suspicious = external.filter(u => !u.startsWith('http://www.w3.org/') && !u.startsWith('https://claude.ai/artifact/'));
+
+// --- the engineering lab (its own page, run inside the Lab tab) ------------------
+// Injected after the dependency check on purpose: the lab loads three.js from
+// cdnjs when online, and falls back to calculations only when offline.
+const labHtml = embedLab(read('lab/lab.html'));
+if (!html.includes('<!--LAB-->')) throw new Error('index.html is missing the <!--LAB--> marker');
+html = html.replace('<!--LAB-->', '<script data-src="lab/lab.html">window.LAB_HTML=' + JSON.stringify(labHtml).replace(/</g,'\\u003c') + ';</script>');
+inlined.push(['lab/lab.html (embedded)', labHtml.length]);
 
 mkdirSync(resolve(root, 'dist'), { recursive: true });
 const out = resolve(root, 'dist/daily-coach.html');

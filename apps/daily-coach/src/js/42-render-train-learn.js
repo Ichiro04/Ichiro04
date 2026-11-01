@@ -365,13 +365,12 @@ function learnCareerHTML(){
 }
 
 
-const LAB_URL = 'https://claude.ai/artifact/6GYxLTF3Ppb6Ro475RAztd';
 function labCardHTML(){
   const s = [['trends','Trends'],['path','Path'],['cad','CAD theory'],['tests','Test bench'],['career','Licences'],['data','Data']];
   return `<div class="glass labcard" data-tilt>
-    <div class="labtop"><span class="labic">${ic('bolt',20)}</span>
+    <div class="labtop"><span class="labic">${ic('gears',20)}</span>
       <div style="flex:1;min-width:0"><div class="h3" style="font-size:16px">Mechanical engineering lab</div>
-      <div class="tiny" style="margin-top:2px">3D CAD walkthrough, a test bench with real load cases, and a Beginner to Advanced path. Opens your lab page.</div></div></div>
-    <div class="labchips"><a class="go" href="${LAB_URL}#tests" target="_blank" rel="noopener">Open the lab</a>${s.map(([h,l])=>`<a href="${LAB_URL}#${h}" target="_blank" rel="noopener">${l}</a>`).join('')}</div>
+      <div class="tiny" style="margin-top:2px">3D CAD walkthrough, a test bench with real load cases, and a Beginner to Advanced path, in the Lab tab.</div></div></div>
+    <div class="labchips"><button class="go" data-a="lab-open" data-id="tests">Open the lab</button>${s.map(([h,l])=>`<button data-a="lab-open" data-id="${h}">${l}</button>`).join('')}</div>
   </div>`;
 }
