@@ -1,6 +1,7 @@
 /* ============================================================
    VIEW · TODAY
    ============================================================ */
+let lap3d = true;
 function all(d,t){ return t>0 && d>=t; }
 function renderToday(){
   const k = dkey();
@@ -43,6 +44,7 @@ function renderToday(){
   <div class="tcol a">
   <div class="glass pw-hero" data-tilt>
     <div class="glare"></div>
+    <div class="revleds ${all(done,total)?'full':''}" aria-hidden="true">${Array.from({length:15},(_,i)=>`<i class="${i<5?'g':i<10?'r':'p'} ${i<Math.round((total?done/total:0)*15)?'on':''}"></i>`).join('')}</div>
     <div class="pw-top">
       ${revGauge(done,total)}
       <div class="pw-meta">
@@ -68,7 +70,8 @@ function renderToday(){
   <div class="h2">Today’s lap <span class="side">${all(done,total)?'flag out':'one task, one stint'}</span></div>
   <div class="glass lapcard" data-tilt>
     <div class="glare"></div>
-    <div class="lapart">${lapArt(k)}</div>
+    <div class="lapart ${lap3d?'is3d':''}" id="lapArt">${lapArt(k)}
+      <div class="lapmode"><button data-a="lap-mode" data-id="3d" class="${lap3d?'on':''}">3D</button><button data-a="lap-mode" data-id="map" class="${lap3d?'':'on'}">Map</button></div></div>
     <div class="tidefoot">
       <span class="legend"><i class="lg-trace"></i>each task drives a stint</span>
       <span class="legend"><i class="lg-pb"></i>sector cleared</span>

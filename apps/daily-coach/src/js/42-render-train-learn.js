@@ -31,6 +31,7 @@ function renderTrain(){
           <div class="a">${esc(ex.name)}</div>
           <div class="b">${b.sets} × ${esc(ex.reps)}${ex.rest?` · rest ${ex.rest}s`:''}${nDone?` · ${nDone}/${b.sets} done`:''}</div>
         </div>
+        <div class="exfig-slot">${exFigure(b.ex)}</div>
         <button class="tgo" data-a="ex-cue" aria-label="Show form cue" aria-expanded="false">${ic('info',18)}</button>
       </div>
       <div class="sets">${chips}</div>
@@ -58,6 +59,7 @@ function renderTrain(){
   ${sess.blocks.length ? `
   <div class="h2">Session <span class="side">tap a set to log it</span></div>
   <div class="glass card" style="padding:12px">
+    <div class="exkey"><span class="k-hot"></span>Red: the muscles doing the work <span class="k-ghost"></span>Faint figure: start position</div>
     <div class="exlist">${exRows}</div>
     <div class="divider"></div>
     <div class="row between wrapflex" style="gap:8px">

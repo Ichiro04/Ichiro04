@@ -77,6 +77,7 @@ function renderView(tab){
   // each section arrives a beat after the one above it
   if (!motionOff()) Array.from(el.children).forEach((c,i)=>{ if (i < 12) c.style.setProperty('--ci', i); });
   if (tab === 'coach') mountChatScroll();
+  if (tab === 'train') mountExFigures(el);
 }
 function setTab(tab, opts={}){
   if (tab === activeTab && !opts.force) return;
@@ -459,6 +460,8 @@ document.addEventListener('click', e=>{
     }
     case 'words-toggle': wordsShow = !wordsShow; renderView('learn'); break;
     case 'lab-open': openLab(el.dataset.id); break;
+    case 'lap-mode': { lap3d = el.dataset.id === '3d'; const box = document.getElementById('lapArt'); if (box){ box.classList.toggle('is3d', lap3d); box.querySelectorAll('.lapmode button').forEach(b=>b.classList.toggle('on', b===el)); } break; }
+    case 'cad-part': case 'cad-view': case 'cad-spin': case 'cad-hide': case 'cad-answer': cadAction(a, el); break;
     case 'pf': {
       state.career = state.career || { portfolio:{} };
       state.career.portfolio = state.career.portfolio || {};
@@ -704,21 +707,28 @@ function sizeLab(){
   f.style.height = Math.max(440, h) + 'px';
 }
 function mountLab(el){
+  if (!el.querySelector('#cadCard')){
+    el.innerHTML = cadCardHTML() + '<div class="h2" style="margin-top:22px">Engineering lab <span class="side">test bench, path, licences</span></div><div id="labMount"></div>';
+    mountCad(el);
+  }
+  const mount = el.querySelector('#labMount');
   if (!labFrame()){
-    if (!window.LAB_HTML){ el.innerHTML = '<div class="glass card"><div class="tiny">The lab is added by the build. Run <b>npm run build</b> and open dist/daily-coach.html.</div></div>'; return; }
-    el.innerHTML = '<div class="glass labwrap"><iframe class="labframe" title="Mechanical engineering lab" loading="eager"></iframe></div>';
+    if (!window.LAB_HTML){ mount.innerHTML = '<div class="glass card"><div class="tiny">The lab is added by the build. Run <b>npm run build</b> and open dist/daily-coach.html.</div></div>'; return; }
+    mount.innerHTML = '<div class="glass labwrap"><iframe class="labframe" title="Mechanical engineering lab" loading="eager"></iframe></div>';
     const f = labFrame();
     f.addEventListener('load', ()=>{
       syncLabTheme();
       if (labPending){ try { f.contentWindow.go(labPending); } catch(e){} labPending = null; }
     });
-    f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';<\/script>');
+    f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';<' + '/script>');
   }
   sizeLab();
+  cadKick();
 }
 function openLab(section){
   const f = labFrame();
   if (activeTab !== 'lab') { labPending = section; setTab('lab'); }
   if (f && f.contentWindow && typeof f.contentWindow.go === 'function'){ try { f.contentWindow.go(section); } catch(e){} labPending = null; }
+  setTimeout(()=>{ const m = document.getElementById('labMount'); if (m) m.scrollIntoView({ behavior: motionOff() ? 'auto' : 'smooth', block:'start' }); }, 120);
 }
 window.addEventListener('resize', sizeLab);

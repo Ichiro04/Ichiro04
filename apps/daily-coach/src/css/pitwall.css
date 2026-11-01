@@ -242,3 +242,123 @@ html[data-theme="dark"] .lapart{background:#0C0C10}
 html.reduce .sky-field::before,html.reduce .sky-field::after{display:none}
 html.reduce .g-fill,html.reduce .g-needle,html.reduce .lap-trace,html.reduce .lap-car,html.reduce .lap-halo,html.reduce .lap-cloth,
 html.reduce .dg-box,html.reduce .dg-line,html.reduce .dg-txt,html.reduce .wk i::after,html.reduce .radio-wave i,html.reduce .caret{animation:none!important}
+
+/* ============================================================
+   DEPTH + COLOUR PASS
+   ============================================================ */
+/* richer floodlights: red key light, purple and cool fill */
+html[data-theme="dark"] body{background:
+  radial-gradient(90vw 60vh at 15% -10%,rgba(255,30,51,.20),transparent 60%),
+  radial-gradient(70vw 50vh at 110% 20%,rgba(155,77,255,.12),transparent 62%),
+  radial-gradient(80vw 60vh at 50% 120%,rgba(64,140,255,.08),transparent 60%),
+  linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px) 0 0/100% 32px,
+  linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px) 0 0/32px 100%,
+  #08080B!important}
+/* panels get a carbon sheen and a lit top edge */
+html[data-theme="dark"] .glass{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0) 38%),
+  repeating-linear-gradient(45deg,rgba(255,255,255,.012) 0 2px,transparent 2px 4px),var(--pw-panel)!important}
+.glass{background:linear-gradient(180deg,#fff,#FAFAFB)!important}
+/* metallic titles */
+html[data-theme="dark"] .hero h1{background:linear-gradient(180deg,#fff 0%,#D6D9E0 55%,#FF4655 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important}
+.hero h1{background:linear-gradient(180deg,#15151E 0%,#3A3C48 55%,#E1061B 100%);-webkit-background-clip:text;background-clip:text;color:transparent!important}
+.pw-meta .big{background:linear-gradient(90deg,var(--pw-ink),var(--pw-ink) 60%,var(--pw-red));-webkit-background-clip:text;background-clip:text;color:transparent}
+/* keycap buttons with real travel */
+.btn-primary,html[data-theme="dark"] .btn-primary{box-shadow:0 4px 0 #8E0411,0 10px 20px -8px rgba(225,6,27,.7),inset 0 1px 0 rgba(255,255,255,.35)!important;transform:translateY(-2px)}
+.btn-primary:active{transform:translateY(2px)!important;box-shadow:0 1px 0 #8E0411,0 4px 10px -6px rgba(225,6,27,.6)!important}
+.btn-soft{box-shadow:inset 0 0 0 1px var(--pw-line-2),0 3px 0 var(--pw-line-2)!important}
+.btn-soft:active{transform:translateY(2px)}
+/* tilt gives real depth: inner layers float above the panel */
+[data-tilt]{transform-style:preserve-3d;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.pw-hero .gauge,.pw-hero .revleds{transform:translateZ(34px)}
+.pw-hero .pw-meta{transform:translateZ(18px)}
+.lapcard .lapart{transform:translateZ(26px)}
+.cadcard .cadstage{transform:translateZ(20px)}
+/* gauge bezel */
+.gauge::before{content:"";position:absolute;inset:-6px;border-radius:50%;
+  background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.10),rgba(255,255,255,0) 55%),conic-gradient(from 210deg,#2a2a33,#0c0c10,#2a2a33,#0c0c10,#2a2a33);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 -8px 18px rgba(0,0,0,.6),0 10px 24px -10px rgba(0,0,0,.8);z-index:-1}
+.gauge{isolation:isolate}
+:root:not([data-theme="dark"]) .gauge::before{background:radial-gradient(circle at 50% 35%,#fff,#E9EBEF 60%,#D5D8DE);box-shadow:inset 0 0 0 1px rgba(16,16,24,.08),inset 0 -6px 14px rgba(16,16,24,.10),0 10px 22px -12px rgba(16,16,24,.35)}
+.g-needle line{filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+/* steering-wheel rev lights: green, red, purple */
+.revleds{display:flex;gap:4px;justify-content:center;margin:2px 0 12px}
+.revleds i{width:14px;height:8px;border-radius:3px;background:var(--pw-line-2);box-shadow:inset 0 1px 1px rgba(0,0,0,.25);transition:background .3s,box-shadow .3s}
+.revleds i.on.g{background:#2EE59D;box-shadow:0 0 10px #2EE59D}
+.revleds i.on.r{background:#FF1E33;box-shadow:0 0 10px #FF1E33}
+.revleds i.on.p{background:#B57BFF;box-shadow:0 0 10px #B57BFF}
+.revleds.full i.on{animation:flash .5s steps(2) 3}
+@keyframes flash{50%{opacity:.25}}
+/* timing tower colour */
+.tt-row.done{box-shadow:inset 3px 0 0 var(--pw-green)!important}
+.tt-row.next{background:linear-gradient(90deg,rgba(245,184,0,.14),transparent 60%)!important}
+.tab[aria-selected="true"] .tic{filter:drop-shadow(0 0 8px rgba(255,30,51,.75))}
+/* today's lap in 3D */
+.lapart{perspective:760px;position:relative}
+.lapart.is3d svg{transform:rotateX(50deg) scale(1.12) translateY(-6px);transform-origin:50% 60%;transition:transform .8s cubic-bezier(.34,1.3,.64,1)}
+.lapart svg{transition:transform .8s cubic-bezier(.34,1.3,.64,1)}
+.lap-wall{fill:none;stroke:#0A0A0D;stroke-width:18;opacity:.55}
+:root:not([data-theme="dark"]) .lap-wall{stroke:#9EA3AD;opacity:.6}
+.lapart.is3d .lap-label{opacity:.0}
+.lapmode{position:absolute;right:10px;top:10px;z-index:3;display:flex;gap:4px;padding:3px;border-radius:9px;background:var(--pw-panel);box-shadow:0 0 0 1px var(--pw-line-2)}
+.lapmode button{padding:4px 9px;border-radius:7px;font-size:12px;font-weight:700;color:var(--pw-ink-3)}
+.lapmode button.on{background:var(--pw-red);color:#fff}
+
+/* ---------- exercise figures ---------- */
+.exhead{display:flex;align-items:center;gap:10px}
+.exhead .n{flex:1;min-width:0}
+.exfig-slot{flex:0 0 auto;width:104px;height:78px;border-radius:10px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line);overflow:hidden}
+html[data-theme="dark"] .exfig-slot{background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.05),transparent 70%),#0C0C10}
+.exfig{display:block;width:100%;height:100%}
+.xf-floor{stroke:var(--pw-line-2);stroke-width:1.5}
+.xf-prop{fill:rgba(138,148,166,.18);stroke:var(--pw-ink-3);stroke-width:1.4}
+.xf-ghost path,.xf-ghost circle{fill:none;stroke:var(--pw-ink-3);stroke-width:3;stroke-linecap:round;opacity:.22}
+.xf-far{fill:none;stroke:var(--pw-ink-3);stroke-width:3.4;stroke-linecap:round;opacity:.55}
+.xf-seg{fill:none;stroke:var(--pw-ink);stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round}
+.xf-seg.hot{stroke:var(--pw-red-2);filter:drop-shadow(0 0 3px rgba(255,30,51,.6))}
+.xf-head{fill:var(--pw-panel);stroke:var(--pw-ink);stroke-width:2.6}
+.xf-joint{fill:var(--pw-yellow)}
+.exkey{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0 10px;font-size:12px;color:var(--pw-ink-3)}
+.exkey .k-hot{width:14px;height:4px;border-radius:2px;background:var(--pw-red-2)}
+.exkey .k-ghost{width:14px;height:4px;border-radius:2px;background:var(--pw-ink-3);opacity:.35;margin-left:8px}
+
+/* ---------- 3D CAD card ---------- */
+.cadcard{padding:14px!important}
+.cadhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.chip-live{padding:3px 8px;border-radius:6px;background:var(--pw-red);color:#fff;font-size:11.5px;font-weight:800;box-shadow:0 0 14px rgba(255,30,51,.5)}
+.cadparts{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 10px}
+.cadparts button{padding:7px 11px;border-radius:8px;font-size:13px;font-weight:650;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line-2);color:var(--pw-ink-2)}
+.cadparts button.on{background:var(--pw-red);color:#fff;box-shadow:0 3px 0 #8E0411}
+.cadstage{position:relative;border-radius:12px;overflow:hidden;
+  background:radial-gradient(70% 60% at 50% 35%,#FFFFFF,#E6E8EC 70%,#D7DAE0);box-shadow:inset 0 0 0 1px var(--pw-line)}
+html[data-theme="dark"] .cadstage{background:radial-gradient(70% 60% at 50% 30%,#23232C,#101015 70%,#08080B);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.cadstage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;pointer-events:none;
+  background:linear-gradient(transparent,rgba(0,0,0,.06)),repeating-linear-gradient(90deg,var(--pw-line) 0 1px,transparent 1px 28px);
+  -webkit-mask:linear-gradient(transparent,#000);mask:linear-gradient(transparent,#000);transform:perspective(300px) rotateX(55deg);transform-origin:bottom}
+#cadCanvas{display:block;width:100%;height:260px;touch-action:none;cursor:grab;position:relative;z-index:1}
+#cadCanvas:active{cursor:grabbing}
+.cadviews{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;display:flex;gap:4px;justify-content:center}
+.cadviews button{padding:6px 10px;border-radius:8px;font-size:12.5px;font-weight:700;background:var(--pw-panel);color:var(--pw-ink-2);box-shadow:0 0 0 1px var(--pw-line-2),0 4px 10px -6px rgba(0,0,0,.4)}
+.cadviews button.on{background:var(--pw-ink);color:var(--pw-panel)}
+.cadinfo{font-size:13.5px;color:var(--pw-ink-2);margin:10px 0 0}
+.sheetwrap{margin-top:10px;border-radius:10px;overflow:hidden;transition:filter .4s,opacity .4s}
+.sheetwrap.hide{filter:blur(12px);opacity:.35;pointer-events:none}
+.dwg{display:block;width:100%;height:auto;background:#F7F8FA}
+html[data-theme="dark"] .dwg{background:#0E0E13}
+.dwg-frame{fill:none;stroke:var(--pw-ink-3);stroke-width:1}
+.dwg .vis{stroke:var(--pw-ink);stroke-width:1.4;stroke-linecap:round}
+.dwg .hid{stroke:var(--pw-ink-2);stroke-width:1;stroke-dasharray:4 3}
+.dwg .dim line{stroke:var(--pw-red);stroke-width:.8}
+.dwg .dim marker path,.dwg marker path{fill:var(--pw-red)}
+.dwg .dim text{font:700 9.5px var(--sans,system-ui);fill:var(--pw-red)}
+.dwg .vtag rect{fill:var(--pw-ink)}
+.dwg .vtag text{font:800 10.5px var(--sans,system-ui);fill:var(--pw-panel)}
+.fa-sym path,.fa-sym circle{fill:none;stroke:var(--pw-ink-2);stroke-width:1.1}
+.fa-sym text{font:600 8.5px var(--sans,system-ui);fill:var(--pw-ink-3)}
+.cadquiz{margin-top:12px;display:grid;gap:8px}
+.cadquiz .q{font-weight:700;font-size:14.5px}
+.qbtn{width:44px;height:40px;border-radius:9px;font-weight:800;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line-2),0 3px 0 var(--pw-line-2)}
+.qbtn:active{transform:translateY(2px)}
+.qfb{font-size:13.5px;min-height:1.4em;color:var(--pw-ink-2)}
+.qfb .ok{color:var(--pw-green);font-weight:800}
+.qfb .no{color:var(--pw-red);font-weight:800}
+html.reduce .revleds.full i.on{animation:none}

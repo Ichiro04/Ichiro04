@@ -96,6 +96,7 @@ function lapArt(k){
       <pattern id="${uid}k" width="8" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(${(stA*180/Math.PI+90).toFixed(1)})"><rect width="4" height="4" fill="#fff"/><rect x="4" width="4" height="4" fill="#111"/></pattern>
     </defs>
     <g class="lap-grid">${grid}</g>
+    <path d="${d}" class="lap-wall" transform="translate(0,7)"/>
     <path d="${d}" class="lap-kerb"/>
     <path d="${d}" class="lap-road"/>
     <path d="${d}" class="lap-centre"/>

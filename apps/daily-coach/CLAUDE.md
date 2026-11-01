@@ -191,3 +191,11 @@ The liquid-glass cream and blue look has been replaced. Two stylesheets load las
   lines use `pathLength="1"` and draw in with a stagger.
 - **Coach** is styled as team radio (`radioHead`, `.radio`).
 - **Lab tab:** the engineering lab (`lab/lab.html`) is embedded at build time by `lab/embed.mjs`.
+- **Exercise figures:** `45-render-exfig.js` — side-view poses A and B per exercise (`EXFIG`),
+  animated with one rAF loop for visible figures only; red segments = working muscles.
+- **3D CAD practice:** `47-render-cad3d.js` — software renderer (extrusions with holes, painter's
+  sort, back-face culling, silhouette edges) plus a first-angle orthographic sheet generated from
+  the same geometry (hidden hole edges dashed) and a "which view is which" quiz. Lives at the top
+  of the Lab tab. Class names `.dwg*` (not `.sheet`, which is the app's bottom sheet).
+- **3D and colour:** rev-light strip (green, red, purple), gauge bezel, keycap buttons, tilt
+  depth via `translateZ`, Today's lap 3D/Map toggle (`lap3d`).
