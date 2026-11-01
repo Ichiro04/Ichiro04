@@ -80,6 +80,9 @@ function renderToday(){
     </div>
   </div>
 
+  <div class="h2">Time zones <span class="side">live</span></div>
+  ${clocksHTML()}
+
   <div class="h2">Speaking · Part 2 <span class="side">cue card</span></div>
   <div id="cueMount">${cueCardHTML()}</div>
 

@@ -199,3 +199,11 @@ The liquid-glass cream and blue look has been replaced. Two stylesheets load las
   of the Lab tab. Class names `.dwg*` (not `.sheet`, which is the app's bottom sheet).
 - **3D and colour:** rev-light strip (green, red, purple), gauge bezel, keycap buttons, tilt
   depth via `translateZ`, Today's lap 3D/Map toggle (`lap3d`).
+- **Time zones:** `CLOCKS` + `tzParts()` in `43-render-pitwall.js` (Southsea, Yangon, UTC); live
+  clock in the status bar and the top strip via `[data-clock]`, ticked every second.
+- **Top strip:** flush full-width bar that fades in on scroll with a red scroll-progress line
+  (`--sp`); no floating card, no bounce, and the hero no longer blurs away.
+- **Lab tab sections:** 3D CAD · Drawings (`48-render-dwg.js`, explore 12 features + 8-question
+  test, best score in `localStorage['dc.dwgBest']`) · V12 engine (`49-render-v12.js`, real
+  slider-crank geometry, firing order 1-7-5-11-3-9-6-12-2-8-4-10) · Test bench (embedded lab,
+  created on first open).

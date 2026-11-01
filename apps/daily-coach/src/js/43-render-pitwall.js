@@ -23,6 +23,7 @@ function statusBar(){
   return `<div class="statusbar" role="status">
     <span class="sb-flag ${flag}" aria-hidden="true"></span>
     <b>${esc(prettyDate())}</b>
+    <span class="sb-sep" aria-hidden="true"></span><span class="sb-clock num" data-clock="Europe/London">${(()=>{ const t = tzParts('Europe/London'); return t.t + ' ' + t.abbr; })()}</span>
     <span class="sb-sep" aria-hidden="true"></span><span class="num">Day ${planDay()} of 365</span>
     <span class="sb-sep" aria-hidden="true"></span><span class="sb-streak num">${streak}-day streak</span>
     <span class="sb-msg">${msg}</span>
@@ -173,3 +174,53 @@ function packDiagram(id){
     <svg viewBox="0 0 340 166" role="img"><defs><marker id="dgArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="dg-head"/></marker></defs>${f().join('')}</svg>
   </figure>`;
 }
+
+/* ---------- time zones ---------- */
+const CLOCKS = [
+  { zone:'Europe/London', city:'Southsea', note:'You' },
+  { zone:'Asia/Yangon',   city:'Yangon',   note:'Myanmar' },
+  { zone:'UTC',           city:'UTC',      note:'Reference' }
+];
+function tzOffsetMin(zone, d=new Date()){
+  const local = new Date(d.toLocaleString('en-US', { timeZone:zone }));
+  const utc = new Date(d.toLocaleString('en-US', { timeZone:'UTC' }));
+  return Math.round((local - utc) / 60000);
+}
+function tzParts(zone, d=new Date()){
+  const t = new Intl.DateTimeFormat('en-GB', { timeZone:zone, hour:'2-digit', minute:'2-digit', hour12:false }).format(d);
+  const date = new Intl.DateTimeFormat('en-GB', { timeZone:zone, weekday:'short', day:'numeric', month:'short' }).format(d);
+  let abbr = 'UTC';
+  try { abbr = new Intl.DateTimeFormat('en-GB', { timeZone:zone, timeZoneName:'short' }).formatToParts(d).find(p=>p.type==='timeZoneName').value; } catch(e){}
+  const off = tzOffsetMin(zone, d), sign = off >= 0 ? '+' : '−', a = Math.abs(off);
+  const offTxt = 'UTC' + sign + Math.floor(a/60) + (a % 60 ? ':' + pad2(a % 60) : '');
+  const h = +new Intl.DateTimeFormat('en-GB', { timeZone:zone, hour:'numeric', hour12:false }).format(d) % 24;
+  const m = +new Intl.DateTimeFormat('en-GB', { timeZone:zone, minute:'numeric' }).format(d);
+  return { t, date, abbr: abbr.startsWith('GMT+') || abbr.startsWith('GMT-') ? offTxt : abbr, offTxt, h, m, s:d.getSeconds(), off };
+}
+function fmtDiff(min){ const a = Math.abs(min), h = Math.floor(a/60), m = a % 60; return `${h} h${m ? ' ' + m + ' min' : ''}`; }
+function dialSVG(p){
+  const hr = ((p.h % 12) + p.m/60) * 30, mn = (p.m + p.s/60) * 6, sc = p.s * 6, night = p.h < 6 || p.h >= 19;
+  let ticks = '';
+  for (let i=0;i<12;i++){ const a = i*30*Math.PI/180, r1 = i%3 ? 19 : 17; ticks += `<line x1="${(24+Math.sin(a)*r1).toFixed(1)}" y1="${(24-Math.cos(a)*r1).toFixed(1)}" x2="${(24+Math.sin(a)*21).toFixed(1)}" y2="${(24-Math.cos(a)*21).toFixed(1)}"/>`; }
+  return `<svg viewBox="0 0 48 48" class="dial ${night?'night':''}" aria-hidden="true"><circle cx="24" cy="24" r="23" class="d-face"/><g class="d-ticks">${ticks}</g>
+    <line x1="24" y1="24" x2="24" y2="12" class="d-h" style="transform:rotate(${hr}deg)"/><line x1="24" y1="24" x2="24" y2="7" class="d-m" style="transform:rotate(${mn}deg)"/>
+    <line x1="24" y1="27" x2="24" y2="5" class="d-s" style="transform:rotate(${sc}deg)"/><circle cx="24" cy="24" r="2" class="d-hub"/></svg>`;
+}
+function clocksHTML(){
+  const now = new Date(), home = tzParts(CLOCKS[0].zone, now);
+  return `<div class="glass clockcard" id="clockCard" data-tilt>
+    <div class="clockrow">${CLOCKS.map((c,i)=>{ const p = tzParts(c.zone, now);
+      return `<div class="clk" data-zone="${c.zone}">${dialSVG(p)}<div class="clk-txt"><b class="num">${p.t}</b><span class="clk-city">${esc(c.city)} <em>${esc(p.abbr)}</em></span><span class="clk-date">${esc(p.date)}</span></div></div>`; }).join('')}</div>
+    <div class="clocknote">${(()=>{ const y = tzParts('Asia/Yangon', now); const d = y.off - home.off; return `Yangon is <b>${fmtDiff(d)}</b> ${d>=0?'ahead of':'behind'} Southsea today (${home.abbr==='BST'?'British Summer Time':'Greenwich Mean Time'}). UK clocks go forward in late March and back in late October.`; })()}</div>
+  </div>`;
+}
+function tickClocks(){
+  const now = new Date();
+  document.querySelectorAll('.clk[data-zone]').forEach(el=>{
+    const p = tzParts(el.dataset.zone, now), svg = el.querySelector('svg');
+    if (svg) svg.outerHTML = dialSVG(p);
+    const b = el.querySelector('b'); if (b) b.textContent = p.t;
+  });
+  document.querySelectorAll('[data-clock]').forEach(el=>{ const p = tzParts(el.dataset.clock, now); el.textContent = `${p.t} ${p.abbr}`; });
+}
+setInterval(()=>{ if (!document.hidden) tickClocks(); }, 1000);

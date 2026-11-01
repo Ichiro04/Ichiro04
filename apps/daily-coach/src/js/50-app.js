@@ -124,7 +124,7 @@ function updateChrome(){
     coach: ''
   }[activeTab] || '';
   $('#miniTitle').textContent = (TABS.find(t=>t.id===activeTab)||{title:''}).title;
-  $('#miniSince').textContent = since;
+  $('#miniSince').innerHTML = `${esc(since)}${since?' · ':''}<span data-clock="Europe/London">${(()=>{ const t = tzParts('Europe/London'); return t.t + ' ' + t.abbr; })()}</span>`;
   { const sb = document.querySelector('#hero .statusbar'); if (sb) sb.outerHTML = statusBar(); }
   $('#miniMark').innerHTML = ic((TABS.find(t=>t.id===activeTab)||{icon:'today'}).icon, 19);
   $('#miniDot').style.display = activeTab==='today' && upNext() ? '' : 'none';
@@ -133,6 +133,7 @@ let fabTucked = false;
 function onScroll(){
   const y = window.scrollY || 0;
   document.body.classList.toggle('condensed', y > 44);
+  { const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight); document.documentElement.style.setProperty('--sp', Math.min(1, y/max).toFixed(3)); }
   document.documentElement.style.setProperty('--sy', y.toFixed(0));
   if (activeTab === 'money'){
     const fab = $('#fabwrap');
@@ -462,6 +463,9 @@ document.addEventListener('click', e=>{
     case 'lab-open': openLab(el.dataset.id); break;
     case 'lap-mode': { lap3d = el.dataset.id === '3d'; const box = document.getElementById('lapArt'); if (box){ box.classList.toggle('is3d', lap3d); box.querySelectorAll('.lapmode button').forEach(b=>b.classList.toggle('on', b===el)); } break; }
     case 'cad-part': case 'cad-view': case 'cad-spin': case 'cad-hide': case 'cad-answer': cadAction(a, el); break;
+    case 'lab-pane': showLabPane(el.dataset.id); break;
+    case 'dx-pick': case 'dx-step': case 'dx-mode': case 'dx-start': case 'dx-answer': case 'dx-next': dxAction(a, el); break;
+    case 'v12-view': case 'v12-run': case 'v12-answer': v12Action(a, el); break;
     case 'pf': {
       state.career = state.career || { portfolio:{} };
       state.career.portfolio = state.career.portfolio || {};
@@ -706,29 +710,39 @@ function sizeLab(){
   const h = window.innerHeight - 72 - (bar ? bar.offsetHeight : 64) - 34;
   f.style.height = Math.max(440, h) + 'px';
 }
+let labPane = 'cad';
+const LAB_PANES = [['cad','3D CAD'],['dwg','Drawings'],['v12','V12 engine'],['lab','Test bench']];
 function mountLab(el){
-  if (!el.querySelector('#cadCard')){
-    el.innerHTML = cadCardHTML() + '<div class="h2" style="margin-top:22px">Engineering lab <span class="side">test bench, path, licences</span></div><div id="labMount"></div>';
-    mountCad(el);
+  if (!el.querySelector('.labseg')){
+    el.innerHTML = `<div class="labseg" role="tablist">${LAB_PANES.map(([k,l])=>`<button role="tab" data-a="lab-pane" data-id="${k}" aria-selected="${k===labPane}">${l}</button>`).join('')}</div>
+      <div class="labpane" data-pane="cad">${cadCardHTML()}</div>
+      <div class="labpane" data-pane="dwg">${dwgCardHTML()}</div>
+      <div class="labpane" data-pane="v12">${v12CardHTML()}</div>
+      <div class="labpane" data-pane="lab"><div id="labMount"></div></div>`;
+    mountCad(el); mountV12(el);
   }
-  const mount = el.querySelector('#labMount');
-  if (!labFrame()){
-    if (!window.LAB_HTML){ mount.innerHTML = '<div class="glass card"><div class="tiny">The lab is added by the build. Run <b>npm run build</b> and open dist/daily-coach.html.</div></div>'; return; }
-    mount.innerHTML = '<div class="glass labwrap"><iframe class="labframe" title="Mechanical engineering lab" loading="eager"></iframe></div>';
-    const f = labFrame();
-    f.addEventListener('load', ()=>{
-      syncLabTheme();
-      if (labPending){ try { f.contentWindow.go(labPending); } catch(e){} labPending = null; }
-    });
-    f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';<' + '/script>');
-  }
-  sizeLab();
-  cadKick();
+  showLabPane(labPane);
+}
+function ensureLabFrame(){
+  const mount = document.getElementById('labMount'); if (!mount || labFrame()) return;
+  if (!window.LAB_HTML){ mount.innerHTML = '<div class="glass card"><div class="tiny">The lab is added by the build. Run <b>npm run build</b> and open dist/daily-coach.html.</div></div>'; return; }
+  mount.innerHTML = '<div class="glass labwrap"><iframe class="labframe" title="Mechanical engineering lab" loading="eager"></iframe></div>';
+  const f = labFrame();
+  f.addEventListener('load', ()=>{ syncLabTheme(); if (labPending){ try { f.contentWindow.go(labPending); } catch(e){} labPending = null; } });
+  f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';<' + '/script>');
+}
+function showLabPane(k){
+  labPane = k;
+  document.querySelectorAll('.labseg button').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.id===k)));
+  document.querySelectorAll('.labpane').forEach(p=>{ const on = p.dataset.pane===k; p.hidden = !on; if (on){ p.classList.remove('in'); void p.offsetWidth; p.classList.add('in'); } });
+  if (k==='lab'){ ensureLabFrame(); sizeLab(); }
+  if (k==='cad') cadKick();
+  if (k==='v12') v12Kick();
 }
 function openLab(section){
   const f = labFrame();
-  if (activeTab !== 'lab') { labPending = section; setTab('lab'); }
+  labPending = section; labPane = 'lab';
+  if (activeTab !== 'lab') setTab('lab'); else showLabPane('lab');
   if (f && f.contentWindow && typeof f.contentWindow.go === 'function'){ try { f.contentWindow.go(section); } catch(e){} labPending = null; }
-  setTimeout(()=>{ const m = document.getElementById('labMount'); if (m) m.scrollIntoView({ behavior: motionOff() ? 'auto' : 'smooth', block:'start' }); }, 120);
 }
 window.addEventListener('resize', sizeLab);
