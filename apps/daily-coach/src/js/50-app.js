@@ -464,6 +464,7 @@ document.addEventListener('click', e=>{
     case 'lap-mode': { lap3d = el.dataset.id === '3d'; const box = document.getElementById('lapArt'); if (box){ box.classList.toggle('is3d', lap3d); box.querySelectorAll('.lapmode button').forEach(b=>b.classList.toggle('on', b===el)); } break; }
     case 'cad-part': case 'cad-view': case 'cad-spin': case 'cad-hide': case 'cad-answer': cadAction(a, el); break;
     case 'lab-pane': showLabPane(el.dataset.id); break;
+    case 'ds-status': case 'ds-step': case 'ds-feel': case 'ds-shape': dsAction(a, el); break;
     case 'dx-pick': case 'dx-step': case 'dx-mode': case 'dx-start': case 'dx-answer': case 'dx-next': dxAction(a, el); break;
     case 'v12-view': case 'v12-run': case 'v12-answer': v12Action(a, el); break;
     case 'pf': {

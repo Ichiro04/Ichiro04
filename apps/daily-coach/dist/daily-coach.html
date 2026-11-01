@@ -1753,6 +1753,169 @@ html[data-theme="dark"] .dx .slot{fill:#0E0E13}
 .v12-facts{margin:0;padding-left:16px;display:grid;gap:6px;font-size:12.5px;line-height:1.45;color:var(--pw-ink-2)}
 .v12-facts b{color:var(--pw-ink)}
 
+/* ============================================================
+   DAILY SYSTEM (structure from the V104 template, F1 skin)
+   ============================================================ */
+.view.wide{flex-wrap:wrap}
+.view.wide > .ds{flex:1 1 100%;min-width:0}
+.ds{display:grid;gap:14px;margin-bottom:6px}
+.pw-tag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;font-size:11.5px;font-weight:800;white-space:nowrap;border:0;cursor:pointer}
+.pw-tag.live{background:rgba(255,30,51,.16);color:var(--pw-red);box-shadow:inset 0 0 0 1px rgba(255,30,51,.4)}
+.pw-tag.next{background:rgba(245,184,0,.18);color:#B88900}
+html[data-theme="dark"] .pw-tag.next{color:var(--pw-yellow)}
+.pw-tag.good{background:rgba(18,183,106,.16);color:var(--pw-green)}
+.pw-tag.late{background:rgba(225,6,27,.12);color:var(--pw-red)}
+.pw-tag.muted{background:var(--pw-panel-2);color:var(--pw-ink-3);cursor:default}
+/* now card */
+.ds-now{padding:18px!important;overflow:hidden}
+html[data-theme="dark"] .ds-now{background:radial-gradient(420px 220px at 8% 40%,rgba(255,30,51,.18),transparent 70%),linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0) 40%),var(--pw-panel)!important}
+.ds-now{background:radial-gradient(420px 220px at 8% 40%,rgba(225,6,27,.08),transparent 70%),#fff!important}
+.ds-now-in{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px 18px;align-items:center}
+.ds-acts{grid-column:1/-1;display:grid;gap:8px}
+@media(min-width:760px){.ds-now-in{grid-template-columns:auto minmax(0,1fr) 240px}.ds-acts{grid-column:auto}}
+.ds-mid{display:grid;gap:8px;min-width:0}
+.ds-pills{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ds-now h2{margin:0;font-size:clamp(22px,5.4vw,30px);font-weight:820;font-style:italic;letter-spacing:-.03em;line-height:1.08}
+.ds-now p{margin:0;font-size:14px;color:var(--pw-ink-2)}
+.ds-steps{list-style:none;margin:2px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ds-steps button{width:100%;display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:9px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line);font-size:12.5px;color:var(--pw-ink-3);text-align:left}
+.ds-steps button span{flex:0 0 auto;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;background:var(--pw-line-2);color:var(--pw-ink)}
+.ds-steps b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-steps li.ok button span{background:var(--pw-green);color:#fff}
+.ds-steps li.cur button{box-shadow:inset 0 0 0 1.5px var(--pw-red);color:var(--pw-ink)}
+.ds-steps li.cur button span{background:var(--pw-red);color:#fff}
+.ds-st3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ds-st{height:40px;border-radius:999px;font-size:13px;font-weight:750;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line-2),0 3px 0 var(--pw-line-2);color:var(--pw-ink-2)}
+.ds-st:active{transform:translateY(2px)}
+.ds-st.done:hover{color:var(--pw-green)} .ds-st.partly:hover{color:#B88900} .ds-st.missed:hover{color:var(--pw-red)}
+.ds-acts .btn{width:100%}
+/* rings */
+.ds-ring{position:relative;flex:0 0 auto}
+.ds-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ds-ring .rt{fill:none;stroke:var(--pw-line-2);stroke-width:9}
+.ds-ring .rf{fill:none;stroke:var(--pw-red);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 0 6px rgba(255,30,51,.45))}
+.ds-ring.next .rf{stroke:var(--pw-yellow);filter:drop-shadow(0 0 6px rgba(245,184,0,.45))}
+.ds-ring.good .rf{stroke:var(--pw-green);filter:drop-shadow(0 0 6px rgba(18,183,106,.45))}
+.ds-ring.late .rf{stroke:var(--pw-red)}
+.ds-rl{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ds-rl b{font-size:20px;font-weight:850;letter-spacing:-.02em;line-height:1}
+.ds-rl small{font-size:10.5px;color:var(--pw-ink-3);margin-top:2px}
+/* three that matter */
+.ds-row2{display:grid;gap:14px}
+.ds-three{padding:14px!important;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ds-3sum{grid-column:1/-1;display:grid;gap:8px}
+.ds-tile{display:grid;gap:6px;padding:11px;border-radius:12px;text-align:left;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}
+.ds-tile:active{transform:scale(.98)}
+.ds-tile.done{background:linear-gradient(135deg,rgba(18,183,106,.16),transparent 60%),var(--pw-panel-2)}
+.ds-tile.next{background:linear-gradient(135deg,rgba(245,184,0,.18),transparent 60%),var(--pw-panel-2);box-shadow:inset 0 0 0 1.5px rgba(245,184,0,.6)}
+.ds-tile.later{background:linear-gradient(135deg,rgba(155,77,255,.14),transparent 60%),var(--pw-panel-2)}
+.ds-ttop{display:flex;justify-content:space-between;align-items:center}
+.ds-ttag{font-size:11.5px;font-weight:850}
+.ds-tile.done .ds-ttag{color:var(--pw-green)} .ds-tile.next .ds-ttag{color:#B88900} .ds-tile.later .ds-ttag{color:var(--pw-purple)}
+html[data-theme="dark"] .ds-tile.next .ds-ttag{color:var(--pw-yellow)}
+.ds-tname{font-weight:780;font-size:14.5px;line-height:1.25}
+.ds-bar{display:block;height:5px;border-radius:3px;background:var(--pw-line-2);overflow:hidden}
+.ds-bar i{display:block;height:100%;border-radius:3px;background:var(--pw-red);transition:width .8s}
+.ds-tile.done .ds-bar i{background:var(--pw-green)} .ds-tile.next .ds-bar i{background:var(--pw-yellow)}
+.ds-tfoot{display:flex;justify-content:space-between;font-size:11.5px;color:var(--pw-ink-3)}
+/* feel strip */
+.ds-feel{padding:6px 14px!important;display:grid}
+.ds-fi{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--pw-line)}
+.ds-fi:last-child{border-bottom:0}
+.ds-fi > div{flex:1;min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ds-fi small{font-size:12.5px;font-weight:700;color:var(--pw-ink-2);min-width:52px}
+.ds-it{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center}
+.t-ye{background:rgba(245,184,0,.18);color:#B88900} .t-rd{background:rgba(225,6,27,.12);color:var(--pw-red)} .t-gr{background:rgba(18,183,106,.14);color:var(--pw-green)} .t-pu{background:rgba(155,77,255,.14);color:var(--pw-purple)}
+html[data-theme="dark"] .t-ye{color:var(--pw-yellow)}
+.ds-dots{display:flex;align-items:center;gap:5px}
+.ds-dots button{width:16px;height:16px;border-radius:50%;background:var(--pw-line-2)}
+.ds-dots button.on{background:var(--pw-yellow);box-shadow:0 0 8px rgba(245,184,0,.6)}
+.ds-dots b{margin-left:4px;font-size:13px}
+.ds-seg{display:flex;padding:3px;gap:2px;border-radius:999px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}
+.ds-seg button{padding:5px 10px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--pw-ink-3)}
+.ds-seg button.on{background:var(--pw-red);color:#fff}
+.ds-sw{width:42px;height:24px;border-radius:999px;background:var(--pw-line-2);position:relative;transition:background .25s}
+.ds-sw i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.ds-sw.on{background:var(--pw-green)} .ds-sw.on i{transform:translateX(18px)}
+.ds-sleep{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--pw-ink-3)}
+.ds-sleep input{width:86px;padding:5px 6px;border-radius:8px;border:0;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line-2);color:var(--pw-ink);font:600 13px var(--sans,system-ui);font-variant-numeric:tabular-nums}
+.ds-shape{flex-wrap:wrap}
+/* number cards */
+.ds-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ds-num{padding:12px!important;display:grid;gap:6px}
+.ds-kh{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--pw-ink-2)}
+.ds-kv{font-size:26px;font-weight:850;letter-spacing:-.03em;line-height:1}
+.ds-kv small{font-size:13px;font-weight:650;color:var(--pw-ink-3);margin-left:2px}
+/* timeline */
+.ds-row3{display:grid;gap:4px}
+.ds-plan{padding:12px 14px!important}
+.ds-way{list-style:none;margin:0;padding:0;position:relative}
+.ds-way::before{content:"";position:absolute;left:52px;top:10px;bottom:10px;width:2px;background:var(--pw-line-2)}
+.ds-wp{display:grid;grid-template-columns:42px 22px 1fr auto;align-items:center;gap:6px;padding:8px 0}
+.ds-wt{font-size:12.5px;font-weight:750;color:var(--pw-ink-3)}
+.ds-wn{width:12px;height:12px;border-radius:50%;background:var(--pw-panel);box-shadow:0 0 0 2px var(--pw-line-2);justify-self:center;position:relative;z-index:1}
+.ds-wb{display:grid;min-width:0}
+.ds-wb b{font-size:14px;font-weight:750}
+.ds-wb small{font-size:12px;color:var(--pw-ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ds-wp.done .ds-wn{background:var(--pw-green);box-shadow:0 0 0 2px var(--pw-green)}
+.ds-wp.partly .ds-wn{background:var(--pw-yellow);box-shadow:0 0 0 2px var(--pw-yellow)}
+.ds-wp.missed .ds-wn{background:var(--pw-red);box-shadow:0 0 0 2px var(--pw-red)}
+.ds-wp.now .ds-wn{background:var(--pw-red);box-shadow:0 0 0 4px rgba(255,30,51,.25),0 0 14px rgba(255,30,51,.7);animation:nowPulse 1.6s ease-in-out infinite}
+@keyframes nowPulse{50%{box-shadow:0 0 0 7px rgba(255,30,51,.08),0 0 6px rgba(255,30,51,.4)}}
+.ds-wp.now .ds-wt,.ds-wp.now .ds-wb b{color:var(--pw-red)}
+.ds-wp.done .ds-wb b{color:var(--pw-ink-3);text-decoration:line-through;text-decoration-color:var(--pw-green)}
+.ds-wp.skip{opacity:.45}
+.ds-wp.overdue .ds-wt{color:var(--pw-red)}
+.ds-wp.sleep .ds-wn{background:var(--pw-purple);box-shadow:0 0 0 2px var(--pw-purple)}
+/* focus chart + time bars */
+.ds-chart,.ds-tbars{padding:14px!important}
+.ds-tbars{margin-top:14px}
+.ds-ch{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+.ds-bars14{width:100%;height:auto;display:block}
+.ds-bars14 .gl{stroke:var(--pw-line);stroke-width:1}
+.ds-bars14 rect{fill:var(--pw-ink-3);opacity:.55;transform-origin:bottom;transform-box:fill-box;animation:barUp .7s cubic-bezier(.2,.8,.2,1) both}
+.ds-bars14 rect.today{fill:var(--pw-red);opacity:1;filter:drop-shadow(0 0 6px rgba(255,30,51,.5))}
+.ds-bars14 rect.best{fill:var(--pw-purple);opacity:1}
+.ds-bars14 .avg{stroke:var(--pw-yellow);stroke-width:1.2;stroke-dasharray:4 3}
+.ds-bars14 text{font:600 9px var(--sans,system-ui);fill:var(--pw-ink-3)}
+@keyframes barUp{from{transform:scaleY(0)}}
+.ds-brow{display:grid;grid-template-columns:92px 1fr 56px;align-items:center;gap:10px;padding:6px 0;font-size:13px}
+.ds-brow b{text-align:right;font-size:12.5px}
+.ds-brow .ds-bar{height:7px}
+.f-rd{background:var(--pw-red)!important}.f-bl{background:#3D8BFF!important}.f-pu{background:var(--pw-purple)!important}.f-ye{background:var(--pw-yellow)!important}.f-gr{background:var(--pw-green)!important}.f-mu{background:var(--pw-ink-3)!important}
+html.reduce .ds-bars14 rect,html.reduce .ds-wp.now .ds-wn{animation:none}
+
+/* ============================================================
+   WIDE SCREENS: tabs move into the top strip, 12-column grid
+   ============================================================ */
+@media(min-width:980px){
+  .wrap{max-width:1240px!important}
+  .tabbar{top:calc(6px + env(safe-area-inset-top,0px))!important;bottom:auto!important;height:46px!important;width:auto!important;min-width:560px;padding:4px!important;
+    border-radius:999px!important;box-shadow:0 0 0 1px var(--pw-line),0 10px 26px -14px rgba(0,0,0,.6)!important;z-index:60}
+  .tabbar::before{display:none}
+  .tab{flex-direction:row!important;grid-auto-flow:column;gap:6px!important;padding:0 14px!important;border-radius:999px!important;align-content:center}
+  .tab .tic svg{width:17px;height:17px}
+  .tab .tname{font-size:13px!important}
+  .tabbar .lens{border-radius:999px!important;background:var(--pw-red)!important;box-shadow:0 4px 14px -4px rgba(225,6,27,.7)!important}
+  .tab[aria-selected="true"],html[data-theme="dark"] .tab[aria-selected="true"]{color:#fff!important}
+  .topbar .groove{pointer-events:auto}
+  .wrap{padding-top:58px!important;padding-bottom:40px!important}
+  .ds-row2{grid-template-columns:7fr 5fr}
+  .ds-three{grid-template-columns:1.1fr 1fr 1fr 1fr}
+  .ds-3sum{grid-column:auto}
+  .ds-nums{grid-template-columns:repeat(4,1fr)}
+  .ds-row3{grid-template-columns:7fr 5fr;gap:16px;align-items:start}
+  .labseg{top:58px}
+}
+
+.ds-seg{flex-wrap:nowrap;flex:0 0 auto}
+.ds-shape{flex-wrap:wrap}
+.ds-shape .tiny{flex-basis:100%;padding-left:2px}
+.ds-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ds-steps li{min-width:0}
+@media(max-width:420px){.ds-steps b{font-size:12px}.ds-steps button{padding:7px 6px;gap:5px}}
+@media(max-width:520px){.ds-steps b{display:none}.ds-steps button{justify-content:center}}
+
 </style>
 </head>
 
@@ -3518,6 +3681,184 @@ function v12Action(a, el){
 }
 
 </script>
+<script data-src="src/js/44a-render-daysys.js">
+/* ============================================================
+   DAILY SYSTEM — adapted from the Daily System V104 template
+   (structure only; colours and type stay F1 pit wall)
+   now card · up next · the 3 that matter · feel strip ·
+   day plan timeline · number cards · focus chart · time bars
+   Day records gain: plan{id:status}, pstep{id:n}, feel{}, sleep{}, shape
+   ============================================================ */
+const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+const fmtHM = m => { m = Math.max(0, Math.round(m)); const h = Math.floor(m/60), r = m%60; return h ? `${h} h${r?` ${r} min`:''}` : `${r} min`; };
+const hhmm = m => `${pad2(Math.floor(m/60)%24)}:${pad2(Math.round(m)%60)}`;
+function dayBlocks(k){
+  const wd = isoWeekday(parseKey(k)), B = [];
+  B.push({ id:'start', t:'07:00', min:10, name:'Morning start', note:'Water, stretch, read the plan', cat:'Routine', steps:['Glass of water','Two-minute stretch','Read today’s plan'] });
+  if (wd===0) B.push({ id:'weigh', t:'07:12', min:5, name:'Monday weigh-in', note:'After the toilet, before food', cat:'Routine', task:'weigh', steps:['Scales on a hard floor','Weigh once','Log it in Progress'], go:'progress' });
+  const strength = [0,1,3,4].includes(wd);
+  B.push(strength ? { id:'train', t:'07:30', min:40, name:'Strength session', note:todaysSession(parseKey(k)).day, cat:'Training', task:'train', steps:['Warm up for 5 minutes','Work every set','Log the sets in Train'], go:'train', top:true }
+                  : { id:'mobility', t:'07:30', min:25, name:'Mobility and easy walk', note:'Loose hips and shoulders', cat:'Training', task:'mobility', steps:['Cat–cow and hips','Easy walk outside','Tick it off'], go:'train', top:true });
+  B.push(wd===6 ? { id:'career', t:'09:30', min:20, name:'Career 15 minutes', note:'Portfolio, drawing or interview questions', cat:'Career', task:'career', steps:['Pick one piece','Work for 15 minutes','Note the next step'], go:'learn', top:true }
+                : { id:'jobs', t:'09:30', min:30, name:'Job search', note:'Two applications or one follow-up', cat:'Career', steps:['Pick two roles','Tailor the first lines','Send and note it'], top:true });
+  if ([0,2,4].includes(wd)) B.push({ id:'essay', t:'12:30', min:40, name:'IELTS essay', note:'Task 2, 270+ words', cat:'English', task:'essay', steps:['Plan for 5 minutes','Write for 30 minutes','Check for 5 minutes'], go:'learn', top:true });
+  else if ([1,3,5].includes(wd)) B.push({ id:'speaking', t:'12:30', min:15, name:'Speaking cue card', note:'1 minute to plan, 2 to talk', cat:'English', task:'speaking', steps:['Read the card','Plan for 1 minute','Talk for 2 minutes'], go:'learn', top:true });
+  B.push({ id:'vocab', t:'13:15', min:15, name:'Vocabulary drill', note:'10 words in your own sentences', cat:'English', task:'vocab', steps:['Read the words','Write a sentence each','Say them out loud'], go:'learn' });
+  B.push(wd<=4 ? { id:'knowledge', t:'15:00', min:20, name:'Knowledge pack', note:'Read, then recall out loud', cat:'Engineering', task:'knowledge', steps:['Read the pack','Study the diagram','Answer the question'], go:'learn' }
+               : { id:'labpractice', t:'15:00', min:20, name:'Lab practice', note:'3D CAD or the drawing test', cat:'Engineering', steps:['Open the Lab','One drawing test','Note what you missed'], go:'lab' });
+  B.push({ id:'walk', t:'18:00', min:30, name:'Walk', note:'Towards 8,000 steps', cat:'Walking', task:'walk', steps:['Shoes on','Walk 30 minutes','Log your steps'] });
+  if (wd===6) B.push({ id:'review', t:'19:30', min:10, name:'Weekly review', note:'Pick next week’s focus', cat:'Routine', task:'review', steps:['Look at the week','Pick one focus','Ask the coach'], go:'coach', top:false });
+  B.push({ id:'close', t:'21:30', min:10, name:'Log and close the day', note:'Spending, three lines, phone away', cat:'Routine', task:'log', steps:['Log every spend','Write three lines','Phone away'], go:'money' });
+  const shape = dayRec(k).shape || 'full';
+  B.forEach(b=>{ b.start = toMin(b.t); b.skip = shape==='minimum' && !b.top; b.dur = shape==='short' ? Math.max(5, Math.round(b.min*0.6/5)*5) : shape==='minimum' ? (b.top ? Math.min(b.min,15) : 0) : b.min; });
+  return B;
+}
+function blockStatus(k, b){ const r = dayRec(k); return (r.plan && r.plan[b.id]) || (b.task && taskDone(k, b.task) ? 'done' : ''); }
+function nowMin(){ const d = new Date(); return d.getHours()*60 + d.getMinutes() + d.getSeconds()/60; }
+function nowState(k){
+  const B = dayBlocks(k).filter(b=>!b.skip), m = nowMin();
+  const cur = B.find(b=>m >= b.start && m < b.start + b.dur && blockStatus(k,b) !== 'done');
+  if (cur) return { kind:'now', b:cur, B };
+  const next = B.find(b=>b.start > m && !blockStatus(k,b));
+  if (next) return { kind:'next', b:next, B };
+  const missed = B.find(b=>!blockStatus(k,b));
+  if (missed) return { kind:'late', b:missed, B };
+  return { kind:'clear', b:null, B };
+}
+function ringSVG(pct, size, label, sub, cls=''){
+  const r = size/2 - 7, C = 2*Math.PI*r;
+  return `<div class="ds-ring ${cls}" style="width:${size}px;height:${size}px"><svg viewBox="0 0 ${size} ${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" class="rt"/><circle cx="${size/2}" cy="${size/2}" r="${r}" class="rf" style="stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C*(1-clamp(pct,0,1))).toFixed(1)}"/></svg><div class="ds-rl"><b class="num">${label}</b>${sub?`<small>${sub}</small>`:''}</div></div>`;
+}
+function nowCardHTML(){
+  const k = dkey(), S = nowState(k), m = nowMin();
+  if (S.kind === 'clear') return `<div class="glass ds-now" id="nowCard"><div class="ds-now-in">${ringSVG(1,104,'✓','day done','good')}<div class="ds-mid"><div class="ds-pills"><span class="pw-tag good">Chequered flag</span></div><h2>Every block is done.</h2><p>Eat well, phone away by 22:15, lights out at 22:45.</p></div></div></div>`;
+  const b = S.b, i = S.B.indexOf(b) + 1, step = (dayRec(k).pstep || {})[b.id] || 0;
+  let pct, label, sub, tag;
+  if (S.kind === 'now'){ const el = m - b.start; pct = el / b.dur; label = (b.dur - el) < 1 ? '<1′' : fmtHM(b.dur - el).replace(' min','′'); sub = 'left'; tag = `<span class="pw-tag live">Now · ${b.t} – ${hhmm(b.start+b.dur)}</span>`; }
+  else if (S.kind === 'next'){ const wait = b.start - m; pct = 1 - Math.min(1, wait/120); label = wait < 60 ? Math.ceil(wait) + '′' : fmtHM(wait).replace(' min','′'); sub = 'to start'; tag = `<span class="pw-tag next">Next · starts at ${b.t}</span>`; }
+  else { pct = 0; label = '!'; sub = 'catch up'; tag = `<span class="pw-tag late">Still open · was ${b.t}</span>`; }
+  return `<div class="glass ds-now" id="nowCard">
+    <div class="ds-now-in">
+      ${ringSVG(pct, 104, label, sub, S.kind)}
+      <div class="ds-mid">
+        <div class="ds-pills">${tag}<span class="tiny num">block ${i} of ${S.B.length} · ${esc(b.cat)} · ${b.dur} min</span></div>
+        <h2>${esc(b.name)}</h2>
+        <p><b>Step ${Math.min(step+1,3)}:</b> ${esc(b.steps[Math.min(step,2)])}. <span class="tiny">${esc(b.note)}</span></p>
+        <ol class="ds-steps">${b.steps.map((s,j)=>`<li class="${j<step?'ok':j===step?'cur':''}"><button data-a="ds-step" data-id="${b.id}" data-n="${j<step?j:j+1}" aria-label="${esc(s)}"><span class="num">${j<step?'✓':j+1}</span><b>${esc(s.split(' ')[0])}</b></button></li>`).join('')}</ol>
+      </div>
+      <div class="ds-acts">
+        <div class="ds-st3">${[['done','Done'],['partly','Partly'],['missed','Missed']].map(([v,l])=>`<button class="ds-st ${v}" data-a="ds-status" data-id="${b.id}" data-v="${v}">${l}</button>`).join('')}</div>
+        ${b.go ? `<button class="btn btn-primary btn-sm" data-a="go" data-go="${b.go}">Open ${b.go==='learn'?'Learn':b.go==='train'?'Train':b.go==='lab'?'the Lab':b.go==='money'?'Money':b.go==='coach'?'Coach':'Progress'}</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+function upNextStrip(){
+  const k = dkey(), B = dayBlocks(k).filter(b=>!b.skip), m = nowMin(), cur = nowState(k);
+  const nx = B.find(b=>b.start > m && !blockStatus(k,b) && (!cur.b || b.id !== cur.b.id));
+  if (!nx) return `<div class="racectl" id="upStrip"><span class="rc-tag">${ic('flag',14)} Up next</span><span class="rc-msg"><b>Lights out at 22:45</b><span>Phone away by 22:15 · aim for 7 h 30 of sleep</span></span></div>`;
+  return `<div class="racectl" id="upStrip"><span class="rc-tag">${ic('flag',14)} Up next</span><span class="rc-msg"><b class="num">Starts in ${fmtHM(nx.start - m)}</b><span>${nx.t} · ${esc(nx.name)} · ${nx.dur} min</span></span></div>`;
+}
+function threeHTML(){
+  const k = dkey(), all = dayBlocks(k).filter(b=>!b.skip), m = nowMin();
+  let top = all.filter(b=>b.top);
+  all.filter(b=>!b.top && b.cat!=='Routine').forEach(b=>{ if (top.length < 3) top.push(b); });
+  top = top.slice(0,3).sort((a,b)=>a.start-b.start);
+  const st = top.map(b=>blockStatus(k,b)), done = st.filter(s=>s==='done').length, n3 = top.length;
+  const firstOpen = top.findIndex((b,i)=>st[i]!=='done');
+  return `<div class="glass ds-three">
+    <div class="ds-3sum"><div class="h3">The 3 that matter</div>
+      <div class="row" style="gap:12px">${ringSVG(n3?done/n3:0, 70, `${done}/${n3}`, '', 'good')}<div class="tiny"><b class="num" style="font-size:15px;color:var(--pw-ink)">${done} of ${n3}</b> done<br>${n3-done} still ahead</div></div>
+      <div class="tiny">Tap a tile to mark it</div></div>
+    ${top.map((b,i)=>{ const s = st[i], cls = s==='done' ? 'done' : i===firstOpen ? 'next' : 'later', run = m >= b.start && m < b.start+b.dur ? (m-b.start)/b.dur : s==='done' ? 1 : 0;
+      return `<button class="ds-tile ${cls}" data-a="ds-status" data-id="${b.id}" data-v="${s==='done'?'':'done'}">
+        <span class="ds-ttop"><span class="ds-ttag">${cls==='done'?'Done':cls==='next'?'Next':'Later'}</span><span class="tiny num">${b.t}</span></span>
+        <span class="ds-tname">${esc(b.name)}</span>
+        <span class="ds-bar"><i style="width:${Math.round(run*100)}%"></i></span>
+        <span class="ds-tfoot"><span class="num">${b.dur} min</span><span>${s==='done'?'✓':cls==='next'?'up next':esc(b.cat)}</span></span></button>`; }).join('')}
+  </div>`;
+}
+function sleepMins(r){ const s = r.sleep || {}; if (!s.bed || !s.up) return null; let d = toMin(s.up) - toMin(s.bed); if (d <= 0) d += 1440; return d; }
+function feelHTML(){
+  const k = dkey(), r = dayRec(k), f = r.feel || {}, s = r.sleep || {}, sl = sleepMins(r), shape = r.shape || 'full';
+  return `<div class="glass ds-feel">
+    <div class="ds-fi"><span class="ds-it t-ye">${ic('bolt',16)}</span><div><small>Energy</small><div class="ds-dots">${[1,2,3,4,5].map(n=>`<button class="${(f.energy||0)>=n?'on':''}" data-a="ds-feel" data-id="energy" data-v="${n}" aria-label="Energy ${n} of 5"></button>`).join('')}<b class="num">${f.energy||'–'}/5</b></div></div></div>
+    <div class="ds-fi"><span class="ds-it t-rd">${ic('flame',16)}</span><div><small>Mood</small><div class="ds-seg">${['Low','OK','Good','Great'].map(v=>`<button class="${f.mood===v?'on':''}" data-a="ds-feel" data-id="mood" data-v="${v}">${v}</button>`).join('')}</div></div></div>
+    <div class="ds-fi"><span class="ds-it t-gr">${ic('lock',16)}</span><div><small>Phone</small><button class="ds-sw ${f.phone?'on':''}" data-a="ds-feel" data-id="phone" data-v="${f.phone?'':'1'}" role="switch" aria-checked="${!!f.phone}"><i></i></button><span class="tiny">${f.phone?`Away ✓${f.phoneAt?' since '+f.phoneAt:''}`:'On the desk'}</span></div></div>
+    <div class="ds-fi"><span class="ds-it t-pu">${ic('moon',16)}</span><div><small>Sleep</small><div class="ds-sleep"><input type="time" value="${s.bed||''}" data-sleep="bed" aria-label="Asleep at"><span>to</span><input type="time" value="${s.up||''}" data-sleep="up" aria-label="Woke at"></div><span class="tiny num">${sl!=null?`slept ${fmtHM(sl)}`:'add last night'}</span></div></div>
+    <div class="ds-fi ds-shape"><small>Day shape</small><div class="ds-seg">${[['full','Full'],['short','Short'],['minimum','Minimum']].map(([v,l])=>`<button class="${shape===v?'on':''}" data-a="ds-shape" data-v="${v}">${l}</button>`).join('')}</div><span class="tiny">${shape==='full'?'Every block at full length':shape==='short'?'Blocks cut to 60%':'Only the 3 that matter, 15 min each'}</span></div>
+  </div>`;
+}
+const STATUS_TAG = { done:['Done','good'], partly:['Partly','next'], missed:['Missed','late'], now:['Now','live'], '':['Open','muted'], skip:['Skipped','muted'] };
+function planHTML(){
+  const k = dkey(), B = dayBlocks(k), S = nowState(k), m = nowMin();
+  return `<div class="glass ds-plan"><ol class="ds-way">${B.map(b=>{
+    const s = blockStatus(k,b), isNow = S.kind==='now' && S.b && S.b.id===b.id, key = b.skip ? 'skip' : isNow && !s ? 'now' : s, [lbl,tone] = STATUS_TAG[key];
+    const next = s==='' ? 'done' : s==='done' ? 'partly' : s==='partly' ? 'missed' : '';
+    return `<li class="ds-wp ${key||'open'} ${b.start+b.dur < m && !s && !b.skip ? 'overdue':''}"><span class="ds-wt num">${b.t}</span><span class="ds-wn"></span>
+      <span class="ds-wb"><b>${esc(b.name)}</b><small>${b.skip?'skipped on a minimum day':`${esc(b.note)} · ${b.dur} min`}</small></span>
+      ${b.skip?`<span class="pw-tag muted">Skipped</span>`:`<button class="pw-tag ${tone}" data-a="ds-status" data-id="${b.id}" data-v="${next}" aria-label="${esc(b.name)}: ${lbl}. Tap to change">${lbl}</button>`}</li>`; }).join('')}
+    <li class="ds-wp sleep"><span class="ds-wt num">22:45</span><span class="ds-wn"></span><span class="ds-wb"><b>Lights out</b><small>Aim for 7 h 30 before a 06:15 start</small></span><span class="pw-tag muted">Sleep</span></li>
+  </ol><div class="tiny" style="margin-top:8px">Tap a tag to cycle Done → Partly → Missed → Open. Done also ticks the matching task.</div></div>`;
+}
+function focusOf(k){ return dayBlocks(k).reduce((s,b)=>{ const st = blockStatus(k,b); return s + (st==='done' ? b.dur : st==='partly' ? b.dur/2 : 0); }, 0); }
+function numbersHTML(){
+  const k = dkey(), f = focusOf(k), sl = sleepMins(dayRec(k));
+  const ws = startOfWeek(); let tot = 0, dn = 0, best = 0;
+  const since = state.createdAt || dkey();
+  for (let i=0;i<7;i++){ const kk = dkey(addDays(ws,i)); if (addDays(ws,i) > new Date()) break; if (kk < since) continue; const B = dayBlocks(kk).filter(b=>!b.skip); tot += B.length; dn += B.filter(b=>blockStatus(kk,b)==='done').length; best = Math.max(best, focusOf(kk)); }
+  const tile = (icon,tone,lbl,val,unit,ctx) => `<div class="glass ds-num"><div class="ds-kh"><span class="ds-it ${tone}">${ic(icon,16)}</span><span>${lbl}</span></div><div class="ds-kv num">${val}<small>${unit}</small></div><div class="tiny">${ctx}</div></div>`;
+  return `<div class="ds-nums">
+    ${tile('clock','t-rd','Focus today', f>=60?Math.floor(f/60):Math.round(f), f>=60?` h ${pad2(Math.round(f)%60)}`:' min', `best this week <b class="num">${fmtHM(best)}</b>`)}
+    ${tile('moon','t-pu','Sleep last night', sl!=null?Math.floor(sl/60):'–', sl!=null?` h ${pad2(sl%60)}`:'', sl!=null?`bed ${(dayRec(k).sleep||{}).bed} · up ${(dayRec(k).sleep||{}).up}`:'add times in the strip above')}
+    ${tile('target','t-gr','Blocks this week', `${dn}`, ` of ${tot}`, `<b class="num">${tot?Math.round(dn/tot*100):0}%</b> of the plan so far`)}
+    ${tile('flame','t-pu','Streak', currentStreak(), ' days', 'four tasks a day keeps it alive')}
+  </div>`;
+}
+function focusChartHTML(){
+  const days = Array.from({length:14},(_,i)=>{ const d = addDays(new Date(), i-13), k = dkey(d); return { k, d, v: focusOf(k) }; });
+  const mx = Math.max(60, ...days.map(x=>x.v)), W = 340, H = 120, bw = W/14, best = Math.max(...days.map(x=>x.v));
+  const avg = days.reduce((s,x)=>s+x.v,0)/14;
+  return `<div class="glass ds-chart"><div class="ds-ch"><div class="h3">Focus minutes · last 14 days</div><span class="tiny num">${Math.round(days[13].v)} min today</span></div>
+    <svg viewBox="0 0 ${W} ${H+18}" class="ds-bars14" role="img" aria-label="Focus minutes for the last 14 days">
+      ${[0.25,0.5,0.75,1].map(f=>`<line x1="0" x2="${W}" y1="${(H - H*f).toFixed(1)}" y2="${(H - H*f).toFixed(1)}" class="gl"/>`).join('')}
+      ${days.map((x,i)=>{ const h = Math.max(2, x.v/mx*(H-8)); return `<rect x="${(i*bw+3).toFixed(1)}" y="${(H-h).toFixed(1)}" width="${(bw-6).toFixed(1)}" height="${h.toFixed(1)}" rx="3" class="${i===13?'today':x.v===best&&best>0?'best':''}" style="animation-delay:${i*30}ms"/><text x="${(i*bw+bw/2).toFixed(1)}" y="${H+13}" text-anchor="middle">${'MTWTFSS'[isoWeekday(x.d)]}</text>`; }).join('')}
+      <line x1="0" x2="${W}" y1="${(H - avg/mx*(H-8)).toFixed(1)}" y2="${(H - avg/mx*(H-8)).toFixed(1)}" class="avg"/>
+    </svg><div class="tidefoot"><span class="legend"><i class="lg-trace"></i>today</span><span class="legend"><i class="lg-best"></i>best day</span><span class="legend"><i style="background:var(--pw-yellow)"></i>average ${Math.round(avg)} min</span></div></div>`;
+}
+function timeBarsHTML(){
+  const ws = startOfWeek(), cats = {};
+  for (let i=0;i<7;i++){ const kk = dkey(addDays(ws,i)); dayBlocks(kk).forEach(b=>{ const st = blockStatus(kk,b); const v = st==='done' ? b.dur : st==='partly' ? b.dur/2 : 0; cats[b.cat] = (cats[b.cat]||0) + v; }); }
+  const order = [['Training','f-rd'],['English','f-bl'],['Engineering','f-pu'],['Career','f-ye'],['Walking','f-gr'],['Routine','f-mu']], mx = Math.max(30, ...Object.values(cats));
+  return `<div class="glass ds-tbars"><div class="ds-ch"><div class="h3">Where the time went</div><span class="tiny">this week</span></div>
+    ${order.map(([c,cl])=>`<div class="ds-brow"><span>${c}</span><span class="ds-bar"><i class="${cl}" style="width:${((cats[c]||0)/mx*100).toFixed(0)}%"></i></span><b class="num">${fmtHM(cats[c]||0).replace(' min','m').replace(' h','h')}</b></div>`).join('')}</div>`;
+}
+function daySystemHTML(){
+  return `<section class="ds">
+    ${nowCardHTML()}
+    ${upNextStrip()}
+    <div class="ds-row2">${threeHTML()}${feelHTML()}</div>
+    ${numbersHTML()}
+    <div class="ds-row3"><div><div class="h2">Day plan <span class="side num">${dayBlocks(dkey()).filter(b=>!b.skip).length} blocks</span></div>${planHTML()}</div>
+      <div><div class="h2">Focus <span class="side">and where it went</span></div>${focusChartHTML()}${timeBarsHTML()}</div></div>
+  </section>`;
+}
+function dsAction(a, el){
+  const k = dkey(), r = dayRec(k, true);
+  if (a==='ds-status'){
+    r.plan = r.plan || {}; const id = el.dataset.id, v = el.dataset.v, b = dayBlocks(k).find(x=>x.id===id);
+    if (v) r.plan[id] = v; else delete r.plan[id];
+    if (b && b.task){ if (v==='done') setTask(k, b.task, true); else if (taskDone(k, b.task)) setTask(k, b.task, false); }
+    save(); if (v==='done') toast(`${b ? b.name : 'Block'} done.`, 'ok', 1600);
+  } else if (a==='ds-step'){ r.pstep = r.pstep || {}; r.pstep[el.dataset.id] = clamp(+el.dataset.n, 0, 3); if (+el.dataset.n >= 3){ r.plan = r.plan || {}; r.plan[el.dataset.id] = 'done'; const b = dayBlocks(k).find(x=>x.id===el.dataset.id); if (b && b.task) setTask(k, b.task, true); toast('All three steps done.','ok',1600); } save(); }
+  else if (a==='ds-feel'){ r.feel = r.feel || {}; const id = el.dataset.id, v = el.dataset.v; if (id==='energy') r.feel.energy = +v; else if (id==='mood') r.feel.mood = v; else { r.feel.phone = !!v; r.feel.phoneAt = v ? hhmm(nowMin()) : ''; } save(); }
+  else if (a==='ds-shape'){ r.shape = el.dataset.v; save(); }
+  renderView('today'); updateChrome();
+}
+document.addEventListener('change', e=>{ const t = e.target; if (!t.dataset || !t.dataset.sleep) return; const r = dayRec(dkey(), true); r.sleep = r.sleep || {}; r.sleep[t.dataset.sleep] = t.value; save(); if (activeTab==='today') renderView('today'); });
+setInterval(()=>{ if (document.hidden || typeof activeTab === 'undefined' || activeTab !== 'today') return; const n = document.getElementById('nowCard'); if (n) n.outerHTML = nowCardHTML(); const u = document.getElementById('upStrip'); if (u) u.outerHTML = upNextStrip(); }, 30000);
+
+</script>
 <script data-src="src/js/41-render-today.js">
 /* ============================================================
    VIEW · TODAY
@@ -3562,6 +3903,7 @@ function renderToday(){
   const sub = done===total&&total ? 'Every task done. The day is yours.' : done>=4 ? 'Streak day secured. Push for the flag.' : `${Math.max(0,4-done)} more for a streak day.`;
 
   return `
+  ${daySystemHTML()}
   <div class="tcol a">
   <div class="glass pw-hero" data-tilt>
     <div class="glare"></div>
@@ -3577,11 +3919,6 @@ function renderToday(){
     <div class="pw-week">${weekCells}</div>
   </div>
 
-  ${next ? `<div class="racectl">
-    <span class="rc-tag">${ic('flag',14)} Race control</span>
-    <span class="rc-msg"><b>${esc(next.name)}</b><span>${esc(next.meta)}</span></span>
-    <button class="btn btn-primary btn-sm" data-a="start" data-id="${next.id}" data-go="${next.go||'today'}">Start</button>
-  </div>`:''}
   <div class="h2">Timing tower <span class="side num">${done}/${total}</span></div>
   <div class="glass tasks tower ${all(done,total)?'allclear':''}">${rows || '<div class="tiny" style="padding:14px">Rest day. Nothing scheduled.</div>'}</div>
 
@@ -4879,6 +5216,7 @@ document.addEventListener('click', e=>{
     case 'lap-mode': { lap3d = el.dataset.id === '3d'; const box = document.getElementById('lapArt'); if (box){ box.classList.toggle('is3d', lap3d); box.querySelectorAll('.lapmode button').forEach(b=>b.classList.toggle('on', b===el)); } break; }
     case 'cad-part': case 'cad-view': case 'cad-spin': case 'cad-hide': case 'cad-answer': cadAction(a, el); break;
     case 'lab-pane': showLabPane(el.dataset.id); break;
+    case 'ds-status': case 'ds-step': case 'ds-feel': case 'ds-shape': dsAction(a, el); break;
     case 'dx-pick': case 'dx-step': case 'dx-mode': case 'dx-start': case 'dx-answer': case 'dx-next': dxAction(a, el); break;
     case 'v12-view': case 'v12-run': case 'v12-answer': v12Action(a, el); break;
     case 'pf': {

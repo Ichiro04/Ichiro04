@@ -207,3 +207,10 @@ The liquid-glass cream and blue look has been replaced. Two stylesheets load las
   test, best score in `localStorage['dc.dwgBest']`) · V12 engine (`49-render-v12.js`, real
   slider-crank geometry, firing order 1-7-5-11-3-9-6-12-2-8-4-10) · Test bench (embedded lab,
   created on first open).
+- **Daily system (from the Daily System V104 template, structure only):** `44a-render-daysys.js`
+  renders at the top of Today: now card (ring timer, 3-step stepper, Done/Partly/Missed), up-next
+  countdown, the 3 that matter, feel strip (energy, mood, phone, sleep, day shape), number cards,
+  day-plan timeline, 14-day focus chart and time-by-category bars. Blocks link to tasks via
+  `task`. Day record fields: `plan`, `pstep`, `feel`, `sleep`, `shape`. Wide screens (≥980px) put
+  the tab bar in the top strip and use 12-column rows. The template's violet palette and web
+  fonts were deliberately not adopted: the F1 look and native fonts stay.
