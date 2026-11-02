@@ -2,7 +2,7 @@
    VIEW · COACH
    ============================================================ */
 let coachBusy = false;
-function renderCoach(){
+function coachClassicHTML(){
   const quick = ['Plan my day','Weekly review','Where is my money leaking?','I feel stuck','Training check-in','What should I learn next?'];
   return `
   <div class="glass card" data-tilt>
@@ -90,3 +90,5 @@ function coachRead(){
   return esc(bits.join(' '));
 }
 
+
+function coachSettingsHTML(){ return '<div class="h2">Settings</div>' + coachClassicHTML().split('<div class="h2">Settings</div>')[1]; }

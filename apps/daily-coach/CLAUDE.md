@@ -248,3 +248,18 @@ content; none of the original product's name, branding or data is used.
   orb with fuzzy ring, five count tiles grow out on curves, the biggest list fans out from the gold
   tile, detail panel slides in. "Explore in …" deep-links into the app (`window.knowPick`).
 - Single dark teal world by design (matches the video); narrow screens stack the focus view.
+
+## Coach AI (assistant redesign)
+
+`src/js/46a-render-assistant.js` + `src/css/ai.css` replace the Coach view (settings kept via
+`coachSettingsHTML()`). Layout from the user's AI-assistant reference, in sunset colours: home
+(greeting, orb card "Start talking", new chat, English ⇄ Burmese translation, recent activities,
+explore presets) and a full-screen conversation (liquid canvas orb that breathes / swirls while
+thinking / pulses while answering, question in big type lighting up word by word, streamed reply,
+dock with history, send/stop, new chat).
+- Answers come from Claude via the artifact `sample` capability (publish with
+  `capabilities: {sample: {}}`); quick tier by default, "Deeper answers" switches to default tier.
+- Only `coachContext()` (a short summary of today's numbers) plus the recent chat is sent; the
+  JSON store never leaves the browser. Without `sample` (or if declined) the rule-based
+  `generateReply` answers. No microphone: artifacts cannot use it, so input is typed.
+- `state.chatArchive` keeps up to 10 earlier chats for "Recent activities".
