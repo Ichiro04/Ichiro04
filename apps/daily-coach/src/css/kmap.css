@@ -347,32 +347,8 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-tip small.hole{color:#F2A08E}
 .km-legend .km-li{gap:7px}
 
-/* ---------- map notch bar (right edge) ---------- */
+/* ---------- right edge: room for the edge control (src/css/camctl.css) ---------- */
 .km-mini{display:none!important}
-.km-notch{position:absolute;z-index:6;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;align-items:center;padding:20px 10px;border-radius:24px 0 0 24px;
-  background:#05090D;box-shadow:-12px 0 40px -14px rgba(0,0,0,.8),inset 1px 0 0 rgba(170,210,255,.1);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
-.km-notch::before,.km-notch::after{content:"";position:absolute;right:0;width:24px;height:24px}
-.km-notch::before{top:-24px;background:radial-gradient(circle at 0 0,transparent 23.5px,#05090D 24px)}
-.km-notch::after{bottom:-24px;background:radial-gradient(circle at 0 100%,transparent 23.5px,#05090D 24px)}
-.km-nr{position:relative;display:grid;justify-items:center;gap:3px;color:#F2F1ED;background:none;border:0;cursor:pointer;padding:2px}
-.km-nrg{position:relative;width:44px;height:44px;display:block}
-.km-nrg > svg{width:44px;height:44px;transform:rotate(-90deg);display:block}
-.km-nrg i svg{width:15px!important;height:15px!important;transform:none!important}
-.km-nrg .t{fill:none;stroke:rgba(170,210,255,.14);stroke-width:4.5}
-.km-nrg .f{fill:none;stroke-width:4.5;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 0 4px currentColor)}
-.km-nrg i{position:absolute;inset:0;display:grid;place-items:center;color:#E6CDB0;font-style:normal}
-.km-nr b{font-size:12px;font-weight:750}
-.km-npop{position:absolute;right:64px;top:50%;width:250px;display:grid;gap:6px;padding:12px 14px;border-radius:16px;text-align:left;background:#05090D;color:#F2F1ED;
-  box-shadow:0 18px 40px -16px #000,inset 0 0 0 1px rgba(170,210,255,.12);opacity:0;pointer-events:none;transform:translate(10px,-50%) scale(.96);transform-origin:right center;transition:opacity .2s,transform .28s cubic-bezier(.2,.9,.3,1.2)}
-.km-npop::after{content:"";position:absolute;right:-9px;top:50%;transform:translateY(-50%);border:9px solid transparent;border-left-color:#05090D;border-right:0}
-.km-npt{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700}
-.km-npl{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#B8C2CC}
-.km-npl span:first-child{color:#E6ECF2}
-.km-npb{height:6px;border-radius:3px;background:rgba(170,210,255,.12);overflow:hidden}
-.km-npb i{display:block;height:100%;border-radius:3px}
-@media(hover:hover){ .km-nr:hover .km-npop{opacity:1;transform:translate(0,-50%)} }
-.km-nr.open .km-npop,.km-nr:focus-visible .km-npop{opacity:1;transform:translate(0,-50%)}
-.km-nr:focus-visible{outline:2px solid #B38F6F;outline-offset:3px;border-radius:12px}
 @media(min-width:1100px){ .km-side.r{right:86px} .km-tip{right:388px} }
 
 /* ---------- panels tuck away while exploring ---------- */
@@ -390,14 +366,9 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-dockbtn:hover{box-shadow:inset 0 0 0 1px rgba(230,205,176,.5),0 12px 30px -12px #000}
 .km-dockg{display:grid;grid-template-columns:repeat(3,5px);gap:3px}
 .km-dockg i{width:5px;height:5px;border-radius:50%;background:#E6CDB0}
-.km.focus .km-notch,.km.focus .km-dockbtn{display:none}
+.km.focus .km-dockbtn{display:none}
 @media(max-width:760px){
-  .km-notch{gap:8px;padding:14px 7px;top:auto;bottom:calc(214px + env(safe-area-inset-bottom,0px));transform:none}
-  .km-nrg,.km-nrg > svg{width:36px;height:36px}
-  .km-nr b{font-size:11px}
-  .km-npop{right:52px;width:220px}
   .km-tip{right:64px}
-  .km.undocked .km-notch{transform:translateY(120px)}
 }
 
 /* map: drag modes, Ask AI, new legend items */

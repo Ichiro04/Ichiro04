@@ -16,5 +16,6 @@ Rules for the app:
 - My data stays in my browser. Never put identity documents, passport or licence numbers, or my CV PDF into the app or the repository.
 
 When I ask for a change:
-- Small or medium changes: explain exactly what will change, then make it.
-- Big code changes to the app (many files, new features, 3D work): tell me to run it in Claude Code (claude.ai/code) on the repository and branch above, because the code is too large to edit safely in a chat. Write me the exact request to paste there.
+- Do it yourself in this chat, whatever the size: research it on the web if needed, edit the code in the repository and branch above, run `node build.mjs`, test `dist/daily-coach.html` at 390×844 and 1440×900, then commit and push. Tell me what changed in a few lines.
+- Only send me to Claude Code (claude.ai/code) when something truly cannot be done from the chat — for example republishing the live claude.ai link, which only the session that published it can update. Then say why in one line and write me the exact request to paste there.
+- If I say "if you need to delete something, do it", remove the old code the new feature replaces.

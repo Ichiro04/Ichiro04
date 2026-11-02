@@ -225,19 +225,5 @@ function kmSidesHTML(){
     </div>`;
 }
 
-/* ---------- right-edge notch bar in the map: ring gauges with speech-bubble cards ---------- */
-function kmNotchHTML(){
-  const k = dkey(), done = todayDone(), total = todayTotal() || 1, saved = savedTotal(), goal = Number(state.settings.goal)||25000, st = currentStreak();
-  const mid = (()=>{ const n = new Date(), m = 1440 - (n.getHours()*60+n.getMinutes()); return `${Math.floor(m/60)} h ${m%60} min`; })();
-  const ring = (id, p, col, icon, val, title, rows) => { const r = 17, C = 2*Math.PI*r;
-    return `<button class="km-nr" data-a="km-nring" data-id="${id}" aria-label="${title}: ${val}" aria-expanded="false">
-      <span class="km-nrg"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="${r}" class="t"/><circle cx="22" cy="22" r="${r}" class="f" style="stroke:${col};stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C*(1-clamp(p,0,1))).toFixed(1)}"/></svg><i>${ic(icon,15)}</i></span>
-      <b class="num">${val}</b>
-      <span class="km-npop" role="tooltip"><span class="km-npt">${ic(icon,15)} ${title}</span>${rows.map(([a,b,pp,c])=>`<span class="km-npl"><span>${a}</span><span>${b}</span></span>${pp!==undefined?`<span class="km-npb"><i style="width:${Math.round(clamp(pp,0,1)*100)}%;background:${c}"></i></span>`:''}`).join('')}</span>
-    </button>`; };
-  return `<aside class="km-notch" aria-label="Today at a glance">
-    ${ring('today', done/total, '#E0435C', 'flag', `${Math.round(done/total*100)}%`, 'Today', [['Tasks', `Resets in ${mid}`, done/total, '#E0435C'], [`${done} of ${total} done`, done>=4 ? 'Streak day ✓' : `${Math.max(0,4-done)} to a streak day`]])}
-    ${ring('money', saved/goal, '#E6CDB0', 'pound', `${Math.round(saved/goal*100)}%`, 'Savings', [[`${money0(saved)} of ${money0(goal)}`, `${Math.round(saved/goal*100)}%`, saved/goal, '#E6CDB0'], ['Still to save', money0(Math.max(0, goal-saved))]])}
-    ${ring('streak', Math.min(1, st/30), '#9CC4F0', 'flame', `${st}d`, 'Streak', [['Current streak', `${st} days`, Math.min(1, st/30), '#9CC4F0'], ['Next milestone', `${st < 7 ? 7 : st < 30 ? 30 : st < 100 ? 100 : st + 50} days`]])}
-  </aside>`;
-}
+/* ---------- right-edge control in the map (iPhone Camera Control style): see 57-render-camctl.js ---------- */
+function kmNotchHTML(){ return kmcHTML(); }

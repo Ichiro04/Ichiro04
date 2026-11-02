@@ -33,7 +33,7 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 The map's controls:
 - Drag moves the view; the orbit toggle or right-drag spins it. Zoom goes up to 24×.
 - The panels tuck away while you explore and come back from the "Panels" button.
-- A right-edge notch shows ring gauges.
+- A right-edge control works like the iPhone Camera Control: a slim sliver on the edge; tap it for a ruler with Today, Savings or Streak, tap again for a curved menu, and Zoom slides the map (0.5× to 24×).
 - "Ask AI" opens the chat over the map with suggested questions.
 
 **Lab.**
@@ -69,4 +69,4 @@ The real budget is in `docs/money-plan.md`: income £2,500 a month, budget £1,1
 
 ## Asking for changes
 - Questions, plans, coaching, study help and small text changes can happen in the Project chat.
-- New features or big redesigns go to Claude Code on the repository and branch above. Start with: "Edit my Daily Coach app in ichiro04/ichiro04, branch claude/affectionate-hopper-zzk39m, folder apps/daily-coach. Read CLAUDE.md first." After a change the live link is republished, and the offline file needs replacing with the new `dist/daily-coach.html`.
+- New features and redesigns are also done in the Project chat, straight on the repository and branch above (build, test, commit, push). Claude Code is only needed to republish the live claude.ai link. Start there with: "Edit my Daily Coach app in ichiro04/ichiro04, branch claude/affectionate-hopper-zzk39m, folder apps/daily-coach. Read CLAUDE.md first." After a change the live link is republished, and the offline file needs replacing with the new `dist/daily-coach.html`.

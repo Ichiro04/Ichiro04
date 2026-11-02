@@ -491,7 +491,7 @@ function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels 
 function kmToWorld(x,y){ return [x,y]; }
 function kmDock(on){ // panels tuck away while you explore and come back from the centre button
   const root = document.getElementById('km'); if (!root || KM.view!=='graph') return; if (root.classList.contains('undocked') === !on) return;
-  root.classList.toggle('undocked', !on); if (!on) document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); }
+  root.classList.toggle('undocked', !on); }
 function kmZoomAt(f, mx, my){ // zoom towards the cursor: the point under it stays put
   const O = KM.orb || { cx:KM.W/2, cy:KM.H/2 }, c = KM.camT || { ...KM.cam }, z = clamp(c.z*f, .4, 24), k = z/c.z;
   KM.camT = { x: mx - O.cx - (mx - O.cx - c.x)*k, y: my - O.cy - (my - O.cy - c.y)*k, z }; kmKick(); }
@@ -790,7 +790,6 @@ function kmAction(a, el){
   if (a==='km-dock'){ kmDock(true); return; }
   if (a==='km-mode'){ KM.mode = el.dataset.id; document.querySelectorAll('[data-a="km-mode"]').forEach(b=>{ const on = b===el; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); KM.vy = KM.vt = 0; const h = document.querySelector('.km-hint'); if (h) h.textContent = KM.mode==='rotate' ? 'Drag to spin 360° · pinch or scroll to zoom · tap anything' : 'Drag to move · pinch or scroll to zoom · tap anything'; toast(KM.mode==='rotate' ? 'Drag now spins the galaxy.' : 'Drag now moves around. Right-drag or Shift-drag still spins.', 'ok', 1800); return; }
   if (a==='km-chat' || a==='km-voice'){ aiOpen('chat'); if (a==='km-voice' && typeof aiListen==='function') aiListen(); return; }
-  if (a==='km-nring'){ const on = !el.classList.contains('open'); document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); el.classList.toggle('open', on); el.setAttribute('aria-expanded', String(on)); return; }
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();

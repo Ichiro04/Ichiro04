@@ -2418,32 +2418,8 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-tip small.hole{color:#F2A08E}
 .km-legend .km-li{gap:7px}
 
-/* ---------- map notch bar (right edge) ---------- */
+/* ---------- right edge: room for the edge control (src/css/camctl.css) ---------- */
 .km-mini{display:none!important}
-.km-notch{position:absolute;z-index:6;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;align-items:center;padding:20px 10px;border-radius:24px 0 0 24px;
-  background:#05090D;box-shadow:-12px 0 40px -14px rgba(0,0,0,.8),inset 1px 0 0 rgba(170,210,255,.1);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
-.km-notch::before,.km-notch::after{content:"";position:absolute;right:0;width:24px;height:24px}
-.km-notch::before{top:-24px;background:radial-gradient(circle at 0 0,transparent 23.5px,#05090D 24px)}
-.km-notch::after{bottom:-24px;background:radial-gradient(circle at 0 100%,transparent 23.5px,#05090D 24px)}
-.km-nr{position:relative;display:grid;justify-items:center;gap:3px;color:#F2F1ED;background:none;border:0;cursor:pointer;padding:2px}
-.km-nrg{position:relative;width:44px;height:44px;display:block}
-.km-nrg > svg{width:44px;height:44px;transform:rotate(-90deg);display:block}
-.km-nrg i svg{width:15px!important;height:15px!important;transform:none!important}
-.km-nrg .t{fill:none;stroke:rgba(170,210,255,.14);stroke-width:4.5}
-.km-nrg .f{fill:none;stroke-width:4.5;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 0 4px currentColor)}
-.km-nrg i{position:absolute;inset:0;display:grid;place-items:center;color:#E6CDB0;font-style:normal}
-.km-nr b{font-size:12px;font-weight:750}
-.km-npop{position:absolute;right:64px;top:50%;width:250px;display:grid;gap:6px;padding:12px 14px;border-radius:16px;text-align:left;background:#05090D;color:#F2F1ED;
-  box-shadow:0 18px 40px -16px #000,inset 0 0 0 1px rgba(170,210,255,.12);opacity:0;pointer-events:none;transform:translate(10px,-50%) scale(.96);transform-origin:right center;transition:opacity .2s,transform .28s cubic-bezier(.2,.9,.3,1.2)}
-.km-npop::after{content:"";position:absolute;right:-9px;top:50%;transform:translateY(-50%);border:9px solid transparent;border-left-color:#05090D;border-right:0}
-.km-npt{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700}
-.km-npl{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#B8C2CC}
-.km-npl span:first-child{color:#E6ECF2}
-.km-npb{height:6px;border-radius:3px;background:rgba(170,210,255,.12);overflow:hidden}
-.km-npb i{display:block;height:100%;border-radius:3px}
-@media(hover:hover){ .km-nr:hover .km-npop{opacity:1;transform:translate(0,-50%)} }
-.km-nr.open .km-npop,.km-nr:focus-visible .km-npop{opacity:1;transform:translate(0,-50%)}
-.km-nr:focus-visible{outline:2px solid #B38F6F;outline-offset:3px;border-radius:12px}
 @media(min-width:1100px){ .km-side.r{right:86px} .km-tip{right:388px} }
 
 /* ---------- panels tuck away while exploring ---------- */
@@ -2461,14 +2437,9 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-dockbtn:hover{box-shadow:inset 0 0 0 1px rgba(230,205,176,.5),0 12px 30px -12px #000}
 .km-dockg{display:grid;grid-template-columns:repeat(3,5px);gap:3px}
 .km-dockg i{width:5px;height:5px;border-radius:50%;background:#E6CDB0}
-.km.focus .km-notch,.km.focus .km-dockbtn{display:none}
+.km.focus .km-dockbtn{display:none}
 @media(max-width:760px){
-  .km-notch{gap:8px;padding:14px 7px;top:auto;bottom:calc(214px + env(safe-area-inset-bottom,0px));transform:none}
-  .km-nrg,.km-nrg > svg{width:36px;height:36px}
-  .km-nr b{font-size:11px}
-  .km-npop{right:52px;width:220px}
   .km-tip{right:64px}
-  .km.undocked .km-notch{transform:translateY(120px)}
 }
 
 /* map: drag modes, Ask AI, new legend items */
@@ -2489,6 +2460,56 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .ai-sugg button:hover{transform:translateY(-2px)}
 @media(max-width:860px){ .km-ai2 span:last-child{display:none} .km-ai2{padding:0 4px} .km-mic{display:none} }
 .km-dot.sneb{background:radial-gradient(circle at 50% 50%,#fff 0 12%,rgba(255,214,170,.85) 22%,rgba(190,215,255,.35) 52%,transparent 72%);box-shadow:0 0 8px rgba(255,214,170,.6)}
+
+</style>
+<style data-src="src/css/camctl.css">
+/* Edge control in the knowledge map, modelled on the iPhone 16 Camera Control overlay.
+   Rest: a slim sliver on the right edge. Light press: the overlay grows out of the bezel (spring),
+   with concave fillets, a tick-ruler slider or a picker wheel. See src/js/57-render-camctl.js. */
+.km-cc{position:absolute;z-index:8;right:0;top:56%;width:0;height:0;--w:7px;--h:68px;--f:0px;--r:4px;--bg:#000;pointer-events:none;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.km-cc[data-mode="slider"]{--w:66px;--h:min(318px,44vh);--f:22px;--r:28px}
+.km-cc[data-mode="menu"]{--w:70px;--h:min(296px,42vh);--f:22px;--r:30px}
+.cc-pill{position:absolute;right:0;top:0;transform:translateY(-50%);width:var(--w);height:var(--h);background:var(--bg);border-radius:var(--r) 0 0 var(--r);pointer-events:auto;touch-action:none;
+  box-shadow:-18px 0 44px -18px rgba(0,0,0,.95),inset 1px 0 0 rgba(255,255,255,.07);
+  transition:width .62s cubic-bezier(.3,1.42,.5,1),height .7s cubic-bezier(.3,1.32,.5,1),border-radius .5s cubic-bezier(.3,1.3,.5,1),background .3s}
+.km-cc[data-mode="rest"] .cc-pill{background:linear-gradient(90deg,#5a5a60,#2a2a2e 45%,#151517);box-shadow:inset 1px 0 0 rgba(255,255,255,.35),inset 0 1px 0 rgba(255,255,255,.18),-3px 0 14px -2px rgba(230,205,176,.22),-4px 0 12px -4px rgba(0,0,0,.7)}
+.cc-pill::before,.cc-pill::after{content:"";position:absolute;right:0;width:var(--f);height:var(--f);pointer-events:none;transition:width .62s cubic-bezier(.3,1.42,.5,1),height .62s cubic-bezier(.3,1.42,.5,1)}
+.cc-pill::before{bottom:100%;background:radial-gradient(circle at 0 0,transparent calc(var(--f) - .5px),var(--bg) var(--f))}
+.cc-pill::after{top:100%;background:radial-gradient(circle at 0 100%,transparent calc(var(--f) - .5px),var(--bg) var(--f))}
+.cc-in{position:absolute;inset:0;overflow:hidden;border-radius:inherit}
+.cc-btn{all:unset;position:absolute;inset:-10px -2px -10px -14px;cursor:pointer;border-radius:12px}
+.km-cc:not([data-mode="rest"]) .cc-btn{inset:auto;width:0;height:0}
+.cc-btn:focus-visible{outline:2px solid #B38F6F;outline-offset:2px}
+@media(hover:hover){ .km-cc[data-mode="rest"] .cc-pill:hover{width:10px;background:linear-gradient(90deg,#3a3a3e,#18181a)} }
+/* slider: tick ruler scrolling past a fixed centre mark */
+.cc-slider,.cc-menu{position:absolute;inset:0;opacity:0;filter:blur(6px);transform:scale(.92);transition:opacity .28s ease,filter .35s ease,transform .45s cubic-bezier(.3,1.3,.5,1);pointer-events:none}
+.km-cc[data-mode="slider"] .cc-slider,.km-cc[data-mode="menu"] .cc-menu{opacity:1;filter:none;transform:none;transition-delay:.12s;pointer-events:auto}
+.cc-ruler{position:absolute;left:0;right:0;bottom:50%;will-change:transform;
+  -webkit-mask:linear-gradient(transparent,#000 28%,#000 72%,transparent);mask:linear-gradient(transparent,#000 28%,#000 72%,transparent)}
+.cc-slider{-webkit-mask:linear-gradient(transparent 4%,#000 26%,#000 74%,transparent 96%);mask:linear-gradient(transparent 4%,#000 26%,#000 74%,transparent 96%)}
+.cc-ruler .t{position:absolute;right:12px;width:12px;height:1.5px;margin-bottom:-.75px;border-radius:1px;background:rgba(242,241,237,.42)}
+.cc-ruler .t.M{width:22px;height:2px;background:#F2F1ED}
+.cc-ruler em{position:absolute;right:38px;transform:translateY(50%);font:650 10.5px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;font-style:normal;color:rgba(242,241,237,.78);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cc-mark{position:absolute;right:8px;top:50%;width:30px;height:2.5px;margin-top:-1.25px;border-radius:2px;background:#E6CDB0;box-shadow:0 0 10px rgba(230,205,176,.8)}
+.cc-mark::after{content:"";position:absolute;left:-7px;top:50%;margin-top:-4px;border:4px solid transparent;border-left:5px solid #E6CDB0}
+/* picker: controls on a wheel */
+.cc-it{all:unset;position:absolute;left:13px;top:0;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:rgba(242,241,237,.8);background:rgba(255,255,255,.08);cursor:pointer;transform-origin:50% 50%;will-change:transform,opacity}
+.cc-it.on{color:#161616;background:#E6CDB0;box-shadow:0 0 16px rgba(230,205,176,.45)}
+.cc-it:focus-visible{outline:2px solid #B38F6F;outline-offset:2px}
+/* the value beside the overlay */
+.cc-lab{position:absolute;right:calc(var(--w) + 14px);top:0;transform:translate(10px,-50%);display:grid;justify-items:end;gap:1px;text-align:right;white-space:nowrap;pointer-events:none;
+  color:#F2F1ED;opacity:0;filter:blur(4px);transition:opacity .25s ease,transform .5s cubic-bezier(.3,1.3,.5,1),filter .3s ease,right .62s cubic-bezier(.3,1.42,.5,1);text-shadow:0 2px 14px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.7)}
+.km-cc:not([data-mode="rest"]) .cc-lab{opacity:1;filter:none;transform:translate(0,-50%);transition-delay:.1s}
+.cc-lab b{font:750 30px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#E6CDB0}
+.km-cc[data-mode="menu"] .cc-lab b{font-size:22px;color:#F2F1ED}
+.cc-lab span{font:650 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.01em}
+.cc-lab small{font:500 11.5px/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:rgba(242,241,237,.72);max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.km.undocked .km-cc{transform:translateX(12px);opacity:.0;pointer-events:none}
+.km.focus .km-cc{display:none}
+@media(max-width:760px){ .km-cc{top:auto;bottom:calc(360px + env(safe-area-inset-bottom,0px))} .km-cc[data-mode="slider"]{--h:min(220px,28vh)} .km-cc[data-mode="menu"]{--h:min(220px,28vh)} .cc-lab b{font-size:24px} .cc-lab small{max-width:170px} }
+html.reduce .km-cc *,html.reduce .km-cc{transition:none!important}
+@media (prefers-reduced-motion: reduce){ .km-cc *,.km-cc{transition:none!important} }
 
 </style>
 <style data-src="src/css/ai.css">
@@ -6303,7 +6324,7 @@ function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels 
 function kmToWorld(x,y){ return [x,y]; }
 function kmDock(on){ // panels tuck away while you explore and come back from the centre button
   const root = document.getElementById('km'); if (!root || KM.view!=='graph') return; if (root.classList.contains('undocked') === !on) return;
-  root.classList.toggle('undocked', !on); if (!on) document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); }
+  root.classList.toggle('undocked', !on); }
 function kmZoomAt(f, mx, my){ // zoom towards the cursor: the point under it stays put
   const O = KM.orb || { cx:KM.W/2, cy:KM.H/2 }, c = KM.camT || { ...KM.cam }, z = clamp(c.z*f, .4, 24), k = z/c.z;
   KM.camT = { x: mx - O.cx - (mx - O.cx - c.x)*k, y: my - O.cy - (my - O.cy - c.y)*k, z }; kmKick(); }
@@ -6602,7 +6623,6 @@ function kmAction(a, el){
   if (a==='km-dock'){ kmDock(true); return; }
   if (a==='km-mode'){ KM.mode = el.dataset.id; document.querySelectorAll('[data-a="km-mode"]').forEach(b=>{ const on = b===el; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); KM.vy = KM.vt = 0; const h = document.querySelector('.km-hint'); if (h) h.textContent = KM.mode==='rotate' ? 'Drag to spin 360° · pinch or scroll to zoom · tap anything' : 'Drag to move · pinch or scroll to zoom · tap anything'; toast(KM.mode==='rotate' ? 'Drag now spins the galaxy.' : 'Drag now moves around. Right-drag or Shift-drag still spins.', 'ok', 1800); return; }
   if (a==='km-chat' || a==='km-voice'){ aiOpen('chat'); if (a==='km-voice' && typeof aiListen==='function') aiListen(); return; }
-  if (a==='km-nring'){ const on = !el.classList.contains('open'); document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); el.classList.toggle('open', on); el.setAttribute('aria-expanded', String(on)); return; }
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();
@@ -6859,22 +6879,8 @@ function kmSidesHTML(){
     </div>`;
 }
 
-/* ---------- right-edge notch bar in the map: ring gauges with speech-bubble cards ---------- */
-function kmNotchHTML(){
-  const k = dkey(), done = todayDone(), total = todayTotal() || 1, saved = savedTotal(), goal = Number(state.settings.goal)||25000, st = currentStreak();
-  const mid = (()=>{ const n = new Date(), m = 1440 - (n.getHours()*60+n.getMinutes()); return `${Math.floor(m/60)} h ${m%60} min`; })();
-  const ring = (id, p, col, icon, val, title, rows) => { const r = 17, C = 2*Math.PI*r;
-    return `<button class="km-nr" data-a="km-nring" data-id="${id}" aria-label="${title}: ${val}" aria-expanded="false">
-      <span class="km-nrg"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="${r}" class="t"/><circle cx="22" cy="22" r="${r}" class="f" style="stroke:${col};stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C*(1-clamp(p,0,1))).toFixed(1)}"/></svg><i>${ic(icon,15)}</i></span>
-      <b class="num">${val}</b>
-      <span class="km-npop" role="tooltip"><span class="km-npt">${ic(icon,15)} ${title}</span>${rows.map(([a,b,pp,c])=>`<span class="km-npl"><span>${a}</span><span>${b}</span></span>${pp!==undefined?`<span class="km-npb"><i style="width:${Math.round(clamp(pp,0,1)*100)}%;background:${c}"></i></span>`:''}`).join('')}</span>
-    </button>`; };
-  return `<aside class="km-notch" aria-label="Today at a glance">
-    ${ring('today', done/total, '#E0435C', 'flag', `${Math.round(done/total*100)}%`, 'Today', [['Tasks', `Resets in ${mid}`, done/total, '#E0435C'], [`${done} of ${total} done`, done>=4 ? 'Streak day ✓' : `${Math.max(0,4-done)} to a streak day`]])}
-    ${ring('money', saved/goal, '#E6CDB0', 'pound', `${Math.round(saved/goal*100)}%`, 'Savings', [[`${money0(saved)} of ${money0(goal)}`, `${Math.round(saved/goal*100)}%`, saved/goal, '#E6CDB0'], ['Still to save', money0(Math.max(0, goal-saved))]])}
-    ${ring('streak', Math.min(1, st/30), '#9CC4F0', 'flame', `${st}d`, 'Streak', [['Current streak', `${st} days`, Math.min(1, st/30), '#9CC4F0'], ['Next milestone', `${st < 7 ? 7 : st < 30 ? 30 : st < 100 ? 100 : st + 50} days`]])}
-  </aside>`;
-}
+/* ---------- right-edge control in the map (iPhone Camera Control style): see 57-render-camctl.js ---------- */
+function kmNotchHTML(){ return kmcHTML(); }
 
 </script>
 <script data-src="src/js/41b-render-wave.js">
@@ -8937,6 +8943,231 @@ document.addEventListener('click', e=>{
 { const _setTab = setTab; setTab = function(tab, opts){ const r = _setTab(tab, opts); railSync(); return r; }; }
 { const _uc = updateChrome; updateChrome = function(){ const r = _uc.apply(this, arguments); railSync(); return r; }; }
 (RAIL_MQ.addEventListener ? RAIL_MQ.addEventListener.bind(RAIL_MQ, 'change') : RAIL_MQ.addListener.bind(RAIL_MQ))(()=>mountRail());
+
+</script>
+<script data-src="src/js/57-render-camctl.js">
+/* 57-render-camctl.js — "Camera Control" edge control for the knowledge map
+ * Replaces the right-edge notch (kmNotchHTML: three ring gauges + pop-out cards) with an overlay
+ * modelled on the iPhone 16 Camera Control:
+ *  - At rest: only a slim sliver on the right edge, where the button would be.
+ *  - Light press (tap the sliver): a black overlay grows out of the screen edge with a spring,
+ *    concave fillets where it meets the edge, and a SLIDER: a tick ruler that scrolls past a
+ *    fixed centre mark, prominent values with labels, the value + unit beside it.
+ *  - Double light press (tap the overlay, or double-tap the sliver): a PICKER — the controls on
+ *    a curved wheel, the selected one centred with its name. Swipe to move, tap to choose.
+ *  - Controls: Streak · Today · Savings · Zoom. Zoom really zooms the map (snaps to 0.5×, 1×, 2×,
+ *    5×, 10×, 24×). The other three are read-only gauges: the ruler stretches and springs back.
+ *  - Retracts into the edge after ~2.5 s without input. Opens once by itself when the map opens.
+ *  - Reduced motion: no springs, no auto-open. Keyboard: Enter opens, ↑/↓ adjusts, Tab/Esc.
+ * kmNotchHTML() (54-render-galaxy.js) returns kmcHTML(); styles live in src/css/camctl.css.
+ * The old ring notch (.km-notch/.km-nr/.km-npop and the 'km-nring' action) was removed.
+ */
+const KMC = { sel:'today', mode:'rest', drag:null, hideT:0, raf:0, pos:0, vel:0, menuPos:1, menuVel:0, introDone:false, lastMajor:null, tap:0 };
+const KMC_ITEMS = [
+  { id:'streak', name:'Streak', icon:'flame' },
+  { id:'today',  name:'Today',  icon:'flag' },
+  { id:'money',  name:'Savings', icon:'pound' },
+  { id:'zoom',   name:'Zoom',   icon:null }
+];
+const KMC_SP = 9;                       // px between minor ticks
+const kmcStill = () => (typeof motionOff === 'function' && motionOff());
+const kmcBuzz = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} };
+const kmcIcon = (it, s=18) => it.icon && typeof ic === 'function' ? ic(it.icon, s)
+  : `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2L20 20M10.5 8v5M8 10.5h5"/></svg>`;
+
+/* ---------- values: same sources the old rings used ---------- */
+function kmcData(id){
+  try {
+    if (id === 'today'){ const d = todayDone(), t = todayTotal() || 1; return { v:d/t*100, min:0, max:100, step:2, majors:[0,25,50,75,100], fmt:v=>`${Math.round(v)}%`, sub:`${d} of ${t} done${d>=4?' · streak day ✓':` · ${Math.max(0,4-d)} to a streak day`}`, read:true }; }
+    if (id === 'money'){ const s = savedTotal(), g = Number(state.settings.goal) || 25000; return { v:Math.min(100, s/g*100), min:0, max:100, step:2, majors:[0,25,50,75,100], fmt:v=>`${Math.round(v)}%`, sub:`${money0(s)} of ${money0(g)} · ${money0(Math.max(0,g-s))} to go`, read:true }; }
+    if (id === 'streak'){ const st = currentStreak(), max = st < 30 ? 30 : st < 100 ? 100 : Math.ceil((st+50)/50)*50; const next = st < 7 ? 7 : st < 30 ? 30 : st < 100 ? 100 : st + 50;
+      return { v:st, min:0, max, step:1, majors: max === 30 ? [0,7,14,21,30] : max === 100 ? [0,25,50,75,100] : [0, max/2, max], fmt:v=>`${Math.round(v)}d`, sub:`${st}-day streak · next ${next} days`, read:true }; }
+    if (id === 'zoom'){ const z = (KM.camT || KM.cam || {z:1}).z || 1; return { log:true, v:z, min:.4, max:24, majors:[.5,1,2,5,10,24], fmt:v=>(v < 10 ? (Math.round(v*10)/10).toFixed(1).replace(/\.0$/,'') : Math.round(v)) + '×', sub:'Map zoom · slide to change', read:false }; }
+  } catch(e){}
+  return { v:0, min:0, max:100, step:2, majors:[0,50,100], fmt:v=>`${Math.round(v)}`, sub:'', read:true };
+}
+/* value <-> ruler position (px from the bottom of the ruler) */
+function kmcU(d, v){ return d.log ? Math.log(v/d.min) * 130 : (v - d.min)/d.step*KMC_SP; }
+function kmcV(d, u){ return d.log ? d.min*Math.exp(u/130) : d.min + u/KMC_SP*d.step; }
+function kmcLen(d){ return kmcU(d, d.max); }
+
+/* ---------- markup (replaces kmNotchHTML) ---------- */
+function kmcHTML(){
+  return `<aside class="km-cc" id="kmCC" data-mode="rest" aria-label="Quick control: today, savings, streak and zoom">
+    <div class="cc-pill" id="kmcPill">
+      <div class="cc-in">
+        <div class="cc-slider"><div class="cc-ruler" id="kmcRuler"></div><i class="cc-mark"></i></div>
+        <div class="cc-menu" id="kmcMenu">${KMC_ITEMS.map((it,i)=>`<button type="button" class="cc-it" data-i="${i}" tabindex="-1" aria-label="${it.name}">${kmcIcon(it)}</button>`).join('')}</div>
+      </div>
+      <button type="button" class="cc-btn" id="kmcBtn" aria-label="Open quick control" aria-expanded="false"></button>
+    </div>
+    <div class="cc-lab" id="kmcLab" aria-live="polite"><b class="num" id="kmcVal"></b><span id="kmcName"></span><small id="kmcSub"></small></div>
+  </aside>`;
+}
+function kmcEl(id){ return document.getElementById(id); }
+
+function kmcBuildRuler(){
+  const d = kmcData(KMC.sel), r = kmcEl('kmcRuler'); if (!r) return d;
+  const L = kmcLen(d), parts = [];
+  if (d.log){
+    const vals = []; for (let v = .4; v < 1; v += .1) vals.push(v); for (let v = 1; v < 3; v += .2) vals.push(v); for (let v = 3; v < 10; v += .5) vals.push(v); for (let v = 10; v <= 24.01; v += 1) vals.push(v);
+    vals.forEach(v => { const maj = d.majors.some(m => Math.abs(m - v) < .001); if (!maj) parts.push(`<i class="t" style="bottom:${kmcU(d,v).toFixed(1)}px"></i>`); });
+  } else {
+    for (let v = d.min; v <= d.max + 1e-6; v += d.step){ const maj = d.majors.some(m => Math.abs(m - v) < 1e-6); if (!maj) parts.push(`<i class="t" style="bottom:${kmcU(d,v).toFixed(1)}px"></i>`); }
+  }
+  d.majors.forEach(m => parts.push(`<i class="t M" style="bottom:${kmcU(d,m).toFixed(1)}px"></i><em style="bottom:${kmcU(d,m).toFixed(1)}px">${d.log ? d.fmt(m) : d.fmt(m)}</em>`));
+  r.innerHTML = parts.join(''); r.style.height = L + 'px';
+  return d;
+}
+function kmcSetLabel(d, v){
+  const it = KMC_ITEMS.find(x => x.id === KMC.sel);
+  kmcEl('kmcVal').textContent = d.fmt(v); kmcEl('kmcName').textContent = it.name; kmcEl('kmcSub').textContent = d.sub;
+}
+function kmcMenuLabel(){
+  const i = Math.round(Math.max(0, Math.min(KMC_ITEMS.length-1, KMC.menuPos))), it = KMC_ITEMS[i], d = kmcData(it.id);
+  kmcEl('kmcVal').textContent = it.name; kmcEl('kmcName').textContent = d.fmt(d.v); kmcEl('kmcSub').textContent = 'Swipe to choose · tap to select';
+}
+
+/* ---------- state machine ---------- */
+function kmcSetMode(mode){
+  const root = kmcEl('kmCC'); if (!root) return;
+  KMC.mode = mode; root.dataset.mode = mode;
+  kmcEl('kmcBtn').setAttribute('aria-expanded', String(mode !== 'rest'));
+  root.querySelectorAll('.cc-it').forEach(b => b.tabIndex = mode === 'menu' ? 0 : -1);
+  if (mode === 'slider'){ const d = kmcBuildRuler(); KMC.target = kmcU(d, d.v); KMC.d = d; if (KMC.fresh){ KMC.pos = 0; KMC.fresh = false; } kmcSetLabel(d, d.v); }
+  if (mode === 'menu'){ KMC.menuTarget = KMC_ITEMS.findIndex(x => x.id === KMC.sel); kmcMenuLabel(); }
+  if (mode === 'rest'){ KMC.fresh = true; }
+  kmcArm(); kmcLoop();
+}
+function kmcArm(ms){ clearTimeout(KMC.hideT); if (KMC.mode === 'rest') return; KMC.hideT = setTimeout(()=>{ if (!KMC.drag && !KMC.hover) kmcSetMode('rest'); else kmcArm(); }, ms || 2600); }
+function kmcLoop(){
+  if (KMC.raf) return;
+  const step = () => {
+    KMC.raf = 0; const root = kmcEl('kmCC'); if (!root || !root.isConnected) return;
+    const still = kmcStill();
+    if (KMC.mode === 'slider' && KMC.d){
+      if (!KMC.drag){
+        const k = still ? 1 : .16; KMC.pos += (KMC.target - KMC.pos)*k;
+        if (Math.abs(KMC.target - KMC.pos) < .2) KMC.pos = KMC.target;
+      }
+      const r = kmcEl('kmcRuler'); if (r) r.style.transform = `translateY(${KMC.pos.toFixed(2)}px)`;
+      const v = kmcV(KMC.d, Math.max(0, Math.min(kmcLen(KMC.d), KMC.pos)));
+      kmcSetLabel(KMC.d, KMC.d.read && !KMC.drag ? (Math.abs(KMC.target-KMC.pos) < .5 ? KMC.d.v : v) : v);
+      const near = KMC.d.majors.find(m => Math.abs(kmcU(KMC.d, m) - KMC.pos) < 2);
+      if (near !== undefined && near !== KMC.lastMajor){ KMC.lastMajor = near; if (KMC.drag) kmcBuzz(6); } else if (near === undefined) KMC.lastMajor = null;
+    }
+    if (KMC.mode === 'menu'){
+      if (!KMC.drag){ const k = still ? 1 : .18; KMC.menuPos += (KMC.menuTarget - KMC.menuPos)*k; if (Math.abs(KMC.menuTarget - KMC.menuPos) < .002) KMC.menuPos = KMC.menuTarget; }
+      kmcLayoutMenu();
+    }
+    const moving = KMC.drag || (KMC.mode === 'slider' && KMC.pos !== KMC.target) || (KMC.mode === 'menu' && KMC.menuPos !== KMC.menuTarget);
+    if (moving) KMC.raf = requestAnimationFrame(step);
+  };
+  KMC.raf = requestAnimationFrame(step);
+}
+function kmcLayoutMenu(){
+  const m = kmcEl('kmcMenu'); if (!m) return;
+  const H = m.clientHeight || 260, cy = H/2, gap = 54, R = 150;
+  m.querySelectorAll('.cc-it').forEach((b, i) => {
+    const off = i - KMC.menuPos, y = cy + off*gap, a = off*gap/R;            // items ride a wheel whose centre is past the edge
+    const x = (1 - Math.cos(a))*R*.62, sc = Math.max(.62, 1 - Math.abs(off)*.18), op = Math.max(0, 1 - Math.abs(off)*.38);
+    b.style.transform = `translate(${x.toFixed(1)}px, ${(y - 20).toFixed(1)}px) scale(${sc.toFixed(3)})`;
+    b.style.opacity = op.toFixed(3); b.classList.toggle('on', Math.abs(off) < .5);
+  });
+  kmcMenuLabel();
+}
+
+/* ---------- input: tap = light press, tap again = double light press; drag/wheel to slide ---------- */
+function kmcBind(){
+  const root = kmcEl('kmCC'); if (!root || root.dataset.bound) return; root.dataset.bound = '1';
+  const pill = kmcEl('kmcPill');
+  root.addEventListener('pointerenter', ()=>{ KMC.hover = true; });
+  root.addEventListener('pointerleave', ()=>{ KMC.hover = false; kmcArm(1400); });
+  pill.addEventListener('pointerdown', e => {
+    if (KMC.mode === 'rest') return;
+    e.stopPropagation(); pill.setPointerCapture && pill.setPointerCapture(e.pointerId);
+    KMC.drag = { y:e.clientY, y0:e.clientY, moved:0, pos0:KMC.pos, mp0:KMC.menuPos, t:performance.now() }; kmcLoop();
+  });
+  pill.addEventListener('pointermove', e => {
+    const g = KMC.drag; if (!g) return; const dy = e.clientY - g.y; g.y = e.clientY; g.moved += Math.abs(dy);
+    if (KMC.mode === 'slider' && KMC.d){
+      const L = kmcLen(KMC.d); let p = KMC.pos - dy;                       // finger up = value up
+      if (KMC.d.read){ const over = p - KMC.target; p = KMC.target + Math.sign(over)*Math.min(46, Math.abs(over)*.45 + Math.max(0, Math.abs(over)-0)*0); }
+      else {
+        p = Math.max(-30, Math.min(L + 30, p));
+        const z = kmcV(KMC.d, Math.max(0, Math.min(L, p))), cur = (KM.camT || KM.cam).z;
+        if (typeof kmZoomAt === 'function' && Math.abs(z/cur - 1) > .002) kmZoomAt(z/cur, KM.W/2, KM.H/2);
+      }
+      KMC.pos = p;
+    }
+    if (KMC.mode === 'menu'){ KMC.menuPos = Math.max(-.4, Math.min(KMC_ITEMS.length - .6, KMC.menuPos - dy/54)); }
+    kmcArm(); kmcLoop();
+  });
+  const end = e => {
+    const g = KMC.drag; if (!g) return; KMC.drag = null;
+    if (g.moved < 6){ kmcTap(e); }
+    else if (KMC.mode === 'slider' && KMC.d){
+      if (KMC.d.read) KMC.target = kmcU(KMC.d, KMC.d.v);
+      else { // snap to a prominent zoom when close, like the real control
+        const L = kmcLen(KMC.d), u = Math.max(0, Math.min(L, KMC.pos)), snap = KMC.d.majors.map(m => kmcU(KMC.d, m)).find(x => Math.abs(x - u) < 10);
+        KMC.target = snap !== undefined ? snap : u; const z = kmcV(KMC.d, KMC.target), cur = (KM.camT || KM.cam).z;
+        if (typeof kmZoomAt === 'function') kmZoomAt(z/cur, KM.W/2, KM.H/2); KMC.d.v = z; }
+    }
+    else if (KMC.mode === 'menu'){ KMC.menuTarget = Math.max(0, Math.min(KMC_ITEMS.length-1, Math.round(KMC.menuPos))); kmcBuzz(5); }
+    kmcArm(); kmcLoop();
+  };
+  pill.addEventListener('pointerup', end); pill.addEventListener('pointercancel', end);
+  pill.addEventListener('wheel', e => {
+    if (KMC.mode === 'rest') return; e.preventDefault(); e.stopPropagation();
+    if (KMC.mode === 'menu'){ KMC.menuTarget = Math.max(0, Math.min(KMC_ITEMS.length-1, KMC.menuTarget + Math.sign(e.deltaY))); }
+    else if (KMC.d && !KMC.d.read){ const L = kmcLen(KMC.d); KMC.target = Math.max(0, Math.min(L, KMC.target - e.deltaY*.35)); const z = kmcV(KMC.d, KMC.target), cur = (KM.camT || KM.cam).z; kmZoomAt(z/cur, KM.W/2, KM.H/2); KMC.d.v = z; }
+    kmcArm(); kmcLoop();
+  }, { passive:false });
+  kmcEl('kmcBtn').addEventListener('pointerdown', e => e.stopPropagation());
+  kmcEl('kmcBtn').addEventListener('click', e => { e.stopPropagation(); kmcLightPress(); });
+  kmcEl('kmcBtn').addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown'){ e.preventDefault(); kmcNudge(e.key === 'ArrowUp' ? 1 : -1); }
+    if (e.key === 'Escape'){ kmcSetMode('rest'); }
+  });
+  root.querySelectorAll('.cc-it').forEach(b => b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); KMC.sel = KMC_ITEMS[+b.dataset.i].id; kmcSetMode('slider'); kmcEl('kmcBtn').focus(); } }));
+}
+function kmcLightPress(){
+  const now = performance.now(), dbl = now - KMC.tap < 380; KMC.tap = now;
+  if (KMC.mode === 'rest'){ kmcBuzz(8); kmcSetMode(dbl ? 'menu' : 'slider'); }
+  else if (KMC.mode === 'slider'){ kmcBuzz(8); kmcSetMode('menu'); }
+  else { KMC.sel = KMC_ITEMS[Math.round(KMC.menuTarget)].id; kmcBuzz(8); kmcSetMode('slider'); }
+}
+function kmcTap(e){
+  if (KMC.mode === 'menu'){
+    const b = e.target.closest && e.target.closest('.cc-it');
+    const i = b ? +b.dataset.i : Math.round(KMC.menuPos);
+    if (Math.round(KMC.menuTarget) !== i && b){ KMC.menuTarget = i; kmcLoop(); setTimeout(()=>{ KMC.sel = KMC_ITEMS[i].id; kmcSetMode('slider'); }, kmcStill() ? 0 : 260); }
+    else { KMC.sel = KMC_ITEMS[i].id; kmcSetMode('slider'); }
+    kmcBuzz(8);
+  } else if (KMC.mode === 'slider'){ kmcBuzz(8); kmcSetMode('menu'); }
+}
+function kmcNudge(dir){
+  if (KMC.mode === 'rest') kmcSetMode('slider');
+  if (KMC.mode === 'menu'){ KMC.menuTarget = Math.max(0, Math.min(KMC_ITEMS.length-1, KMC.menuTarget - dir)); kmcLoop(); kmcArm(); return; }
+  if (KMC.d && !KMC.d.read){ const i = KMC.d.majors.findIndex(m => m > KMC.d.v*1.01); const cur = KMC.d.v;
+    const z = dir > 0 ? (KMC.d.majors.find(m => m > cur*1.01) || KMC.d.max) : ([...KMC.d.majors].reverse().find(m => m < cur*.99) || KMC.d.min);
+    kmZoomAt(z/((KM.camT||KM.cam).z), KM.W/2, KM.H/2); KMC.d.v = z; KMC.target = kmcU(KMC.d, z); }
+  kmcLoop(); kmcArm();
+}
+
+/* ---------- styles ---------- */
+
+/* ---------- hook in: bind when the map shell appears; open once by itself so today's number is still seen ---------- */
+(function(){
+  const mo = new MutationObserver(() => {
+    const root = document.getElementById('kmCC');
+    if (root && !root.dataset.bound){
+      kmcBind(); KMC.mode = 'rest'; KMC.fresh = true;
+      if (!KMC.introDone && !kmcStill()){ KMC.introDone = true; setTimeout(()=>{ if (KMC.mode === 'rest' && document.getElementById('kmCC')){ kmcSetMode('slider'); kmcArm(4200); } }, 2400); }
+    }
+  });
+  mo.observe(document.body, { childList:true, subtree:true });
+})();
 
 </script>
 <script data-src="src/js/58-render-settings.js">
