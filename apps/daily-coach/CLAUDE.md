@@ -315,3 +315,8 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
   (`wsSheet`) renders the target in hidden-line mode on a second WebGL canvas into four views with
   balloons and a size table. `wsMatch` ticks features within ±0.6 mm.
 - **State:** `state.cadws = { ex, models:{ex:[features]}, done:{ex:true} }`.
+- **Galaxy effects (Nov 2026):**
+  - Zoom runs from 0.4× to 24×, eases towards `KM.camT` and centres on the cursor (`kmZoomAt`). Orbital time `KM.st` slows as you zoom in, so the target stays in view.
+  - Solar-system detail: `kmSun` (corona rays, glow, lens flare when off-centre), moon orbit rings round each planet past 1.3× or when selected, Saturn rings (`kmPlanetRing`, every third domain), cloud bands and a terminator on big planets (`kmBands`). Planets grow with zoom.
+  - Effects: `kmSky` (nebula clouds with parallax, spiked twinkling stars, shooting stars), `kmNovae` (a rare supernova flash) and `kmComets` (tails point away from the sun).
+  - All effects are skipped with reduced motion.

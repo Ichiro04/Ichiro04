@@ -5547,7 +5547,9 @@ function kmDraw(now){
   const cv = document.getElementById('kmCanvas'); if (!cv) return;
   const g = cv.getContext('2d'), W = KM.W, H = KM.H;
   g.setTransform(KM.dpr,0,0,KM.dpr,0,0); g.clearRect(0,0,W,H);
-  const T = (now - KM.t0)/1000, still = motionOff(), TT = still ? 30 : T;
+  const T = (now - KM.t0)/1000, still = motionOff(), dt = Math.min(.05, Math.max(0, (now - (KM.lastNow||now))/1000)); KM.lastNow = now;
+  // orbital time slows as you zoom in, so whatever you zoom towards stays in view
+  KM.st = (KM.st||0) + dt*clamp(Math.pow(1.4/KM.cam.z, 1.6), .015, 1); const TT = still ? 30 : (T < 3 ? T : KM.st + (KM.stOff ?? (KM.stOff = T - KM.st)));
   if (KM.tween){ const k = Math.min(1,(now-KM.tween.t0)/KM.tween.d), e = 1-Math.pow(1-k,3); KM.cam.x = KM.tween.x0+(KM.tween.x1-KM.tween.x0)*e; KM.cam.y = KM.tween.y0+(KM.tween.y1-KM.tween.y0)*e; KM.cam.z = KM.tween.z0+(KM.tween.z1-KM.tween.z0)*e; if (KM.tween.t1!==undefined) KM.tilt = kmWrap(KM.tween.t0v+(KM.tween.t1-KM.tween.t0v)*e); if (k>=1) KM.tween = null; }
   if (KM.yawT === undefined){ KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
   if (KM.tween || still){ if (still && !KM.tween){ KM.yaw = KM.yawT; KM.tilt = KM.tiltT; } KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
@@ -5555,19 +5557,20 @@ function kmDraw(now){
     if (!KM.drag){ KM.yawT += KM.vy; KM.vy *= .955; KM.tiltT = kmWrap(KM.tiltT + (KM.vt||0)); KM.vt = (KM.vt||0)*.955; }
     KM.yaw += (KM.yawT - KM.yaw)*.18; KM.tilt = kmWrap(KM.tilt + kmWrap(KM.tiltT - KM.tilt)*.18); }
   if (!KM.freeze) KM.freezeT = TT;
+  if (KM.tween || !KM.camT) KM.camT = { x:KM.cam.x, y:KM.cam.y, z:KM.cam.z };
+  else { const e = still ? 1 : .16; KM.cam.x += (KM.camT.x - KM.cam.x)*e; KM.cam.y += (KM.camT.y - KM.cam.y)*e; KM.cam.z *= Math.pow(KM.camT.z/KM.cam.z, e); }
   { const want = KM.view==='graph' && !KM.sel && KM.cam.z < 1.3 && (still || T > 2.2) ? 1 : 0; KM.tA = (KM.tA||0) + (want - (KM.tA||0))*(still ? 1 : .12);
     const root = document.getElementById('km'); if (root){ const on = KM.tA > .5; if (root.classList.contains('titled') !== on) root.classList.toggle('titled', on); } }
   const intro = still ? 1 : clamp((T - .2)/2.2, 0, 1), ie = 1 - Math.pow(1-intro, 3);
   const O = KM.orb || { cx:W/2, cy:H/2, r:Math.min(W,H)*.4 }, R = (KM.R||300)*KM.cam.z, v = { cx: O.cx + KM.cam.x, cy: O.cy + KM.cam.y, R, yaw: KM.yaw, tilt: KM.tilt };
   const fade = KM.view==='leaving' ? clamp(1 - (now - KM.leaveT0)/600, 0, 1) : 1;
-  // background stars (screen space, gentle parallax with yaw)
-  if (!KM.stars){ const r = mulberry32(99); KM.stars = Array.from({length:260},()=>[r(), r(), r()*1.2+.3, r()*.6+.2, r()*6]); }
-  KM.stars.forEach(([x,y,s,a,tw])=>{ g.globalAlpha = a*(.7+.3*Math.sin(TT*1.2+tw))*fade; g.fillStyle = '#F2EEE8'; g.fillRect(((x*W + KM.yaw*20) % W + W) % W, y*H, s, s); }); g.globalAlpha = 1;
+  kmSky(g, W, H, TT, now, fade, still);
   if (!KM.dust) KM.dust = GAL.dust(W < 760 ? 3200 : 5200, 77);
   const vD = Object.assign({}, v, { R: R*(1 + (1-ie)*1.4) });
   KM_DOMAINS.forEach((d,i)=>GAL.drawRing(g, .26 + i/(KM_DOMAINS.length-1)*.66, v, .09*ie*fade, TT));
   if (!KM.neb) KM.neb = GAL.nebula(); GAL.drawNebula(g, KM.neb, vD, TT, ie*fade);
   GAL.drawDust(g, KM.dust, vD, TT, ie*fade*.95);
+  if (!still && ie > .9) kmNovae(g, vD, TT, now, fade);
   // project nodes
   const conn = KM.sel ? new Set([KM.sel, ...KM.edges.filter(e=>e.a===KM.sel||e.b===KM.sel).flatMap(e=>[e.a,e.b])]) : null;
   KM.nodes.forEach(n=>{ const w = kmWorld(n, TT), p = GAL.proj(w[0]*(1+(1-ie)*.6), w[1]*(1+(1-ie)*.6), 0, v); n.wx = w[0]; n.wz = w[1]; n.sx = p[0]; n.sy = p[1]; n.dz = p[2];
@@ -5587,25 +5590,34 @@ function kmDraw(now){
     g.globalCompositeOperation = 'source-over';
   }
   // core
-  const core = KM.nodes[0]; GAL.drawCore(g, core.sx, core.sy, R*.06*(still ? 1 : (T < 1.2 ? .4 + .9*Math.sin(clamp(T/1.2,0,1)*Math.PI/2) + (T>.7&&T<1.2? (1.2-T)*1.4 : 0) : 1)), fade);
-  core.sr = R*.06;
+  const core = KM.nodes[0], sunR = (KM.R||300)*.06*clamp(Math.pow(KM.cam.z,.8), .5, 9);
+  kmSun(g, core.sx, core.sy, sunR*(still ? 1 : (T < 1.2 ? .4 + .9*Math.sin(clamp(T/1.2,0,1)*Math.PI/2) + (T>.7&&T<1.2? (1.2-T)*1.4 : 0) : 1)), TT, fade, still);
+  core.sr = sunR;
+  if (!still && ie > .9) kmComets(g, v, TT, core, fade);
+  const gz = clamp(Math.pow(KM.cam.z,.75), .75, 10), gt = clamp(Math.pow(KM.cam.z,.8), .8, 12), gd = clamp(Math.pow(KM.cam.z,.7), .7, 8);
+  // moon orbits round each planet once you zoom in (or select it)
+  { const oa = clamp((KM.cam.z - 1.3)/1.2, 0, 1); KM.nodes.forEach(n=>{ if (n.type!=='domain' || n.va <= 0) return; const a = Math.max(oa, KM.sel===n ? 1 : 0)*n.va; if (a <= .02) return;
+      const lrs = [...new Set(KM.nodes.filter(t=>t.parent===n && t.type==='topic').map(t=>t.lr))]; g.strokeStyle = `rgba(214,200,186,${(.22*a).toFixed(3)})`; g.lineWidth = .8;
+      lrs.forEach(lr=>{ g.beginPath(); for (let i=0;i<=48;i++){ const th = i/48*Math.PI*2, x = n.wx + Math.cos(th)*lr, z = n.wz + Math.sin(th)*lr, p = GAL.proj(Math.hypot(x,z), Math.atan2(z,x), 0, v); i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); } g.stroke(); }); }); }
   // nodes, far to near
   const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = [];
   // reserve label space front-to-back: domains first, then the nearest topics
   const labOK = new Set(); g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
-  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (7.5 + n.w*.4)*Math.max(.7, Math.min(1.35, KM.cam.z)) : 4, h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
+  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (7.5 + n.w*.4)*clamp(Math.pow(KM.cam.z,.75), .75, 10) : 3.4*clamp(Math.pow(KM.cam.z,.8), .8, 12), h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
   const zs = Math.max(.7, Math.min(1.8, KM.cam.z));
   list.forEach(n=>{
     const depth = .8 + .25*(n.dz+1)/2, hov = KM.hover===n ? 1.25 : 1;
-    if (n.type==='domain'){ const r = (7.5 + n.w*.4)*Math.min(zs,1.35)*depth*hov, col = GAL_PLANETS[KM_DOMAINS.indexOf(n.dom) % GAL_PLANETS.length];
-      GAL.planet(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r;
+    if (n.type==='domain'){ const di = KM_DOMAINS.indexOf(n.dom), r = (7.5 + n.w*.4)*gz*depth*hov, col = GAL_PLANETS[di % GAL_PLANETS.length], ringed = di % 3 === 1;
+      if (ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, true);
+      GAL.planet(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va); if (r > 13) kmBands(g, n.sx, n.sy, r, col, di, TT, n.va, core.sx-n.sx, core.sy-n.sy);
+      if (ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, false); n.sr = r;
       g.globalAlpha = n.va; g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F4EFE8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 8;
       const lab = W < 760 && n.name.length > 16 ? n.name.slice(0,15).trimEnd()+'…' : n.name, lw = g.measureText(lab).width, lx = n.lside < 0 ? n.sx - r - 9 - lw : n.sx + r + 9; if (!labOK.has(n)) g.globalAlpha = 0; else if (kmInTitle(lx, n.sy, lw)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, lx, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, lx, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(lx, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
-    else if (n.type==='topic'){ const r = 3.4*Math.min(zs,1.4)*depth*hov, m = kmMastery(n.topic);
+    else if (n.type==='topic'){ const r = 3.4*gt*depth*hov, m = kmMastery(n.topic);
       g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(n.sx,n.sy,0,n.sx,n.sy,r*3.4); gr.addColorStop(0,`rgba(${m>=100?'230,205,176':'200,216,240'},${(.3*n.va).toFixed(2)})`); gr.addColorStop(1,'rgba(180,200,240,0)'); g.fillStyle = gr; g.beginPath(); g.arc(n.sx,n.sy,r*3.4,0,7); g.fill(); g.globalCompositeOperation = 'source-over';
       GAL.planet(g, n.sx, n.sy, r, m>=100 ? KM_PLANET.practice : KM_PLANET.topic, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 4;
       if (KM.hover===n || KM.sel===n || (labOK.has(n) && ((KM.labels && KM.cam.z > 1.5) || (conn && conn.has(n))))){ g.globalAlpha = n.va; g.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#E8EEF8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r + 8, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
-    else { const r = (n.type==='practice' ? 2 : 1.6)*zs*depth; g.globalAlpha = n.va; g.fillStyle = n.type==='practice' ? '#E6CDB0' : '#D44A62'; g.beginPath(); g.arc(n.sx,n.sy,r,0,7); g.fill(); g.globalAlpha = 1; n.sr = r + 5;
+    else { const r = (n.type==='practice' ? 2 : 1.6)*gd*depth; g.globalAlpha = n.va; g.fillStyle = n.type==='practice' ? '#E6CDB0' : '#D44A62'; g.beginPath(); g.arc(n.sx,n.sy,r,0,7); g.fill(); g.globalAlpha = 1; n.sr = r + 5;
       if (KM.labels && KM.cam.z > 2.2 && kmLabelFree(n.sx + r + 3, n.sy - 12, 18, 12)) kmChip(g, n.sx + r + 4, n.sy - 6, String(n.n), n.va*.85); }
   });
   // a soft dark band keeps the title readable over the core
@@ -5615,13 +5627,85 @@ function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
   const t = document.querySelector('.km-title'), cv = document.getElementById('kmCanvas'); if (!t || !cv) return; const c = cv.getBoundingClientRect(); let b = null;
   t.querySelectorAll('small,h1,span').forEach(el=>{ const r = el.getBoundingClientRect(), w = el.tagName==='H1' ? r.width : Math.min(r.width, el.scrollWidth); const x0 = r.left + (r.width - w)/2 - c.left; b = b ? [Math.min(b[0],x0), Math.min(b[1],r.top-c.top), Math.max(b[2],x0+w), Math.max(b[3],r.bottom-c.top)] : [x0, r.top-c.top, x0+w, r.bottom-c.top]; });
   KM.tBox = b; }
+/* ---------- galaxy effects ---------- */
+function kmSky(g, W, H, T, now, fade, still){
+  // faint coloured nebula clouds far behind the galaxy, painted once per size, gentle parallax
+  if (!KM.sky || KM.sky.w !== W || KM.sky.h !== H){ const c = document.createElement('canvas'); c.width = Math.ceil(W/2); c.height = Math.ceil(H/2); const q = c.getContext('2d'), r = mulberry32(404);
+    [[150,40,70],[90,70,150],[40,90,130],[179,143,111],[120,30,60]].forEach((col,i)=>{ for (let k=0;k<3;k++){ const x = r()*c.width, y = r()*c.height, rad = (.25 + r()*.35)*Math.max(c.width,c.height), gr = q.createRadialGradient(x,y,0,x,y,rad); gr.addColorStop(0,`rgba(${col},${.045 + r()*.035})`); gr.addColorStop(1,`rgba(${col},0)`); q.fillStyle = gr; q.fillRect(0,0,c.width,c.height); } });
+    KM.sky = { c, w:W, h:H }; }
+  g.globalAlpha = fade; const ox = ((KM.yaw*30) % W + W) % W; g.drawImage(KM.sky.c, -ox, 0, W, H); g.drawImage(KM.sky.c, W - ox, 0, W, H); g.globalAlpha = 1;
+  // background stars, a few with diffraction spikes that twinkle
+  if (!KM.stars){ const r = mulberry32(99); KM.stars = Array.from({length:340},(_,i)=>[r(), r(), r()*1.2+.3, r()*.6+.2, r()*6, i < 16]); }
+  g.fillStyle = '#F2EEE8';
+  KM.stars.forEach(([x,y,s,a,tw,big])=>{ const px = ((x*W + KM.yaw*20) % W + W) % W, py = y*H, al = a*(.65+.35*Math.sin(T*1.3+tw))*fade;
+    if (!big){ g.globalAlpha = al; g.fillRect(px, py, s, s); return; }
+    const L = 5 + 7*(.5+.5*Math.sin(T*.9+tw)); g.globalAlpha = Math.min(1, al*1.6); g.globalCompositeOperation = 'lighter';
+    const gr = g.createRadialGradient(px,py,0,px,py,L*.8); gr.addColorStop(0,'rgba(255,248,236,.9)'); gr.addColorStop(1,'rgba(255,248,236,0)'); g.fillStyle = gr; g.beginPath(); g.arc(px,py,L*.8,0,7); g.fill();
+    g.strokeStyle = 'rgba(255,244,230,.55)'; g.lineWidth = .8; g.beginPath(); g.moveTo(px-L,py); g.lineTo(px+L,py); g.moveTo(px,py-L); g.lineTo(px,py+L); g.stroke(); g.globalCompositeOperation = 'source-over'; g.fillStyle = '#F2EEE8'; });
+  g.globalAlpha = 1;
+  if (still || !KM.fx) return;
+  // shooting stars
+  const fx = KM.fx; if (now > fx.nextShoot){ fx.nextShoot = now + 2200 + Math.random()*3800; const a = Math.PI*(.15 + Math.random()*.25)*(Math.random() < .5 ? 1 : -1) + (Math.random() < .5 ? 0 : Math.PI);
+    fx.shoot.push({ x:Math.random()*W, y:Math.random()*H*.6, dx:Math.cos(a), dy:Math.abs(Math.sin(a)), t0:now, d:900 + Math.random()*500, sp:.55 + Math.random()*.4 }); }
+  fx.shoot = fx.shoot.filter(s=>now - s.t0 < s.d); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  fx.shoot.forEach(s=>{ const k = (now - s.t0)/s.d, dist = k*s.d*s.sp, x = s.x + s.dx*dist, y = s.y + s.dy*dist, len = 90*Math.sin(k*Math.PI), al = Math.sin(k*Math.PI)*fade;
+    const gr = g.createLinearGradient(x, y, x - s.dx*len, y - s.dy*len); gr.addColorStop(0,`rgba(255,250,240,${al.toFixed(2)})`); gr.addColorStop(1,'rgba(255,220,200,0)'); g.strokeStyle = gr; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x,y); g.lineTo(x - s.dx*len, y - s.dy*len); g.stroke(); });
+  g.globalCompositeOperation = 'source-over';
+}
+function kmNovae(g, v, T, now, fade){ // a rare star flares up somewhere in the arms, rings out and fades
+  const fx = KM.fx; if (!fx || !KM.dust) return;
+  if (now > fx.nextNova){ fx.nextNova = now + 6000 + Math.random()*8000; const p = KM.dust[Math.floor(Math.random()*KM.dust.length)]; fx.nova.push({ p, t0:now, d:2200 }); }
+  fx.nova = fx.nova.filter(n=>now - n.t0 < n.d); g.globalCompositeOperation = 'lighter';
+  fx.nova.forEach(n=>{ const k = (now - n.t0)/n.d, [x,y] = GAL.proj(n.p.r, n.p.th + GAL.spin(n.p.r,T), n.p.y, v), fl = Math.pow(1-k, 2)*fade, rr = 4 + 26*Math.sqrt(k);
+    let gr = g.createRadialGradient(x,y,0,x,y,rr*1.4); gr.addColorStop(0,`rgba(255,255,250,${(.95*fl).toFixed(3)})`); gr.addColorStop(.25,`rgba(200,220,255,${(.4*fl).toFixed(3)})`); gr.addColorStop(1,'rgba(160,190,255,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x,y,rr*1.4,0,7); g.fill();
+    g.strokeStyle = `rgba(255,170,190,${(.5*fl).toFixed(3)})`; g.lineWidth = 1.2; g.beginPath(); g.arc(x,y,rr*1.8,0,7); g.stroke();
+    g.strokeStyle = `rgba(255,250,240,${(.7*fl).toFixed(3)})`; g.lineWidth = .9; g.beginPath(); g.moveTo(x-rr*1.6,y); g.lineTo(x+rr*1.6,y); g.moveTo(x,y-rr*1.6); g.lineTo(x,y+rr*1.6); g.stroke(); });
+  g.globalCompositeOperation = 'source-over';
+}
+function kmSun(g, x, y, r, T, a, still){ // the core as a star: corona, slow rays, glow and a lens flare when it sits off-centre
+  g.globalCompositeOperation = 'lighter';
+  if (!still){ g.save(); g.translate(x,y); g.rotate(T*.05); for (let i=0;i<12;i++){ g.rotate(Math.PI/6); const L = r*(3.2 + .8*Math.sin(T*.8 + i*1.7)); const gr = g.createLinearGradient(0,0,L,0); gr.addColorStop(0,`rgba(255,226,180,${(.16*a).toFixed(3)})`); gr.addColorStop(1,'rgba(255,200,150,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0,-r*.18); g.lineTo(L,0); g.lineTo(0,r*.18); g.fill(); } g.restore(); }
+  const pul = still ? 1 : 1 + .05*Math.sin(T*1.6); const gr = g.createRadialGradient(x,y,r*.6,x,y,r*2.4*pul); gr.addColorStop(0,`rgba(255,214,160,${(.38*a).toFixed(3)})`); gr.addColorStop(1,'rgba(200,80,60,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x,y,r*2.4*pul,0,7); g.fill();
+  g.globalCompositeOperation = 'source-over';
+  GAL.drawCore(g, x, y, r, a);
+  const O = KM.orb; if (O && !still){ const dx = O.cx - x, dy = O.cy - y, d = Math.hypot(dx,dy); if (d > 40){ g.globalCompositeOperation = 'lighter';
+    [[.55,10,'255,190,150',.12],[1.1,22,'190,200,255',.08],[1.6,7,'255,150,170',.14],[2.1,34,'230,205,176',.05]].forEach(([t,s,c,al])=>{ const fx = x + dx*t, fy = y + dy*t, q = g.createRadialGradient(fx,fy,0,fx,fy,s); q.addColorStop(0,`rgba(${c},${(al*a*Math.min(1,d/200)).toFixed(3)})`); q.addColorStop(1,`rgba(${c},0)`); g.fillStyle = q; g.beginPath(); g.arc(fx,fy,s,0,7); g.fill(); });
+    g.globalCompositeOperation = 'source-over'; } }
+}
+function kmComets(g, v, T, core, fade){ // two comets on long orbits, tails always pointing away from the sun
+  [[.6, .21, 0], [.82, .14, 2.6]].forEach(([rad, sp, ph])=>{
+    const th = ph + T*sp, p = GAL.proj(rad, th, 0, v); if (p[2] < -.2) return;
+    const dx = p[0] - core.sx, dy = p[1] - core.sy, d = Math.hypot(dx,dy) || 1, L = 26 + 40*(1 - rad);
+    g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = 'rgba(214,200,186,.12)'; g.lineWidth = 1.2; g.beginPath(); for (let i=0;i<=16;i++){ const q = GAL.proj(rad, th - i*.03, 0, v); i ? g.lineTo(q[0],q[1]) : g.moveTo(q[0],q[1]); } g.stroke();
+    const gr = g.createLinearGradient(p[0], p[1], p[0] + dx/d*L, p[1] + dy/d*L); gr.addColorStop(0,`rgba(200,225,255,${(.7*fade).toFixed(2)})`); gr.addColorStop(1,'rgba(160,190,255,0)');
+    g.strokeStyle = gr; g.lineWidth = 3; g.lineCap = 'round'; g.beginPath(); g.moveTo(p[0],p[1]); g.lineTo(p[0] + dx/d*L, p[1] + dy/d*L); g.stroke();
+    const h = g.createRadialGradient(p[0],p[1],0,p[0],p[1],5); h.addColorStop(0,`rgba(255,255,255,${fade})`); h.addColorStop(1,'rgba(200,220,255,0)'); g.fillStyle = h; g.beginPath(); g.arc(p[0],p[1],5,0,7); g.fill();
+    g.globalCompositeOperation = 'source-over'; });
+}
+function kmPlanetRing(g, x, y, r, col, tilt, a, back){ // Saturn-style ring: back half before the planet, front half after
+  const rx = r*2.1, ry = Math.max(r*.18, r*2.1*Math.abs(Math.cos(tilt))*.42);
+  g.save(); g.globalAlpha = a*.85; g.beginPath(); back ? g.rect(x - rx*1.2, y - ry*1.4, rx*2.4, ry*1.4) : g.rect(x - rx*1.2, y, rx*2.4, ry*1.4); g.clip();
+  [[1, .55, 2.2],[.86, .35, 1.4],[.74, .5, 1.6]].forEach(([k, al, w])=>{ g.strokeStyle = col[0]; g.globalAlpha = a*al; g.lineWidth = w*Math.max(1, r/12); g.beginPath(); g.ellipse(x, y, rx*k, ry*k, -.12, 0, 7); g.stroke(); });
+  g.restore();
+}
+function kmBands(g, x, y, r, col, seed, T, a, lx, ly){ // cloud bands and a soft terminator on planets big enough to see
+  g.save(); g.globalAlpha = a*.35; g.beginPath(); g.arc(x,y,r,0,7); g.clip(); g.translate(x,y); g.rotate(-.25);
+  const rb = mulberry32(seed*7 + 3); for (let i=-6;i<=6;i++){ const yy = i*r*.16 + Math.sin(T*.3 + i + seed)*r*.025, h = r*(.04 + rb()*.09); g.fillStyle = i % 2 ? col[2] : col[0]; g.globalAlpha = a*(i % 2 ? .13 : .07)*(.6 + rb()*.6); g.fillRect(-r, yy, r*2, h); }
+  g.restore();
+  const L = Math.hypot(lx,ly) || 1, sh = g.createLinearGradient(x + lx/L*r, y + ly/L*r, x - lx/L*r, y - ly/L*r); sh.addColorStop(.45,'rgba(0,0,0,0)'); sh.addColorStop(1,`rgba(0,0,0,${(.55*a).toFixed(2)})`);
+  g.fillStyle = sh; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
+}
 function kmInTitle(x, y, w=0){ const b = KM.tBox; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
 function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels never pile up
   const L = KM.labs || (KM.labs = []); for (const b of L) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return false; L.push([x, y, w, h]); return true; }
 function kmToWorld(x,y){ return [x,y]; }
+function kmZoomAt(f, mx, my){ // zoom towards the cursor: the point under it stays put
+  const O = KM.orb || { cx:KM.W/2, cy:KM.H/2 }, c = KM.camT || { ...KM.cam }, z = clamp(c.z*f, .4, 24), k = z/c.z;
+  KM.camT = { x: mx - O.cx - (mx - O.cx - c.x)*k, y: my - O.cy - (my - O.cy - c.y)*k, z }; kmKick(); }
 function kmWrap(a){ const P = Math.PI*2; return ((a + Math.PI) % P + P) % P - Math.PI; } // full 360° turns in both directions
-function kmCamTo(x, y, z, d=700, raw, tilt){ KM.tween = { t0:performance.now(), d: motionOff() ? 1 : d, x0:KM.cam.x, y0:KM.cam.y, z0:KM.cam.z, x1:x, y1:y, z1:clamp(z,.5,4) }; if (tilt!==undefined){ KM.vt = 0; KM.tween.t0v = KM.tilt; KM.tween.t1 = tilt + Math.PI*2*Math.round((KM.tilt - tilt)/(Math.PI*2)); } }
-function kmCenterOn(n, z){ const z1 = clamp(z,.5,4), f = z1/KM.cam.z, O = KM.orb || { cx:KM.W/2, cy:KM.H/2 }; const ox = n.sx - (O.cx + KM.cam.x), oy = n.sy - (O.cy + KM.cam.y); kmCamTo(-ox*f, -oy*f, z1); }
+function kmCamTo(x, y, z, d=700, raw, tilt){ KM.tween = { t0:performance.now(), d: motionOff() ? 1 : d, x0:KM.cam.x, y0:KM.cam.y, z0:KM.cam.z, x1:x, y1:y, z1:clamp(z,.4,24) }; if (tilt!==undefined){ KM.vt = 0; KM.tween.t0v = KM.tilt; KM.tween.t1 = tilt + Math.PI*2*Math.round((KM.tilt - tilt)/(Math.PI*2)); } }
+function kmCenterOn(n, z){ const z1 = clamp(z,.4,24), f = z1/KM.cam.z, O = KM.orb || { cx:KM.W/2, cy:KM.H/2 }; const ox = n.sx - (O.cx + KM.cam.x), oy = n.sy - (O.cy + KM.cam.y); kmCamTo(-ox*f, -oy*f, z1); }
 
 const KM_COL = {
   core:['#FFFFFA','#F0D2AE','#8A5A34'], domain:['#F6D9DE','#B3203A','#3A0710'], topic:['#FFFFFF','#C9D6EC','#3C4A66'],
@@ -5853,7 +5937,7 @@ function kmOpen(){
   KM.labels = window.innerWidth >= 760; KM.yaw = KM.yawT = -.5; KM.tilt = KM.tiltT = .55; KM.vy = KM.vt = 0; KM.tA = 0; KM.neb = null; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
   document.body.insertAdjacentHTML('beforeend', kmShellHTML());
   KM.labels = window.innerWidth >= 760;
-  document.body.classList.add('km-open'); KM.open = true; KM.view = 'graph'; KM.sel = null; KM.focus = null; KM.cam = { x:0, y:0, z:1 }; KM.pulses = [];
+  document.body.classList.add('km-open'); KM.open = true; KM.view = 'graph'; KM.sel = null; KM.focus = null; KM.cam = { x:0, y:0, z:1 }; KM.camT = { x:0, y:0, z:1 }; KM.st = 0; KM.stOff = undefined; KM.lastNow = 0; KM.pulses = []; KM.fx = { shoot:[], nova:[], nextShoot:0, nextNova:0 };
   const cv = document.getElementById('kmCanvas');
   KM.W = cv.clientWidth; KM.H = cv.clientHeight; kmBuild(); kmResize(); kmWave();
   document.querySelector('.km-legend').innerHTML = kmLegend();
@@ -5876,8 +5960,8 @@ function kmBind(){
     const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     if (KM.ptr.has(e.pointerId)){
       const prev = KM.ptr.get(e.pointerId); KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY });
-      if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); if (d0 > 0){ const z = clamp(KM.cam.z*d1/d0, .5, 4), k = z/KM.cam.z; KM.cam.x *= k; KM.cam.y *= k; KM.cam.z = z; } return; }
-      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ KM.cam.x += dx; KM.cam.y += dy; } else { KM.yawT += dx*.007; KM.vy = KM.vy*.5 + dx*.0016; KM.tiltT = kmWrap(KM.tiltT - dy*.007); KM.vt = (KM.vt||0)*.5 - dy*.0016; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); }
+      if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); const r = cv.getBoundingClientRect(); KM.tween = null; if (d0 > 0) kmZoomAt(d1/d0, (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top); return; }
+      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ if (!KM.camT) KM.camT = { ...KM.cam }; KM.camT.x += dx; KM.camT.y += dy; } else { KM.yawT += dx*.007; KM.vy = KM.vy*.5 + dx*.0016; KM.tiltT = kmWrap(KM.tiltT - dy*.007); KM.vt = (KM.vt||0)*.5 - dy*.0016; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); }
       return;
     }
     const h = kmHit(x,y); if (h !== KM.hover){ KM.hover = h; cv.style.cursor = h ? 'pointer' : 'grab'; }
@@ -5891,7 +5975,7 @@ function kmBind(){
     }
   };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-  cv.addEventListener('wheel', e=>{ e.preventDefault(); KM.tween = null; const f = Math.exp(-e.deltaY*.0015), z = clamp(KM.cam.z*f, .5, 4); const k = z/KM.cam.z; KM.cam.x *= k; KM.cam.y *= k; KM.cam.z = z; }, { passive:false });
+  cv.addEventListener('wheel', e=>{ e.preventDefault(); KM.tween = null; const r = cv.getBoundingClientRect(); kmZoomAt(Math.exp(-e.deltaY*.0011), e.clientX - r.left, e.clientY - r.top); }, { passive:false });
   document.getElementById('kmForm').addEventListener('submit', e=>{ e.preventDefault(); const q = document.getElementById('kmQ').value.trim(); if (KM.view!=='graph'){ const hit = kmMatch(q); if (hit){ kmUnfocus(); setTimeout(()=>kmFocus(hit), 300); } else { kmUnfocus(); setTimeout(()=>kmAnalyse(q), 300); } return; } kmAnalyse(q); });
   root.addEventListener('click', e=>{ const el = e.target.closest('[data-a]'); if (!el || !root.contains(el)) return; kmAction(el.dataset.a, el); e.stopPropagation(); });
   window.addEventListener('resize', kmResize);
@@ -5900,8 +5984,8 @@ function kmAction(a, el){
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();
-  else if (a==='km-zoom'){ { const f = +el.dataset.id > 0 ? 1.35 : 1/1.35, z = clamp(KM.cam.z*f,.5,4), k = z/KM.cam.z; kmCamTo(KM.cam.x*k, KM.cam.y*k, z, 300); } }
-  else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,700,true,.55); }
+  else if (a==='km-zoom'){ { const f = +el.dataset.id > 0 ? 1.35 : 1/1.35, z = clamp(KM.cam.z*f,.4,24), k = z/KM.cam.z; kmCamTo(KM.cam.x*k, KM.cam.y*k, z, 420); } }
+  else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,700,true,.55); KM.camT = null; }
   else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : .55); }
   else if (a==='km-gaps'){ KM.gaps = !KM.gaps; el.classList.toggle('on', KM.gaps); toast(KM.gaps ? 'Showing gaps only: learned topics are dimmed.' : 'Showing every topic.', 'ok', 1600); }
   else if (a==='km-labels'){ KM.labels = !KM.labels; el.classList.toggle('on', KM.labels); }
