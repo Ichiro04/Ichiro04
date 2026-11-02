@@ -333,3 +333,10 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
 - **Settings** (`58-render-settings.js`, `settings.css`): a glass sheet opened from the rail or the gear in the date strip. Sections are profile (`profile.display` is the big map title; default "KsHan"), look and motion, goals and money, coach and voice, tips, and data (export, import and reset reuse the app's actions). Changes save at once.
 - **Chat everywhere:** the floating "Ask coach" orb pill and its mic sit bottom right on every tab (`chatFab`, `state.chatFab`). The chat has a mic using browser speech recognition where it is allowed, which fails gracefully with a toast, plus a speaker toggle that reads answers aloud with `speechSynthesis` (`state.voiceOut`, `voiceRate`, `voiceLang`).
 - **Liquid glass** (`liquid.css`): `.lg` and `.lg-chip` surfaces (blur, saturate, light rim, specular arc, slow sheen), spring easing `--lq-spring`, `lqIn` and `lqOut` jelly enter and exit. All of it is off with reduced motion.
+- **Map controls (Nov 2026 update):**
+  - Drag pans by default (`KM.mode = 'move'`, hand button), with a short glide. The orbit button, right-drag or Shift-drag spins instead. In move mode the arrow keys pan.
+  - Orbits freeze while you pan and past 2.6× zoom, so nothing slides away.
+  - Fixed: nodes were projected with cartesian coords passed as polar; they now go through `hypot` / `atan2` (+ `n.el` elevation) and sit on their rings.
+  - New items: satellites = the next 3 day-plan blocks (`kmSat`); nebulae = the big goals (£25k, IELTS, target weight) with progress arcs (`kmNeb`); pulsar = the streak, which spins faster with the streak (`kmPulsar`); constellation = the last 14 days (`kmConst`).
+  - New effects: tap ripples, warp streaks on long camera flights, meteor showers and a hover ring.
+  - "Ask AI" and a mic sit in the map's top bar. The chat opens over the map (`.over-map`) with suggested questions about the selected item.

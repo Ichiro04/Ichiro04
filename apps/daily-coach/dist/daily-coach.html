@@ -2471,6 +2471,24 @@ html.reduce .km *,html.reduce .km{animation:none!important}
   .km.undocked .km-notch{transform:translateY(120px)}
 }
 
+/* map: drag modes, Ask AI, new legend items */
+.km-ai2{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 5px;border-radius:999px;font-size:13px;font-weight:700;color:#F6F1EA;cursor:pointer;border:0;
+  background:linear-gradient(135deg,rgba(163,20,44,.85),rgba(113,0,20,.9));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 24px -10px rgba(113,0,20,.8);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.km-ai2:hover{transform:translateY(-1px) scale(1.04)}.km-ai2:active{transform:scale(.95)}
+.cfab-orb.sm{width:28px;height:28px}
+.km-mic{color:#E6CDB0}
+.km-dot.sat{border-radius:3px;background:linear-gradient(90deg,#2B4A6E 0 30%,#E8ECF0 30% 70%,#2B4A6E 70%);box-shadow:none}
+.km-dot.neb{background:radial-gradient(circle,rgba(255,255,255,.9),rgba(230,205,176,.6) 35%,rgba(150,190,255,.25) 65%,transparent 72%);box-shadow:none}
+.km-dot.pulsar{background:radial-gradient(circle,#fff 0 30%,#AFD2FF 45%,transparent 70%);box-shadow:0 0 0 1px rgba(175,210,255,.3),0 0 10px #AFD2FF}
+.km-tip small.sat{color:#9FD0FF}
+.ai-chat.over-map{z-index:360}
+.ai-sugg{max-width:720px;width:100%;margin:0 auto 8px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.ai-sugg::-webkit-scrollbar{display:none}
+.ai-sugg button{flex:0 0 auto;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:650;color:#F2F1ED;background:linear-gradient(145deg,rgba(230,205,176,.14),rgba(230,205,176,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 1px rgba(230,205,176,.2);animation:lqIn .6s cubic-bezier(.34,1.56,.64,1) both;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.ai-sugg button:nth-child(2){animation-delay:.08s}.ai-sugg button:nth-child(3){animation-delay:.16s}
+.ai-sugg button:hover{transform:translateY(-2px)}
+@media(max-width:860px){ .km-ai2 span:last-child{display:none} .km-ai2{padding:0 4px} .km-mic{display:none} }
+
 </style>
 <style data-src="src/css/ai.css">
 /* ============================================================
@@ -5886,6 +5904,21 @@ function kmBuild(){
   tasks.forEach((t,i)=>nodes.push({ id:'task:'+t.id, type:'task', name:t.name, task:t, orad:.085 + i*(.19/Math.max(1, tasks.length-1)), oth:i*2.39 + rnd()*.6, r:6, ph:rnd()*6, ringed:i % 3 === 2 }));
   // black holes = mistakes to avoid, out past the stars
   KM_HOLES.forEach((h,i)=>nodes.push({ id:'hole:'+i, type:'hole', name:h.n, hole:h, orad:1.02 + (i % 2)*.09, oth:i/KM_HOLES.length*Math.PI*2 + .6, r:10, ph:rnd()*6 }));
+  // satellites = your next day-plan blocks, floating just above the disc
+  const nmn = typeof nowMin==='function' ? nowMin() : 0, upb = (typeof dayBlocks==='function' ? dayBlocks(dkey()) : []).filter(b=>!b.skip && b.dur > 0 && b.start + b.dur > nmn).slice(0,3);
+  upb.forEach((b,i)=>nodes.push({ id:'sat:'+b.id, type:'sat', name:b.name, block:b, orad:.16 + i*.055, oth:i*2.1 + 1, el:.05 + i*.012, r:5, ph:rnd()*6 }));
+  // nebulae = the big goals, glowing brighter as they fill
+  const goalV = Number(state.settings.goal)||25000, savedV = typeof savedTotal==='function' ? savedTotal() : 0;
+  const wts = Object.keys(state.days||{}).sort().map(k=>state.days[k].weight).filter(Boolean), wNow = wts.length ? wts[wts.length-1] : state.profile.weightStart;
+  const wP = clamp((state.profile.weightStart - wNow)/Math.max(1, state.profile.weightStart - state.profile.weightTarget), 0, 1);
+  const engD = KM_DOMAINS.find(d=>d.id==='english'), eP = engD ? engD.topics.reduce((a2,t)=>a2+kmMastery(t),0)/engD.topics.length/100 : 0;
+  [['£25k savings', savedV/goalV, '230,205,176', `${money0(savedV)} of ${money0(goalV)} saved`], [`IELTS ${state.settings.ieltsTarget||7}+`, eP, '150,190,255', `English practice ${Math.round(eP*100)}% done`], [`${state.profile.weightTarget} kg target`, wP, '255,140,165', `${wNow} kg now · target ${state.profile.weightTarget} kg`]]
+    .forEach(([n,pr,c,d],i)=>nodes.push({ id:'neb:'+i, type:'neb', name:n, prog:clamp(pr,0,1), col:c, desc:d, orad:1.2 + i*.05, oth:i*2.1 + 2.4, el:-.02, r:20, ph:rnd()*6 }));
+  // pulsar = your streak (it spins faster the longer the streak)
+  nodes.push({ id:'pulsar', type:'pulsar', name:'Streak pulsar', orad:.9, oth:4.1, el:.03, r:6, ph:rnd()*6 });
+  // constellation = the last 14 days, high above the disc
+  KM.days14 = Array.from({length:14},(_,i)=>{ const k = dkey(addDays(new Date(), i-13)); return { k, n:countDone(k) }; });
+  nodes.push({ id:'const', type:'const', name:'Last 14 days', orad:1.15, oth:.5, el:.4, r:10, ph:0 });
   // a thin asteroid belt between the planets and the stars
   KM.belt = Array.from({length:220},()=>({ r:.3 + rnd()*.04, th:rnd()*Math.PI*2, y:(rnd()-.5)*.012, s:.6 + rnd()*1.4, c:rnd() }));
   KM.nodes = nodes; KM.edges = edges;
@@ -5910,7 +5943,7 @@ function kmPos(n){ return [n.wx||0, n.wz||0]; }
 function kmIntroAt(n){ if (n.type==='core') return 0; const d = n.type==='domain' ? n : n.parent && n.parent.type==='domain' ? n.parent : n.parent && n.parent.parent ? n.parent.parent : n; return .9 + (d.orad||.5)*1.6 + (n.type==='domain'?0:.25) + ((n.ph*37)%1)*.15; }
 function kmWorld(n, T){ // disc coordinates (x, z) for each node, with differential rotation
   if (n.type==='core') return [0,0];
-  if (n.type==='domain' || n.type==='task' || n.type==='hole'){ const th = n.oth + GAL.spin(n.orad, KM.freeze ? KM.freezeT : T)*(n.type==='task' ? .9 : n.type==='hole' ? .3 : .55); return [Math.cos(th)*n.orad, Math.sin(th)*n.orad]; }
+  if (n.orad !== undefined && !n.parent){ const th = n.oth + GAL.spin(n.orad, KM.freeze ? KM.freezeT : T)*({ task:.9, sat:1.1, hole:.3, neb:.12, pulsar:.4, const:.06 }[n.type] ?? .55); return [Math.cos(th)*n.orad, Math.sin(th)*n.orad]; }
   const p = kmWorld(n.parent, T), sp = KM.freeze ? KM.freezeT : T; const th = n.lth + sp*(n.type==='topic' ? .12 : .3);
   return [p[0] + Math.cos(th)*n.lr, p[1] + Math.sin(th)*n.lr];
 }
@@ -5921,7 +5954,7 @@ function kmDraw(now){
   g.setTransform(KM.dpr,0,0,KM.dpr,0,0); g.clearRect(0,0,W,H);
   const T = (now - KM.t0)/1000, still = motionOff(), dt = Math.min(.05, Math.max(0, (now - (KM.lastNow||now))/1000)); KM.lastNow = now;
   // orbital time slows as you zoom in, so whatever you zoom towards stays in view
-  KM.st = (KM.st||0) + dt*clamp(Math.pow(1.4/KM.cam.z, 1.6), .015, 1); const TT = still ? 30 : (T < 3 ? T : KM.st + (KM.stOff ?? (KM.stOff = T - KM.st)));
+  KM.st = (KM.st||0) + dt*((KM.drag && KM.mode!=='rotate') || KM.panning ? 0 : KM.cam.z > 2.6 ? 0 : clamp(Math.pow(1.4/KM.cam.z, 1.6), .02, 1)*(KM.orbits===false ? 0 : 1)); const TT = still ? 30 : (T < 3 ? T : KM.st + (KM.stOff ?? (KM.stOff = T - KM.st)));
   if (KM.tween){ const k = Math.min(1,(now-KM.tween.t0)/KM.tween.d), e = KM.tween.io ? (k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2) : 1-Math.pow(1-k,3); KM.cam.x = KM.tween.x0+(KM.tween.x1-KM.tween.x0)*e; KM.cam.y = KM.tween.y0+(KM.tween.y1-KM.tween.y0)*e; KM.cam.z = KM.tween.z0+(KM.tween.z1-KM.tween.z0)*e; if (KM.tween.t1!==undefined) KM.tilt = kmWrap(KM.tween.t0v+(KM.tween.t1-KM.tween.t0v)*e); if (k>=1) KM.tween = null; }
   if (KM.yawT === undefined){ KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
   if (KM.tween || still){ if (still && !KM.tween){ KM.yaw = KM.yawT; KM.tilt = KM.tiltT; } KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
@@ -5929,6 +5962,7 @@ function kmDraw(now){
     if (!KM.drag){ KM.yawT += KM.vy; KM.vy *= .955; KM.tiltT = kmWrap(KM.tiltT + (KM.vt||0)); KM.vt = (KM.vt||0)*.955; }
     KM.yaw += (KM.yawT - KM.yaw)*.18; KM.tilt = kmWrap(KM.tilt + kmWrap(KM.tiltT - KM.tilt)*.18); }
   if (!KM.freeze) KM.freezeT = TT;
+  if (!KM.drag && KM.pv && KM.camT && !still){ KM.camT.x += KM.pv.x; KM.camT.y += KM.pv.y; KM.pv.x *= .86; KM.pv.y *= .86; if (Math.abs(KM.pv.x) + Math.abs(KM.pv.y) < .1) KM.pv = null; }
   if (KM.tween || !KM.camT) KM.camT = { x:KM.cam.x, y:KM.cam.y, z:KM.cam.z };
   else { const e = still ? 1 : .16; KM.cam.x += (KM.camT.x - KM.cam.x)*e; KM.cam.y += (KM.camT.y - KM.cam.y)*e; KM.cam.z *= Math.pow(KM.camT.z/KM.cam.z, e); }
   { const want = KM.view==='graph' && !KM.sel && KM.cam.z < 1.3 && (still || T > 2.2) ? 1 : 0; KM.tA = (KM.tA||0) + (want - (KM.tA||0))*(still ? 1 : .12);
@@ -5947,7 +5981,7 @@ function kmDraw(now){
   if (!still && ie > .9) kmNovae(g, vD, TT, now, fade);
   // project nodes
   const conn = KM.sel ? new Set([KM.sel, ...KM.edges.filter(e=>e.a===KM.sel||e.b===KM.sel).flatMap(e=>[e.a,e.b])]) : null;
-  KM.nodes.forEach(n=>{ const w = kmWorld(n, TT), p = GAL.proj(w[0]*(1+(1-ie)*.6), w[1]*(1+(1-ie)*.6), 0, v); n.wx = w[0]; n.wz = w[1]; n.sx = p[0]; n.sy = p[1]; n.dz = p[2]; n.pk = p[3] || 1;
+  KM.nodes.forEach(n=>{ const w = kmWorld(n, TT), sc = 1+(1-ie)*.6, p = GAL.proj(Math.hypot(w[0],w[1])*sc, Math.atan2(w[1],w[0]), n.el||0, v); n.wx = w[0]; n.wz = w[1]; n.sx = p[0]; n.sy = p[1]; n.dz = p[2]; n.pk = p[3] || 1;
     let a = (still ? 1 : clamp((T - kmIntroAt(n))/.6, 0, 1)) * fade; if (conn && !conn.has(n)) a *= .25; if (KM.gaps && n.type==='topic' && kmMastery(n.topic) >= 100) a *= .25; n.va = a; });
   // links: soft, curved, low contrast
   g.lineCap = 'round';
@@ -5990,6 +6024,13 @@ function kmDraw(now){
       kmGloss(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va*(1 - blur*.4), done, TT);
       if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, false); n.sr = r + 5;
       if (KM.hover===n || KM.sel===n || (KM.labels && (KM.cam.z > 1.35 || W >= 1100) && !kmInTitle(n.sx + r + 6, n.sy, 90))){ g.globalAlpha = n.va*(KM.hover===n || KM.sel===n ? 1 : .8); g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = done ? '#F3DDBA' : '#D9E6F2'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText((done ? '✓ ' : '') + n.name, n.sx + r + 6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+    else if (n.type==='sat'){ const r = 4.5*gt*depth*hov; kmSat(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*2.4;
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.3)){ g.globalAlpha = n.va*.9; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#BFE0FF'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(`${n.block.t} ${n.name}`, n.sx + r*2.6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+    else if (n.type==='neb'){ const r = 26*gz*depth*hov; kmNeb(g, n.sx, n.sy, r, n.col, n.prog, TT, n.va, n.ph, still); n.sr = r*.8;
+      g.globalAlpha = n.va*.9; g.font = '650 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = `rgb(${n.col})`; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 8; g.textAlign = 'center'; g.fillText(`${n.name} · ${Math.round(n.prog*100)}%`, n.sx, n.sy + r*1.05 + 12); g.textAlign = 'start'; g.shadowBlur = 0; g.globalAlpha = 1; }
+    else if (n.type==='pulsar'){ const r = 4*gz*depth*hov; kmPulsar(g, n.sx, n.sy, r, TT, n.va, still); n.sr = r*3;
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.1)){ g.globalAlpha = n.va*.85; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#CFE6FF'; g.fillText(`Streak · ${currentStreak()} days`, n.sx + r*3, n.sy - r*2); g.globalAlpha = 1; } }
+    else if (n.type==='const'){ const r = 12*gz*depth; kmConst(g, n.sx, n.sy, r, TT, n.va); n.sr = r*3; }
     else if (n.type==='hole'){ const r = 9*gz*depth*hov; kmHole(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*1.8;
       if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.2)){ g.globalAlpha = n.va*.85; g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F2B7A8'; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r*2.2 + 4, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='topic' && kmMastery(n.topic) < 50){ const r = 3.6*gt*depth*hov; kmRock(g, n.sx, n.sy, r, n.ph, TT, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 5;
@@ -6001,6 +6042,10 @@ function kmDraw(now){
     else { const r = (n.type==='practice' ? 2 : 1.6)*gd*depth; g.globalAlpha = n.va; g.fillStyle = n.type==='practice' ? '#E6CDB0' : '#D44A62'; g.beginPath(); g.arc(n.sx,n.sy,r,0,7); g.fill(); g.globalAlpha = 1; n.sr = r + 5;
       if (KM.labels && KM.cam.z > 2.2 && kmLabelFree(n.sx + r + 3, n.sy - 12, 18, 12)) kmChip(g, n.sx + r + 4, n.sy - 6, String(n.n), n.va*.85); }
   });
+  if (KM.hover && KM.hover.sr && KM.hover.va > 0 && !still){ const h = KM.hover; g.save(); g.strokeStyle = 'rgba(230,205,176,.75)'; g.lineWidth = 1.2; g.setLineDash([4,5]); g.lineDashOffset = -TT*20; g.beginPath(); g.arc(h.sx, h.sy, h.sr + 7, 0, 7); g.stroke(); g.restore(); }
+  if (KM.fx && KM.fx.rip){ KM.fx.rip = KM.fx.rip.filter(r0=>now - r0.t0 < 900); g.globalCompositeOperation = 'lighter'; KM.fx.rip.forEach(r0=>{ const k = (now - r0.t0)/900; [0,.18].forEach(dk=>{ const kk = clamp(k - dk, 0, 1); if (!kk) return; g.strokeStyle = `rgba(200,225,255,${((1-kk)*.6).toFixed(3)})`; g.lineWidth = 2*(1-kk) + .5; g.beginPath(); g.ellipse(r0.x, r0.y, 8 + kk*70, (8 + kk*70)*.55, 0, 0, 7); g.stroke(); }); }); g.globalCompositeOperation = 'source-over'; }
+  if (KM.tween && KM.tween.d >= 600 && !still){ const k = Math.min(1, (now - KM.tween.t0)/KM.tween.d), al = Math.sin(k*Math.PI)*.32; if (al > .01){ if (!KM.warp){ const r1 = mulberry32(5); KM.warp = Array.from({length:80},()=>[r1()*Math.PI*2, .15 + r1()*.85, .5 + r1()]); }
+    g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; const cx0 = W/2, cy0 = H/2, M = Math.hypot(W,H)/2; KM.warp.forEach(([a0, d0, w0])=>{ const r1 = M*d0*(.6 + k*.5), r2 = r1 + M*.18*w0*Math.sin(k*Math.PI); const gr = g.createLinearGradient(cx0 + Math.cos(a0)*r1, cy0 + Math.sin(a0)*r1, cx0 + Math.cos(a0)*r2, cy0 + Math.sin(a0)*r2); gr.addColorStop(0,'rgba(200,225,255,0)'); gr.addColorStop(1,`rgba(220,235,255,${al.toFixed(3)})`); g.strokeStyle = gr; g.lineWidth = w0*1.2; g.beginPath(); g.moveTo(cx0 + Math.cos(a0)*r1, cy0 + Math.sin(a0)*r1); g.lineTo(cx0 + Math.cos(a0)*r2, cy0 + Math.sin(a0)*r2); g.stroke(); }); g.globalCompositeOperation = 'source-over'; } }
   if (!still) kmBokeh(g, W, H, TT, fade);
   // a soft dark band keeps the title readable over the core
   if (KM.tA > .01){ const tr = Math.min(O.r, 380), ty = O.cy - tr*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.38*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
@@ -6053,6 +6098,39 @@ function kmHole(g, x, y, r, T, a, ph, still){ // a mistake to avoid: event horiz
   disc(true);
   if (!still){ g.globalCompositeOperation = 'lighter'; for (let i=0;i<10;i++){ const life = ((T*.35 + i/10 + ph) % 1), rad = r*(3.6 - life*2.5), ang = rot*1.5 + i*2.4 + life*5; g.fillStyle = `rgba(255,214,170,${(a*life*.8).toFixed(3)})`; g.beginPath(); g.arc(x + Math.cos(ang)*rad, y + Math.sin(ang)*rad*tilt*1.4, 1 + life, 0, 7); g.fill(); } g.globalCompositeOperation = 'source-over'; }
 }
+function kmSat(g, x, y, r, T, a, ph, still){ // a satellite: body, two solar panels, a blinking light
+  const ang = (still ? 0 : T*.6) + ph; g.save(); g.globalAlpha = a; g.translate(x,y); g.rotate(ang);
+  g.fillStyle = '#2B4A6E'; g.strokeStyle = 'rgba(170,210,255,.8)'; g.lineWidth = .8;
+  [-1,1].forEach(sd=>{ g.fillRect(sd*r*1.1 - (sd<0 ? r*1.4 : 0), -r*.45, r*1.4, r*.9); g.strokeRect(sd*r*1.1 - (sd<0 ? r*1.4 : 0), -r*.45, r*1.4, r*.9); g.beginPath(); g.moveTo(sd*r*.5, 0); g.lineTo(sd*r*1.1, 0); g.stroke(); });
+  const gr = g.createLinearGradient(-r*.5, -r*.5, r*.5, r*.5); gr.addColorStop(0,'#F2F1ED'); gr.addColorStop(1,'#8C99A8'); g.fillStyle = gr; g.beginPath(); g.rect(-r*.5, -r*.5, r, r); g.fill();
+  g.restore(); if (!still && Math.sin(T*4 + ph*5) > .6){ g.globalCompositeOperation = 'lighter'; const b = g.createRadialGradient(x,y,0,x,y,r*1.6); b.addColorStop(0,'rgba(255,90,110,.9)'); b.addColorStop(1,'rgba(255,90,110,0)'); g.fillStyle = b; g.beginPath(); g.arc(x,y,r*1.6,0,7); g.fill(); g.globalCompositeOperation = 'source-over'; }
+}
+function kmNeb(g, x, y, r, c, prog, T, a, ph, still){ // a goal nebula: soft drifting clouds, brighter as the goal fills, with a progress arc
+  g.globalCompositeOperation = 'lighter'; const k = .35 + .65*prog;
+  for (let i=0;i<5;i++){ const an = ph + i*1.26 + (still ? 0 : T*.05*(i%2 ? 1 : -1)), d = r*(.25 + .2*(i%3)), bx = x + Math.cos(an)*d, by = y + Math.sin(an)*d*.6, br = r*(.55 + .15*(i%2));
+    const gr = g.createRadialGradient(bx,by,0,bx,by,br); gr.addColorStop(0,`rgba(${c},${(.16*k*a).toFixed(3)})`); gr.addColorStop(1,`rgba(${c},0)`); g.fillStyle = gr; g.beginPath(); g.arc(bx,by,br,0,7); g.fill(); }
+  const core = g.createRadialGradient(x,y,0,x,y,r*.25); core.addColorStop(0,`rgba(255,255,255,${(.5*k*a).toFixed(3)})`); core.addColorStop(1,`rgba(${c},0)`); g.fillStyle = core; g.beginPath(); g.arc(x,y,r*.25,0,7); g.fill();
+  g.globalCompositeOperation = 'source-over';
+  g.globalAlpha = a; g.lineCap = 'round'; g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, r*.62, 0, 7); g.stroke();
+  if (prog > 0){ g.strokeStyle = `rgb(${c})`; g.lineWidth = 2.4; g.beginPath(); g.arc(x, y, r*.62, -Math.PI/2, -Math.PI/2 + prog*Math.PI*2); g.stroke(); }
+  g.globalAlpha = 1;
+}
+function kmPulsar(g, x, y, r, T, a, still){ // the streak: a neutron star sweeping two beams round
+  const st = currentStreak(), sp = .6 + Math.min(4, st*.25), ang = still ? .6 : T*sp, L = r*14;
+  g.globalCompositeOperation = 'lighter';
+  [0, Math.PI].forEach(o=>{ const an = ang + o, ex = x + Math.cos(an)*L, ey = y + Math.sin(an)*L*.5, gr = g.createLinearGradient(x,y,ex,ey); gr.addColorStop(0,`rgba(190,220,255,${(.55*a).toFixed(3)})`); gr.addColorStop(1,'rgba(190,220,255,0)');
+    g.fillStyle = gr; g.beginPath(); g.moveTo(x,y); g.lineTo(ex + Math.cos(an+Math.PI/2)*r*1.6, ey + Math.sin(an+Math.PI/2)*r*.8); g.lineTo(ex - Math.cos(an+Math.PI/2)*r*1.6, ey - Math.sin(an+Math.PI/2)*r*.8); g.closePath(); g.fill(); });
+  const c = g.createRadialGradient(x,y,0,x,y,r*2.4); c.addColorStop(0,`rgba(255,255,255,${a})`); c.addColorStop(.4,`rgba(170,210,255,${(.6*a).toFixed(3)})`); c.addColorStop(1,'rgba(170,210,255,0)'); g.fillStyle = c; g.beginPath(); g.arc(x,y,r*2.4,0,7); g.fill();
+  g.globalCompositeOperation = 'source-over';
+}
+function kmConst(g, x, y, r, T, a){ // last 14 days as a constellation: bright stars = streak days, lines join days in a row
+  const d = KM.days14 || []; if (!d.length) return; const pts = d.map((day,i)=>{ const t = i/13, ang = -2.4 + t*2.2; return [x + Math.cos(ang)*r*2.4 + Math.sin(i*1.7)*r*.25, y + Math.sin(ang)*r*1.1 + Math.cos(i*2.3)*r*.3, day.n >= 4, day.n]; });
+  g.globalAlpha = a; g.strokeStyle = 'rgba(200,225,255,.45)'; g.lineWidth = .9;
+  for (let i=1;i<pts.length;i++) if (pts[i][2] && pts[i-1][2]){ g.beginPath(); g.moveTo(pts[i-1][0], pts[i-1][1]); g.lineTo(pts[i][0], pts[i][1]); g.stroke(); }
+  g.globalCompositeOperation = 'lighter';
+  pts.forEach(([px,py,on,n],i)=>{ const s = on ? 3 : n > 0 ? 1.8 : 1.1, tw = .75 + .25*Math.sin(T*2 + i); const gr = g.createRadialGradient(px,py,0,px,py,s*3); gr.addColorStop(0,`rgba(235,245,255,${((on ? .95 : .5)*tw*a).toFixed(3)})`); gr.addColorStop(1,'rgba(200,225,255,0)'); g.fillStyle = gr; g.beginPath(); g.arc(px,py,s*3,0,7); g.fill(); });
+  g.globalCompositeOperation = 'source-over'; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = 'rgba(200,225,255,.75)'; g.textAlign = 'center'; g.fillText('Last 14 days', x, y + r*1.9); g.textAlign = 'start'; g.globalAlpha = 1;
+}
 function kmStreaks(g, v, T, a, still){ // glowing orbit trails round the sun, with light running along them
   if (a <= 0) return; if (!KM.streaks){ const r = mulberry32(17); KM.streaks = Array.from({length:30},(_,i)=>({ rad:.06 + Math.pow(i/30, 1.15)*1.05 + r()*.012, al:.03 + r()*.05, runs:Array.from({length:1 + (r() < .6 ? 1 : 0)},()=>({ ph:r()*7, len:.35 + r()*.9, sp:(.25 + r()*.5)*(r() < .15 ? -1 : 1) })), c:r() < .18 ? '255,190,140' : '170,210,255' })); }
   g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
@@ -6090,10 +6168,11 @@ function kmSky(g, W, H, T, now, fade, still){
   g.globalAlpha = 1;
   if (still || !KM.fx) return;
   // shooting stars
-  const fx = KM.fx; if (now > fx.nextShoot){ fx.nextShoot = now + 2200 + Math.random()*3800; const a = Math.PI*(.15 + Math.random()*.25)*(Math.random() < .5 ? 1 : -1) + (Math.random() < .5 ? 0 : Math.PI);
+  const fx = KM.fx; if (!fx.nextShower) fx.nextShower = now + 9000; if (now > fx.nextShower){ fx.nextShower = now + 18000 + Math.random()*14000; const a = Math.PI*(.2 + Math.random()*.15), sx0 = Math.random()*W*.6; for (let i=0;i<7;i++) fx.shoot.push({ x:sx0 + i*40 + Math.random()*60, y:Math.random()*H*.35, dx:Math.cos(a), dy:Math.sin(a), t0:now + i*110 + Math.random()*120, d:800 + Math.random()*400, sp:.8 + Math.random()*.3 }); }
+  if (now > fx.nextShoot){ fx.nextShoot = now + 2200 + Math.random()*3800; const a = Math.PI*(.15 + Math.random()*.25)*(Math.random() < .5 ? 1 : -1) + (Math.random() < .5 ? 0 : Math.PI);
     fx.shoot.push({ x:Math.random()*W, y:Math.random()*H*.6, dx:Math.cos(a), dy:Math.abs(Math.sin(a)), t0:now, d:900 + Math.random()*500, sp:.55 + Math.random()*.4 }); }
-  fx.shoot = fx.shoot.filter(s=>now - s.t0 < s.d); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
-  fx.shoot.forEach(s=>{ const k = (now - s.t0)/s.d, dist = k*s.d*s.sp, x = s.x + s.dx*dist, y = s.y + s.dy*dist, len = 90*Math.sin(k*Math.PI), al = Math.sin(k*Math.PI)*fade;
+  fx.shoot = fx.shoot.filter(s=>now - s.t0 < s.d && (now >= s.t0 || true)); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  fx.shoot.forEach(s=>{ if (now < s.t0) return; const k = (now - s.t0)/s.d, dist = k*s.d*s.sp, x = s.x + s.dx*dist, y = s.y + s.dy*dist, len = 90*Math.sin(k*Math.PI), al = Math.sin(k*Math.PI)*fade;
     const gr = g.createLinearGradient(x, y, x - s.dx*len, y - s.dy*len); gr.addColorStop(0,`rgba(255,250,240,${al.toFixed(2)})`); gr.addColorStop(1,'rgba(255,220,200,0)'); g.strokeStyle = gr; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x,y); g.lineTo(x - s.dx*len, y - s.dy*len); g.stroke(); });
   g.globalCompositeOperation = 'source-over';
 }
@@ -6204,14 +6283,14 @@ function kmTimeline(){
 }
 function kmLegend(){
   const c = t => KM.nodes.filter(n=>n.type===t).length, weak = KM.nodes.filter(n=>n.type==='topic' && kmMastery(n.topic) < 50).length, done = KM.nodes.filter(n=>n.type==='task' && taskDone(dkey(), n.task.id)).length;
-  return `<div class="km-legh">Your universe</div>${[['sun','Sun','you','1'],['star','Stars','big areas', c('domain')],['planet','Planets','today\'s tasks', `${done}/${c('task')}`],['moon','Moons','topics you know', c('topic') - weak],['rock','Asteroids','need more training', weak],['hole','Black holes','mistakes to avoid', c('hole')]].map(([k,l,d,n])=>`<div class="km-li"><i class="km-dot ${k}"></i><span class="km-cnt num">${n}</span>${l}<small>${d}</small></div>`).join('')}
+  return `<div class="km-legh">Your universe</div>${[['sun','Sun','you','1'],['star','Stars','big areas', c('domain')],['planet','Planets','today\'s tasks', `${done}/${c('task')}`],['moon','Moons','topics you know', c('topic') - weak],['rock','Asteroids','need more training', weak],['hole','Black holes','mistakes to avoid', c('hole')],['sat','Satellites','coming up today', c('sat')],['neb','Nebulae','big goals', c('neb')],['pulsar','Pulsar','your streak', currentStreak()+'d']].map(([k,l,d,n])=>`<div class="km-li"><i class="km-dot ${k}"></i><span class="km-cnt num">${n}</span>${l}<small>${d}</small></div>`).join('')}
     <div class="km-li tiny-note">Tap anything to read it. Tap a planet to tick the task off.</div>`;
 }
 const KM_ICONS = {
   radial:'<circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="1.8"/><circle cx="19" cy="6" r="1.8"/><circle cx="5" cy="18" r="1.8"/><circle cx="19" cy="18" r="1.8"/><path d="M10 10.5 6.4 7.2M14 10.5l3.6-3.3M10 13.5l-3.6 3.3M14 13.5l3.6 3.3"/>',
   tree:'<circle cx="12" cy="5" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M12 7v4M12 11H6v5M12 11h6v5"/>',
   plus:'<path d="M12 5v14M5 12h14"/>', minus:'<path d="M5 12h14"/>', filter:'<path d="M4 5h16l-6 8v5l-4 2v-7z"/>', label:'<path d="M4 7h11l5 5-5 5H4z"/><circle cx="8" cy="12" r="1.2"/>', fit:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><rect x="9" y="9" width="6" height="6" rx="1"/>',
-  menu:'<path d="M4 7h16M4 12h16M4 17h10"/>', back:'<path d="M15 5l-7 7 7 7"/>', x:'<path d="M6 6l12 12M18 6 6 18"/>', send:'<path d="M5 12h12M12 6l6 6-6 6"/>', spark:'<path d="M4 18 9 12l3 3 7-8M15 7h4v4"/>', search:'<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>', agent:'<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 12h6M12 9v6"/>', hist:'<circle cx="12" cy="12" r="7"/><path d="M12 8v4l3 2"/>'
+  menu:'<path d="M4 7h16M4 12h16M4 17h10"/>', hand:'<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v7c0 4-2.5 7-6 7-2.5 0-4-1.2-5.5-3.5L3.8 13.6a1.4 1.4 0 0 1 2.3-1.6L8 14"/>', orbit:'<circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(-25 12 12)"/><path d="M19 5l1.5-1.5M20 8h2"/>', back:'<path d="M15 5l-7 7 7 7"/>', x:'<path d="M6 6l12 12M18 6 6 18"/>', send:'<path d="M5 12h12M12 6l6 6-6 6"/>', spark:'<path d="M4 18 9 12l3 3 7-8M15 7h4v4"/>', search:'<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>', agent:'<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 12h6M12 9v6"/>', hist:'<circle cx="12" cy="12" r="7"/><path d="M12 8v4l3 2"/>'
 };
 const kmi = (k, s=18) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${KM_ICONS[k]}</svg>`;
 function kmAskHTML(){
@@ -6228,16 +6307,17 @@ function kmShellHTML(){
     <header class="km-top">
       <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Knowledge map</b><small>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}'s engineering plan</small></div></div>
       <div class="km-tools" role="toolbar" aria-label="Map tools">
+        <span class="km-grp" role="radiogroup" aria-label="Drag mode"><button data-a="km-mode" data-id="move" class="${KM.mode!=='rotate'?'on':''}" role="radio" aria-checked="${KM.mode!=='rotate'}" aria-label="Drag to move" title="Drag to move (pan)">${kmi('hand')}</button><button data-a="km-mode" data-id="rotate" class="${KM.mode==='rotate'?'on':''}" role="radio" aria-checked="${KM.mode==='rotate'}" aria-label="Drag to spin" title="Drag to spin 360°">${kmi('orbit')}</button></span>
         <span class="km-grp"><button data-a="km-layout" data-id="radial" class="${KM.layout==='radial'?'on':''}" aria-label="Network view">${kmi('radial')}</button><button data-a="km-layout" data-id="tree" class="${KM.layout==='tree'?'on':''}" aria-label="Tree view">${kmi('tree')}</button></span>
         <span class="km-grp"><button data-a="km-zoom" data-id="1" aria-label="Zoom in">${kmi('plus')}</button><button data-a="km-zoom" data-id="-1" aria-label="Zoom out">${kmi('minus')}</button></span>
         <span class="km-grp"><button data-a="km-gaps" class="${KM.gaps?'on':''}" aria-label="Show gaps only">${kmi('filter')}</button></span>
         <span class="km-grp"><button data-a="km-labels" class="${KM.labels?'on':''}" aria-label="Show labels">${kmi('label')}</button></span>
         <span class="km-grp"><button data-a="km-fit" aria-label="Fit to screen">${kmi('fit')}</button></span>
       </div>
-      <div class="km-right"><button class="km-new" data-a="km-plan">${kmi('plus',15)} New study plan</button><button class="km-ib" data-a="km-search" aria-label="Search">${kmi('search',17)}</button><span class="km-av">KS</span><button class="km-ib" data-a="km-close" aria-label="Back to the app">${kmi('x',17)}</button></div>
+      <div class="km-right"><button class="km-ai2" data-a="km-chat" aria-label="Ask AI about the map"><span class="cfab-orb sm" aria-hidden="true"><i></i></span><span>Ask AI</span></button><button class="km-ib km-mic" data-a="km-voice" aria-label="Ask by voice">${ic('mic',17)}</button><button class="km-new" data-a="km-plan">${kmi('plus',15)} New study plan</button><button class="km-ib" data-a="km-search" aria-label="Search">${kmi('search',17)}</button><span class="km-av">KS</span><button class="km-ib" data-a="km-close" aria-label="Back to the app">${kmi('x',17)}</button></div>
     </header>
     <div class="km-title" aria-hidden="true"><small>Personal growth project</small><h1>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}</h1><span class="num">Day ${typeof planDay==='function'?planDay():1} of 365 · ${currentStreak()}-day streak</span></div>
-    <span class="km-hint" aria-hidden="true">Drag to spin 360° · pinch or scroll to zoom · tap a planet</span>
+    <span class="km-hint" aria-hidden="true">Drag to move · pinch or scroll to zoom · tap anything</span>
     ${kmSidesHTML()}
     ${kmNotchHTML()}
     <button class="km-dockbtn" data-a="km-dock" aria-label="Show the panels again"><span class="km-dockg" aria-hidden="true"><i></i><i></i><i></i></span><span>Panels</span></button>
@@ -6262,6 +6342,10 @@ function kmTip(n){
   const tip = document.getElementById('kmTip'); if (!tip) return;
   if (!n || n.type==='core'){ tip.hidden = true; return; }
   if (n.type==='task'){ const done = taskDone(dkey(), n.task.id); tip.innerHTML = `<small>Planet · today's task</small><b>${esc(n.name)}</b><div class="km-tipr"><span>${esc(n.task.meta||'')}</span><span>${done?'Done':'To do'}</span></div><button class="km-open" data-a="km-task" data-id="${esc(n.task.id)}">${done?'Mark as not done':'Mark as done'} ${kmi('send',14)}</button>`; tip.hidden = false; return; }
+  if (n.type==='sat'){ const b = n.block; tip.innerHTML = `<small class="sat">Satellite · coming up today</small><b>${esc(b.name)}</b><div class="km-tipr"><span>${esc(b.t)} · ${b.dur} min</span><span>${esc(b.cat)}</span></div><p class="km-tipp">${esc(b.note||'')}</p>`; tip.hidden = false; return; }
+  if (n.type==='neb'){ tip.innerHTML = `<small>Nebula · big goal</small><b>${esc(n.name)}</b><div class="km-tipr"><span>${esc(n.desc)}</span><span>${Math.round(n.prog*100)}%</span></div><div class="km-npb" style="margin-top:4px"><i style="width:${Math.round(n.prog*100)}%;background:rgb(${n.col})"></i></div>`; tip.hidden = false; return; }
+  if (n.type==='pulsar'){ const st = currentStreak(); tip.innerHTML = `<small>Pulsar · your streak</small><b>${st} day${st===1?'':'s'} in a row</b><p class="km-tipp">It spins faster the longer the streak runs. Four tasks a day keeps it going.</p>`; tip.hidden = false; return; }
+  if (n.type==='const'){ const d = KM.days14 || [], good = d.filter(x=>x.n >= 4).length; tip.innerHTML = `<small>Constellation · last 14 days</small><b>${good} streak day${good===1?'':'s'} of 14</b><p class="km-tipp">Each star is a day. Bright stars are days with four or more tasks done; lines join days in a row.</p>`; tip.hidden = false; return; }
   if (n.type==='hole'){ tip.innerHTML = `<small class="hole">Black hole · mistake to avoid</small><b>${esc(n.name)}</b><p class="km-tipp">${esc(n.hole.tip)}</p>`; tip.hidden = false; return; }
   const t = n.type==='topic' ? n.topic : n.parent && n.parent.type==='topic' ? n.parent.topic : null, d = n.dom || (n.parent && n.parent.dom);
   if (n.type==='domain'){ const ts = n.dom.topics, m = Math.round(ts.reduce((a,x)=>a+kmMastery(x),0)/ts.length);
@@ -6396,7 +6480,7 @@ function kmOpen(){
   document.querySelector('.km-legend').innerHTML = kmLegend();
   KM.t0 = performance.now() - (motionOff() ? 10000 : 0);
   // fly-in: start high and far, sweep down to the low cinematic angle
-  if (motionOff()){ KM.tilt = KM.tiltT = 1.0; } else { KM.cam = { x:0, y:0, z:.42 }; KM.camT = null; kmCamTo(0, 0, 1, 3000, true, 1.0); KM.tween.io = true; KM.yawT = KM.yaw = -1.4; KM.vy = .006; }
+  if (motionOff()){ KM.tilt = KM.tiltT = 1.0; } else { KM.cam = { x:0, y:0, z:.42 }; KM.camT = null; kmCamTo(0, 0, 1, 3000, true, 1.0); KM.tween.io = true; KM.yawT = KM.yaw = -1.4; KM.vy = 0; }
   if (!motionOff()) document.getElementById('km').classList.add('intro');
   kmKick(); kmBind();
   try { if (location.hash !== '#map') history.replaceState(null, '', '#map'); } catch(e){}
@@ -6410,20 +6494,22 @@ function kmClose(){
 }
 function kmBind(){
   const cv = document.getElementById('kmCanvas'), root = document.getElementById('km');
-  cv.addEventListener('pointerdown', e=>{ KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY }); cv.setPointerCapture(e.pointerId); if (KM.ptr.size===1) KM.drag = { x:e.clientX, y:e.clientY, moved:0 }; else KM.drag = null; KM.tween = null; KM.vy = KM.vt = 0; });
+  cv.addEventListener('pointerdown', e=>{ KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY }); cv.setPointerCapture(e.pointerId); if (KM.ptr.size===1) KM.drag = { x:e.clientX, y:e.clientY, moved:0, btn:e.button }; else KM.drag = null; KM.tween = null; KM.vy = KM.vt = 0; KM.pv = null; });
+  cv.addEventListener('contextmenu', e=>e.preventDefault());
   cv.addEventListener('pointermove', e=>{
     const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     if (KM.ptr.has(e.pointerId)){
       const prev = KM.ptr.get(e.pointerId); KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY });
       if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); const r = cv.getBoundingClientRect(); KM.tween = null; if (d0 > 0) kmZoomAt(d1/d0, (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top); kmDock(false); return; }
-      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ if (!KM.camT) KM.camT = { ...KM.cam }; KM.camT.x += dx; KM.camT.y += dy; } else { KM.yawT += dx*.007; KM.vy = KM.vy*.5 + dx*.0016; KM.tiltT = kmWrap(KM.tiltT - dy*.007); KM.vt = (KM.vt||0)*.5 - dy*.0016; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); if (KM.drag.moved > 18) kmDock(false); }
+      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y, rot = (KM.mode==='rotate') !== !!(e.shiftKey || KM.drag.btn===2);
+        if (!rot){ if (!KM.camT) KM.camT = { ...KM.cam }; KM.camT.x += dx; KM.camT.y += dy; KM.pv = { x:(KM.pv ? KM.pv.x*.5 : 0) + dx*.5, y:(KM.pv ? KM.pv.y*.5 : 0) + dy*.5 }; KM.vy = KM.vt = 0; } else { KM.yawT += dx*.007; KM.vy = KM.vy*.5 + dx*.0016; KM.tiltT = kmWrap(KM.tiltT - dy*.007); KM.vt = (KM.vt||0)*.5 - dy*.0016; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); if (KM.drag.moved > 18) kmDock(false); }
       return;
     }
     const h = kmHit(x,y); if (h !== KM.hover){ KM.hover = h; cv.style.cursor = h ? 'pointer' : 'grab'; }
   });
   const up = e=>{
     const was = KM.drag; KM.ptr.delete(e.pointerId); if (KM.ptr.size===0) KM.drag = null;
-    if (was && was.moved < 6 && e.type==='pointerup'){ const r = cv.getBoundingClientRect(), n = kmHit(e.clientX-r.left, e.clientY-r.top);
+    if (was && was.moved < 6 && e.type==='pointerup'){ const r = cv.getBoundingClientRect(), n = kmHit(e.clientX-r.left, e.clientY-r.top); if (KM.fx){ (KM.fx.rip = KM.fx.rip || []).push({ x:e.clientX-r.left, y:e.clientY-r.top, t0:performance.now() }); }
       if (!n){ KM.sel = null; KM.freeze = false; kmTip(null); return; }
       if (n.type==='topic' && KM.sel===n){ kmFocus(n.topic); return; }
       KM.sel = n; KM.freeze = n.type!=='core'; kmTip(n); if (n.type!=='core') kmCenterOn(n, Math.max(KM.cam.z, n.type==='domain' ? 1.5 : 1.9)); else kmCamTo(0,0,1,700,true);
@@ -6439,6 +6525,8 @@ function kmAction(a, el){
   if (a==='km-task'){ const id = el.dataset.id, k = dkey(), now = !taskDone(k, id); setTask(k, id, now); const n = KM.nodes.find(x=>x.id==='task:'+id); if (n) kmTip(n);
     const leg = document.querySelector('.km-legend'); if (leg) leg.innerHTML = kmLegend(); toast(now ? `${n ? n.name : 'Task'} done · ${countDone(k)}/${tasksForDay(k).length}` : 'Marked as not done', 'ok', 1600); try { if (typeof renderView==='function') renderView(activeTab); updateChrome(); } catch(e){} return; }
   if (a==='km-dock'){ kmDock(true); return; }
+  if (a==='km-mode'){ KM.mode = el.dataset.id; document.querySelectorAll('[data-a="km-mode"]').forEach(b=>{ const on = b===el; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); KM.vy = KM.vt = 0; const h = document.querySelector('.km-hint'); if (h) h.textContent = KM.mode==='rotate' ? 'Drag to spin 360° · pinch or scroll to zoom · tap anything' : 'Drag to move · pinch or scroll to zoom · tap anything'; toast(KM.mode==='rotate' ? 'Drag now spins the galaxy.' : 'Drag now moves around. Right-drag or Shift-drag still spins.', 'ok', 1800); return; }
+  if (a==='km-chat' || a==='km-voice'){ aiOpen('chat'); if (a==='km-voice' && typeof aiListen==='function') setTimeout(aiListen, 300); return; }
   if (a==='km-nring'){ const on = !el.classList.contains('open'); document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); el.classList.toggle('open', on); el.setAttribute('aria-expanded', String(on)); return; }
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
@@ -6460,7 +6548,7 @@ function kmAction(a, el){
     else if (t.lab){ labPane = t.lab; setTab('lab', { force:true }); setTimeout(()=>showLabPane(t.lab), 60); }
     else if (t.learn){ learnTab = t.learn; setTab('learn', { force:true }); } }
 }
-document.addEventListener('keydown', e=>{ if (KM.open && KM.view==='graph' && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))){ const k = { ArrowLeft:[-.12,0], ArrowRight:[.12,0], ArrowUp:[0,-.12], ArrowDown:[0,.12] }[e.key]; if (k){ e.preventDefault(); KM.yawT += k[0]; KM.tiltT = kmWrap(KM.tiltT + k[1]); kmKick(); return; } }
+document.addEventListener('keydown', e=>{ if (KM.open && KM.view==='graph' && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))){ const k = { ArrowLeft:[-.12,0], ArrowRight:[.12,0], ArrowUp:[0,-.12], ArrowDown:[0,.12] }[e.key]; if (k && KM.mode!=='rotate'){ e.preventDefault(); if (!KM.camT) KM.camT = { ...KM.cam }; KM.camT.x -= k[0]*400; KM.camT.y -= k[1]*400; kmKick(); return; } if (k){ e.preventDefault(); KM.yawT += k[0]; KM.tiltT = kmWrap(KM.tiltT + k[1]); kmKick(); return; } }
   if (e.key==='Escape' && KM.open){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); } });
 window.addEventListener('hashchange', ()=>{ if (location.hash==='#map') kmOpen(); else if (KM.open) kmClose(); });
 function kmLauncherHTML(){
@@ -8853,6 +8941,15 @@ function aiListen(){
     form.insertAdjacentHTML('afterbegin', `<button type="button" class="ai-mic" id="aiMic" aria-label="Speak your question">${ic('mic',20)}<span class="ai-micw" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>`);
     const top = chat.querySelector('.ai-top'), menu = top.querySelector('[data-a="ai-menu"]');
     menu.insertAdjacentHTML('beforebegin', `<button class="ai-ib ai-spk${state.voiceOut?' on':''}" id="aiSpk" aria-label="${state.voiceOut?'Stop reading answers aloud':'Read answers aloud'}" aria-pressed="${!!state.voiceOut}">${ic(state.voiceOut?'volume':'mute',19)}</button>`);
+    if (typeof KM!=='undefined' && KM.open){ chat.classList.add('over-map');
+      const sel = KM.sel, nm = sel && sel.name, sugg = !sel ? ['What should I study next?', 'Explain my biggest gap in one minute', 'Plan my week from this map']
+        : sel.type==='task' ? [`Give me a 2-minute way to start: ${nm}`, `Why does "${nm}" matter for my goals?`]
+        : sel.type==='hole' ? [`How do I avoid: ${nm}?`, `Give me a real example of "${nm}" going wrong`]
+        : sel.type==='neb' ? [`How am I doing on my ${nm} goal?`, `One step today towards ${nm}`]
+        : sel.type==='domain' ? [`Explain ${nm} simply`, `Quiz me on ${nm}`, `How does ${nm} help at Huhtamaki?`]
+        : nm ? [`Explain ${nm} simply`, `Quiz me with 3 questions on ${nm}`, `How would I use ${nm} on a production line?`] : ['What should I study next?'];
+      form.insertAdjacentHTML('beforebegin', `<div class="ai-sugg" role="list" aria-label="Suggested questions">${sugg.map(t=>`<button role="listitem" data-sugg="${esc(t)}">${esc(t)}</button>`).join('')}</div>`);
+      chat.querySelectorAll('[data-sugg]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); aiSend(b.dataset.sugg); chat.querySelector('.ai-sugg')?.remove(); })); }
     document.getElementById('aiMic').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); aiListen(); });
     document.getElementById('aiSpk').addEventListener('click', e=>{ e.stopPropagation(); state.voiceOut = !state.voiceOut; save(); const b = e.currentTarget; b.classList.toggle('on', state.voiceOut); b.innerHTML = ic(state.voiceOut?'volume':'mute',19); b.setAttribute('aria-pressed', String(state.voiceOut)); b.setAttribute('aria-label', state.voiceOut?'Stop reading answers aloud':'Read answers aloud'); if (!state.voiceOut && 'speechSynthesis' in window) speechSynthesis.cancel(); toast(state.voiceOut ? 'Answers will be read aloud.' : 'Voice off.', 'ok', 1500); });
   }; }

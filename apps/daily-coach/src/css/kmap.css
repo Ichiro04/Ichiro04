@@ -399,3 +399,21 @@ html.reduce .km *,html.reduce .km{animation:none!important}
   .km-tip{right:64px}
   .km.undocked .km-notch{transform:translateY(120px)}
 }
+
+/* map: drag modes, Ask AI, new legend items */
+.km-ai2{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 5px;border-radius:999px;font-size:13px;font-weight:700;color:#F6F1EA;cursor:pointer;border:0;
+  background:linear-gradient(135deg,rgba(163,20,44,.85),rgba(113,0,20,.9));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 24px -10px rgba(113,0,20,.8);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.km-ai2:hover{transform:translateY(-1px) scale(1.04)}.km-ai2:active{transform:scale(.95)}
+.cfab-orb.sm{width:28px;height:28px}
+.km-mic{color:#E6CDB0}
+.km-dot.sat{border-radius:3px;background:linear-gradient(90deg,#2B4A6E 0 30%,#E8ECF0 30% 70%,#2B4A6E 70%);box-shadow:none}
+.km-dot.neb{background:radial-gradient(circle,rgba(255,255,255,.9),rgba(230,205,176,.6) 35%,rgba(150,190,255,.25) 65%,transparent 72%);box-shadow:none}
+.km-dot.pulsar{background:radial-gradient(circle,#fff 0 30%,#AFD2FF 45%,transparent 70%);box-shadow:0 0 0 1px rgba(175,210,255,.3),0 0 10px #AFD2FF}
+.km-tip small.sat{color:#9FD0FF}
+.ai-chat.over-map{z-index:360}
+.ai-sugg{max-width:720px;width:100%;margin:0 auto 8px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.ai-sugg::-webkit-scrollbar{display:none}
+.ai-sugg button{flex:0 0 auto;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:650;color:#F2F1ED;background:linear-gradient(145deg,rgba(230,205,176,.14),rgba(230,205,176,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 1px rgba(230,205,176,.2);animation:lqIn .6s cubic-bezier(.34,1.56,.64,1) both;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.ai-sugg button:nth-child(2){animation-delay:.08s}.ai-sugg button:nth-child(3){animation-delay:.16s}
+.ai-sugg button:hover{transform:translateY(-2px)}
+@media(max-width:860px){ .km-ai2 span:last-child{display:none} .km-ai2{padding:0 4px} .km-mic{display:none} }

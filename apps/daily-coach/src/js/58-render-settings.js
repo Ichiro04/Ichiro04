@@ -125,6 +125,15 @@ function aiListen(){
     form.insertAdjacentHTML('afterbegin', `<button type="button" class="ai-mic" id="aiMic" aria-label="Speak your question">${ic('mic',20)}<span class="ai-micw" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>`);
     const top = chat.querySelector('.ai-top'), menu = top.querySelector('[data-a="ai-menu"]');
     menu.insertAdjacentHTML('beforebegin', `<button class="ai-ib ai-spk${state.voiceOut?' on':''}" id="aiSpk" aria-label="${state.voiceOut?'Stop reading answers aloud':'Read answers aloud'}" aria-pressed="${!!state.voiceOut}">${ic(state.voiceOut?'volume':'mute',19)}</button>`);
+    if (typeof KM!=='undefined' && KM.open){ chat.classList.add('over-map');
+      const sel = KM.sel, nm = sel && sel.name, sugg = !sel ? ['What should I study next?', 'Explain my biggest gap in one minute', 'Plan my week from this map']
+        : sel.type==='task' ? [`Give me a 2-minute way to start: ${nm}`, `Why does "${nm}" matter for my goals?`]
+        : sel.type==='hole' ? [`How do I avoid: ${nm}?`, `Give me a real example of "${nm}" going wrong`]
+        : sel.type==='neb' ? [`How am I doing on my ${nm} goal?`, `One step today towards ${nm}`]
+        : sel.type==='domain' ? [`Explain ${nm} simply`, `Quiz me on ${nm}`, `How does ${nm} help at Huhtamaki?`]
+        : nm ? [`Explain ${nm} simply`, `Quiz me with 3 questions on ${nm}`, `How would I use ${nm} on a production line?`] : ['What should I study next?'];
+      form.insertAdjacentHTML('beforebegin', `<div class="ai-sugg" role="list" aria-label="Suggested questions">${sugg.map(t=>`<button role="listitem" data-sugg="${esc(t)}">${esc(t)}</button>`).join('')}</div>`);
+      chat.querySelectorAll('[data-sugg]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); aiSend(b.dataset.sugg); chat.querySelector('.ai-sugg')?.remove(); })); }
     document.getElementById('aiMic').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); aiListen(); });
     document.getElementById('aiSpk').addEventListener('click', e=>{ e.stopPropagation(); state.voiceOut = !state.voiceOut; save(); const b = e.currentTarget; b.classList.toggle('on', state.voiceOut); b.innerHTML = ic(state.voiceOut?'volume':'mute',19); b.setAttribute('aria-pressed', String(state.voiceOut)); b.setAttribute('aria-label', state.voiceOut?'Stop reading answers aloud':'Read answers aloud'); if (!state.voiceOut && 'speechSynthesis' in window) speechSynthesis.cancel(); toast(state.voiceOut ? 'Answers will be read aloud.' : 'Voice off.', 'ok', 1500); });
   }; }
