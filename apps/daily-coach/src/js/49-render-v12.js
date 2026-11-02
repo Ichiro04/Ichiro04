@@ -6,14 +6,21 @@
    as listed for the BMW N73 V12. Piston position from the
    slider-crank equation s = r cos α + √(l² − r² sin² α).
    ============================================================ */
-const V12 = { order:[1,7,5,11,3,9,6,12,2,8,4,10], theta:0, speed:0.25, run:true, yaw:-0.95, pitch:0.34, drag:null, raf:0, vis:false, io:null, last:0, tween:null, quiz:0, idle:0 };
+const V12_FAULTS = {
+  none:{ name:'Healthy', health:96, alert:'All twelve cylinders firing evenly', causes:['Oil pressure normal','Vibration in the normal band','Cam timing on the marks'], fix:'Keep to the service plan: oil and filter, plugs at the interval, a timing check at the big service.', when:'Next check at the routine service.' },
+  misfire:{ name:'Misfire, cylinder 5', health:71, cyl:5, alert:'Cylinder 5 is not firing', causes:['Worn spark plug','Failed coil pack','Blocked injector'], fix:'Swap the coil from cylinder 5 to cylinder 4. If the misfire moves, replace the coil. If it stays, check the plug, then the injector.', when:'Fix within a day or two: unburnt fuel overheats the catalyst.' },
+  bearing:{ name:'Worn big-end, cylinder 3', health:54, cyl:3, alert:'Knock at cylinder 3, louder under load', causes:['Low oil pressure','Oil starvation at high rpm','Bearing clearance past the limit'], fix:'Stop the engine. Check the oil level and pressure, then drop the sump and measure the big-end clearance with Plastigauge.', when:'Stop now: a spun bearing can wreck the crankshaft.' },
+  timing:{ name:'Cam timing out one tooth', health:79, alert:'Power down and rough idle on both banks', causes:['Stretched timing chain','Worn tensioner','Chain jumped a tooth'], fix:'Lock the crank at top dead centre on cylinder 1, check both cam marks, then replace the chain and tensioner as a set.', when:'Plan within a week and avoid high rpm until fixed.' }
+};
+const V12 = { fault:'none', vib:[], order:[1,7,5,11,3,9,6,12,2,8,4,10], theta:0, speed:0.25, run:true, yaw:-0.95, pitch:0.34, drag:null, raf:0, vis:false, io:null, last:0, tween:null, quiz:0, idle:0 };
 const VG = { r:8, l:26, bore:7, sp:24, off:9, bank:Math.PI/6, deck:40, skirt:14 };
-const STROKE = [ ['power','Power',[255,59,31]], ['exhaust','Exhaust',[138,143,156]], ['intake','Intake',[61,139,255]], ['compression','Compression',[255,194,26]] ];
+const STROKE = [ ['power','Power',[242,86,58]], ['exhaust','Exhaust',[140,110,96]], ['intake','Intake',[248,236,172]], ['compression','Compression',[239,200,139]] ];
 const v12Fire = c => V12.order.indexOf(c) * 60;
 function v12Cyl(c, theta){
   const A = c <= 6, i = A ? c-1 : c-7, beta = (A ? -1 : 1) * VG.bank;
   const phase = (((theta - v12Fire(c)) % 720) + 720) % 720, al = phase * Math.PI/180;
-  const s = VG.r*Math.cos(al) + Math.sqrt(VG.l*VG.l - VG.r*VG.r*Math.sin(al)**2);
+  let s = VG.r*Math.cos(al) + Math.sqrt(VG.l*VG.l - VG.r*VG.r*Math.sin(al)**2);
+  if (V12.fault==='bearing' && c===3) s += (Math.random()-.5)*1.4;
   const u = [0, Math.sin(beta), Math.cos(beta)], psi = beta + al;
   return { c, A, i, beta, phase, s, u, x: i*VG.sp + (A ? 0 : VG.off), pin:[VG.r*Math.sin(psi), VG.r*Math.cos(psi)], st: STROKE[Math.floor(phase/180)] };
 }
@@ -26,14 +33,26 @@ function v12Build(theta){
     pf.forEach((f,j)=>{ f.mat = j===0 ? k.st[0] : 'piston'; });
     faces.push(...pf);
     const g = [k.x, k.u[1]*(k.s-2), k.u[2]*(k.s-2)], p = [k.x, k.pin[0], k.pin[1]];
-    rods.push({ a:p, b:g });
+    rods.push({ a:p, b:g, hot: V12.fault==='bearing' && c===3 });
+    // valves: intake opens on the intake stroke, exhaust on the exhaust stroke
+    const lift = (from) => k.phase > from && k.phase < from+180 ? Math.sin((k.phase-from)/180*Math.PI) : 0;
+    [[-2.6,'in',lift(360)],[2.6,'ex',lift(180)]].forEach(([dx,kind,l])=>{ const w0 = VG.deck - 1 - l*2.6, w1 = VG.deck + 8 - l*2.6;
+      rods.push({ a:[k.x+dx, k.u[1]*w0, k.u[2]*w0], b:[k.x+dx, k.u[1]*w1, k.u[2]*w1], valve:kind }); });
   }
   for (let i=0;i<6;i++){
     const k = cyls[i];
     faces.push(...extrude([circleLoop(k.pin[0],k.pin[1],2.6,10)], i*VG.sp-4, i*VG.sp+VG.off+4, [Y,Z,X], [0,0,0], 'red'));
     [i*VG.sp-5, i*VG.sp+VG.off+5].forEach(x=>rods.push({ a:[x,0,0], b:[x,k.pin[0],k.pin[1]], web:true }));
   }
-  faces.push(...extrude([circleLoop(0,0,3.2,12)], -12, 5*VG.sp+VG.off+12, [Y,Z,X], [0,0,0], 'steel'));
+  faces.push(...extrude([circleLoop(0,0,3.2,12)], -12, 5*VG.sp+VG.off+16, [Y,Z,X], [0,0,0], 'steel'));
+  const end = 5*VG.sp + VG.off;
+  faces.push(...extrude([circleLoop(0,0,22,32), circleLoop(0,0,4,12)], -20, -16, [Y,Z,X], [0,0,0], 'fly'));
+  faces.push(...extrude([circleLoop(0,0,8,20)], end+12, end+16, [Y,Z,X], [0,0,0], 'red'));
+  [-1,1].forEach(sg=>{ const b = sg*VG.bank, cy = Math.sin(b)*(VG.deck+10), cz = Math.cos(b)*(VG.deck+10), x0 = -6 + (sg>0?VG.off:0);
+    faces.push(...extrude([circleLoop(cy,cz,2.2,10)], x0, end+14, [Y,Z,X], [0,0,0], 'cam'));
+    faces.push(...extrude([circleLoop(cy,cz,6.5,18)], end+12, end+16, [Y,Z,X], [0,0,0], 'red'));
+    rods.push({ a:[end+14, 0, 8], b:[end+14, cy, cz+6.5], belt:true });
+    rods.push({ a:[end+14, sg*8, 0], b:[end+14, cy+sg*6.5, cz], belt:true }); });
   faces.forEach(f=>{ f.n = newell(f.loops[0]); const o = f.loops[0]; f.c = o.reduce((s,p)=>[s[0]+p[0]/o.length,s[1]+p[1]/o.length,s[2]+p[2]/o.length],[0,0,0]); });
   return { faces, rods, cyls };
 }
@@ -51,13 +70,16 @@ function v12Draw(){
   M.faces.forEach(f=>{ const n = camXf(f.n, V12.yaw, V12.pitch); if (n[1] < -1e-4){ f._n = n; items.push({ f, d: camXf(V3.sub(f.c,V12_CENTRE), V12.yaw, V12.pitch)[1] }); } });
   M.rods.forEach(r=>{ const m = [(r.a[0]+r.b[0])/2,(r.a[1]+r.b[1])/2,(r.a[2]+r.b[2])/2]; items.push({ r, d: camXf(V3.sub(m,V12_CENTRE), V12.yaw, V12.pitch)[1] }); });
   items.sort((a,b)=>b.d - a.d);
-  const col = { steel: dark?[120,126,140]:[150,156,168], piston: dark?[170,176,190]:[196,201,211], red:[226,24,44] };
+  const col = { steel: dark?[118,96,88]:[170,150,136], piston: dark?[196,176,160]:[226,212,190], red:[200,30,14], fly: dark?[96,70,62]:[150,124,110], cam: dark?[226,200,140]:[201,144,46] };
   STROKE.forEach(([k,,c])=>col[k] = c);
   items.forEach(it=>{
     if (it.r){
       const a = tp(it.r.a), b = tp(it.r.b);
-      g.strokeStyle = it.r.web ? (dark?'#3A3A46':'#7A7F8C') : (dark?'#9CA1AE':'#5C6170'); g.lineWidth = it.r.web ? 4.5 : 3; g.lineCap = 'round';
-      g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke(); return;
+      const r = it.r;
+      g.strokeStyle = r.hot ? '#F2563A' : r.belt ? (dark?'rgba(248,236,172,.55)':'rgba(85,13,8,.55)') : r.valve==='in' ? '#F8ECAC' : r.valve==='ex' ? (dark?'#A68D74':'#8A5A4E') : r.web ? (dark?'#3A1612':'#8A6A5C') : (dark?'#C9B49A':'#6E4A3E');
+      g.lineWidth = r.hot ? 4.5 : r.belt ? 1.6 : r.valve ? 1.8 : r.web ? 4.5 : 3; g.lineCap = 'round';
+      if (r.hot){ g.shadowColor = '#F2563A'; g.shadowBlur = 14; } else g.shadowBlur = 0;
+      g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke(); g.shadowBlur = 0; return;
     }
     const f = it.f, lam = Math.max(0, V3.dot(f._n, light)), k = 0.42 + 0.62*lam, c = col[f.mat] || col.steel, sp = Math.pow(lam,16)*55;
     g.fillStyle = `rgb(${Math.min(255,c[0]*k+sp)|0},${Math.min(255,c[1]*k+sp)|0},${Math.min(255,c[2]*k+sp)|0})`;
@@ -69,29 +91,31 @@ function v12Draw(){
     const b = sg*VG.bank, u = [0,Math.sin(b),Math.cos(b)], ev = [0,u[2],-u[1]], x0 = -10 + (sg>0?VG.off:0), x1 = 5*VG.sp + 10 + (sg>0?VG.off:0);
     const P = (x,w,e) => tp([x, u[1]*w + ev[1]*e, u[2]*w + ev[2]*e]);
     const q = [P(x0,VG.deck,-VG.bore-2),P(x1,VG.deck,-VG.bore-2),P(x1,VG.deck,VG.bore+2),P(x0,VG.deck,VG.bore+2)];
-    g.fillStyle = dark ? 'rgba(255,255,255,.035)' : 'rgba(20,24,40,.05)'; g.strokeStyle = dark ? 'rgba(255,70,85,.35)' : 'rgba(225,6,27,.35)'; g.lineWidth = 1;
+    g.fillStyle = dark ? 'rgba(255,255,255,.035)' : 'rgba(85,13,8,.05)'; g.strokeStyle = dark ? 'rgba(242,86,58,.35)' : 'rgba(184,18,2,.35)'; g.lineWidth = 1;
     g.beginPath(); q.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath(); g.fill(); g.stroke();
-    const lb = P(x1+6, VG.deck, 0); g.font = '800 11px -apple-system,system-ui,sans-serif'; g.fillStyle = dark?'#FF4655':'#E1061B'; g.textAlign = 'center'; g.fillText(sg<0?'Bank A':'Bank B', lb[0], lb[1]);
+    const lb = P(x1+6, VG.deck, 0); g.font = '800 11px -apple-system,system-ui,sans-serif'; g.fillStyle = dark?'#F2563A':'#B81202'; g.textAlign = 'center'; g.fillText(sg<0?'Bank A':'Bank B', lb[0], lb[1]);
   });
   // glass cylinder liners, combustion glow, spark, numbers
   M.cyls.forEach(k=>{
     const ev = [0, k.u[2], -k.u[1]];
     const ring = w => circleLoop(0,0,VG.bore,24).map(([a,b])=>tp([k.x + a, ev[1]*b + k.u[1]*w, ev[2]*b + k.u[2]*w]));
     const top = ring(VG.deck), bot = ring(VG.skirt), crown = ring(k.s+4);
-    if (k.phase < 180){
-      const a = 0.55*(1 - k.phase/180);
-      g.fillStyle = `rgba(255,${90+Math.round(80*(1-k.phase/180))},30,${a.toFixed(2)})`;
+    const F = V12.fault, mis = F==='misfire' && k.c===5, ph = F==='timing' ? (k.phase - 25 + 720) % 720 : k.phase;
+    if (!mis && ph < 180){
+      const a = (F==='timing'?0.32:0.55)*(1 - ph/180);
+      g.fillStyle = `rgba(255,${90+Math.round(80*(1-ph/180))},30,${a.toFixed(2)})`;
       g.beginPath(); top.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); crown.slice().reverse().forEach(p=>g.lineTo(p[0],p[1])); g.closePath(); g.fill();
     }
-    g.strokeStyle = dark ? 'rgba(200,215,255,.28)' : 'rgba(30,40,70,.28)'; g.lineWidth = 1;
+    g.strokeStyle = dark ? 'rgba(248,236,172,.28)' : 'rgba(85,13,8,.28)'; g.lineWidth = 1;
+    if (mis){ g.strokeStyle = `rgba(242,86,58,${(0.5+0.5*Math.sin(performance.now()/180)).toFixed(2)})`; g.lineWidth = 2.4; }
     [top, bot].forEach(r=>{ g.beginPath(); r.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath(); g.stroke(); });
-    if (k.phase < 22){
-      const d = tp([k.x, k.u[1]*VG.deck, k.u[2]*VG.deck]), rr = 9*(1 - k.phase/22) + 3;
+    if (!mis && ph < 22){
+      const d = tp([k.x, k.u[1]*VG.deck, k.u[2]*VG.deck]), rr = 9*(1 - ph/22) + 3;
       const gr = g.createRadialGradient(d[0],d[1],0,d[0],d[1],rr*2.2); gr.addColorStop(0,'rgba(255,255,220,.95)'); gr.addColorStop(.4,'rgba(255,190,60,.7)'); gr.addColorStop(1,'rgba(255,60,20,0)');
       g.fillStyle = gr; g.beginPath(); g.arc(d[0],d[1],rr*2.2,0,Math.PI*2); g.fill();
     }
     const lb = tp([k.x, k.u[1]*(VG.deck+7), k.u[2]*(VG.deck+7)]);
-    g.font = '700 10px -apple-system,system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = k.phase < 60 ? '#FF4655' : (dark?'#C9CBD2':'#3D3F4A');
+    g.font = '700 10px -apple-system,system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = (mis || (F==='bearing'&&k.c===3)) ? '#F2563A' : k.phase < 60 ? (dark?'#F8ECAC':'#B81202') : (dark?'#C9B49A':'#550D08');
     g.fillText(String(k.c), lb[0], lb[1]+3);
   });
   v12Panel(M.cyls);
@@ -117,6 +141,42 @@ function v12Panel(cyls){
   q('#cutLbl').textContent = k.st[1];
   q('#cutLbl').setAttribute('class', 'cut-lbl ' + k.st[0]);
 }
+
+function v12TwinHTML(){
+  const F = V12_FAULTS[V12.fault], h = F.health, r = 46, C = 2*Math.PI*r, col = h>=85 ? '#C9902E' : h>=65 ? '#F08A3C' : '#E0301C';
+  return `<div class="v12-twin" id="v12Twin">
+    <div class="ds-ch"><div class="h3">Digital twin</div><span class="tiny">simulate a fault, then diagnose it</span></div>
+    <div class="v12-faults">${Object.entries(V12_FAULTS).map(([k,f])=>`<button data-a="v12-fault" data-id="${k}" class="${k===V12.fault?'on':''} ${k==='none'?'ok':''}">${esc(k==='none'?'Healthy':f.name)}</button>`).join('')}</div>
+    <div class="twin-grid">
+      <div class="twin-health"><svg viewBox="0 0 110 110"><circle cx="55" cy="55" r="${r}" class="t"/><circle cx="55" cy="55" r="${r}" class="f" style="stroke:${col};stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C*(1-h/100)).toFixed(1)};filter:drop-shadow(0 0 6px ${col})"/></svg><div><b class="num" style="color:${col}">${h}</b><small>health</small></div></div>
+      <div><div class="twin-alert"><i style="background:${col};box-shadow:0 0 10px ${col}"></i>${esc(F.alert)}</div>
+        <div class="twin-causes">${F.causes.map(c=>`<span>${esc(c)}</span>`).join('')}</div>
+        <div class="twin-fix"><b>Suggestion:</b> ${esc(F.fix)}</div>
+        <div class="twin-when" style="color:${col}">${esc(F.when)}</div></div>
+    </div>
+    <canvas class="twin-vib" id="v12Vib" aria-label="Live vibration trace"></canvas>
+    <div class="tidefoot"><span class="legend"><i style="background:${col}"></i>vibration at the crank, live</span><span class="legend"><i class="lg-trace"></i>alarm level</span></div>
+  </div>`;
+}
+function v12Vib(){
+  const cv = document.getElementById('v12Vib'); if (!cv) return;
+  const dpr = Math.min(2, window.devicePixelRatio||1), W = cv.clientWidth, H = cv.clientHeight; if (!W) return;
+  if (cv.width !== Math.round(W*dpr)){ cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+  const th = V12.theta, F = V12.fault;
+  let v = Math.sin(th*Math.PI/30)*0.22 + (Math.random()-.5)*0.08;
+  if (F==='misfire'){ const t = ((th % 720)+720)%720; if (Math.abs(t - 120) < 14) v -= 0.75; }
+  if (F==='bearing'){ const t = ((th % 360)+360)%360; if (t < 12 || Math.abs(t-180) < 12) v += 0.95*(Math.random()>.3?1:-1); }
+  if (F==='timing') v += Math.sin(th*Math.PI/97)*0.25 + (Math.random()-.5)*0.18;
+  V12.vib.push(v); if (V12.vib.length > 160) V12.vib.shift();
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  g.strokeStyle = dark?'rgba(248,236,172,.08)':'rgba(85,13,8,.08)'; g.lineWidth = 1;
+  for (let y=H/4;y<H;y+=H/4){ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
+  g.setLineDash([4,4]); g.strokeStyle = 'rgba(224,48,28,.6)'; [H*0.14, H*0.86].forEach(y=>{ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }); g.setLineDash([]);
+  const h = V12_FAULTS[F].health, col = h>=85 ? (dark?'#F8ECAC':'#C9902E') : h>=65 ? '#F08A3C' : '#F2563A';
+  g.strokeStyle = col; g.lineWidth = 1.8; g.shadowColor = col; g.shadowBlur = 8; g.beginPath();
+  V12.vib.forEach((s,i)=>{ const x = i/159*W, y = H/2 - s*H*0.42; i ? g.lineTo(x,y) : g.moveTo(x,y); }); g.stroke(); g.shadowBlur = 0;
+}
 function v12CardHTML(){
   const Qs = [['How many degrees of crank rotation between firings?',['45°','60°','90°'],1,'720° ÷ 12 cylinders = 60°, which is why the banks sit 60° apart.'],
     ['Which cylinder fires straight after cylinder 1 in this engine?',['2','7','12'],1,'Order 1-7-5-11…: 7 sits opposite 1 on the same crank pin and fires 60° later.'],
@@ -129,7 +189,8 @@ function v12CardHTML(){
     <div class="v12-ctrl"><label for="v12Speed" class="tiny">Slow motion</label><input type="range" id="v12Speed" min="0.04" max="1.2" step="0.01" value="${V12.speed}"><span class="tiny num" id="v12SpeedTxt"></span></div>
     <div class="v12-ang tiny num" id="v12Ang"></div>
     <div class="v12-order" aria-label="Firing order">${V12.order.map(c=>`<i><b class="num">${c}</b><span>${c<=6?'A':'B'}</span></i>`).join('')}</div>
-    <div class="v12-legend">${STROKE.map(([k,l])=>`<span><i class="lg-${k}"></i>${l}</span>`).join('')}</div>
+    <div class="v12-legend">${STROKE.map(([k,l])=>`<span><i class="lg-${k}"></i>${l}</span>`).join('')}<span><i style="background:#F8ECAC"></i>intake valve</span><span><i style="background:#A68D74"></i>exhaust valve</span></div>
+    ${v12TwinHTML()}
     <div class="v12-split">
       <svg viewBox="0 0 160 170" id="v12Cut" class="v12cut" role="img" aria-label="Cut-away of cylinder 1">
         <rect x="58" y="30" width="44" height="74" class="cut-wall"/>
@@ -162,7 +223,7 @@ function v12Loop(ts){
   const dt = V12.last ? Math.min(0.05, (ts - V12.last)/1000) : 0; V12.last = ts;
   if (V12.run && !motionOff()) V12.theta += dt * V12.speed * 360;
   if (V12.tween){ const t = Math.min(1,(performance.now()-V12.tween.t0)/650), e = 1-Math.pow(1-t,3); V12.yaw = V12.tween.y0+(V12.tween.y1-V12.tween.y0)*e; V12.pitch = V12.tween.p0+(V12.tween.p1-V12.tween.p0)*e; if (t>=1) V12.tween = null; }
-  v12Draw();
+  v12Draw(); v12Vib();
   V12.raf = requestAnimationFrame(v12Loop);
 }
 function v12Kick(){ V12.last = 0; if (!V12.raf) V12.raf = requestAnimationFrame(v12Loop); }
@@ -182,6 +243,7 @@ function mountV12(root){
 function v12Action(a, el){
   if (a==='v12-view'){ const [y,p] = V12_VIEWS[el.dataset.id]; const ny = y + Math.round((V12.yaw - y)/(Math.PI*2))*Math.PI*2;
     if (motionOff()){ V12.yaw = ny; V12.pitch = p; v12Draw(); } else { V12.tween = { t0:performance.now(), y0:V12.yaw, y1:ny, p0:V12.pitch, p1:p }; v12Kick(); } }
+  else if (a==='v12-fault'){ V12.fault = el.dataset.id; V12.vib = []; const t = document.getElementById('v12Twin'); if (t) t.outerHTML = v12TwinHTML(); v12Kick(); if (V12.fault !== 'none') toast('Fault simulated: ' + V12_FAULTS[V12.fault].name, 'warn', 1800); }
   else if (a==='v12-run'){ V12.run = !V12.run; el.textContent = V12.run ? 'Pause' : 'Play'; el.classList.toggle('on', V12.run); v12Kick(); }
   else if (a==='v12-answer'){
     const right = [1,1,0][V12.quiz % 3], whys = ['720° ÷ 12 cylinders = 60°, which is why the banks sit 60° apart.','7 sits opposite 1 on the same crank pin and fires 60° later.','An inline six is perfectly balanced; a V12 is two of them on one crank.'];

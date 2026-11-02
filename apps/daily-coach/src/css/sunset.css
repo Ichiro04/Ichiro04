@@ -1,0 +1,148 @@
+/* ============================================================
+   SUNSET PIT WALL — final theme layer (loaded last)
+   Palette (sunset reds): Asphalt #1C0A0A · Earth Brown #550D08 ·
+   Demonic Presence #7B1103 · Red Prayer Flag #B81202 · Gold Sand #F8ECAC
+   Effects from the references: gold edge glow (weather card),
+   stacked glass plates and neon edges (glass components),
+   holographic sheen (soap bubble, liquid glass), side notch with
+   ring gauges (usage panel), digital-twin panels (process monitor).
+   ============================================================ */
+:root{
+  --s-asphalt:#1C0A0A; --s-earth:#550D08; --s-demon:#7B1103; --s-flag:#B81202; --s-gold:#F8ECAC;
+  --s-glow:rgba(248,236,172,.55); --s-glow-soft:rgba(248,236,172,.18); --s-red-glow:rgba(184,18,2,.55);
+  --pw-panel:#FFFAEB; --pw-panel-2:#F6ECCF; --pw-line:rgba(85,13,8,.12); --pw-line-2:rgba(85,13,8,.2);
+  --pw-ink-3:#8A5A4E; --pw-asphalt:#E3D2A8;
+  --s-holo:conic-gradient(from 200deg,#F8ECAC,#F2563A,#B81202,#F8ECAC,#EFC88B,#F2563A,#F8ECAC);
+}
+html[data-theme="dark"]{
+  --pw-bg:#120606; --pw-panel:#1C0A0A; --pw-panel-2:#280F0C; --pw-line:rgba(248,236,172,.09); --pw-line-2:rgba(248,236,172,.17);
+  --pw-ink:#FBF3D2; --pw-ink-2:#DCCBA2; --pw-ink-3:#A68D74; --pw-asphalt:#2E1210;
+  --s-glow:rgba(248,236,172,.6); --s-glow-soft:rgba(248,236,172,.16); --s-red-glow:rgba(224,48,28,.6);
+}
+::selection{background:rgba(184,18,2,.3)}
+
+/* ---------- atmosphere: a sunset sky ---------- */
+html[data-theme="dark"] body{background:
+  radial-gradient(70% 38% at 50% 108%, rgba(255,214,150,.42), rgba(242,86,58,.32) 30%, rgba(184,18,2,.12) 55%, transparent 72%) fixed,
+  radial-gradient(110% 55% at 50% -12%, rgba(123,17,3,.55), transparent 62%) fixed,
+  linear-gradient(180deg,#140606 0%,#1C0A0A 38%,#2B0C08 72%,#470A08 100%) fixed!important}
+body{background:
+  radial-gradient(70% 36% at 50% 110%, rgba(242,86,58,.22), rgba(248,236,172,.25) 40%, transparent 72%) fixed,
+  radial-gradient(100% 50% at 50% -14%, rgba(184,18,2,.10), transparent 60%) fixed,
+  linear-gradient(180deg,#FBF5DE 0%,#F8EDC8 60%,#F4DDB0 100%) fixed!important;background-size:auto!important}
+.sky-field{display:block!important;opacity:.55!important;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' viewBox='0 0 1200 800' preserveAspectRatio='none'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0035 .012' numOctaves='5' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 .55  0 0 0 0 .35  0 0 0 1.6 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
+  background-size:100% 100%;background-repeat:no-repeat;inset:-8%!important;animation:skydrift 70s ease-in-out infinite alternate}
+html[data-theme="dark"] .sky-field{opacity:.42!important;mix-blend-mode:screen}
+@keyframes skydrift{from{transform:translate3d(-3%,0,0) scale(1.04)}to{transform:translate3d(3%,1.5%,0) scale(1.08)}}
+.sky-field::before,.sky-field::after{display:none!important}
+html[data-theme="dark"] .hero::before{background:radial-gradient(60% 70% at 30% 20%,rgba(248,236,172,.08),transparent 70%)}
+
+/* ---------- panels: warm glass with a gold rim ---------- */
+.glass{background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,250,235,.92))!important;box-shadow:var(--pw-shadow),0 0 0 1px var(--pw-line)!important}
+html[data-theme="dark"] .glass{background:linear-gradient(180deg,rgba(248,236,172,.055),rgba(248,236,172,0) 42%),linear-gradient(180deg,rgba(40,15,12,.86),rgba(28,10,10,.92))!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.2)!important;backdrop-filter:blur(14px) saturate(1.2)!important;
+  box-shadow:inset 0 1px 0 rgba(248,236,172,.12),0 0 0 1px rgba(248,236,172,.09),0 18px 40px -22px rgba(0,0,0,.9)!important}
+.glass::before{background:linear-gradient(90deg,var(--s-flag),var(--s-gold))!important}
+
+/* ---------- highlight cards: gold edge glow + stacked glass plates ---------- */
+.ds-now,.pw-hero,.v12card .v12-twin{position:relative}
+.ds-now,.pw-hero{box-shadow:
+  inset 0 -30px 46px -30px var(--s-glow),inset 0 1px 0 rgba(255,255,255,.5),0 0 0 1px rgba(201,144,46,.45),
+  7px 8px 0 -1px var(--pw-panel-2),7px 8px 0 0 rgba(201,144,46,.28),
+  14px 16px 0 -1px var(--pw-panel-2),14px 16px 0 0 rgba(201,144,46,.16),
+  0 30px 60px -28px rgba(123,17,3,.45)!important;margin-right:14px;margin-bottom:16px}
+html[data-theme="dark"] .ds-now,html[data-theme="dark"] .pw-hero{box-shadow:
+  inset 0 -34px 50px -30px var(--s-glow),inset 0 1px 0 rgba(248,236,172,.22),0 0 0 1px rgba(248,236,172,.32),
+  7px 8px 0 -1px #1E0A09,7px 8px 0 0 rgba(248,236,172,.14),
+  14px 16px 0 -1px #170707,14px 16px 0 0 rgba(248,236,172,.08),
+  0 0 40px -10px rgba(224,48,28,.35),0 30px 60px -24px rgba(0,0,0,.9)!important}
+.ds-now::after,.pw-hero::after{content:""!important;display:block!important;position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:0 0 14px 14px;opacity:1!important;
+  background:linear-gradient(90deg,transparent,var(--s-gold) 20%,#FFF7D6 50%,var(--s-gold) 80%,transparent)!important;filter:blur(.5px);box-shadow:0 0 18px 2px var(--s-glow)}
+html[data-theme="dark"] .ds-now{background:radial-gradient(420px 220px at 8% 40%,rgba(224,48,28,.22),transparent 70%),linear-gradient(180deg,rgba(248,236,172,.06),transparent 40%),#1E0A09!important}
+.ds-now{background:radial-gradient(420px 220px at 8% 40%,rgba(184,18,2,.10),transparent 70%),#FFFAEB!important}
+/* holographic halo behind the now ring */
+.ds-now .ds-ring{isolation:isolate}
+.ds-now .ds-ring::before{content:"";position:absolute;inset:-6px;border-radius:50%;background:var(--s-holo);filter:blur(10px);opacity:.45;z-index:-1;animation:holo 9s linear infinite}
+@keyframes holo{to{transform:rotate(360deg)}}
+
+/* ---------- neon edges on actions ---------- */
+.btn-primary,html[data-theme="dark"] .btn-primary{background:linear-gradient(180deg,#D3281A,#B81202 55%,#7B1103)!important;color:#FFF7DC!important;
+  box-shadow:0 4px 0 #470A08,0 0 22px -4px var(--s-red-glow),inset 0 1px 0 rgba(248,236,172,.55),inset 0 0 0 1px rgba(248,236,172,.25)!important}
+.btn-soft{box-shadow:inset 0 0 0 1px rgba(201,144,46,.45),0 3px 0 var(--pw-line-2)!important}
+html[data-theme="dark"] .btn-soft{background:linear-gradient(180deg,rgba(248,236,172,.08),rgba(248,236,172,.02))!important;box-shadow:inset 0 0 0 1px rgba(248,236,172,.22),0 0 16px -8px var(--s-glow),0 3px 0 rgba(0,0,0,.5)!important}
+.tabbar{background:linear-gradient(180deg,rgba(255,250,235,.96),rgba(246,236,207,.96))!important;box-shadow:0 0 0 1px rgba(201,144,46,.4),0 18px 40px -18px rgba(123,17,3,.45)!important}
+html[data-theme="dark"] .tabbar{background:linear-gradient(180deg,rgba(40,15,12,.92),rgba(20,7,7,.94))!important;-webkit-backdrop-filter:blur(16px)!important;backdrop-filter:blur(16px)!important;
+  box-shadow:0 0 0 1px rgba(248,236,172,.16),inset 0 1px 0 rgba(248,236,172,.12),0 18px 40px -18px rgba(0,0,0,.9)!important}
+.tabbar::before{background:repeating-linear-gradient(90deg,var(--s-flag) 0 14px,var(--s-gold) 14px 28px)!important}
+html[data-theme="dark"] .tabbar .lens{background:radial-gradient(80% 120% at 50% 110%,rgba(248,236,172,.35),transparent 60%),rgba(224,48,28,.16)!important;
+  box-shadow:inset 0 0 0 1px rgba(248,236,172,.3),inset 0 -3px 0 var(--s-gold),0 0 22px rgba(224,48,28,.4)!important}
+.tabbar .lens{box-shadow:inset 0 0 0 1px rgba(201,144,46,.5),inset 0 -3px 0 var(--s-flag)!important}
+html[data-theme="dark"] .tab[aria-selected="true"]{color:var(--s-gold)!important}
+.tab[aria-selected="true"] .tic{filter:drop-shadow(0 0 8px var(--s-glow))!important}
+.topbar .mini-mark,.labcard .labic,.chip-live{background:linear-gradient(160deg,#D3281A,#7B1103)!important;box-shadow:0 0 16px -2px var(--s-red-glow),inset 0 1px 0 rgba(248,236,172,.4)!important}
+html[data-theme="dark"] .hero h1{background:linear-gradient(180deg,#FFF7DC 0%,#F8ECAC 55%,#F2563A 100%)!important;-webkit-background-clip:text!important;background-clip:text!important}
+.hero h1{background:linear-gradient(180deg,#1C0A0A 0%,#550D08 60%,#B81202 100%)!important;-webkit-background-clip:text!important;background-clip:text!important}
+.hero h1::after{background:repeating-linear-gradient(90deg,var(--s-flag) 0 12px,var(--s-gold) 12px 24px)!important}
+.pw-meta .big{background:linear-gradient(90deg,var(--pw-ink),var(--pw-ink) 55%,var(--s-flag))!important;-webkit-background-clip:text;background-clip:text}
+html[data-theme="dark"] .pw-meta .big{background:linear-gradient(90deg,#FBF3D2,#F8ECAC 55%,#F2563A)!important;-webkit-background-clip:text;background-clip:text}
+.rc-tag{background:linear-gradient(180deg,#F8ECAC,#EFC88B)!important;color:#1C0A0A!important}
+.statusbar{background:var(--pw-panel)!important}
+html[data-theme="dark"] .statusbar{background:rgba(28,10,10,.86)!important;box-shadow:0 0 0 1px rgba(248,236,172,.14)!important}
+/* rings and gauges glow gold at the finish */
+.ds-ring.good .rf{stroke:#C9902E!important;filter:drop-shadow(0 0 6px rgba(201,144,46,.6))!important}
+html[data-theme="dark"] .ds-ring.good .rf{stroke:var(--s-gold)!important;filter:drop-shadow(0 0 8px var(--s-glow))!important}
+.g-fill{stroke:url(#none);stroke:var(--pw-red)!important}
+.purple-dot{box-shadow:0 0 12px var(--s-glow)!important}
+
+/* ---------- desktop side notch with ring gauges ---------- */
+.notch{display:none}
+@media(min-width:1180px){
+  .notch{display:flex;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:55;flex-direction:column;gap:14px;align-items:center;
+    padding:22px 12px calc(22px);border-radius:26px 0 0 26px;background:#0E0404;box-shadow:-10px 0 40px -14px rgba(0,0,0,.7),inset 1px 0 0 rgba(248,236,172,.12)}
+  .notch::before,.notch::after{content:"";position:absolute;right:0;width:26px;height:26px;background:radial-gradient(circle at 0 0,transparent 25px,#0E0404 26px)}
+  .notch::before{top:-26px;background:radial-gradient(circle at 0 0,transparent 25.5px,#0E0404 26px)}
+  .notch::after{bottom:-26px;background:radial-gradient(circle at 0 100%,transparent 25.5px,#0E0404 26px)}
+  .nring{position:relative;display:grid;justify-items:center;gap:4px;cursor:default;color:#FBF3D2;font:700 12.5px var(--sans,system-ui);font-variant-numeric:tabular-nums}
+  .nring > svg{width:46px;height:46px;transform:rotate(-90deg)}
+  .nring .ic svg{width:16px!important;height:16px!important;transform:none!important}
+  .nring .t{fill:none;stroke:rgba(248,236,172,.14);stroke-width:5}
+  .nring .f{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .8s}
+  .nring .ic{position:absolute;top:15px;left:50%;transform:translateX(-50%);color:#F8ECAC;line-height:0}
+  .npop{position:absolute;right:66px;top:50%;transform:translateY(-50%) translateX(8px);width:250px;padding:12px 14px;border-radius:16px;background:#0E0404;color:#FBF3D2;
+    box-shadow:0 18px 40px -16px rgba(0,0,0,.8),inset 0 0 0 1px rgba(248,236,172,.12);opacity:0;pointer-events:none;transition:opacity .2s,transform .25s;text-align:left;font-weight:500}
+  .npop::after{content:"";position:absolute;right:-8px;top:50%;transform:translateY(-50%);border:8px solid transparent;border-left-color:#0E0404;border-right:0}
+  .nring:hover .npop,.nring:focus-within .npop,.nring:focus .npop{opacity:1;transform:translateY(-50%)}
+  .npop b{display:block;font-size:13.5px;margin-bottom:8px}
+  .npop .nl{display:flex;justify-content:space-between;font-size:11.5px;color:#C9B48E;margin-top:8px}
+  .npop .nb{height:6px;border-radius:3px;background:rgba(248,236,172,.12);margin-top:4px;overflow:hidden}
+  .npop .nb i{display:block;height:100%;border-radius:3px}
+  .wrap{padding-right:96px!important}
+}
+
+/* ---------- digital twin panel (V12) ---------- */
+.v12-twin{margin-top:12px;padding:12px;border-radius:14px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}
+.v12-faults{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.v12-faults button{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--pw-panel);color:var(--pw-ink-2);box-shadow:inset 0 0 0 1px var(--pw-line-2)}
+.v12-faults button.on{background:linear-gradient(180deg,#D3281A,#7B1103);color:#FFF7DC;box-shadow:0 0 16px -4px var(--s-red-glow)}
+.v12-faults button.on.ok{background:linear-gradient(180deg,#F8ECAC,#EFC88B);color:#1C0A0A}
+.twin-grid{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center}
+.twin-health{position:relative;width:110px;height:110px}
+.twin-health svg{width:100%;height:100%;transform:rotate(-90deg)}
+.twin-health .t{fill:none;stroke:var(--pw-line-2);stroke-width:9}
+.twin-health .f{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .9s,stroke .4s}
+.twin-health div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.twin-health b{font-size:28px;font-weight:850;letter-spacing:-.03em;line-height:1}
+.twin-health small{font-size:11px;color:var(--pw-ink-3)}
+.twin-alert{display:flex;align-items:center;gap:8px;font-weight:780;font-size:14px}
+.twin-alert i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.twin-causes{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.twin-causes span{padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;background:var(--pw-panel);box-shadow:inset 0 0 0 1px var(--pw-line-2);color:var(--pw-ink-2)}
+.twin-fix{font-size:13px;color:var(--pw-ink-2);line-height:1.45}
+.twin-when{margin-top:6px;font-size:12.5px;font-weight:750}
+.twin-vib{display:block;width:100%;height:56px;margin-top:10px;border-radius:10px;background:var(--pw-panel)}
+@media(max-width:420px){.twin-grid{grid-template-columns:1fr}.twin-health{margin:0 auto}}
+html.reduce .ds-now .ds-ring::before,html.reduce .sky-field{animation:none!important}
+.ds-bars14 .wave{fill:none;stroke:#C9902E;stroke-width:2.2;stroke-linecap:round;filter:drop-shadow(0 0 4px rgba(201,144,46,.6))}
+html[data-theme="dark"] .ds-bars14 .wave{stroke:var(--s-gold);filter:drop-shadow(0 0 6px var(--s-glow))}
+.ds-bars14 .wave-end{fill:var(--s-gold);stroke:var(--s-flag);stroke-width:2}

@@ -89,14 +89,14 @@ function cadDraw(){
   // floor shadow
   const fl = tp([b.c[0], b.c[1], b.mn[2]]);
   const sh = g.createRadialGradient(fl[0], fl[1]+4, 2, fl[0], fl[1]+4, b.r*s*1.1);
-  sh.addColorStop(0, dark?'rgba(255,30,51,.22)':'rgba(16,16,24,.20)'); sh.addColorStop(1,'rgba(0,0,0,0)');
+  sh.addColorStop(0, dark?'rgba(224,48,28,.22)':'rgba(28,10,10,.20)'); sh.addColorStop(1,'rgba(0,0,0,0)');
   g.fillStyle = sh; g.beginPath(); g.ellipse(fl[0], fl[1]+4, b.r*s*1.1, b.r*s*0.32*(0.4+Math.abs(Math.sin(cad.pitch))), 0, 0, Math.PI*2); g.fill();
   const light = V3.norm([-0.45,-0.7,0.6]);
   const vis = f => { const n = camXf(f.n, cad.yaw, cad.pitch); f._n = n; return n[1] < -1e-4; };
   const list = cad.faces.filter(vis);
   list.forEach(f=>{ f._d = camXf(V3.sub(f.c,b.c), cad.yaw, cad.pitch)[1]; });
   list.sort((a,c)=>c._d - a._d);
-  const base = { steel: dark?[150,156,170]:[184,190,202], red:[226,24,44] };
+  const base = { steel: dark?[150,128,116]:[214,200,180], red:[200,30,14] };
   const edge = dark ? 'rgba(255,255,255,.55)' : 'rgba(14,14,20,.75)';
   list.forEach(f=>{
     const lam = Math.max(0, V3.dot(f._n, light)), k = 0.42 + 0.62*lam;

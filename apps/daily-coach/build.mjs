@@ -54,6 +54,15 @@ inlined.push(['lab/lab.html (embedded)', labHtml.length]);
 mkdirSync(resolve(root, 'dist'), { recursive: true });
 const out = resolve(root, 'dist/daily-coach.html');
 writeFileSync(out, html);
+// artifact variant: the Artifact tool wraps the page in its own document skeleton,
+// so publish the same page without doctype / html / head / body wrappers
+const art = html
+  .replace(/<!DOCTYPE html>\s*/i, '')
+  .replace(/<html[^>]*>\s*/i, '').replace(/<\/html>\s*$/i, '')
+  .replace(/<head>\s*/i, '').replace(/<\/head>\s*/i, '')
+  .replace(/<meta name="viewport"[^>]*>\s*/i, '').replace(/<meta charset="[^"]*">\s*/i, '')
+  .replace(/<body([^>]*)>\s*/i, '').replace(/<\/body>\s*/i, '');
+writeFileSync(resolve(root, 'dist/artifact.html'), art);
 
 console.log('built  dist/daily-coach.html');
 console.log('  ' + kb(html.length) + ' total, ' + inlined.length + ' files inlined, 0 dependencies');

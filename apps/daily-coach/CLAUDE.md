@@ -214,3 +214,21 @@ The liquid-glass cream and blue look has been replaced. Two stylesheets load las
   `task`. Day record fields: `plan`, `pstep`, `feel`, `sleep`, `shape`. Wide screens (≥980px) put
   the tab bar in the top strip and use 12-column rows. The template's violet palette and web
   fonts were deliberately not adopted: the F1 look and native fonts stay.
+
+## Sunset pit wall (current theme, November 2026)
+
+Palette chosen from the two the user sent: the sunset reds — Asphalt #1C0A0A, Earth Brown #550D08,
+Demonic Presence #7B1103, Red Prayer Flag #B81202, Gold Sand #F8ECAC. It gives a full dark ramp
+for the race-day look plus a gold highlight; the cream palette lacked the deep reds. Light mode
+uses warm Gold Sand tints, never plain white. Timing semantics: red = live/action, amber = next,
+gold = done/best.
+
+- `src/css/sunset.css` loads last: tokens, sunset sky (stitched noise clouds drifting over a red
+  gradient with a low sun glow), warm glass panels, gold edge glow and stacked glass plates on
+  the highlight cards (from the weather-card and glass-component references), holographic halo
+  on the now ring, neon-edged buttons and tabs, the desktop side notch (≥1180px, ring gauges with
+  pop-out cards: today, this week, savings), and the V12 digital-twin panel.
+- V12 digital twin: fault simulator (misfire on 5, worn big-end on 3, cam timing one tooth out)
+  with health ring, alert, causes, suggestion, urgency and a live vibration trace. The model now
+  has camshafts, valves that open on the right strokes, a flywheel and a belt drive.
+- `build.mjs` also writes `dist/artifact.html` (no doctype/html/head/body) for the Artifact tool.

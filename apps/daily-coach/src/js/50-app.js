@@ -8,7 +8,7 @@ function applyTheme(){
   const want = state.theme === 'auto' ? (mqDark.matches ? 'dark' : 'light') : state.theme;
   document.documentElement.setAttribute('data-theme', want);
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', want === 'dark' ? '#0A0A0D' : '#F3F4F6');
+  if (meta) meta.setAttribute('content', want === 'dark' ? '#120606' : '#F7EFD6');
   syncLabTheme();
 }
 function applyMotion(){
@@ -126,6 +126,7 @@ function updateChrome(){
   $('#miniTitle').textContent = (TABS.find(t=>t.id===activeTab)||{title:''}).title;
   $('#miniSince').innerHTML = `${esc(since)}${since?' · ':''}<span data-clock="Europe/London">${(()=>{ const t = tzParts('Europe/London'); return t.t + ' ' + t.abbr; })()}</span>`;
   { const sb = document.querySelector('#hero .statusbar'); if (sb) sb.outerHTML = statusBar(); }
+  if (typeof mountNotch === 'function') mountNotch();
   $('#miniMark').innerHTML = ic((TABS.find(t=>t.id===activeTab)||{icon:'today'}).icon, 19);
   $('#miniDot').style.display = activeTab==='today' && upNext() ? '' : 'none';
 }
@@ -466,7 +467,7 @@ document.addEventListener('click', e=>{
     case 'lab-pane': showLabPane(el.dataset.id); break;
     case 'ds-status': case 'ds-step': case 'ds-feel': case 'ds-shape': dsAction(a, el); break;
     case 'dx-pick': case 'dx-step': case 'dx-mode': case 'dx-start': case 'dx-answer': case 'dx-next': dxAction(a, el); break;
-    case 'v12-view': case 'v12-run': case 'v12-answer': v12Action(a, el); break;
+    case 'v12-view': case 'v12-run': case 'v12-answer': case 'v12-fault': v12Action(a, el); break;
     case 'pf': {
       state.career = state.career || { portfolio:{} };
       state.career.portfolio = state.career.portfolio || {};
@@ -576,7 +577,7 @@ document.addEventListener('click', e=>{
         <p class="tiny">This clears every task, weigh-in, expense and essay stored in this browser. It cannot be undone.</p>
         <div class="row" style="gap:8px;margin-top:6px">
           <button class="btn btn-soft" data-a="close-sheet" style="flex:1">Keep my data</button>
-          <button class="btn btn-deep" data-a="reset-confirm" style="flex:1;background:linear-gradient(165deg,#FFC700,#D9A400)">Reset</button>
+          <button class="btn btn-deep" data-a="reset-confirm" style="flex:1;background:linear-gradient(165deg,#F08A3C,#D9741F)">Reset</button>
         </div>`});
       break;
     }
