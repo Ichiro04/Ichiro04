@@ -287,3 +287,31 @@ dock with history, send/stop, new chat).
     in focus view. Labels that overlap the title text (`kmTitleBox`) fade with it, and
     `kmLabelFree` stops zoomed labels from piling up.
 - The user asked that the view changes **without renaming things**: keep existing labels and names.
+
+## CAD workspace (SolidWorks-style, top of Lab → 3D CAD)
+
+`src/js/47b-render-cadws.js` + `src/css/cadws.css`. The user asked for exercises in a real 3D CAD
+view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block drawing.
+- **Features:** `boss` / `rib` (sketch plane top/front/right, optional tilt, profile rect with
+  corner fillet R, circle, triangle or crankcase; Blind with start offset, or Mid Plane) and `cut`
+  (a Through All hole pattern: diameter, first hole, count, pitch, direction, rows). A cut affects every
+  earlier solid on the same plane and tilt, and skips holes that would break an edge (the tree shows a "!").
+- **Geometry:** `wsBuild` → `wsSolid` per boss. Caps are triangulated with `wsTriangulate`
+  (hole bridging + ear clipping). Sides get smooth normals on curves, and the
+  feature edges and silhouette candidates are kept separately.
+- **Renderer:** `wsRenderer(canvas)` is plain WebGL with a depth buffer, polygon offset so edges
+  win, live silhouettes and a soft floor shadow. Display modes are shaded with edges, shaded,
+  hidden lines visible and wireframe. The camera is orthographic. Drag rotates with eased
+  follow and inertia; right-drag or Shift-drag pans; the wheel or a pinch zooms at the
+  cursor; the arrow keys, + / -, F, Delete and Ctrl+Z / Ctrl+Y work too.
+- **UI:**
+  - The command bar has Boss, Cut, Rib, Fillet, Undo, Redo, Check and Show answer.
+  - The FeatureManager tree selects, edits, suppresses and deletes features. Its PropertyManager
+    applies edits live, with ✓ to keep and ✗ to undo, and the viewport shows dimensions as you edit.
+  - Tapping a face selects its feature; a double tap opens it for editing.
+  - Full screen lifts the window to `<body>`, because ancestor transforms would trap `position: fixed`.
+- **Exercises (`WS_EX`):** L-bracket, flanged bush, pillow block, the V4 engine block (from the user's
+  drawing) and free model. Each starts with the right tree but wrong sizes (`wsRough`). The drawing sheet
+  (`wsSheet`) renders the target in hidden-line mode on a second WebGL canvas into four views with
+  balloons and a size table. `wsMatch` ticks features within ±0.6 mm.
+- **State:** `state.cadws = { ex, models:{ex:[features]}, done:{ex:true} }`.

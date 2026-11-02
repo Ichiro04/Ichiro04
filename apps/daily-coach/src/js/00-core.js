@@ -55,6 +55,7 @@ const DEFAULT_STATE = {
     ieltsTarget: 7.0,
     examDate: ''
   },
+  cadws: { ex:'bracket', models:{}, done:{} },   // CAD workspace: current exercise, saved feature trees, finished exercises
   days: {},        // dateKey -> { tasks:{id:true}, steps, note, weight }
   expenses: [],    // {id,date,amount,cat,note}
   savings: [],     // {id,date,amount,note}

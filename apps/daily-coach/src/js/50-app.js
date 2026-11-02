@@ -719,11 +719,11 @@ const LAB_PANES = [['cad','3D CAD'],['dwg','Drawings'],['v12','V12 engine'],['la
 function mountLab(el){
   if (!el.querySelector('.labseg')){
     el.innerHTML = kmLauncherHTML() + `<div class="labseg" role="tablist">${LAB_PANES.map(([k,l])=>`<button role="tab" data-a="lab-pane" data-id="${k}" aria-selected="${k===labPane}">${l}</button>`).join('')}</div>
-      <div class="labpane" data-pane="cad">${cadCardHTML()}</div>
+      <div class="labpane" data-pane="cad">${cwsHTML()}${cadCardHTML()}</div>
       <div class="labpane" data-pane="dwg">${dwgCardHTML()}</div>
       <div class="labpane" data-pane="v12">${v12CardHTML()}</div>
       <div class="labpane" data-pane="lab"><div id="labMount"></div></div>`;
-    mountCad(el); mountV12(el);
+    mountCws(el); mountCad(el); mountV12(el);
   }
   showLabPane(labPane);
 }
@@ -740,7 +740,7 @@ function showLabPane(k){
   document.querySelectorAll('.labseg button').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.id===k)));
   document.querySelectorAll('.labpane').forEach(p=>{ const on = p.dataset.pane===k; p.hidden = !on; if (on){ p.classList.remove('in'); void p.offsetWidth; p.classList.add('in'); } });
   if (k==='lab'){ ensureLabFrame(); sizeLab(); }
-  if (k==='cad') cadKick();
+  if (k==='cad'){ cadKick(); if (typeof wsKick==='function') wsKick(); }
   if (k==='v12') v12Kick();
 }
 function openLab(section){
