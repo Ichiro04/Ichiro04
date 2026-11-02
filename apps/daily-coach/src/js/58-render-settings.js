@@ -104,20 +104,54 @@ function aiSpeak(text, force){
     u.onstart = ()=>{ document.getElementById('aiChat')?.classList.add('voicing'); }; u.onend = u.onerror = ()=>{ document.getElementById('aiChat')?.classList.remove('voicing'); };
     speechSynthesis.speak(u); } catch(_){ }
 }
+/* can this page use the microphone at all? (inside the claude.ai viewer it is not given access) */
+function micAllowed(){
+  try { const pp = document.permissionsPolicy || document.featurePolicy; if (pp && typeof pp.allowsFeature === 'function') return pp.allowsFeature('microphone'); } catch(_){}
+  return true;
+}
+function dictationTip(){
+  const ua = navigator.userAgent, mobile = /Android|iPhone|iPad|iPod/i.test(ua), mac = /Mac/i.test(navigator.platform || ua) && !mobile, win = /Win/i.test(navigator.platform || ua);
+  return mobile ? 'Tap the box below, then tap the 🎤 on your keyboard and speak. Your words type in; press send.'
+    : win ? 'Click the box below and press <b>Windows key + H</b>, then speak. Windows types your words in; press Enter to send.'
+    : mac ? 'Click the box below and press the <b>Fn key twice</b> (or the 🎤 key), then speak. macOS types your words in; press Enter.'
+    : 'Click the box below and use your device’s dictation, then press Enter.';
+}
+function voiceHelp(reason){ // a clear card in the chat instead of a toast that is easy to miss
+  const chat = document.getElementById('aiChat'), form = document.getElementById('aiForm'); if (!chat || !form) return;
+  chat.querySelector('.ai-vhelp')?.remove();
+  const msg = reason==='blocked' ? 'This page isn’t allowed to use the microphone (the claude.ai viewer blocks it), so I can’t record here.'
+    : reason==='network' ? 'Voice typing needs the internet: Chrome sends the audio to Google to turn it into text.'
+    : reason==='nomic' ? 'I can’t find a microphone. Check one is plugged in and allowed for Chrome.'
+    : reason==='denied' ? 'The microphone permission was turned down. Allow it from the 🔒 icon in the address bar, then tap the mic again.'
+    : 'Voice typing isn’t available in this browser.';
+  form.insertAdjacentHTML('beforebegin', `<div class="ai-vhelp" role="status"><b>${ic('mic',16)} Voice</b><p>${msg}</p><p class="ai-vtip">${dictationTip()}</p><button class="ai-vx" aria-label="Close">${ic('x',14)}</button></div>`);
+  chat.querySelector('.ai-vx').addEventListener('click', e=>{ e.stopPropagation(); chat.querySelector('.ai-vhelp')?.remove(); });
+  const q = document.getElementById('aiQ'); if (q) q.focus();
+}
 function aiListen(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR){ toast('Voice typing is not available in this browser. Type your question instead.','warn',3000); document.getElementById('aiQ')?.focus(); return; }
   if (AI.rec){ try { AI.rec.stop(); } catch(_){} return; }
-  const q = document.getElementById('aiQ'), mic = document.getElementById('aiMic'); if (!q) return;
-  let finalText = '', rec;
-  try { rec = new SR(); } catch(_){ toast('Voice typing could not start here. Type your question instead.','warn',3000); return; }
+  if (!SR){ voiceHelp('unsupported'); return; }
+  if (!micAllowed()){ voiceHelp('blocked'); return; }
+  const q = document.getElementById('aiQ'), mic = document.getElementById('aiMic'), chat = document.getElementById('aiChat'), hint = document.getElementById('aiHint'); if (!q) return;
+  chat?.querySelector('.ai-vhelp')?.remove();
+  let finalText = '', heard = false, failed = false, rec;
+  try { rec = new SR(); } catch(_){ voiceHelp('unsupported'); return; }
   rec.lang = state.voiceLang || 'en-GB'; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
-  rec.onresult = e=>{ let t = ''; for (let i=0;i<e.results.length;i++) t += e.results[i][0].transcript; q.value = t; q.dispatchEvent(new Event('input')); finalText = t; };
-  rec.onerror = e=>{ const blocked = e.error==='not-allowed' || e.error==='service-not-allowed'; toast(blocked ? 'The microphone is blocked in this view. Allow it in your browser, or type instead.' : e.error==='no-speech' ? 'I did not hear anything. Tap the mic and try again.' : 'Voice stopped (' + e.error + ').', 'warn', 3200); };
-  rec.onend = ()=>{ AI.rec = null; mic?.classList.remove('on'); document.getElementById('aiChat')?.classList.remove('mic-on'); if (finalText.trim()) aiSend(); else { AI.state = 'idle'; aiHint(); } };
-  try { rec.start(); } catch(_){ toast('Voice typing could not start. Type instead.','warn',2600); return; }
-  AI.rec = rec; mic?.classList.add('on'); document.getElementById('aiChat')?.classList.add('mic-on'); AI.state = 'listening'; aiHint();
-  const h = document.getElementById('aiHint'); if (h) h.textContent = 'Listening… speak now';
+  rec.onstart = ()=>{ if (hint) hint.textContent = 'Listening… speak now'; };
+  rec.onresult = e=>{ let t = ''; for (let i=0;i<e.results.length;i++) t += e.results[i][0].transcript; heard = true; q.value = t; q.style.height = 'auto'; q.style.height = Math.min(120, q.scrollHeight) + 'px'; finalText = t; if (hint) hint.textContent = '“' + t.slice(-60) + '”'; };
+  rec.onerror = e=>{ failed = true; const er = e.error;
+    if (er==='not-allowed' || er==='service-not-allowed') voiceHelp(micAllowed() ? 'denied' : 'blocked');
+    else if (er==='network') voiceHelp('network');
+    else if (er==='audio-capture') voiceHelp('nomic');
+    else if (er==='no-speech') toast('I didn’t hear anything. Tap the mic and speak straight away.','warn',2600);
+    else if (er!=='aborted') toast('Voice stopped (' + er + '). Try again or type.','warn',2600); };
+  rec.onend = ()=>{ AI.rec = null; mic?.classList.remove('on'); chat?.classList.remove('mic-on');
+    if (finalText.trim()){ AI.voiceTurn = true; aiSend(); }
+    else { AI.state = 'idle'; aiHint(); if (!failed && !heard) toast('I didn’t catch that. Tap the mic and try again.','warn',2400); } };
+  try { rec.start(); } catch(e){ voiceHelp(micAllowed() ? 'denied' : 'blocked'); return; }
+  AI.rec = rec; mic?.classList.add('on'); chat?.classList.add('mic-on'); AI.state = 'listening'; aiHint();
+  if (hint) hint.textContent = 'Starting the microphone…';
 }
 /* decorate the chat with mic + speaker, and read answers aloud */
 { const _open = aiOpen; aiOpen = function(mode){ _open(mode); const chat = document.getElementById('aiChat'); if (!chat) return;
@@ -137,7 +171,7 @@ function aiListen(){
     document.getElementById('aiMic').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); aiListen(); });
     document.getElementById('aiSpk').addEventListener('click', e=>{ e.stopPropagation(); state.voiceOut = !state.voiceOut; save(); const b = e.currentTarget; b.classList.toggle('on', state.voiceOut); b.innerHTML = ic(state.voiceOut?'volume':'mute',19); b.setAttribute('aria-pressed', String(state.voiceOut)); b.setAttribute('aria-label', state.voiceOut?'Stop reading answers aloud':'Read answers aloud'); if (!state.voiceOut && 'speechSynthesis' in window) speechSynthesis.cancel(); toast(state.voiceOut ? 'Answers will be read aloud.' : 'Voice off.', 'ok', 1500); });
   }; }
-{ const _send = aiSend; aiSend = async function(p){ const n = state.chat.length; await _send(p); const last = state.chat[state.chat.length-1]; if (AI.mode!=='translate' && state.chat.length > n && last && last.role==='coach') aiSpeak(last.text); }; }
+{ const _send = aiSend; aiSend = async function(p){ const n = state.chat.length, byVoice = !!AI.voiceTurn; AI.voiceTurn = false; await _send(p); const last = state.chat[state.chat.length-1]; if (AI.mode!=='translate' && state.chat.length > n && last && last.role==='coach') aiSpeak(last.text, byVoice); }; }
 { const _close = aiClose; aiClose = function(){ if (AI.rec){ try { AI.rec.abort(); } catch(_){} AI.rec = null; } if ('speechSynthesis' in window) speechSynthesis.cancel(); return _close(); }; }
 
 /* ---------- floating chat button on every tab ---------- */
@@ -148,7 +182,7 @@ function chatFab(){
     <button class="cfab-main" data-cfab="chat" aria-label="Open the coach chat"><span class="cfab-orb" aria-hidden="true"><i></i></span><span class="cfab-t"><b>Ask coach</b><small>${typeof aiOnline==='function' && aiOnline() ? 'Claude' : 'Text or voice'}</small></span></button>
   </div>`);
 }
-document.addEventListener('click', e=>{ const b = e.target.closest('[data-cfab]'); if (!b) return; e.stopPropagation(); aiOpen('chat'); if (b.dataset.cfab==='voice') setTimeout(aiListen, 300); }, true);
+document.addEventListener('click', e=>{ const b = e.target.closest('[data-cfab]'); if (!b) return; e.stopPropagation(); aiOpen('chat'); if (b.dataset.cfab==='voice') aiListen(); }, true);
 /* gear in the date strip and a Settings entry in the rail */
 { const _sb = statusBar; statusBar = function(){ return _sb().replace(/<\/div>\s*$/, `<button class="sb-gear" data-set-open aria-label="Settings">${ic('gear',16)}</button></div>`); }; }
 if (typeof railHTML === 'function'){ const _rh = railHTML; railHTML = function(){ return _rh().replace('<div class="rail-foot">', `<div class="rail-list rail-set"><button class="rail-i" data-set-open aria-label="Settings"><span class="rail-ic">${ic('gear',19)}</span><span class="rail-n">Settings</span><span class="rail-tip" aria-hidden="true">Settings</span></button></div><div class="rail-foot">`).replace(/<b>KsHan<\/b>/g, `<b>${esc(displayName())}</b>`).replace('<span class="rail-av">KS</span>', `<span class="rail-av">${esc(displayInitials())}</span>`); }; }

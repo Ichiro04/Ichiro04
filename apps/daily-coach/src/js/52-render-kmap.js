@@ -739,7 +739,7 @@ function kmAction(a, el){
     const leg = document.querySelector('.km-legend'); if (leg) leg.innerHTML = kmLegend(); toast(now ? `${n ? n.name : 'Task'} done · ${countDone(k)}/${tasksForDay(k).length}` : 'Marked as not done', 'ok', 1600); try { if (typeof renderView==='function') renderView(activeTab); updateChrome(); } catch(e){} return; }
   if (a==='km-dock'){ kmDock(true); return; }
   if (a==='km-mode'){ KM.mode = el.dataset.id; document.querySelectorAll('[data-a="km-mode"]').forEach(b=>{ const on = b===el; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }); KM.vy = KM.vt = 0; const h = document.querySelector('.km-hint'); if (h) h.textContent = KM.mode==='rotate' ? 'Drag to spin 360° · pinch or scroll to zoom · tap anything' : 'Drag to move · pinch or scroll to zoom · tap anything'; toast(KM.mode==='rotate' ? 'Drag now spins the galaxy.' : 'Drag now moves around. Right-drag or Shift-drag still spins.', 'ok', 1800); return; }
-  if (a==='km-chat' || a==='km-voice'){ aiOpen('chat'); if (a==='km-voice' && typeof aiListen==='function') setTimeout(aiListen, 300); return; }
+  if (a==='km-chat' || a==='km-voice'){ aiOpen('chat'); if (a==='km-voice' && typeof aiListen==='function') aiListen(); return; }
   if (a==='km-nring'){ const on = !el.classList.contains('open'); document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); el.classList.toggle('open', on); el.setAttribute('aria-expanded', String(on)); return; }
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }

@@ -120,3 +120,12 @@ html.reduce .cfab,html.reduce .cfab-orb::before,html.reduce .cfab-orb i{animatio
 @keyframes micW{50%{height:22px}}
 .ai-spk.on{color:#161616;background:linear-gradient(160deg,#E6CDB0,#B38F6F)}
 .ai-chat.voicing .ai-big{filter:drop-shadow(0 0 30px rgba(230,205,176,.5))}
+/* voice help card in the chat */
+.ai-vhelp{position:relative;max-width:720px;width:100%;margin:0 auto 10px;padding:12px 40px 12px 14px;border-radius:18px;color:#F2F1ED;
+  background:linear-gradient(145deg,rgba(230,205,176,.14),rgba(230,205,176,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 1px rgba(230,205,176,.22);animation:lqIn .55s cubic-bezier(.34,1.56,.64,1) both}
+.ai-vhelp b{display:flex;align-items:center;gap:6px;font-size:13.5px}
+.ai-vhelp p{margin:6px 0 0;font-size:13px;line-height:1.5;color:#D6CFC5}
+.ai-vhelp .ai-vtip{color:#F6E3C8}
+.ai-vx{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#D6CFC5}
+.ai-vx:hover{background:rgba(255,255,255,.08)}
+.ai-chat.mic-on .ai-hint{color:#F6E3C8;font-weight:650}
