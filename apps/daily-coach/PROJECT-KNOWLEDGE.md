@@ -1,0 +1,72 @@
+# Personal Growth Project — project brief
+
+A one-page overview for chats in the Claude Project. The full technical notes are in `CLAUDE.md`.
+
+## Where things are
+
+| What | Where |
+|---|---|
+| Live app (private) | https://claude.ai/artifact/ABK7Raj2rTqfmzUD5LiVgF |
+| Offline app | `dist/daily-coach.html`. Open it in Chrome; Chrome can create a shortcut with the galaxy icon. |
+| Code | GitHub `ichiro04/ichiro04`, branch `claude/affectionate-hopper-zzk39m`, folder `apps/daily-coach` |
+| Build | `node build.mjs` turns `src/` into `dist/daily-coach.html` and `dist/artifact.html` |
+| Icon | `icons/` (SVG source, PNG sizes, Windows `.ico`) |
+
+## What the app does
+
+**Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress and Coach. Settings opens from the gear in the date strip or from the rail.
+
+**Today.**
+- The daily system: the now card with a ring timer and Done / Partly / Missed, an up-next countdown, the 3 that matter, a feel strip and a day-plan timeline.
+- **Today's wave:** the day plan drawn as an animated wave, with done blocks filled in crimson and a "Now" marker.
+- **Tips** worked out from the data, up to 3 at a time, each dismissible for today.
+- The task list: four tasks makes a streak day.
+
+**Knowledge map (galaxy).** It opens from the launcher card. It's a 3D cinematic space scene built from real data:
+- Sun = KsHan.
+- Stars = the 9 big areas (Thermoforming 24%, Manufacturing 16%, CAD 13%, Quality 12%, Maintenance 11%, Engines 8%, Mechanics 7%, Career 5%, English 4%).
+- Planets = today's tasks; tap one to tick it off.
+- Moons = topics at 50% mastery or more; asteroids = topics under 50%.
+- Black holes = 6 mistakes to avoid.
+- Satellites = the next 3 day-plan blocks; nebulae = big goals (£25k, IELTS, target weight); pulsar = the streak; constellation = the last 14 days.
+
+The map's controls:
+- Drag moves the view; the orbit toggle or right-drag spins it. Zoom goes up to 24×.
+- The panels tuck away while you explore and come back from the "Panels" button.
+- A right-edge notch shows ring gauges.
+- "Ask AI" opens the chat over the map with suggested questions.
+
+**Lab.**
+- **CAD workspace:** SolidWorks-style WebGL modeller with a feature tree, editable boss / cut / rib / fillet features, zoom / pan / rotate, display styles and full screen. Its exercises are the L-bracket, flanged bush, pillow block and V4 engine block, each checked against a generated drawing.
+- The older 3D CAD quiz, the drawings explorer and 8-question test, the V12 engine digital twin with a fault simulator, and the test bench.
+
+**Coach AI.**
+- A floating "Ask coach" button sits on every tab, with a mic.
+- In the chat:
+  - The text box.
+  - A mic. Voice works in the Chrome app; the claude.ai viewer blocks the microphone, so device dictation is the fallback.
+  - Read-aloud answers.
+  - English ⇄ Burmese translation.
+- **Token saver:** Saver (the default) gives built-in answers and calls Claude only on "Ask Claude"; Smart sends only open questions to Claude; Off never calls it. There's a daily limit (default 20), a same-day answer cache and a usage meter in Settings.
+
+**Money / Progress / Train / Learn.**
+- Train: sessions with animated exercise figures.
+- Learn: IELTS essays, speaking cue cards, 12 engineering knowledge packs, words and career prep (Huhtamaki stages, stories, portfolio).
+- Money: the £25k savings plan and spending log.
+- Progress: streaks and charts.
+
+## Look
+- Palette: Crimson Depth #710014, Warm Sand #B38F6F, Soft Pearl #F2F1ED, Obsidian #161616.
+- Background: a procedural red / gold / cream mountain landscape.
+- The galaxy is deep blue space.
+- Surfaces are liquid glass with springy motion, and every animation stops when reduced motion is on.
+
+## Data
+Everything is stored in the browser under `localStorage['dailycoach.v1']`. The claude.ai link and the offline file keep separate copies; Settings → Your data → Export / Import moves data between them. Reset clears only the logged data, not the app.
+
+## Defaults that should be replaced with real numbers
+Income £2,500 a month, fixed costs £1,050, target weight 72 kg, IELTS target 7.0. These can be changed in Settings → Goals and money.
+
+## Asking for changes
+- Questions, plans, coaching, study help and small text changes can happen in the Project chat.
+- New features or big redesigns go to Claude Code on the repository and branch above. Start with: "Edit my Daily Coach app in ichiro04/ichiro04, branch claude/affectionate-hopper-zzk39m, folder apps/daily-coach. Read CLAUDE.md first." After a change the live link is republished, and the offline file needs replacing with the new `dist/daily-coach.html`.
