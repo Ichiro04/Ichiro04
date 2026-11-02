@@ -266,8 +266,8 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 }
 
 /* ============================================================
-   GALAXY DASHBOARD — the map opens as a satellite-style console:
-   a round galaxy porthole in the centre carrying the main title,
+   GALAXY DASHBOARD — the map opens full screen: a big galaxy
+   mind map (no frame) with the main title over its core,
    instrument panels left and right, ask bar below.
    ============================================================ */
 .km{--pw-ink:#F2F1ED;--pw-ink-2:#BDB3A8;--pw-ink-3:#857A70;--pw-line:rgba(242,241,237,.08);--pw-line-2:rgba(242,241,237,.16);--cr-accent:#C2304A;--cr-sand:#C9A882;
@@ -281,13 +281,13 @@ html.reduce .km *,html.reduce .km{animation:none!important}
   background:linear-gradient(180deg,#FBF6EE 30%,#E6CDB0 70%,#C9A882);-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 2px 14px rgba(0,0,0,.85)) drop-shadow(0 0 28px rgba(194,48,74,.45))}
 .km-title span{font-size:clamp(11px,calc(var(--or,200px)*.038),13.5px);color:rgba(242,241,237,.8);text-shadow:0 1px 6px #000}
-.km-hint{position:absolute;left:var(--ox,50%);top:calc(var(--oy,50%) + var(--or,200px)*.78);transform:translateX(-50%);z-index:2;pointer-events:none;white-space:nowrap;
+.km-hint{position:absolute;left:var(--ox,50%);top:calc(var(--oy,50%) + var(--oh,200px) + 6px);transform:translateX(-50%);z-index:2;pointer-events:none;white-space:nowrap;
   font-size:11.5px;color:rgba(242,241,237,.55);opacity:0;transition:opacity .5s}
 .km.titled .km-hint{opacity:1}
 #kmCanvas:active{cursor:grabbing}
 
 /* side instrument columns */
-.km-side{position:absolute;z-index:4;top:76px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:280px;display:flex;flex-direction:column;gap:12px;overflow:auto;scrollbar-width:none;padding:2px}
+.km-side{position:absolute;z-index:4;top:76px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:264px;display:flex;flex-direction:column;gap:12px;overflow:auto;scrollbar-width:none;padding:2px}
 .km-side::-webkit-scrollbar{display:none}
 .km-side.l{left:max(16px,env(safe-area-inset-left,0px))}
 .km-side.r{right:max(16px,env(safe-area-inset-right,0px));bottom:auto}
@@ -315,7 +315,7 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 }
 @media(max-width:1099px){
   .km-side{display:none}
-  .km-mini{position:absolute;z-index:4;left:16px;right:16px;top:calc(var(--oy,50%) + var(--or,200px) + 22px);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:560px;margin:0 auto}
+  .km-mini{position:absolute;z-index:4;left:16px;right:16px;top:calc(var(--oy,50%) + var(--oh,200px) + 18px);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:560px;margin:0 auto}
   .km-mi{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;min-width:0}
   .km-mi b{display:block;font-size:14px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .km-mi small{display:block;font-size:10.5px;color:var(--k-ink2)}

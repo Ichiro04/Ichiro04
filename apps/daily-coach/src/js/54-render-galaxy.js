@@ -111,8 +111,8 @@ const GAL = {
   drawDust(g, dust, v, T, alpha=1){
     g.globalCompositeOperation = 'lighter';
     for (const p of dust){ const [x,y,dz] = GAL.proj(p.r, p.th + GAL.spin(p.r,T), p.y, v), tw = .75 + .25*Math.sin(T*1.5 + p.tw);
-      const a = p.a*tw*alpha*(.75 + .25*dz), s = Math.min(2.4, p.s*(v.R/260));
-      g.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${a.toFixed(3)})`; g.fillRect(x, y, s, s); }
+      const a = p.a*tw*alpha*(.75 + .25*dz), s = Math.min(1.7, p.s*(v.R/420));
+      g.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${a.toFixed(3)})`; g.fillRect(x - s/2, y - s/2, s, s); }
     g.globalCompositeOperation = 'source-over';
   },
   drawCore(g, x, y, r, a=1){
@@ -134,7 +134,7 @@ const GAL = {
   },
   planet(g, x, y, r, col, lx, ly, a=1){ // col: [light, mid, dark]; (lx,ly) = direction to the core
     g.globalAlpha = a;
-    const gl = g.createRadialGradient(x,y,r*.5,x,y,r*2.6); gl.addColorStop(0, col[1]+'55'); gl.addColorStop(1, col[1]+'00'); g.fillStyle = gl; g.beginPath(); g.arc(x,y,r*2.6,0,7); g.fill();
+    const gl = g.createRadialGradient(x,y,r*.5,x,y,r*2.6); gl.addColorStop(0, col[1]+'38'); gl.addColorStop(1, col[1]+'00'); g.fillStyle = gl; g.beginPath(); g.arc(x,y,r*2.6,0,7); g.fill();
     const L = Math.hypot(lx,ly)||1, ox = lx/L*r*.45, oy = ly/L*r*.45;
     const b = g.createRadialGradient(x+ox, y+oy, r*.1, x, y, r*1.05); b.addColorStop(0, col[0]); b.addColorStop(.5, col[1]); b.addColorStop(1, col[2]);
     g.fillStyle = b; g.beginPath(); g.arc(x,y,r,0,7); g.fill();

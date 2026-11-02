@@ -273,12 +273,12 @@ dock with history, send/stop, new chat).
   mountain landscape (ink ridges, mist, gold-leaf specks) on a fixed canvas, repainted on resize and
   theme change. No third-party art is embedded.
 - **Knowledge map = galaxy dashboard.** Opening the map (launcher card on Today, Lab, Learn, or `#map`)
-  shows a satellite-style console: a round porthole in the centre holding the galaxy, with the main
+  shows a full-screen galaxy mind map (no frame or circle: the user rejected it), with the main
   title **"KsHan"** (the user's chosen name, keep it) over the core. The left column has Today, Legend
   and 14 days; the right column has Next block, £25k goal and Upcoming; the ask bar sits underneath.
   Below 1100px the columns collapse into a three-chip strip.
   - `kmLayout` computes `KM.orb {cx, cy, r}` and sets `--ox/--oy/--or` on `#km` for the HTML title.
-  - `kmDraw` draws the bezel (`kmBezel`: ticks, sweeping arc, compass marks), clips to the circle,
+  - `kmDraw` draws, with no clip,
     then draws the nebula texture (`GAL.nebula`, painted once), spiral dust, orbit rings, links and
     planets.
   - Spin a full 360° both ways: drag (with inertia) or the arrow keys. `KM.tilt` is wrapped by

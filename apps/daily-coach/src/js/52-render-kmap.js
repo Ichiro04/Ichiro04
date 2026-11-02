@@ -111,15 +111,16 @@ function kmLayout(snap){
   const W = KM.W || 1200, H = KM.H || 800, N = KM_DOMAINS.length;
   KM.nodes.forEach(n=>{
     if (n.type==='domain'){ const i = KM_DOMAINS.indexOf(n.dom); n.orad = .26 + i/(N-1)*.66; n.oth = i*2.39 + (n.ph%1)*.4; }
-    else if (n.type==='topic'){ const j = n.dom.topics.indexOf(n.topic), k = n.dom.topics.length; n.lr = .055 + (j%2)*.025; n.lth = j/k*Math.PI*2 + n.ph; }
-    else if (n.type==='practice' || n.type==='skill'){ n.lr = .02 + (n.ph%1)*.014; n.lth = n.ph*2; }
+    else if (n.type==='topic'){ const j = n.dom.topics.indexOf(n.topic), k = n.dom.topics.length; n.lr = .1 + (j%2)*.045; n.lth = j/k*Math.PI*2 + n.ph; }
+    else if (n.type==='practice' || n.type==='skill'){ n.lr = .028 + (n.ph%1)*.02; n.lth = n.ph*2; }
   });
   const wide = W >= 1100, top = W < 760 ? 112 : 76;
-  let r, cx = W/2, cy;
-  if (wide){ const bot = 178; r = Math.min((W - 2*300 - 70)/2, (H - top - bot)/2 - 8); cy = top + (H - top - bot)/2; }
-  else { const bot = W < 760 ? 186 : 176, mini = 74; r = Math.max(110, Math.min(W/2 - 16, (H - top - bot - mini)/2 - 6, 330)); const free = H - top - bot - (2*r + 22 + mini); cy = top + r + 6 + Math.max(0, free*.45); }
-  r = Math.max(110, r); KM.orb = { cx, cy, r }; KM.R = r*.9;
-  const el = document.getElementById('km'); if (el){ el.style.setProperty('--ox', cx+'px'); el.style.setProperty('--oy', cy+'px'); el.style.setProperty('--or', r+'px'); requestAnimationFrame(kmTitleBox); }
+  // no frame: the galaxy fills the screen like a mind map, between the side panels on wide screens
+  const ct = Math.cos(.55); let R, cx = W/2, cy, hh;
+  if (wide){ const bot = 170; R = Math.min((W - 2*290)/2*.92, (H - top - bot)/2/(ct*.98)); cy = top + (H - top - bot)/2 + 8; }
+  else { const bot = W < 760 ? 186 : 176, mini = 70; R = Math.max(120, Math.min(W*.56, (H - top - bot - mini)/2/(ct*.98), 420)); const used = 2*R*ct*.98 + 18 + mini, free = H - top - bot - used; cy = top + R*ct*.98 + Math.max(0, free*.4); }
+  hh = R*ct*.98; KM.orb = { cx, cy, r:R }; KM.R = R;
+  const el = document.getElementById('km'); if (el){ el.style.setProperty('--ox', cx+'px'); el.style.setProperty('--oy', cy+'px'); el.style.setProperty('--or', Math.min(R, 380)+'px'); el.style.setProperty('--oh', hh+'px'); requestAnimationFrame(kmTitleBox); }
 }
 function kmPos(n){ return [n.wx||0, n.wz||0]; }
 function kmIntroAt(n){ if (n.type==='core') return 0; const d = n.type==='domain' ? n : n.parent && n.parent.type==='domain' ? n.parent : n.parent && n.parent.parent ? n.parent.parent : n; return .9 + (d.orad||.5)*1.6 + (n.type==='domain'?0:.25) + ((n.ph*37)%1)*.15; }
@@ -146,10 +147,6 @@ function kmDraw(now){
   // background stars (screen space, gentle parallax with yaw)
   if (!KM.stars){ const r = mulberry32(99); KM.stars = Array.from({length:260},()=>[r(), r(), r()*1.2+.3, r()*.6+.2, r()*6]); }
   KM.stars.forEach(([x,y,s,a,tw])=>{ g.globalAlpha = a*(.7+.3*Math.sin(TT*1.2+tw))*fade; g.fillStyle = '#F2EEE8'; g.fillRect(((x*W + KM.yaw*20) % W + W) % W, y*H, s, s); }); g.globalAlpha = 1;
-  kmBezel(g, O, TT, fade*ie);
-  g.save(); g.beginPath(); g.arc(O.cx, O.cy, O.r, 0, 7); g.clip();
-  { const bg = g.createRadialGradient(O.cx, O.cy, 0, O.cx, O.cy, O.r); bg.addColorStop(0,'rgba(36,22,24,.9)'); bg.addColorStop(.65,'rgba(14,11,11,.94)'); bg.addColorStop(1,'rgba(6,5,5,.98)'); g.globalAlpha = fade; g.fillStyle = bg; g.fillRect(O.cx-O.r, O.cy-O.r, O.r*2, O.r*2); g.globalAlpha = 1;
-    const rs = mulberry32(5); g.fillStyle = '#F2EEE8'; for (let i=0;i<120;i++){ g.globalAlpha = (.15 + rs()*.5)*fade; const a = rs()*7, d = Math.sqrt(rs())*O.r; g.fillRect(O.cx + Math.cos(a)*d, O.cy + Math.sin(a)*d, rs()*1.2+.3, rs()*1.2+.3); } g.globalAlpha = 1; }
   if (!KM.dust) KM.dust = GAL.dust(W < 760 ? 2600 : 4200, 77);
   const vD = Object.assign({}, v, { R: R*(1 + (1-ie)*1.4) });
   KM_DOMAINS.forEach((d,i)=>GAL.drawRing(g, .26 + i/(KM_DOMAINS.length-1)*.66, v, .09*ie*fade, TT));
@@ -180,25 +177,23 @@ function kmDraw(now){
   const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = [];
   // reserve label space front-to-back: domains first, then the nearest topics
   const labOK = new Set(); g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
-  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (6 + n.w*.32)*Math.max(.7, Math.min(1.8, KM.cam.z)) : 4; if (kmLabelFree(n.sx + r + 6, n.sy - 10, w, n.type==='domain' ? 30 : 16)) labOK.add(n); });
+  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (7.5 + n.w*.4)*Math.max(.7, Math.min(1.35, KM.cam.z)) : 4, h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
   const zs = Math.max(.7, Math.min(1.8, KM.cam.z));
   list.forEach(n=>{
     const depth = .8 + .25*(n.dz+1)/2, hov = KM.hover===n ? 1.25 : 1;
-    if (n.type==='domain'){ const r = (6 + n.w*.32)*zs*depth*hov, col = GAL_PLANETS[KM_DOMAINS.indexOf(n.dom) % GAL_PLANETS.length];
+    if (n.type==='domain'){ const r = (7.5 + n.w*.4)*Math.min(zs,1.35)*depth*hov, col = GAL_PLANETS[KM_DOMAINS.indexOf(n.dom) % GAL_PLANETS.length];
       GAL.planet(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r;
       g.globalAlpha = n.va; g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F4EFE8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 8;
-      const lab = W < 760 && n.name.length > 14 ? n.name.slice(0,13).trimEnd()+'…' : n.name; if (!labOK.has(n)) g.globalAlpha = n.va*.0; else if (kmInTitle(n.sx + r + 9, n.sy, g.measureText(lab).width)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, n.sx + r + 9, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, n.sx + r + 9, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(n.sx + r + 9, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
-    else if (n.type==='topic'){ const r = 3.6*zs*depth*hov, m = kmMastery(n.topic);
-      g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(n.sx,n.sy,0,n.sx,n.sy,r*5); gr.addColorStop(0,`rgba(${m>=100?'230,205,176':'200,216,240'},${(.7*n.va).toFixed(2)})`); gr.addColorStop(1,'rgba(180,200,240,0)'); g.fillStyle = gr; g.beginPath(); g.arc(n.sx,n.sy,r*5,0,7); g.fill(); g.globalCompositeOperation = 'source-over';
+      const lab = W < 760 && n.name.length > 16 ? n.name.slice(0,15).trimEnd()+'…' : n.name, lw = g.measureText(lab).width, lx = n.lside < 0 ? n.sx - r - 9 - lw : n.sx + r + 9; if (!labOK.has(n)) g.globalAlpha = 0; else if (kmInTitle(lx, n.sy, lw)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, lx, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, lx, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(lx, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
+    else if (n.type==='topic'){ const r = 3.4*Math.min(zs,1.4)*depth*hov, m = kmMastery(n.topic);
+      g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(n.sx,n.sy,0,n.sx,n.sy,r*3.4); gr.addColorStop(0,`rgba(${m>=100?'230,205,176':'200,216,240'},${(.3*n.va).toFixed(2)})`); gr.addColorStop(1,'rgba(180,200,240,0)'); g.fillStyle = gr; g.beginPath(); g.arc(n.sx,n.sy,r*3.4,0,7); g.fill(); g.globalCompositeOperation = 'source-over';
       GAL.planet(g, n.sx, n.sy, r, m>=100 ? KM_PLANET.practice : KM_PLANET.topic, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 4;
       if (KM.hover===n || KM.sel===n || (labOK.has(n) && ((KM.labels && KM.cam.z > 1.5) || (conn && conn.has(n))))){ g.globalAlpha = n.va; g.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#E8EEF8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r + 8, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else { const r = (n.type==='practice' ? 2 : 1.6)*zs*depth; g.globalAlpha = n.va; g.fillStyle = n.type==='practice' ? '#E6CDB0' : '#D44A62'; g.beginPath(); g.arc(n.sx,n.sy,r,0,7); g.fill(); g.globalAlpha = 1; n.sr = r + 5;
       if (KM.labels && KM.cam.z > 2.2 && kmLabelFree(n.sx + r + 3, n.sy - 12, 18, 12)) kmChip(g, n.sx + r + 4, n.sy - 6, String(n.n), n.va*.85); }
   });
-  // inner rim shading, then the dark band that keeps the title readable
-  { const vg = g.createRadialGradient(O.cx, O.cy, O.r*.72, O.cx, O.cy, O.r); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.55)'); g.fillStyle = vg; g.fillRect(O.cx-O.r, O.cy-O.r, O.r*2, O.r*2);
-    if (KM.tA > .01){ const ty = O.cy - O.r*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, O.r*.7); tv.addColorStop(0,`rgba(8,6,7,${(.62*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, O.r*.74, O.r*.3, 0, 0, 7); g.fill(); } }
-  g.restore();
+  // a soft dark band keeps the title readable over the core
+  if (KM.tA > .01){ const tr = Math.min(O.r, 380), ty = O.cy - tr*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.55*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
 }
 function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
   const t = document.querySelector('.km-title'), cv = document.getElementById('kmCanvas'); if (!t || !cv) return; const c = cv.getBoundingClientRect(); let b = null;
@@ -207,21 +202,6 @@ function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
 function kmInTitle(x, y, w=0){ const b = KM.tBox; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
 function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels never pile up
   const L = KM.labs || (KM.labs = []); for (const b of L) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return false; L.push([x, y, w, h]); return true; }
-function kmBezel(g, O, T, a){ // the instrument ring round the porthole: ticks, a sweeping arc, compass marks
-  if (a <= 0) return; const { cx, cy, r } = O;
-  g.save(); g.globalAlpha = a;
-  const glow = g.createRadialGradient(cx, cy, r*.96, cx, cy, r*1.32); glow.addColorStop(0,'rgba(194,48,74,.22)'); glow.addColorStop(1,'rgba(194,48,74,0)'); g.fillStyle = glow; g.beginPath(); g.arc(cx, cy, r*1.32, 0, 7); g.fill();
-  g.lineWidth = 9; g.strokeStyle = '#1A1615'; g.beginPath(); g.arc(cx, cy, r+5.5, 0, 7); g.stroke();
-  g.lineWidth = 1; g.strokeStyle = 'rgba(230,205,176,.35)'; g.beginPath(); g.arc(cx, cy, r+1, 0, 7); g.stroke();
-  g.strokeStyle = 'rgba(230,205,176,.16)'; g.beginPath(); g.arc(cx, cy, r+10.5, 0, 7); g.stroke();
-  for (let i=0;i<120;i++){ const th = i/120*Math.PI*2, big = i%10===0, r0 = r+14, r1 = r0 + (big ? 9 : 4); g.strokeStyle = big ? 'rgba(230,205,176,.55)' : 'rgba(230,205,176,.18)'; g.lineWidth = big ? 1.4 : 1; g.beginPath(); g.moveTo(cx+Math.cos(th)*r0, cy+Math.sin(th)*r0); g.lineTo(cx+Math.cos(th)*r1, cy+Math.sin(th)*r1); g.stroke(); }
-  const s0 = T*.35; g.lineCap = 'round'; g.lineWidth = 2.4; const sw = g.createLinearGradient(cx+Math.cos(s0)*r, cy+Math.sin(s0)*r, cx+Math.cos(s0+1.1)*r, cy+Math.sin(s0+1.1)*r); sw.addColorStop(0,'rgba(194,48,74,0)'); sw.addColorStop(1,'rgba(224,90,110,.95)');
-  g.strokeStyle = sw; g.beginPath(); g.arc(cx, cy, r+5.5, s0, s0+1.1); g.stroke();
-  g.fillStyle = '#E6CDB0'; g.beginPath(); g.arc(cx+Math.cos(s0+1.1)*(r+5.5), cy+Math.sin(s0+1.1)*(r+5.5), 2.6, 0, 7); g.fill();
-  if (r > 150){ g.font = '600 10px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = 'rgba(230,205,176,.55)'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    [['N',-Math.PI/2],['E',0],['S',Math.PI/2],['W',Math.PI]].forEach(([l,th])=>g.fillText(l, cx+Math.cos(th)*(r+34), cy+Math.sin(th)*(r+34))); g.textAlign = 'start'; g.textBaseline = 'alphabetic'; }
-  g.restore();
-}
 function kmToWorld(x,y){ return [x,y]; }
 function kmWrap(a){ const P = Math.PI*2; return ((a + Math.PI) % P + P) % P - Math.PI; } // full 360° turns in both directions
 function kmCamTo(x, y, z, d=700, raw, tilt){ KM.tween = { t0:performance.now(), d: motionOff() ? 1 : d, x0:KM.cam.x, y0:KM.cam.y, z0:KM.cam.z, x1:x, y1:y, z1:clamp(z,.5,4) }; if (tilt!==undefined){ KM.vt = 0; KM.tween.t0v = KM.tilt; KM.tween.t1 = tilt + Math.PI*2*Math.round((KM.tilt - tilt)/(Math.PI*2)); } }
@@ -326,7 +306,7 @@ function kmWave(){
 }
 
 /* ---------- interaction ---------- */
-function kmHit(x,y){ if (KM.orb && Math.hypot(x-KM.orb.cx, y-KM.orb.cy) > KM.orb.r) return null; let best = null, bd = 1e9; KM.nodes.forEach(n=>{ if (n.sx===undefined) return; const d = Math.hypot(n.sx-x, n.sy-y); if (d < Math.max(14, n.sr+8) && d < bd){ bd = d; best = n; } }); return best; }
+function kmHit(x,y){ let best = null, bd = 1e9; KM.nodes.forEach(n=>{ if (n.sx===undefined) return; const d = Math.hypot(n.sx-x, n.sy-y); if (d < Math.max(14, n.sr+8) && d < bd){ bd = d; best = n; } }); return best; }
 function kmTip(n){
   const tip = document.getElementById('kmTip'); if (!tip) return;
   if (!n || n.type==='core'){ tip.hidden = true; return; }
@@ -454,7 +434,7 @@ function kmUnfocus(){
 function kmKick(){ if (!KM.raf) KM.raf = requestAnimationFrame(kmLoop); }
 function kmOpen(){
   if (KM.open) return;
-  KM.labels = window.innerWidth >= 760; KM.yaw = -.5; KM.tilt = .72; KM.tA = 0; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
+  KM.labels = window.innerWidth >= 760; KM.yaw = -.5; KM.tilt = .55; KM.tA = 0; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
   document.body.insertAdjacentHTML('beforeend', kmShellHTML());
   KM.labels = window.innerWidth >= 760;
   document.body.classList.add('km-open'); KM.open = true; KM.view = 'graph'; KM.sel = null; KM.focus = null; KM.cam = { x:0, y:0, z:1 }; KM.pulses = [];
@@ -505,8 +485,8 @@ function kmAction(a, el){
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();
   else if (a==='km-zoom'){ { const f = +el.dataset.id > 0 ? 1.35 : 1/1.35, z = clamp(KM.cam.z*f,.5,4), k = z/KM.cam.z; kmCamTo(KM.cam.x*k, KM.cam.y*k, z, 300); } }
-  else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,700,true,.72); }
-  else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : .72); }
+  else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,700,true,.55); }
+  else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : .55); }
   else if (a==='km-gaps'){ KM.gaps = !KM.gaps; el.classList.toggle('on', KM.gaps); toast(KM.gaps ? 'Showing gaps only: learned topics are dimmed.' : 'Showing every topic.', 'ok', 1600); }
   else if (a==='km-labels'){ KM.labels = !KM.labels; el.classList.toggle('on', KM.labels); }
   else if (a==='km-search'){ document.getElementById('kmQ').focus(); }
