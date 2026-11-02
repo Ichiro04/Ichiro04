@@ -154,10 +154,15 @@ his weight or his money — state the number and the next action.
 
 ## Known TODOs
 
-- [ ] The four project docs (`instructions-context.md`, `daily-coach.md`, `money-plan.md`,
-      `build-references.md`) never arrived. The app runs on the original brief plus assumptions that
-      should be replaced: income £2,500/mo, fixed costs £1,050, weight target 72 kg, IELTS target 7.0,
-      no spend history.
+- [x] The four project docs arrived (Nov 2026) and live in `docs/`: `instructions-context.md` (who Kyaw
+      is, background, goals, how to coach him), `money-plan.md` (the real budget) and
+      `build-references.md` (prompt patterns for visual builds). `daily-coach.md` is no longer needed:
+      this `CLAUDE.md` replaces it. Money defaults now follow `money-plan.md`: income £2,500, budget
+      £1,197 a month, so £1,303 saved (£15,636 a year; the £25k goal is short by about £780 a month).
+      The budget keeps the existing item names, with "Shopping + personal" and "Learning + career"
+      added. `load()` swaps in the new list once, only if a saved list is still the old £1,050
+      placeholder. `feasiblePerMonth()` no longer takes 10% off (the budget already has a £50 buffer),
+      so the Money tab shows £1,303 realistic and £780 short, matching the plan. The weight target stays 72 kg and the IELTS target 7.0.
 - [ ] `state.settings.examDate` is stored but nothing counts down to it yet.
 - [ ] The Coach is deterministic (`generateReply`). If it is ever wired to a real model, keep the
       grounded-data-first behaviour and never send the JSON store to a server without asking.

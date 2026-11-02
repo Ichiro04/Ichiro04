@@ -64,8 +64,8 @@ The map's controls:
 ## Data
 Everything is stored in the browser under `localStorage['dailycoach.v1']`. The claude.ai link and the offline file keep separate copies; Settings → Your data → Export / Import moves data between them. Reset clears only the logged data, not the app.
 
-## Defaults that should be replaced with real numbers
-Income £2,500 a month, fixed costs £1,050, target weight 72 kg, IELTS target 7.0. These can be changed in Settings → Goals and money.
+## Money and targets
+The real budget is in `docs/money-plan.md`: income £2,500 a month, budget £1,197, so £1,303 saved a month (£15,636 a year). The £25k goal needs £2,083 a month, so it is short by about £780 a month. Commuting to Huhtamaki in Gosport would cost about £206 a month. The target weight is 72 kg and the IELTS target 7.0. All of these can be changed in Settings → Goals and money. Background about Kyaw is in `docs/instructions-context.md`.
 
 ## Asking for changes
 - Questions, plans, coaching, study help and small text changes can happen in the Project chat.

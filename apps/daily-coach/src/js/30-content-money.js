@@ -22,7 +22,8 @@ function monthProgress(d=new Date()){ const dim = new Date(d.getFullYear(), d.ge
 const planMonths = 12;
 const needPerMonth = () => Math.max(0, (Number(state.settings.goal) - Number(state.settings.opening||0)) / planMonths);
 const freeAfterFixed = () => Number(state.settings.income||0) - fixedTotal();
-const feasiblePerMonth = () => Math.max(0, freeAfterFixed() * 0.9);
+// the budget in docs/money-plan.md already carries a £50 buffer, so no extra haircut: £2,500 − £1,197 = £1,303/month
+const feasiblePerMonth = () => Math.max(0, freeAfterFixed());
 const milestoneList = (() => {
   const goal = 25000; return [5000,10000,15000,20000,25000].map(v=>({ v, pct:v/goal }));
 })();

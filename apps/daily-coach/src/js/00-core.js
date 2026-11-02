@@ -47,13 +47,16 @@ const DEFAULT_STATE = {
   profile: { display:'KsHan', name:'Kyaw Soe Han', heightCm:170, weightStart:81, weightTarget:72, city:'Southsea, Portsmouth', degree:'BEng Mechanical Engineering, Portsmouth 2025' },
   settings: {
     income: 2500, goal: 25000, opening: 0,
+    // monthly budget from docs/money-plan.md (Nov 2026): £1,197 out of £2,500, so £1,303 saved
     fixed: [
-      { id:'rent',  name:'Rent + bills',        amount: 650 },
-      { id:'food',  name:'Food shop',           amount: 180 },
-      { id:'trans', name:'Transport',           amount: 60  },
-      { id:'phone', name:'Phone + subscriptions', amount: 25 },
-      { id:'fun',   name:'Fun + eating out',    amount: 90  },
-      { id:'misc',  name:'Everything else',     amount: 45  }
+      { id:'rent',  name:'Rent + bills',        amount: 600 },
+      { id:'food',  name:'Food shop',           amount: 250 },  // groceries
+      { id:'trans', name:'Transport',           amount: 72  },  // First Bus Portsmouth monthly ticket
+      { id:'phone', name:'Phone + subscriptions', amount: 65 }, // phone 15 + subscriptions 50
+      { id:'fun',   name:'Fun + eating out',    amount: 80  },  // fun 20 + eating out 60
+      { id:'shop',  name:'Shopping + personal', amount: 50  },
+      { id:'learn', name:'Learning + career',   amount: 30  },
+      { id:'misc',  name:'Everything else',     amount: 50  }   // other / buffer
     ],
     stepsGoal: 8000,
     ieltsTarget: 7.0,
@@ -91,6 +94,10 @@ function load(){
   let raw = null;
   try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e){ raw = null; }
   const s = deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), raw || {});
+  // one-time move to the real budget (docs/money-plan.md): only if the list is still the untouched old placeholder
+  const OLD_FIXED = 'rent:650|food:180|trans:60|phone:25|fun:90|misc:45';
+  if (s.settings && Array.isArray(s.settings.fixed) && s.settings.fixed.map(f=>f.id + ':' + f.amount).join('|') === OLD_FIXED)
+    s.settings.fixed = JSON.parse(JSON.stringify(DEFAULT_STATE.settings.fixed));
   return s;
 }
 let saveWarned = false;
