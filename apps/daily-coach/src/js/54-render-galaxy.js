@@ -79,29 +79,42 @@ let landT; addEventListener('resize', ()=>{ clearTimeout(landT); landT = setTime
 
 /* ---------- galaxy helpers ---------- */
 const GAL = {
+  // Milky Way: a central bar, two bright arms from its ends, two fainter arms, a warm bulge and a thin halo.
+  // Particles are grouped into colour/brightness buckets so each frame sets fillStyle ~24 times, not once per star.
+  MW_COLS: [[226,234,255],[200,214,255],[255,238,214],[255,214,170],[255,132,160],[214,60,86]],
   dust(n, seed){
-    const r = mulberry32(seed), out = [];
+    const r = mulberry32(seed), out = [], g = () => (r()+r()+r()-1.5)/1.5;
+    const push = (rad, th, y, s, a, ci) => out.push({ r:rad, th, y, s, a, ci, b: ci*4 + Math.min(3, Math.floor(a*4)) });
     for (let i=0;i<n;i++){
-      const arm = i % 3, t = Math.pow(r(), .7), rad = .08 + t*.92, th = arm*2*Math.PI/3 + Math.log(rad*8+1)*2.4 + (r()-.5)*.55*(1-t*.4);
-      const c = r(), col = c < .55 ? [236,232,224] : c < .78 ? [214,184,150] : c < .9 ? [176,196,226] : [200,60,80];
-      out.push({ r:rad, th, y:(r()-.5)*.05*(1-t), s:.4 + r()*1.4, a:.25 + r()*.7, col, tw:r()*6 });
+      const main = i % 4 < 3, arm = main ? (i % 2)*Math.PI : Math.PI/2 + (i % 2)*Math.PI, t = Math.pow(r(), .75), rad = .16 + t*.84;
+      const th = arm + Math.log(rad*5+1)*2.1 + g()*(main ? .3 : .42)*(1 - t*.25), c = r();
+      const ci = rad < .35 ? (c < .6 ? 2 : 3) : c < .5 ? 0 : c < .82 ? 1 : c < .9 ? 2 : c < .97 ? 4 : 5;
+      push(rad, th, g()*.03*(1-t), .5 + r()*1.3, (main ? .35 : .22) + r()*.6, ci);
     }
-    for (let i=0;i<n*.25;i++){ const rad = r()*.22, th = r()*Math.PI*2; out.push({ r:rad, th, y:(r()-.5)*.06, s:.4+r(), a:.5+r()*.5, col:[246,230,205], tw:r()*6 }); }
-    return out;
+    for (let i=0;i<n*.3;i++){ const u = g()*.3, w = g()*.06, rad = Math.hypot(u,w), th = Math.atan2(w,u) + .5; push(rad, th, g()*.05, .5 + r(), .45 + r()*.5, r() < .7 ? 2 : 3); }
+    for (let i=0;i<n*.18;i++){ const rad = Math.sqrt(r())*1.05, th = r()*Math.PI*2; push(rad, th, g()*.04, .4 + r()*.8, .12 + r()*.3, r() < .6 ? 0 : 2); }
+    out.sort((a,b)=>a.b-b.b); return out;
   },
-  nebula(){ // face-on glow texture for the spiral arms (radius 1 = 250px), painted once
-    const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d'), r = mulberry32(31);
-    g.translate(256,256); g.globalCompositeOperation = 'lighter';
-    for (let arm=0; arm<3; arm++) for (let i=0;i<110;i++){ const rad = .08 + Math.pow(i/110,.85)*.92, th = arm*2*Math.PI/3 + Math.log(rad*8+1)*2.4 + (r()-.5)*.18;
-      const x = Math.cos(th)*rad*250, y = Math.sin(th)*rad*250, br = 10 + rad*34, inner = rad < .45;
-      const gr = g.createRadialGradient(x,y,0,x,y,br); gr.addColorStop(0, inner ? 'rgba(240,214,182,.075)' : 'rgba(178,40,62,.075)'); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x,y,br,0,7); g.fill(); }
-    const core = g.createRadialGradient(0,0,0,0,0,120); core.addColorStop(0,'rgba(255,236,210,.35)'); core.addColorStop(.35,'rgba(220,170,130,.12)'); core.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = core; g.beginPath(); g.arc(0,0,120,0,7); g.fill();
+  nebula(){ // face-on glow texture (radius 1 = 380px), painted once: diffuse disc, bar, arms, pink knots, dust lanes
+    const S = 768, H = S/2, K = 380, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d'), r = mulberry32(31);
+    g.translate(H,H); g.globalCompositeOperation = 'lighter';
+    let gr = g.createRadialGradient(0,0,0,0,0,K); gr.addColorStop(0,'rgba(255,226,186,.22)'); gr.addColorStop(.3,'rgba(190,190,220,.08)'); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = gr; g.beginPath(); g.arc(0,0,K,0,7); g.fill();
+    const blob = (x,y,br,col) => { const q = g.createRadialGradient(x,y,0,x,y,br); q.addColorStop(0,col); q.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = q; g.beginPath(); g.arc(x,y,br,0,7); g.fill(); };
+    for (let arm=0; arm<4; arm++){ const main = arm < 2, a0 = main ? arm*Math.PI : Math.PI/2 + (arm-2)*Math.PI;
+      for (let i=0;i<150;i++){ const rad = .16 + Math.pow(i/150,.9)*.84, th = a0 + Math.log(rad*5+1)*2.1 + (r()-.5)*.12, x = Math.cos(th)*rad*K, y = Math.sin(th)*rad*K;
+        blob(x, y, 14 + rad*46, rad < .35 ? `rgba(255,222,180,${main?.09:.05})` : `rgba(176,196,255,${main?.08:.045})`);
+        if (rad > .3 && r() < (main ? .22 : .1)) blob(x + (r()-.5)*20, y + (r()-.5)*20, 4 + r()*7, 'rgba(255,110,140,.35)'); } }
+    g.save(); g.rotate(.5); g.scale(1,.36); blob(0,0,K*.36,'rgba(255,226,180,.75)'); g.restore();
+    blob(0,0,K*.2,'rgba(255,240,215,.8)'); blob(0,0,K*.07,'rgba(255,250,240,.9)');
+    g.globalCompositeOperation = 'destination-out'; g.lineCap = 'round';
+    for (let arm=0; arm<2; arm++){ g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 7; g.beginPath();
+      for (let i=0;i<=120;i++){ const rad = .2 + i/120*.75, th = arm*Math.PI + Math.log(rad*5+1)*2.1 - .16, x = Math.cos(th)*rad*K, y = Math.sin(th)*rad*K; i ? g.lineTo(x,y) : g.moveTo(x,y); } g.stroke(); }
     return c;
   },
   drawNebula(g, neb, v, T, alpha){
-    if (alpha <= 0) return; const k = v.R/250;
+    if (alpha <= 0) return; const k = v.R/380;
     g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = alpha; g.translate(v.cx, v.cy); g.scale(1, Math.cos(v.tilt)); g.rotate(v.yaw + GAL.spin(.42, T));
-    g.drawImage(neb, -256*k, -256*k, 512*k, 512*k); g.restore();
+    g.drawImage(neb, -384*k, -384*k, 768*k, 768*k); g.restore();
   },
   proj(rad, th, y, v){ // v: {cx, cy, R, yaw, tilt}
     const x = rad*Math.cos(th + v.yaw), z = rad*Math.sin(th + v.yaw);
@@ -109,10 +122,11 @@ const GAL = {
   },
   spin(rad, T){ return T * .06 / Math.sqrt(rad + .05); },
   drawDust(g, dust, v, T, alpha=1){
-    g.globalCompositeOperation = 'lighter';
-    for (const p of dust){ const [x,y,dz] = GAL.proj(p.r, p.th + GAL.spin(p.r,T), p.y, v), tw = .75 + .25*Math.sin(T*1.5 + p.tw);
-      const a = p.a*tw*alpha*(.75 + .25*dz), s = Math.min(1.7, p.s*(v.R/420));
-      g.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${a.toFixed(3)})`; g.fillRect(x - s/2, y - s/2, s, s); }
+    g.globalCompositeOperation = 'lighter'; let cur = -1; const sc = Math.min(1.25, v.R/420);
+    for (const p of dust){
+      if (p.b !== cur){ cur = p.b; const c = GAL.MW_COLS[p.ci], lv = (p.b % 4 + .6)/4; g.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${(lv*alpha*.9).toFixed(3)})`; }
+      const [x,y] = GAL.proj(p.r, p.th + GAL.spin(p.r,T), p.y, v), s = Math.max(.6, Math.min(1.8, p.s*sc)); g.fillRect(x - s/2, y - s/2, s, s);
+    }
     g.globalCompositeOperation = 'source-over';
   },
   drawCore(g, x, y, r, a=1){

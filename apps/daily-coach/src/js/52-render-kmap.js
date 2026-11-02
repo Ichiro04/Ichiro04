@@ -137,7 +137,11 @@ function kmDraw(now){
   g.setTransform(KM.dpr,0,0,KM.dpr,0,0); g.clearRect(0,0,W,H);
   const T = (now - KM.t0)/1000, still = motionOff(), TT = still ? 30 : T;
   if (KM.tween){ const k = Math.min(1,(now-KM.tween.t0)/KM.tween.d), e = 1-Math.pow(1-k,3); KM.cam.x = KM.tween.x0+(KM.tween.x1-KM.tween.x0)*e; KM.cam.y = KM.tween.y0+(KM.tween.y1-KM.tween.y0)*e; KM.cam.z = KM.tween.z0+(KM.tween.z1-KM.tween.z0)*e; if (KM.tween.t1!==undefined) KM.tilt = kmWrap(KM.tween.t0v+(KM.tween.t1-KM.tween.t0v)*e); if (k>=1) KM.tween = null; }
-  if (!KM.drag && !still){ KM.yaw += KM.vy; KM.vy *= .94; if (!KM.tween){ KM.tilt = kmWrap(KM.tilt + (KM.vt||0)); } KM.vt = (KM.vt||0)*.94; }
+  if (KM.yawT === undefined){ KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
+  if (KM.tween || still){ if (still && !KM.tween){ KM.yaw = KM.yawT; KM.tilt = KM.tiltT; } KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
+  else { // smooth follow: drags move a target and the view eases toward it every frame, then glides on with inertia
+    if (!KM.drag){ KM.yawT += KM.vy; KM.vy *= .955; KM.tiltT = kmWrap(KM.tiltT + (KM.vt||0)); KM.vt = (KM.vt||0)*.955; }
+    KM.yaw += (KM.yawT - KM.yaw)*.18; KM.tilt = kmWrap(KM.tilt + kmWrap(KM.tiltT - KM.tilt)*.18); }
   if (!KM.freeze) KM.freezeT = TT;
   { const want = KM.view==='graph' && !KM.sel && KM.cam.z < 1.3 && (still || T > 2.2) ? 1 : 0; KM.tA = (KM.tA||0) + (want - (KM.tA||0))*(still ? 1 : .12);
     const root = document.getElementById('km'); if (root){ const on = KM.tA > .5; if (root.classList.contains('titled') !== on) root.classList.toggle('titled', on); } }
@@ -147,7 +151,7 @@ function kmDraw(now){
   // background stars (screen space, gentle parallax with yaw)
   if (!KM.stars){ const r = mulberry32(99); KM.stars = Array.from({length:260},()=>[r(), r(), r()*1.2+.3, r()*.6+.2, r()*6]); }
   KM.stars.forEach(([x,y,s,a,tw])=>{ g.globalAlpha = a*(.7+.3*Math.sin(TT*1.2+tw))*fade; g.fillStyle = '#F2EEE8'; g.fillRect(((x*W + KM.yaw*20) % W + W) % W, y*H, s, s); }); g.globalAlpha = 1;
-  if (!KM.dust) KM.dust = GAL.dust(W < 760 ? 2600 : 4200, 77);
+  if (!KM.dust) KM.dust = GAL.dust(W < 760 ? 3200 : 5200, 77);
   const vD = Object.assign({}, v, { R: R*(1 + (1-ie)*1.4) });
   KM_DOMAINS.forEach((d,i)=>GAL.drawRing(g, .26 + i/(KM_DOMAINS.length-1)*.66, v, .09*ie*fade, TT));
   if (!KM.neb) KM.neb = GAL.nebula(); GAL.drawNebula(g, KM.neb, vD, TT, ie*fade);
@@ -193,7 +197,7 @@ function kmDraw(now){
       if (KM.labels && KM.cam.z > 2.2 && kmLabelFree(n.sx + r + 3, n.sy - 12, 18, 12)) kmChip(g, n.sx + r + 4, n.sy - 6, String(n.n), n.va*.85); }
   });
   // a soft dark band keeps the title readable over the core
-  if (KM.tA > .01){ const tr = Math.min(O.r, 380), ty = O.cy - tr*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.55*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
+  if (KM.tA > .01){ const tr = Math.min(O.r, 380), ty = O.cy - tr*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.38*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
 }
 function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
   const t = document.querySelector('.km-title'), cv = document.getElementById('kmCanvas'); if (!t || !cv) return; const c = cv.getBoundingClientRect(); let b = null;
@@ -434,7 +438,7 @@ function kmUnfocus(){
 function kmKick(){ if (!KM.raf) KM.raf = requestAnimationFrame(kmLoop); }
 function kmOpen(){
   if (KM.open) return;
-  KM.labels = window.innerWidth >= 760; KM.yaw = -.5; KM.tilt = .55; KM.tA = 0; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
+  KM.labels = window.innerWidth >= 760; KM.yaw = KM.yawT = -.5; KM.tilt = KM.tiltT = .55; KM.vy = KM.vt = 0; KM.tA = 0; KM.neb = null; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
   document.body.insertAdjacentHTML('beforeend', kmShellHTML());
   KM.labels = window.innerWidth >= 760;
   document.body.classList.add('km-open'); KM.open = true; KM.view = 'graph'; KM.sel = null; KM.focus = null; KM.cam = { x:0, y:0, z:1 }; KM.pulses = [];
@@ -455,13 +459,13 @@ function kmClose(){
 }
 function kmBind(){
   const cv = document.getElementById('kmCanvas'), root = document.getElementById('km');
-  cv.addEventListener('pointerdown', e=>{ KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY }); cv.setPointerCapture(e.pointerId); if (KM.ptr.size===1) KM.drag = { x:e.clientX, y:e.clientY, moved:0 }; else KM.drag = null; KM.tween = null; });
+  cv.addEventListener('pointerdown', e=>{ KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY }); cv.setPointerCapture(e.pointerId); if (KM.ptr.size===1) KM.drag = { x:e.clientX, y:e.clientY, moved:0 }; else KM.drag = null; KM.tween = null; KM.vy = KM.vt = 0; });
   cv.addEventListener('pointermove', e=>{
     const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     if (KM.ptr.has(e.pointerId)){
       const prev = KM.ptr.get(e.pointerId); KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY });
       if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); if (d0 > 0){ const z = clamp(KM.cam.z*d1/d0, .5, 4), k = z/KM.cam.z; KM.cam.x *= k; KM.cam.y *= k; KM.cam.z = z; } return; }
-      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ KM.cam.x += dx; KM.cam.y += dy; } else { KM.yaw += dx*.007; KM.vy = dx*.0035; KM.tilt = kmWrap(KM.tilt - dy*.007); KM.vt = -dy*.0035; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); }
+      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ KM.cam.x += dx; KM.cam.y += dy; } else { KM.yawT += dx*.007; KM.vy = KM.vy*.5 + dx*.0016; KM.tiltT = kmWrap(KM.tiltT - dy*.007); KM.vt = (KM.vt||0)*.5 - dy*.0016; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); }
       return;
     }
     const h = kmHit(x,y); if (h !== KM.hover){ KM.hover = h; cv.style.cursor = h ? 'pointer' : 'grab'; }
@@ -501,7 +505,7 @@ function kmAction(a, el){
     else if (t.lab){ labPane = t.lab; setTab('lab', { force:true }); setTimeout(()=>showLabPane(t.lab), 60); }
     else if (t.learn){ learnTab = t.learn; setTab('learn', { force:true }); } }
 }
-document.addEventListener('keydown', e=>{ if (KM.open && KM.view==='graph' && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))){ const k = { ArrowLeft:[-.12,0], ArrowRight:[.12,0], ArrowUp:[0,-.12], ArrowDown:[0,.12] }[e.key]; if (k){ e.preventDefault(); KM.yaw += k[0]; KM.tilt = kmWrap(KM.tilt + k[1]); kmKick(); return; } }
+document.addEventListener('keydown', e=>{ if (KM.open && KM.view==='graph' && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))){ const k = { ArrowLeft:[-.12,0], ArrowRight:[.12,0], ArrowUp:[0,-.12], ArrowDown:[0,.12] }[e.key]; if (k){ e.preventDefault(); KM.yawT += k[0]; KM.tiltT = kmWrap(KM.tiltT + k[1]); kmKick(); return; } }
   if (e.key==='Escape' && KM.open){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); } });
 window.addEventListener('hashchange', ()=>{ if (location.hash==='#map') kmOpen(); else if (KM.open) kmClose(); });
 function kmLauncherHTML(){
