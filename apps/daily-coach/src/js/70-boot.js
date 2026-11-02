@@ -29,7 +29,7 @@ function buildMotes(){
    ============================================================ */
 function boot(){
   applyTheme(); applyMotion(); paintLandscape();
-  buildTabbar();
+  buildTabbar(); if (typeof mountRail==='function') mountRail(); if (typeof chatFab==='function') chatFab();
   // hydrate any static icon slots written as <span data-ic="name">
   $$('[data-ic]').forEach(el=>{ el.innerHTML = ic(el.dataset.ic, 15); });
   $('#hero').innerHTML = heroHTML(activeTab);

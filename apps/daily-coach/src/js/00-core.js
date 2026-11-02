@@ -39,8 +39,11 @@ const DEFAULT_STATE = {
   v: 1,
   theme: 'auto',            // auto | light | dark
   reduceMotion: false,
+  railOpen: false,          // desktop side menu expanded
+  tipsOff: {},
+  voiceOut: false, voiceRate: 1, voiceLang: 'en-GB', chatFab: true, tipsShow: true,              // dateKey -> [tip ids hidden today] ('*' hides all)
   createdAt: dkey(),
-  profile: { name:'Kyaw Soe Han', heightCm:170, weightStart:81, weightTarget:72, city:'Southsea, Portsmouth', degree:'BEng Mechanical Engineering, Portsmouth 2025' },
+  profile: { display:'KsHan', name:'Kyaw Soe Han', heightCm:170, weightStart:81, weightTarget:72, city:'Southsea, Portsmouth', degree:'BEng Mechanical Engineering, Portsmouth 2025' },
   settings: {
     income: 2500, goal: 25000, opening: 0,
     fixed: [

@@ -132,8 +132,8 @@ function kmLayout(snap){
   const wide = W >= 1100, top = W < 760 ? 112 : 76;
   // no frame: the galaxy fills the screen like a mind map, between the side panels on wide screens
   const ct = Math.cos(1.0); let R, cx = W/2, cy, hh;
-  if (wide){ const bot = 170; R = Math.min((W - 2*290)/2*.92, (H - top - bot)/2/(ct*.98)); cy = top + (H - top - bot)/2 + 8; }
-  else { const bot = W < 760 ? 186 : 176, mini = 70; R = Math.max(120, Math.min(W*.56, (H - top - bot - mini)/2/(ct*.98), 420)); const used = 2*R*ct*.98 + 18 + mini, free = H - top - bot - used; cy = top + R*ct*.98 + Math.max(0, free*.4); }
+  if (wide){ const bot = 170; R = Math.min((W - 2*290 - 70)/2*.92, (H - top - bot)/2/(ct*.98)); cy = top + (H - top - bot)/2 + 8; }
+  else { const bot = W < 760 ? 186 : 176, mini = 0; R = Math.max(120, Math.min(W*.56, (H - top - bot - mini)/2/(ct*.98), 420)); const used = 2*R*ct*.98 + 18 + mini, free = H - top - bot - used; cy = top + R*ct*.98 + Math.max(0, free*.4); }
   hh = R*ct*.98; KM.orb = { cx, cy, r:R }; KM.R = R;
   const el = document.getElementById('km'); if (el){ el.style.setProperty('--ox', cx+'px'); el.style.setProperty('--oy', cy+'px'); el.style.setProperty('--or', Math.min(R, 380)+'px'); el.style.setProperty('--oh', hh+'px'); requestAnimationFrame(kmTitleBox); }
 }
@@ -378,6 +378,9 @@ function kmInTitle(x, y, w=0){ const b = KM.tBox; return b && KM.tA > .3 && x < 
 function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels never pile up
   const L = KM.labs || (KM.labs = []); for (const b of L) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return false; L.push([x, y, w, h]); return true; }
 function kmToWorld(x,y){ return [x,y]; }
+function kmDock(on){ // panels tuck away while you explore and come back from the centre button
+  const root = document.getElementById('km'); if (!root || KM.view!=='graph') return; if (root.classList.contains('undocked') === !on) return;
+  root.classList.toggle('undocked', !on); if (!on) document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); }
 function kmZoomAt(f, mx, my){ // zoom towards the cursor: the point under it stays put
   const O = KM.orb || { cx:KM.W/2, cy:KM.H/2 }, c = KM.camT || { ...KM.cam }, z = clamp(c.z*f, .4, 24), k = z/c.z;
   KM.camT = { x: mx - O.cx - (mx - O.cx - c.x)*k, y: my - O.cy - (my - O.cy - c.y)*k, z }; kmKick(); }
@@ -454,7 +457,7 @@ function kmShellHTML(){
     <canvas id="kmCanvas" aria-label="Network of everything you are learning. Drag or use the arrow keys to spin it all the way round, scroll to zoom, tap a node."></canvas>
     <div class="km-vign" aria-hidden="true"></div>
     <header class="km-top">
-      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Knowledge map</b><small>KsHan's engineering plan</small></div></div>
+      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Knowledge map</b><small>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}'s engineering plan</small></div></div>
       <div class="km-tools" role="toolbar" aria-label="Map tools">
         <span class="km-grp"><button data-a="km-layout" data-id="radial" class="${KM.layout==='radial'?'on':''}" aria-label="Network view">${kmi('radial')}</button><button data-a="km-layout" data-id="tree" class="${KM.layout==='tree'?'on':''}" aria-label="Tree view">${kmi('tree')}</button></span>
         <span class="km-grp"><button data-a="km-zoom" data-id="1" aria-label="Zoom in">${kmi('plus')}</button><button data-a="km-zoom" data-id="-1" aria-label="Zoom out">${kmi('minus')}</button></span>
@@ -464,9 +467,11 @@ function kmShellHTML(){
       </div>
       <div class="km-right"><button class="km-new" data-a="km-plan">${kmi('plus',15)} New study plan</button><button class="km-ib" data-a="km-search" aria-label="Search">${kmi('search',17)}</button><span class="km-av">KS</span><button class="km-ib" data-a="km-close" aria-label="Back to the app">${kmi('x',17)}</button></div>
     </header>
-    <div class="km-title" aria-hidden="true"><small>Personal growth project</small><h1>KsHan</h1><span class="num">Day ${typeof planDay==='function'?planDay():1} of 365 · ${currentStreak()}-day streak</span></div>
+    <div class="km-title" aria-hidden="true"><small>Personal growth project</small><h1>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}</h1><span class="num">Day ${typeof planDay==='function'?planDay():1} of 365 · ${currentStreak()}-day streak</span></div>
     <span class="km-hint" aria-hidden="true">Drag to spin 360° · pinch or scroll to zoom · tap a planet</span>
     ${kmSidesHTML()}
+    ${kmNotchHTML()}
+    <button class="km-dockbtn" data-a="km-dock" aria-label="Show the panels again"><span class="km-dockg" aria-hidden="true"><i></i><i></i><i></i></span><span>Panels</span></button>
     <div class="km-tip glass-km" id="kmTip" hidden></div>
     <div class="km-an glass-km" id="kmAn" hidden></div>
     ${kmAskHTML()}
@@ -641,8 +646,8 @@ function kmBind(){
     const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     if (KM.ptr.has(e.pointerId)){
       const prev = KM.ptr.get(e.pointerId); KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY });
-      if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); const r = cv.getBoundingClientRect(); KM.tween = null; if (d0 > 0) kmZoomAt(d1/d0, (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top); return; }
-      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ if (!KM.camT) KM.camT = { ...KM.cam }; KM.camT.x += dx; KM.camT.y += dy; } else { KM.yawT += dx*.007; KM.vy = KM.vy*.5 + dx*.0016; KM.tiltT = kmWrap(KM.tiltT - dy*.007); KM.vt = (KM.vt||0)*.5 - dy*.0016; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); }
+      if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); const r = cv.getBoundingClientRect(); KM.tween = null; if (d0 > 0) kmZoomAt(d1/d0, (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top); kmDock(false); return; }
+      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ if (!KM.camT) KM.camT = { ...KM.cam }; KM.camT.x += dx; KM.camT.y += dy; } else { KM.yawT += dx*.007; KM.vy = KM.vy*.5 + dx*.0016; KM.tiltT = kmWrap(KM.tiltT - dy*.007); KM.vt = (KM.vt||0)*.5 - dy*.0016; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); if (KM.drag.moved > 18) kmDock(false); }
       return;
     }
     const h = kmHit(x,y); if (h !== KM.hover){ KM.hover = h; cv.style.cursor = h ? 'pointer' : 'grab'; }
@@ -656,7 +661,7 @@ function kmBind(){
     }
   };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-  cv.addEventListener('wheel', e=>{ e.preventDefault(); KM.tween = null; const r = cv.getBoundingClientRect(); kmZoomAt(Math.exp(-e.deltaY*.0011), e.clientX - r.left, e.clientY - r.top); }, { passive:false });
+  cv.addEventListener('wheel', e=>{ e.preventDefault(); KM.tween = null; const r = cv.getBoundingClientRect(); kmZoomAt(Math.exp(-e.deltaY*.0011), e.clientX - r.left, e.clientY - r.top); kmDock(false); }, { passive:false });
   document.getElementById('kmForm').addEventListener('submit', e=>{ e.preventDefault(); const q = document.getElementById('kmQ').value.trim(); if (KM.view!=='graph'){ const hit = kmMatch(q); if (hit){ kmUnfocus(); setTimeout(()=>kmFocus(hit), 300); } else { kmUnfocus(); setTimeout(()=>kmAnalyse(q), 300); } return; } kmAnalyse(q); });
   root.addEventListener('click', e=>{ const el = e.target.closest('[data-a]'); if (!el || !root.contains(el)) return; kmAction(el.dataset.a, el); e.stopPropagation(); });
   window.addEventListener('resize', kmResize);
@@ -664,6 +669,8 @@ function kmBind(){
 function kmAction(a, el){
   if (a==='km-task'){ const id = el.dataset.id, k = dkey(), now = !taskDone(k, id); setTask(k, id, now); const n = KM.nodes.find(x=>x.id==='task:'+id); if (n) kmTip(n);
     const leg = document.querySelector('.km-legend'); if (leg) leg.innerHTML = kmLegend(); toast(now ? `${n ? n.name : 'Task'} done · ${countDone(k)}/${tasksForDay(k).length}` : 'Marked as not done', 'ok', 1600); try { if (typeof renderView==='function') renderView(activeTab); updateChrome(); } catch(e){} return; }
+  if (a==='km-dock'){ kmDock(true); return; }
+  if (a==='km-nring'){ const on = !el.classList.contains('open'); document.querySelectorAll('.km-nr.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); el.classList.toggle('open', on); el.setAttribute('aria-expanded', String(on)); return; }
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();

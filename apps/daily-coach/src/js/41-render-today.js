@@ -42,6 +42,7 @@ function renderToday(){
 
   return `
   ${kmLauncherHTML()}
+  ${typeof waveHTML==='function' ? waveHTML() : ''}
   ${daySystemHTML()}
   <div class="tcol a">
   <div class="glass pw-hero" data-tilt>

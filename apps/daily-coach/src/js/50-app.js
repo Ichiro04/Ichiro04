@@ -79,6 +79,7 @@ function renderView(tab){
   if (!motionOff()) Array.from(el.children).forEach((c,i)=>{ if (i < 12) c.style.setProperty('--ci', i); });
   if (tab === 'coach') mountChatScroll();
   if (tab === 'train') mountExFigures(el);
+  if (tab === 'today' && typeof waveMount === 'function') waveMount();
 }
 function setTab(tab, opts={}){
   if (tab === activeTab && !opts.force) return;
