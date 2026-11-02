@@ -2112,6 +2112,7 @@ body.km-open .tabbar,body.km-open .notch,body.km-open .topbar{visibility:hidden}
 .km-grp{display:flex;padding:3px;gap:2px;border-radius:10px;background:var(--k-glass2);border:1px solid var(--k-line);box-shadow:0 10px 24px -14px #000}
 .km-grp button{width:34px;height:32px;border-radius:7px;display:grid;place-items:center;color:var(--k-ink2);cursor:pointer;background:none;border:0;transition:background .2s,color .2s}
 .km-grp button:hover{color:var(--k-ink);background:rgba(255,255,255,.06)}
+.km-grp .km-zr{width:auto;min-width:40px;padding:0 6px;font-size:12px;font-weight:700;color:var(--k-ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .km-grp button.on{color:var(--k-teal);background:rgba(217,185,146,.13);box-shadow:inset 0 0 0 1px rgba(217,185,146,.35)}
 .km-right{display:flex;align-items:center;gap:8px}
 .km-new{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;font-size:13px;font-weight:600;color:var(--k-ink);background:rgba(255,255,255,.03);border:1px solid var(--k-line2);cursor:pointer}
@@ -2344,9 +2345,13 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km{--pw-ink:#F2F1ED;--pw-ink-2:#BDB3A8;--pw-ink-3:#857A70;--pw-line:rgba(242,241,237,.08);--pw-line-2:rgba(242,241,237,.16);--cr-accent:#C2304A;--cr-sand:#C9A882;
   background:radial-gradient(60% 55% at 50% 44%,#2A1416 0%,#160D0E 40%,#0B0909 72%,#050404 100%)}
 .km-time{display:none}
+/* dragging the map must never select text: that drew a crimson selection box over the title */
+.km,.km *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.km input,.km textarea,.km [contenteditable="true"]{-webkit-user-select:text;user-select:text}
 .km-title{position:absolute;left:var(--ox,50%);top:var(--oy,50%);transform:translate(-50%,-56%);z-index:2;width:calc(var(--or,200px)*1.4);text-align:center;pointer-events:none;
   display:grid;gap:5px;justify-items:center;opacity:0;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
 .km.titled .km-title{opacity:1;transform:translate(-50%,-50%)}
+.km-title{translate:var(--tx,0px) var(--ty,0px)} /* pan offset, set every frame by kmDraw */
 .km-title small{font-size:clamp(10.5px,calc(var(--or,200px)*.04),13px);color:#D9BC9C;letter-spacing:.14em;font-weight:650}
 .km-title h1{margin:0;font-family:var(--serif,Georgia,"Times New Roman",serif);font-weight:700;font-size:clamp(28px,calc(var(--or,200px)*.2),66px);letter-spacing:.03em;line-height:1.02;
   background:linear-gradient(180deg,#FBF6EE 30%,#E6CDB0 70%,#C9A882);-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -2418,9 +2423,7 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-tip small.hole{color:#F2A08E}
 .km-legend .km-li{gap:7px}
 
-/* ---------- right edge: room for the edge control (src/css/camctl.css) ---------- */
 .km-mini{display:none!important}
-@media(min-width:1100px){ .km-side.r{right:86px} .km-tip{right:388px} }
 
 /* ---------- panels tuck away while exploring ---------- */
 .km-side,.km-ask{transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s ease}
@@ -2438,9 +2441,6 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-dockg{display:grid;grid-template-columns:repeat(3,5px);gap:3px}
 .km-dockg i{width:5px;height:5px;border-radius:50%;background:#E6CDB0}
 .km.focus .km-dockbtn{display:none}
-@media(max-width:760px){
-  .km-tip{right:64px}
-}
 
 /* map: drag modes, Ask AI, new legend items */
 .km-ai2{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 5px;border-radius:999px;font-size:13px;font-weight:700;color:#F6F1EA;cursor:pointer;border:0;
@@ -2460,56 +2460,6 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .ai-sugg button:hover{transform:translateY(-2px)}
 @media(max-width:860px){ .km-ai2 span:last-child{display:none} .km-ai2{padding:0 4px} .km-mic{display:none} }
 .km-dot.sneb{background:radial-gradient(circle at 50% 50%,#fff 0 12%,rgba(255,214,170,.85) 22%,rgba(190,215,255,.35) 52%,transparent 72%);box-shadow:0 0 8px rgba(255,214,170,.6)}
-
-</style>
-<style data-src="src/css/camctl.css">
-/* Edge control in the knowledge map, modelled on the iPhone 16 Camera Control overlay.
-   Rest: a slim sliver on the right edge. Light press: the overlay grows out of the bezel (spring),
-   with concave fillets, a tick-ruler slider or a picker wheel. See src/js/57-render-camctl.js. */
-.km-cc{position:absolute;z-index:8;right:0;top:56%;width:0;height:0;--w:7px;--h:68px;--f:0px;--r:4px;--bg:#000;pointer-events:none;
-  transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
-.km-cc[data-mode="slider"]{--w:66px;--h:min(318px,44vh);--f:22px;--r:28px}
-.km-cc[data-mode="menu"]{--w:70px;--h:min(296px,42vh);--f:22px;--r:30px}
-.cc-pill{position:absolute;right:0;top:0;transform:translateY(-50%);width:var(--w);height:var(--h);background:var(--bg);border-radius:var(--r) 0 0 var(--r);pointer-events:auto;touch-action:none;
-  box-shadow:-18px 0 44px -18px rgba(0,0,0,.95),inset 1px 0 0 rgba(255,255,255,.07);
-  transition:width .62s cubic-bezier(.3,1.42,.5,1),height .7s cubic-bezier(.3,1.32,.5,1),border-radius .5s cubic-bezier(.3,1.3,.5,1),background .3s}
-.km-cc[data-mode="rest"] .cc-pill{background:linear-gradient(90deg,#5a5a60,#2a2a2e 45%,#151517);box-shadow:inset 1px 0 0 rgba(255,255,255,.35),inset 0 1px 0 rgba(255,255,255,.18),-3px 0 14px -2px rgba(230,205,176,.22),-4px 0 12px -4px rgba(0,0,0,.7)}
-.cc-pill::before,.cc-pill::after{content:"";position:absolute;right:0;width:var(--f);height:var(--f);pointer-events:none;transition:width .62s cubic-bezier(.3,1.42,.5,1),height .62s cubic-bezier(.3,1.42,.5,1)}
-.cc-pill::before{bottom:100%;background:radial-gradient(circle at 0 0,transparent calc(var(--f) - .5px),var(--bg) var(--f))}
-.cc-pill::after{top:100%;background:radial-gradient(circle at 0 100%,transparent calc(var(--f) - .5px),var(--bg) var(--f))}
-.cc-in{position:absolute;inset:0;overflow:hidden;border-radius:inherit}
-.cc-btn{all:unset;position:absolute;inset:-10px -2px -10px -14px;cursor:pointer;border-radius:12px}
-.km-cc:not([data-mode="rest"]) .cc-btn{inset:auto;width:0;height:0}
-.cc-btn:focus-visible{outline:2px solid #B38F6F;outline-offset:2px}
-@media(hover:hover){ .km-cc[data-mode="rest"] .cc-pill:hover{width:10px;background:linear-gradient(90deg,#3a3a3e,#18181a)} }
-/* slider: tick ruler scrolling past a fixed centre mark */
-.cc-slider,.cc-menu{position:absolute;inset:0;opacity:0;filter:blur(6px);transform:scale(.92);transition:opacity .28s ease,filter .35s ease,transform .45s cubic-bezier(.3,1.3,.5,1);pointer-events:none}
-.km-cc[data-mode="slider"] .cc-slider,.km-cc[data-mode="menu"] .cc-menu{opacity:1;filter:none;transform:none;transition-delay:.12s;pointer-events:auto}
-.cc-ruler{position:absolute;left:0;right:0;bottom:50%;will-change:transform;
-  -webkit-mask:linear-gradient(transparent,#000 28%,#000 72%,transparent);mask:linear-gradient(transparent,#000 28%,#000 72%,transparent)}
-.cc-slider{-webkit-mask:linear-gradient(transparent 4%,#000 26%,#000 74%,transparent 96%);mask:linear-gradient(transparent 4%,#000 26%,#000 74%,transparent 96%)}
-.cc-ruler .t{position:absolute;right:12px;width:12px;height:1.5px;margin-bottom:-.75px;border-radius:1px;background:rgba(242,241,237,.42)}
-.cc-ruler .t.M{width:22px;height:2px;background:#F2F1ED}
-.cc-ruler em{position:absolute;right:38px;transform:translateY(50%);font:650 10.5px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;font-style:normal;color:rgba(242,241,237,.78);font-variant-numeric:tabular-nums;white-space:nowrap}
-.cc-mark{position:absolute;right:8px;top:50%;width:30px;height:2.5px;margin-top:-1.25px;border-radius:2px;background:#E6CDB0;box-shadow:0 0 10px rgba(230,205,176,.8)}
-.cc-mark::after{content:"";position:absolute;left:-7px;top:50%;margin-top:-4px;border:4px solid transparent;border-left:5px solid #E6CDB0}
-/* picker: controls on a wheel */
-.cc-it{all:unset;position:absolute;left:13px;top:0;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:rgba(242,241,237,.8);background:rgba(255,255,255,.08);cursor:pointer;transform-origin:50% 50%;will-change:transform,opacity}
-.cc-it.on{color:#161616;background:#E6CDB0;box-shadow:0 0 16px rgba(230,205,176,.45)}
-.cc-it:focus-visible{outline:2px solid #B38F6F;outline-offset:2px}
-/* the value beside the overlay */
-.cc-lab{position:absolute;right:calc(var(--w) + 14px);top:0;transform:translate(10px,-50%);display:grid;justify-items:end;gap:1px;text-align:right;white-space:nowrap;pointer-events:none;
-  color:#F2F1ED;opacity:0;filter:blur(4px);transition:opacity .25s ease,transform .5s cubic-bezier(.3,1.3,.5,1),filter .3s ease,right .62s cubic-bezier(.3,1.42,.5,1);text-shadow:0 2px 14px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.7)}
-.km-cc:not([data-mode="rest"]) .cc-lab{opacity:1;filter:none;transform:translate(0,-50%);transition-delay:.1s}
-.cc-lab b{font:750 30px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#E6CDB0}
-.km-cc[data-mode="menu"] .cc-lab b{font-size:22px;color:#F2F1ED}
-.cc-lab span{font:650 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.01em}
-.cc-lab small{font:500 11.5px/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:rgba(242,241,237,.72);max-width:220px;overflow:hidden;text-overflow:ellipsis}
-.km.undocked .km-cc{transform:translateX(12px);opacity:.0;pointer-events:none}
-.km.focus .km-cc{display:none}
-@media(max-width:760px){ .km-cc{top:auto;bottom:calc(360px + env(safe-area-inset-bottom,0px))} .km-cc[data-mode="slider"]{--h:min(220px,28vh)} .km-cc[data-mode="menu"]{--h:min(220px,28vh)} .cc-lab b{font-size:24px} .cc-lab small{max-width:170px} }
-html.reduce .km-cc *,html.reduce .km-cc{transition:none!important}
-@media (prefers-reduced-motion: reduce){ .km-cc *,.km-cc{transition:none!important} }
 
 </style>
 <style data-src="src/css/ai.css">
@@ -6011,6 +5961,8 @@ function kmDraw(now){
   if (!KM.drag && KM.pv && KM.camT && !still){ KM.camT.x += KM.pv.x; KM.camT.y += KM.pv.y; KM.pv.x *= .86; KM.pv.y *= .86; if (Math.abs(KM.pv.x) + Math.abs(KM.pv.y) < .1) KM.pv = null; }
   if (KM.tween || !KM.camT) KM.camT = { x:KM.cam.x, y:KM.cam.y, z:KM.cam.z };
   else { const e = still ? 1 : .16; KM.cam.x += (KM.camT.x - KM.cam.x)*e; KM.cam.y += (KM.camT.y - KM.cam.y)*e; KM.cam.z *= Math.pow(KM.camT.z/KM.cam.z, e); }
+  { const zr = document.getElementById('kmZr'), z = KM.cam.z, zt = (z < 10 ? (Math.round(z*10)/10).toFixed(1) : Math.round(z)) + '×'; if (zr && zr.textContent !== zt){ zr.textContent = zt; zr.setAttribute('aria-label', `Zoom ${zt}. Tap to reset`); } }
+  { const root = document.getElementById('km'), tx = Math.round(KM.cam.x), ty = Math.round(KM.cam.y); if (root && (KM.ttx !== tx || KM.tty !== ty)){ KM.ttx = tx; KM.tty = ty; root.style.setProperty('--tx', tx+'px'); root.style.setProperty('--ty', ty+'px'); } }
   { const want = KM.view==='graph' && !KM.sel && KM.cam.z < 1.3 && (still || T > 2.2) ? 1 : 0; KM.tA = (KM.tA||0) + (want - (KM.tA||0))*(still ? 1 : .12);
     const root = document.getElementById('km'); if (root){ const on = KM.tA > .5; if (root.classList.contains('titled') !== on) root.classList.toggle('titled', on); } }
   const intro = still ? 1 : clamp((T - .2)/2.2, 0, 1), ie = 1 - Math.pow(1-intro, 3);
@@ -6056,7 +6008,7 @@ function kmDraw(now){
       const lrs = [...new Set(KM.nodes.filter(t=>t.parent===n && t.type==='topic').map(t=>t.lr))]; g.strokeStyle = `rgba(214,200,186,${(.22*a).toFixed(3)})`; g.lineWidth = .8;
       lrs.forEach(lr=>{ g.beginPath(); for (let i=0;i<=48;i++){ const th = i/48*Math.PI*2, x = n.wx + Math.cos(th)*lr, z = n.wz + Math.sin(th)*lr, p = GAL.proj(Math.hypot(x,z), Math.atan2(z,x), 0, v); i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); } g.stroke(); }); }); }
   // nodes, far to near
-  const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = [];
+  const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = kmPanels().map(p=>p.slice());
   // reserve label space front-to-back: domains first, then the nearest topics
   const labOK = new Set(); g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
   [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill'||n.type==='task'||n.type==='hole') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (5 + n.w*.28)*1.6*clamp(Math.pow(KM.cam.z,.75), .75, 10) : 3.4*clamp(Math.pow(KM.cam.z,.8), .8, 12), h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
@@ -6071,16 +6023,16 @@ function kmDraw(now){
       if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, true);
       kmGloss(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va*(1 - blur*.4), done, TT);
       if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, false); n.sr = r + 5;
-      if (KM.hover===n || KM.sel===n || (KM.labels && (KM.cam.z > 1.35 || W >= 1100) && !kmInTitle(n.sx + r + 6, n.sy, 90))){ g.globalAlpha = n.va*(KM.hover===n || KM.sel===n ? 1 : .8); g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = done ? '#F3DDBA' : '#D9E6F2'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText((done ? '✓ ' : '') + n.name, n.sx + r + 6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && (KM.cam.z > 1.35 || W >= 1100) && !kmInTitle(n.sx + r + 6, n.sy, 90))){ g.globalAlpha = kmOverPanel(n.sx + r + 6, n.sy - 10, 110, 16) ? 0 : n.va*(KM.hover===n || KM.sel===n ? 1 : .8); g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = done ? '#F3DDBA' : '#D9E6F2'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText((done ? '✓ ' : '') + n.name, n.sx + r + 6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='sat'){ const r = 4.5*gt*depth*hov; kmSat(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*2.4;
-      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.3)){ g.globalAlpha = n.va*.9; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#BFE0FF'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(`${n.block.t} ${n.name}`, n.sx + r*2.6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.3)){ g.globalAlpha = kmOverPanel(n.sx + r*2.6, n.sy - 10, 130, 16) ? 0 : n.va*.9; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#BFE0FF'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(`${n.block.t} ${n.name}`, n.sx + r*2.6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='neb'){ const r = 26*gz*depth*hov; kmNeb(g, n.sx, n.sy, r, n.col, n.prog, TT, n.va, n.ph, still); n.sr = r*.8;
-      g.globalAlpha = n.va*.9; g.font = '650 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = `rgb(${n.col})`; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 8; g.textAlign = 'center'; g.fillText(`${n.name} · ${Math.round(n.prog*100)}%`, n.sx, n.sy + r*1.05 + 12); g.textAlign = 'start'; g.shadowBlur = 0; g.globalAlpha = 1; }
+      { const t = `${n.name} · ${Math.round(n.prog*100)}%`; g.font = '650 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; const tw = g.measureText(t).width; g.globalAlpha = kmOverPanel(n.sx - tw/2, n.sy + r*1.05, tw, 16) ? 0 : n.va*.9; } g.fillStyle = `rgb(${n.col})`; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 8; g.textAlign = 'center'; g.fillText(`${n.name} · ${Math.round(n.prog*100)}%`, n.sx, n.sy + r*1.05 + 12); g.textAlign = 'start'; g.shadowBlur = 0; g.globalAlpha = 1; }
     else if (n.type==='pulsar'){ const r = 4*gz*depth*hov; kmPulsar(g, n.sx, n.sy, r, TT, n.va, still); n.sr = r*3;
-      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.1)){ g.globalAlpha = n.va*.85; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#CFE6FF'; g.fillText(`Streak · ${currentStreak()} days`, n.sx + r*3, n.sy - r*2); g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.1)){ g.globalAlpha = kmOverPanel(n.sx + r*3, n.sy - r*2 - 12, 110, 16) ? 0 : n.va*.85; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#CFE6FF'; g.fillText(`Streak · ${currentStreak()} days`, n.sx + r*3, n.sy - r*2); g.globalAlpha = 1; } }
     else if (n.type==='const'){ const r = 12*gz*depth; kmConst(g, n.sx, n.sy, r, TT, n.va); n.sr = r*3; }
     else if (n.type==='hole'){ const r = 9*gz*depth*hov; kmHole(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*1.8;
-      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.2)){ g.globalAlpha = n.va*.85; g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F2B7A8'; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r*2.2 + 4, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.2)){ g.globalAlpha = kmOverPanel(n.sx + r*2.2 + 4, n.sy - 10, 140, 16) ? 0 : n.va*.85; g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F2B7A8'; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r*2.2 + 4, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='topic' && kmMastery(n.topic) < 50){ const r = 3.6*gt*depth*hov; kmRock(g, n.sx, n.sy, r, n.ph, TT, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 5;
       if (KM.hover===n || KM.sel===n || (labOK.has(n) && ((KM.labels && KM.cam.z > 1.5) || (conn && conn.has(n))))){ g.globalAlpha = n.va; g.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#D8CBBE'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r + 8, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='topic'){ const r = 3.4*gt*depth*hov, m = kmMastery(n.topic);
@@ -6096,12 +6048,12 @@ function kmDraw(now){
     g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; const cx0 = W/2, cy0 = H/2, M = Math.hypot(W,H)/2; KM.warp.forEach(([a0, d0, w0])=>{ const r1 = M*d0*(.6 + k*.5), r2 = r1 + M*.18*w0*Math.sin(k*Math.PI); const gr = g.createLinearGradient(cx0 + Math.cos(a0)*r1, cy0 + Math.sin(a0)*r1, cx0 + Math.cos(a0)*r2, cy0 + Math.sin(a0)*r2); gr.addColorStop(0,'rgba(200,225,255,0)'); gr.addColorStop(1,`rgba(220,235,255,${al.toFixed(3)})`); g.strokeStyle = gr; g.lineWidth = w0*1.2; g.beginPath(); g.moveTo(cx0 + Math.cos(a0)*r1, cy0 + Math.sin(a0)*r1); g.lineTo(cx0 + Math.cos(a0)*r2, cy0 + Math.sin(a0)*r2); g.stroke(); }); g.globalCompositeOperation = 'source-over'; } }
   if (!still) kmBokeh(g, W, H, TT, fade);
   // a soft dark band keeps the title readable over the core
-  if (KM.tA > .01){ const tr = Math.min(O.r, 380), ty = O.cy - tr*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.38*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
+  if (KM.tA > .01){ const tr = Math.min(O.r, 380), tcx = O.cx + KM.cam.x, ty = O.cy + KM.cam.y - tr*.02, tv = g.createRadialGradient(tcx, ty, 0, tcx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.38*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(tcx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
 }
 function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
   const t = document.querySelector('.km-title'), cv = document.getElementById('kmCanvas'); if (!t || !cv) return; const c = cv.getBoundingClientRect(); let b = null;
   t.querySelectorAll('small,h1,span').forEach(el=>{ const r = el.getBoundingClientRect(), w = el.tagName==='H1' ? r.width : Math.min(r.width, el.scrollWidth); const x0 = r.left + (r.width - w)/2 - c.left; b = b ? [Math.min(b[0],x0), Math.min(b[1],r.top-c.top), Math.max(b[2],x0+w), Math.max(b[3],r.bottom-c.top)] : [x0, r.top-c.top, x0+w, r.bottom-c.top]; });
-  KM.tBox = b; }
+  KM.tBox = b; KM.tBoxCam = [KM.cam.x, KM.cam.y]; }
 /* ---------- cosmic objects ---------- */
 const KM_STAR_COLS = ['255,214,170','190,215,255','255,190,140','236,240,255','255,166,140','200,225,255','255,232,196','176,200,255','255,205,160'];
 const KM_TASK_COLS = { train:['#F3D3C2','#C2603E','#3E1A10'], learn:['#DCE8F6','#6F93C2','#1B2A40'], money:['#F2E4C8','#B8955E','#3E2E14'], progress:['#E4F0E6','#7FA68A','#1E3326'], coach:['#EADCF2','#9A7BB5','#2C1E3A'], today:['#E8EEF2','#8EA4B4','#22303A'], def:['#E8E4DE','#A49A8E','#2E2A26'] };
@@ -6318,7 +6270,16 @@ function kmBands(g, x, y, r, col, seed, T, a, lx, ly){ // cloud bands and a soft
   const L = Math.hypot(lx,ly) || 1, sh = g.createLinearGradient(x + lx/L*r, y + ly/L*r, x - lx/L*r, y - ly/L*r); sh.addColorStop(.45,'rgba(0,0,0,0)'); sh.addColorStop(1,`rgba(0,0,0,${(.55*a).toFixed(2)})`);
   g.fillStyle = sh; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
 }
-function kmInTitle(x, y, w=0){ const b = KM.tBox; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
+function kmInTitle(x, y, w=0){ const b0 = KM.tBox, c0 = KM.tBoxCam || [0,0], b = b0 && [b0[0] + KM.cam.x - c0[0], b0[1] + KM.cam.y - c0[1], b0[2] + KM.cam.x - c0[0], b0[3] + KM.cam.y - c0[1]]; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
+function kmPanels(){ // screen boxes of the HTML panels over the canvas (canvas coords), refreshed 5× a second
+  const now = performance.now(); if (KM.pnl && now - KM.pnlT < 200) return KM.pnl; KM.pnlT = now;
+  const cv = document.getElementById('kmCanvas'), root = document.getElementById('km'); if (!cv || !root) return (KM.pnl = []);
+  const c = cv.getBoundingClientRect(), out = [];
+  root.querySelectorAll('.km-top,.km-side,.km-ask,.km-tip:not([hidden]),.km-an:not([hidden])').forEach(el => { const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    if (r.width < 4 || r.height < 4 || cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .2) return;
+    out.push([r.left - c.left - 6, r.top - c.top - 4, r.width + 12, r.height + 8]); });
+  return (KM.pnl = out); }
+function kmOverPanel(x, y, w, h){ for (const b of kmPanels()) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return true; return false; }
 function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels never pile up
   const L = KM.labs || (KM.labs = []); for (const b of L) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return false; L.push([x, y, w, h]); return true; }
 function kmToWorld(x,y){ return [x,y]; }
@@ -6397,15 +6358,15 @@ function kmAskHTML(){
   </div>`;
 }
 function kmShellHTML(){
-  return `<div class="km" id="km" role="dialog" aria-modal="true" aria-label="Knowledge map">
+  return `<div class="km" id="km" role="dialog" aria-modal="true" aria-label="Orbit, your growth galaxy">
     <canvas id="kmCanvas" aria-label="Network of everything you are learning. Drag or use the arrow keys to spin it all the way round, scroll to zoom, tap a node."></canvas>
     <div class="km-vign" aria-hidden="true"></div>
     <header class="km-top">
-      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Knowledge map</b><small>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}'s engineering plan</small></div></div>
+      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Orbit</b><small>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}'s growth galaxy</small></div></div>
       <div class="km-tools" role="toolbar" aria-label="Map tools">
         <span class="km-grp" role="radiogroup" aria-label="Drag mode"><button data-a="km-mode" data-id="move" class="${KM.mode!=='rotate'?'on':''}" role="radio" aria-checked="${KM.mode!=='rotate'}" aria-label="Drag to move" title="Drag to move (pan)">${kmi('hand')}</button><button data-a="km-mode" data-id="rotate" class="${KM.mode==='rotate'?'on':''}" role="radio" aria-checked="${KM.mode==='rotate'}" aria-label="Drag to spin" title="Drag to spin 360°">${kmi('orbit')}</button></span>
         <span class="km-grp"><button data-a="km-layout" data-id="radial" class="${KM.layout==='radial'?'on':''}" aria-label="Network view">${kmi('radial')}</button><button data-a="km-layout" data-id="tree" class="${KM.layout==='tree'?'on':''}" aria-label="Tree view">${kmi('tree')}</button></span>
-        <span class="km-grp"><button data-a="km-zoom" data-id="1" aria-label="Zoom in">${kmi('plus')}</button><button data-a="km-zoom" data-id="-1" aria-label="Zoom out">${kmi('minus')}</button></span>
+        <span class="km-grp"><button data-a="km-zoom" data-id="1" aria-label="Zoom in">${kmi('plus')}</button><button class="km-zr num" id="kmZr" data-a="km-z1" aria-label="Zoom 1×. Tap to reset">1×</button><button data-a="km-zoom" data-id="-1" aria-label="Zoom out">${kmi('minus')}</button></span>
         <span class="km-grp"><button data-a="km-gaps" class="${KM.gaps?'on':''}" aria-label="Show gaps only">${kmi('filter')}</button></span>
         <span class="km-grp"><button data-a="km-labels" class="${KM.labels?'on':''}" aria-label="Show labels">${kmi('label')}</button></span>
         <span class="km-grp"><button data-a="km-fit" aria-label="Fit to screen">${kmi('fit')}</button></span>
@@ -6415,7 +6376,6 @@ function kmShellHTML(){
     <div class="km-title" aria-hidden="true"><small>Personal growth project</small><h1>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}</h1><span class="num">Day ${typeof planDay==='function'?planDay():1} of 365 · ${currentStreak()}-day streak</span></div>
     <span class="km-hint" aria-hidden="true">Drag to move · pinch or scroll to zoom · tap anything</span>
     ${kmSidesHTML()}
-    ${kmNotchHTML()}
     <button class="km-dockbtn" data-a="km-dock" aria-label="Show the panels again"><span class="km-dockg" aria-hidden="true"><i></i><i></i><i></i></span><span>Panels</span></button>
     <div class="km-tip glass-km" id="kmTip" hidden></div>
     <div class="km-an glass-km" id="kmAn" hidden></div>
@@ -6626,6 +6586,7 @@ function kmAction(a, el){
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();
+  else if (a==='km-z1'){ kmCamTo(KM.cam.x/KM.cam.z, KM.cam.y/KM.cam.z, 1, 420); }
   else if (a==='km-zoom'){ { const f = +el.dataset.id > 0 ? 1.35 : 1/1.35, z = clamp(KM.cam.z*f,.4,24), k = z/KM.cam.z; kmCamTo(KM.cam.x*k, KM.cam.y*k, z, 420); } }
   else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,900,true,1.0); KM.tween.io = true; KM.camT = null; }
   else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : 1.0); }
@@ -6647,7 +6608,7 @@ document.addEventListener('keydown', e=>{ if (KM.open && KM.view==='graph' && !(
   if (e.key==='Escape' && KM.open){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); } });
 window.addEventListener('hashchange', ()=>{ if (location.hash==='#map') kmOpen(); else if (KM.open) kmClose(); });
 function kmLauncherHTML(){
-  return `<button class="km-launch" data-a="km-open"><span class="km-lorb" aria-hidden="true"></span><span class="km-lt"><b>Knowledge map</b><small>Everything you are learning as one network. Tap a topic to dive in.</small></span><span class="km-lgo">${kmi('send',16)}</span></button>`;
+  return `<button class="km-launch" data-a="km-open"><span class="km-lorb" aria-hidden="true"></span><span class="km-lt"><b>Orbit</b><small>Everything you are growing, circling you. Tap a star to dive in.</small></span><span class="km-lgo">${kmi('send',16)}</span></button>`;
 }
 
 </script>
@@ -6879,8 +6840,6 @@ function kmSidesHTML(){
     </div>`;
 }
 
-/* ---------- right-edge control in the map (iPhone Camera Control style): see 57-render-camctl.js ---------- */
-function kmNotchHTML(){ return kmcHTML(); }
 
 </script>
 <script data-src="src/js/41b-render-wave.js">
@@ -8911,7 +8870,7 @@ function railHTML(){
     <div class="rail-sec">Main menu</div>
     <div class="rail-list" role="tablist"><span class="rail-lens" aria-hidden="true"><i></i></span>${TABS.map(item).join('')}</div>
     <div class="rail-sec">Explore</div>
-    <div class="rail-list">${extra('map','gauge','Knowledge map')}${extra('cad','wrench','CAD workspace')}${extra('theme', dark ? 'sun' : 'moon', dark ? 'Light mode' : 'Dark mode')}</div>
+    <div class="rail-list">${extra('map','gauge','Orbit')}${extra('cad','wrench','CAD workspace')}${extra('theme', dark ? 'sun' : 'moon', dark ? 'Light mode' : 'Dark mode')}</div>
     <div class="rail-foot"><span class="rail-av">KS</span><span class="rail-bt"><b>KsHan</b><small>${todayDone()}/${todayTotal()} today · ${currentStreak()}-day streak</small></span></div>
     <button class="rail-tog" data-rail-tog aria-label="${open?'Collapse':'Expand'} the side menu" aria-expanded="${open}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   </nav>`;
@@ -8943,231 +8902,6 @@ document.addEventListener('click', e=>{
 { const _setTab = setTab; setTab = function(tab, opts){ const r = _setTab(tab, opts); railSync(); return r; }; }
 { const _uc = updateChrome; updateChrome = function(){ const r = _uc.apply(this, arguments); railSync(); return r; }; }
 (RAIL_MQ.addEventListener ? RAIL_MQ.addEventListener.bind(RAIL_MQ, 'change') : RAIL_MQ.addListener.bind(RAIL_MQ))(()=>mountRail());
-
-</script>
-<script data-src="src/js/57-render-camctl.js">
-/* 57-render-camctl.js — "Camera Control" edge control for the knowledge map
- * Replaces the right-edge notch (kmNotchHTML: three ring gauges + pop-out cards) with an overlay
- * modelled on the iPhone 16 Camera Control:
- *  - At rest: only a slim sliver on the right edge, where the button would be.
- *  - Light press (tap the sliver): a black overlay grows out of the screen edge with a spring,
- *    concave fillets where it meets the edge, and a SLIDER: a tick ruler that scrolls past a
- *    fixed centre mark, prominent values with labels, the value + unit beside it.
- *  - Double light press (tap the overlay, or double-tap the sliver): a PICKER — the controls on
- *    a curved wheel, the selected one centred with its name. Swipe to move, tap to choose.
- *  - Controls: Streak · Today · Savings · Zoom. Zoom really zooms the map (snaps to 0.5×, 1×, 2×,
- *    5×, 10×, 24×). The other three are read-only gauges: the ruler stretches and springs back.
- *  - Retracts into the edge after ~2.5 s without input. Opens once by itself when the map opens.
- *  - Reduced motion: no springs, no auto-open. Keyboard: Enter opens, ↑/↓ adjusts, Tab/Esc.
- * kmNotchHTML() (54-render-galaxy.js) returns kmcHTML(); styles live in src/css/camctl.css.
- * The old ring notch (.km-notch/.km-nr/.km-npop and the 'km-nring' action) was removed.
- */
-const KMC = { sel:'today', mode:'rest', drag:null, hideT:0, raf:0, pos:0, vel:0, menuPos:1, menuVel:0, introDone:false, lastMajor:null, tap:0 };
-const KMC_ITEMS = [
-  { id:'streak', name:'Streak', icon:'flame' },
-  { id:'today',  name:'Today',  icon:'flag' },
-  { id:'money',  name:'Savings', icon:'pound' },
-  { id:'zoom',   name:'Zoom',   icon:null }
-];
-const KMC_SP = 9;                       // px between minor ticks
-const kmcStill = () => (typeof motionOff === 'function' && motionOff());
-const kmcBuzz = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} };
-const kmcIcon = (it, s=18) => it.icon && typeof ic === 'function' ? ic(it.icon, s)
-  : `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2L20 20M10.5 8v5M8 10.5h5"/></svg>`;
-
-/* ---------- values: same sources the old rings used ---------- */
-function kmcData(id){
-  try {
-    if (id === 'today'){ const d = todayDone(), t = todayTotal() || 1; return { v:d/t*100, min:0, max:100, step:2, majors:[0,25,50,75,100], fmt:v=>`${Math.round(v)}%`, sub:`${d} of ${t} done${d>=4?' · streak day ✓':` · ${Math.max(0,4-d)} to a streak day`}`, read:true }; }
-    if (id === 'money'){ const s = savedTotal(), g = Number(state.settings.goal) || 25000; return { v:Math.min(100, s/g*100), min:0, max:100, step:2, majors:[0,25,50,75,100], fmt:v=>`${Math.round(v)}%`, sub:`${money0(s)} of ${money0(g)} · ${money0(Math.max(0,g-s))} to go`, read:true }; }
-    if (id === 'streak'){ const st = currentStreak(), max = st < 30 ? 30 : st < 100 ? 100 : Math.ceil((st+50)/50)*50; const next = st < 7 ? 7 : st < 30 ? 30 : st < 100 ? 100 : st + 50;
-      return { v:st, min:0, max, step:1, majors: max === 30 ? [0,7,14,21,30] : max === 100 ? [0,25,50,75,100] : [0, max/2, max], fmt:v=>`${Math.round(v)}d`, sub:`${st}-day streak · next ${next} days`, read:true }; }
-    if (id === 'zoom'){ const z = (KM.camT || KM.cam || {z:1}).z || 1; return { log:true, v:z, min:.4, max:24, majors:[.5,1,2,5,10,24], fmt:v=>(v < 10 ? (Math.round(v*10)/10).toFixed(1).replace(/\.0$/,'') : Math.round(v)) + '×', sub:'Map zoom · slide to change', read:false }; }
-  } catch(e){}
-  return { v:0, min:0, max:100, step:2, majors:[0,50,100], fmt:v=>`${Math.round(v)}`, sub:'', read:true };
-}
-/* value <-> ruler position (px from the bottom of the ruler) */
-function kmcU(d, v){ return d.log ? Math.log(v/d.min) * 130 : (v - d.min)/d.step*KMC_SP; }
-function kmcV(d, u){ return d.log ? d.min*Math.exp(u/130) : d.min + u/KMC_SP*d.step; }
-function kmcLen(d){ return kmcU(d, d.max); }
-
-/* ---------- markup (replaces kmNotchHTML) ---------- */
-function kmcHTML(){
-  return `<aside class="km-cc" id="kmCC" data-mode="rest" aria-label="Quick control: today, savings, streak and zoom">
-    <div class="cc-pill" id="kmcPill">
-      <div class="cc-in">
-        <div class="cc-slider"><div class="cc-ruler" id="kmcRuler"></div><i class="cc-mark"></i></div>
-        <div class="cc-menu" id="kmcMenu">${KMC_ITEMS.map((it,i)=>`<button type="button" class="cc-it" data-i="${i}" tabindex="-1" aria-label="${it.name}">${kmcIcon(it)}</button>`).join('')}</div>
-      </div>
-      <button type="button" class="cc-btn" id="kmcBtn" aria-label="Open quick control" aria-expanded="false"></button>
-    </div>
-    <div class="cc-lab" id="kmcLab" aria-live="polite"><b class="num" id="kmcVal"></b><span id="kmcName"></span><small id="kmcSub"></small></div>
-  </aside>`;
-}
-function kmcEl(id){ return document.getElementById(id); }
-
-function kmcBuildRuler(){
-  const d = kmcData(KMC.sel), r = kmcEl('kmcRuler'); if (!r) return d;
-  const L = kmcLen(d), parts = [];
-  if (d.log){
-    const vals = []; for (let v = .4; v < 1; v += .1) vals.push(v); for (let v = 1; v < 3; v += .2) vals.push(v); for (let v = 3; v < 10; v += .5) vals.push(v); for (let v = 10; v <= 24.01; v += 1) vals.push(v);
-    vals.forEach(v => { const maj = d.majors.some(m => Math.abs(m - v) < .001); if (!maj) parts.push(`<i class="t" style="bottom:${kmcU(d,v).toFixed(1)}px"></i>`); });
-  } else {
-    for (let v = d.min; v <= d.max + 1e-6; v += d.step){ const maj = d.majors.some(m => Math.abs(m - v) < 1e-6); if (!maj) parts.push(`<i class="t" style="bottom:${kmcU(d,v).toFixed(1)}px"></i>`); }
-  }
-  d.majors.forEach(m => parts.push(`<i class="t M" style="bottom:${kmcU(d,m).toFixed(1)}px"></i><em style="bottom:${kmcU(d,m).toFixed(1)}px">${d.log ? d.fmt(m) : d.fmt(m)}</em>`));
-  r.innerHTML = parts.join(''); r.style.height = L + 'px';
-  return d;
-}
-function kmcSetLabel(d, v){
-  const it = KMC_ITEMS.find(x => x.id === KMC.sel);
-  kmcEl('kmcVal').textContent = d.fmt(v); kmcEl('kmcName').textContent = it.name; kmcEl('kmcSub').textContent = d.sub;
-}
-function kmcMenuLabel(){
-  const i = Math.round(Math.max(0, Math.min(KMC_ITEMS.length-1, KMC.menuPos))), it = KMC_ITEMS[i], d = kmcData(it.id);
-  kmcEl('kmcVal').textContent = it.name; kmcEl('kmcName').textContent = d.fmt(d.v); kmcEl('kmcSub').textContent = 'Swipe to choose · tap to select';
-}
-
-/* ---------- state machine ---------- */
-function kmcSetMode(mode){
-  const root = kmcEl('kmCC'); if (!root) return;
-  KMC.mode = mode; root.dataset.mode = mode;
-  kmcEl('kmcBtn').setAttribute('aria-expanded', String(mode !== 'rest'));
-  root.querySelectorAll('.cc-it').forEach(b => b.tabIndex = mode === 'menu' ? 0 : -1);
-  if (mode === 'slider'){ const d = kmcBuildRuler(); KMC.target = kmcU(d, d.v); KMC.d = d; if (KMC.fresh){ KMC.pos = 0; KMC.fresh = false; } kmcSetLabel(d, d.v); }
-  if (mode === 'menu'){ KMC.menuTarget = KMC_ITEMS.findIndex(x => x.id === KMC.sel); kmcMenuLabel(); }
-  if (mode === 'rest'){ KMC.fresh = true; }
-  kmcArm(); kmcLoop();
-}
-function kmcArm(ms){ clearTimeout(KMC.hideT); if (KMC.mode === 'rest') return; KMC.hideT = setTimeout(()=>{ if (!KMC.drag && !KMC.hover) kmcSetMode('rest'); else kmcArm(); }, ms || 2600); }
-function kmcLoop(){
-  if (KMC.raf) return;
-  const step = () => {
-    KMC.raf = 0; const root = kmcEl('kmCC'); if (!root || !root.isConnected) return;
-    const still = kmcStill();
-    if (KMC.mode === 'slider' && KMC.d){
-      if (!KMC.drag){
-        const k = still ? 1 : .16; KMC.pos += (KMC.target - KMC.pos)*k;
-        if (Math.abs(KMC.target - KMC.pos) < .2) KMC.pos = KMC.target;
-      }
-      const r = kmcEl('kmcRuler'); if (r) r.style.transform = `translateY(${KMC.pos.toFixed(2)}px)`;
-      const v = kmcV(KMC.d, Math.max(0, Math.min(kmcLen(KMC.d), KMC.pos)));
-      kmcSetLabel(KMC.d, KMC.d.read && !KMC.drag ? (Math.abs(KMC.target-KMC.pos) < .5 ? KMC.d.v : v) : v);
-      const near = KMC.d.majors.find(m => Math.abs(kmcU(KMC.d, m) - KMC.pos) < 2);
-      if (near !== undefined && near !== KMC.lastMajor){ KMC.lastMajor = near; if (KMC.drag) kmcBuzz(6); } else if (near === undefined) KMC.lastMajor = null;
-    }
-    if (KMC.mode === 'menu'){
-      if (!KMC.drag){ const k = still ? 1 : .18; KMC.menuPos += (KMC.menuTarget - KMC.menuPos)*k; if (Math.abs(KMC.menuTarget - KMC.menuPos) < .002) KMC.menuPos = KMC.menuTarget; }
-      kmcLayoutMenu();
-    }
-    const moving = KMC.drag || (KMC.mode === 'slider' && KMC.pos !== KMC.target) || (KMC.mode === 'menu' && KMC.menuPos !== KMC.menuTarget);
-    if (moving) KMC.raf = requestAnimationFrame(step);
-  };
-  KMC.raf = requestAnimationFrame(step);
-}
-function kmcLayoutMenu(){
-  const m = kmcEl('kmcMenu'); if (!m) return;
-  const H = m.clientHeight || 260, cy = H/2, gap = 54, R = 150;
-  m.querySelectorAll('.cc-it').forEach((b, i) => {
-    const off = i - KMC.menuPos, y = cy + off*gap, a = off*gap/R;            // items ride a wheel whose centre is past the edge
-    const x = (1 - Math.cos(a))*R*.62, sc = Math.max(.62, 1 - Math.abs(off)*.18), op = Math.max(0, 1 - Math.abs(off)*.38);
-    b.style.transform = `translate(${x.toFixed(1)}px, ${(y - 20).toFixed(1)}px) scale(${sc.toFixed(3)})`;
-    b.style.opacity = op.toFixed(3); b.classList.toggle('on', Math.abs(off) < .5);
-  });
-  kmcMenuLabel();
-}
-
-/* ---------- input: tap = light press, tap again = double light press; drag/wheel to slide ---------- */
-function kmcBind(){
-  const root = kmcEl('kmCC'); if (!root || root.dataset.bound) return; root.dataset.bound = '1';
-  const pill = kmcEl('kmcPill');
-  root.addEventListener('pointerenter', ()=>{ KMC.hover = true; });
-  root.addEventListener('pointerleave', ()=>{ KMC.hover = false; kmcArm(1400); });
-  pill.addEventListener('pointerdown', e => {
-    if (KMC.mode === 'rest') return;
-    e.stopPropagation(); pill.setPointerCapture && pill.setPointerCapture(e.pointerId);
-    KMC.drag = { y:e.clientY, y0:e.clientY, moved:0, pos0:KMC.pos, mp0:KMC.menuPos, t:performance.now() }; kmcLoop();
-  });
-  pill.addEventListener('pointermove', e => {
-    const g = KMC.drag; if (!g) return; const dy = e.clientY - g.y; g.y = e.clientY; g.moved += Math.abs(dy);
-    if (KMC.mode === 'slider' && KMC.d){
-      const L = kmcLen(KMC.d); let p = KMC.pos - dy;                       // finger up = value up
-      if (KMC.d.read){ const over = p - KMC.target; p = KMC.target + Math.sign(over)*Math.min(46, Math.abs(over)*.45 + Math.max(0, Math.abs(over)-0)*0); }
-      else {
-        p = Math.max(-30, Math.min(L + 30, p));
-        const z = kmcV(KMC.d, Math.max(0, Math.min(L, p))), cur = (KM.camT || KM.cam).z;
-        if (typeof kmZoomAt === 'function' && Math.abs(z/cur - 1) > .002) kmZoomAt(z/cur, KM.W/2, KM.H/2);
-      }
-      KMC.pos = p;
-    }
-    if (KMC.mode === 'menu'){ KMC.menuPos = Math.max(-.4, Math.min(KMC_ITEMS.length - .6, KMC.menuPos - dy/54)); }
-    kmcArm(); kmcLoop();
-  });
-  const end = e => {
-    const g = KMC.drag; if (!g) return; KMC.drag = null;
-    if (g.moved < 6){ kmcTap(e); }
-    else if (KMC.mode === 'slider' && KMC.d){
-      if (KMC.d.read) KMC.target = kmcU(KMC.d, KMC.d.v);
-      else { // snap to a prominent zoom when close, like the real control
-        const L = kmcLen(KMC.d), u = Math.max(0, Math.min(L, KMC.pos)), snap = KMC.d.majors.map(m => kmcU(KMC.d, m)).find(x => Math.abs(x - u) < 10);
-        KMC.target = snap !== undefined ? snap : u; const z = kmcV(KMC.d, KMC.target), cur = (KM.camT || KM.cam).z;
-        if (typeof kmZoomAt === 'function') kmZoomAt(z/cur, KM.W/2, KM.H/2); KMC.d.v = z; }
-    }
-    else if (KMC.mode === 'menu'){ KMC.menuTarget = Math.max(0, Math.min(KMC_ITEMS.length-1, Math.round(KMC.menuPos))); kmcBuzz(5); }
-    kmcArm(); kmcLoop();
-  };
-  pill.addEventListener('pointerup', end); pill.addEventListener('pointercancel', end);
-  pill.addEventListener('wheel', e => {
-    if (KMC.mode === 'rest') return; e.preventDefault(); e.stopPropagation();
-    if (KMC.mode === 'menu'){ KMC.menuTarget = Math.max(0, Math.min(KMC_ITEMS.length-1, KMC.menuTarget + Math.sign(e.deltaY))); }
-    else if (KMC.d && !KMC.d.read){ const L = kmcLen(KMC.d); KMC.target = Math.max(0, Math.min(L, KMC.target - e.deltaY*.35)); const z = kmcV(KMC.d, KMC.target), cur = (KM.camT || KM.cam).z; kmZoomAt(z/cur, KM.W/2, KM.H/2); KMC.d.v = z; }
-    kmcArm(); kmcLoop();
-  }, { passive:false });
-  kmcEl('kmcBtn').addEventListener('pointerdown', e => e.stopPropagation());
-  kmcEl('kmcBtn').addEventListener('click', e => { e.stopPropagation(); kmcLightPress(); });
-  kmcEl('kmcBtn').addEventListener('keydown', e => {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown'){ e.preventDefault(); kmcNudge(e.key === 'ArrowUp' ? 1 : -1); }
-    if (e.key === 'Escape'){ kmcSetMode('rest'); }
-  });
-  root.querySelectorAll('.cc-it').forEach(b => b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); KMC.sel = KMC_ITEMS[+b.dataset.i].id; kmcSetMode('slider'); kmcEl('kmcBtn').focus(); } }));
-}
-function kmcLightPress(){
-  const now = performance.now(), dbl = now - KMC.tap < 380; KMC.tap = now;
-  if (KMC.mode === 'rest'){ kmcBuzz(8); kmcSetMode(dbl ? 'menu' : 'slider'); }
-  else if (KMC.mode === 'slider'){ kmcBuzz(8); kmcSetMode('menu'); }
-  else { KMC.sel = KMC_ITEMS[Math.round(KMC.menuTarget)].id; kmcBuzz(8); kmcSetMode('slider'); }
-}
-function kmcTap(e){
-  if (KMC.mode === 'menu'){
-    const b = e.target.closest && e.target.closest('.cc-it');
-    const i = b ? +b.dataset.i : Math.round(KMC.menuPos);
-    if (Math.round(KMC.menuTarget) !== i && b){ KMC.menuTarget = i; kmcLoop(); setTimeout(()=>{ KMC.sel = KMC_ITEMS[i].id; kmcSetMode('slider'); }, kmcStill() ? 0 : 260); }
-    else { KMC.sel = KMC_ITEMS[i].id; kmcSetMode('slider'); }
-    kmcBuzz(8);
-  } else if (KMC.mode === 'slider'){ kmcBuzz(8); kmcSetMode('menu'); }
-}
-function kmcNudge(dir){
-  if (KMC.mode === 'rest') kmcSetMode('slider');
-  if (KMC.mode === 'menu'){ KMC.menuTarget = Math.max(0, Math.min(KMC_ITEMS.length-1, KMC.menuTarget - dir)); kmcLoop(); kmcArm(); return; }
-  if (KMC.d && !KMC.d.read){ const i = KMC.d.majors.findIndex(m => m > KMC.d.v*1.01); const cur = KMC.d.v;
-    const z = dir > 0 ? (KMC.d.majors.find(m => m > cur*1.01) || KMC.d.max) : ([...KMC.d.majors].reverse().find(m => m < cur*.99) || KMC.d.min);
-    kmZoomAt(z/((KM.camT||KM.cam).z), KM.W/2, KM.H/2); KMC.d.v = z; KMC.target = kmcU(KMC.d, z); }
-  kmcLoop(); kmcArm();
-}
-
-/* ---------- styles ---------- */
-
-/* ---------- hook in: bind when the map shell appears; open once by itself so today's number is still seen ---------- */
-(function(){
-  const mo = new MutationObserver(() => {
-    const root = document.getElementById('kmCC');
-    if (root && !root.dataset.bound){
-      kmcBind(); KMC.mode = 'rest'; KMC.fresh = true;
-      if (!KMC.introDone && !kmcStill()){ KMC.introDone = true; setTimeout(()=>{ if (KMC.mode === 'rest' && document.getElementById('kmCC')){ kmcSetMode('slider'); kmcArm(4200); } }, 2400); }
-    }
-  });
-  mo.observe(document.body, { childList:true, subtree:true });
-})();
 
 </script>
 <script data-src="src/js/58-render-settings.js">
@@ -9202,7 +8936,7 @@ function setToggle(label, key, on, note=''){ return `<div class="set-f row"><spa
 function setSeg(label, key, cur, opts){ return `<div class="set-f row"><span>${label}</span><div class="set-seg" role="radiogroup" aria-label="${label}">${opts.map(([v,l])=>`<button role="radio" aria-checked="${cur===v}" class="${cur===v?'on':''}" data-set-seg="${key}" data-v="${v}">${l}</button>`).join('')}</div></div>`; }
 function setBody(sec){
   const p = state.profile, s = state.settings;
-  if (sec==='profile') return `<h3>Profile</h3><p class="set-note">How the app talks about you. The display name is the big title in the knowledge map.</p>
+  if (sec==='profile') return `<h3>Profile</h3><p class="set-note">How the app talks about you. The display name is the big title in Orbit.</p>
     ${setField('Display name','profile.display', displayName())}${setField('Full name','profile.name', p.name)}${setField('City','profile.city', p.city)}
     ${setField('Height (cm)','profile.heightCm', p.heightCm, 'number', 'inputmode="decimal"')}${setField('Starting weight (kg)','profile.weightStart', p.weightStart, 'number', 'step="0.1" inputmode="decimal"')}${setField('Target weight (kg)','profile.weightTarget', p.weightTarget, 'number', 'step="0.1" inputmode="decimal"')}`;
   if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Light is soft pearl, dark is obsidian. Reduced motion stops every animation, the galaxy included.</p>

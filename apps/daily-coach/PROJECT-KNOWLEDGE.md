@@ -22,7 +22,7 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 - **Tips** worked out from the data, up to 3 at a time, each dismissible for today.
 - The task list: four tasks makes a streak day.
 
-**Knowledge map (galaxy).** It opens from the launcher card. It's a 3D cinematic space scene built from real data:
+**Orbit (the knowledge map / galaxy).** It opens from the launcher card. It's a 3D cinematic space scene built from real data:
 - Sun = KsHan.
 - Stars = the 9 big areas (Thermoforming 24%, Manufacturing 16%, CAD 13%, Quality 12%, Maintenance 11%, Engines 8%, Mechanics 7%, Career 5%, English 4%).
 - Planets = today's tasks; tap one to tick it off.
@@ -33,7 +33,8 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 The map's controls:
 - Drag moves the view; the orbit toggle or right-drag spins it. Zoom goes up to 24×.
 - The panels tuck away while you explore and come back from the "Panels" button.
-- A right-edge control works like the iPhone Camera Control: a slim sliver on the edge; tap it for a ruler with Today, Savings or Streak, tap again for a curved menu, and Zoom slides the map (0.5× to 24×).
+- + and − zoom, and the number between them (e.g. 1.0×) shows the zoom; tap it to go back to 1×.
+- The KsHan title moves with the galaxy, and labels never hide under the panels.
 - "Ask AI" opens the chat over the map with suggested questions.
 
 **Lab.**

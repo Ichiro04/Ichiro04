@@ -178,6 +178,8 @@ function kmDraw(now){
   if (!KM.drag && KM.pv && KM.camT && !still){ KM.camT.x += KM.pv.x; KM.camT.y += KM.pv.y; KM.pv.x *= .86; KM.pv.y *= .86; if (Math.abs(KM.pv.x) + Math.abs(KM.pv.y) < .1) KM.pv = null; }
   if (KM.tween || !KM.camT) KM.camT = { x:KM.cam.x, y:KM.cam.y, z:KM.cam.z };
   else { const e = still ? 1 : .16; KM.cam.x += (KM.camT.x - KM.cam.x)*e; KM.cam.y += (KM.camT.y - KM.cam.y)*e; KM.cam.z *= Math.pow(KM.camT.z/KM.cam.z, e); }
+  { const zr = document.getElementById('kmZr'), z = KM.cam.z, zt = (z < 10 ? (Math.round(z*10)/10).toFixed(1) : Math.round(z)) + '×'; if (zr && zr.textContent !== zt){ zr.textContent = zt; zr.setAttribute('aria-label', `Zoom ${zt}. Tap to reset`); } }
+  { const root = document.getElementById('km'), tx = Math.round(KM.cam.x), ty = Math.round(KM.cam.y); if (root && (KM.ttx !== tx || KM.tty !== ty)){ KM.ttx = tx; KM.tty = ty; root.style.setProperty('--tx', tx+'px'); root.style.setProperty('--ty', ty+'px'); } }
   { const want = KM.view==='graph' && !KM.sel && KM.cam.z < 1.3 && (still || T > 2.2) ? 1 : 0; KM.tA = (KM.tA||0) + (want - (KM.tA||0))*(still ? 1 : .12);
     const root = document.getElementById('km'); if (root){ const on = KM.tA > .5; if (root.classList.contains('titled') !== on) root.classList.toggle('titled', on); } }
   const intro = still ? 1 : clamp((T - .2)/2.2, 0, 1), ie = 1 - Math.pow(1-intro, 3);
@@ -223,7 +225,7 @@ function kmDraw(now){
       const lrs = [...new Set(KM.nodes.filter(t=>t.parent===n && t.type==='topic').map(t=>t.lr))]; g.strokeStyle = `rgba(214,200,186,${(.22*a).toFixed(3)})`; g.lineWidth = .8;
       lrs.forEach(lr=>{ g.beginPath(); for (let i=0;i<=48;i++){ const th = i/48*Math.PI*2, x = n.wx + Math.cos(th)*lr, z = n.wz + Math.sin(th)*lr, p = GAL.proj(Math.hypot(x,z), Math.atan2(z,x), 0, v); i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); } g.stroke(); }); }); }
   // nodes, far to near
-  const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = [];
+  const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = kmPanels().map(p=>p.slice());
   // reserve label space front-to-back: domains first, then the nearest topics
   const labOK = new Set(); g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
   [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill'||n.type==='task'||n.type==='hole') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (5 + n.w*.28)*1.6*clamp(Math.pow(KM.cam.z,.75), .75, 10) : 3.4*clamp(Math.pow(KM.cam.z,.8), .8, 12), h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
@@ -238,16 +240,16 @@ function kmDraw(now){
       if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, true);
       kmGloss(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va*(1 - blur*.4), done, TT);
       if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, false); n.sr = r + 5;
-      if (KM.hover===n || KM.sel===n || (KM.labels && (KM.cam.z > 1.35 || W >= 1100) && !kmInTitle(n.sx + r + 6, n.sy, 90))){ g.globalAlpha = n.va*(KM.hover===n || KM.sel===n ? 1 : .8); g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = done ? '#F3DDBA' : '#D9E6F2'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText((done ? '✓ ' : '') + n.name, n.sx + r + 6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && (KM.cam.z > 1.35 || W >= 1100) && !kmInTitle(n.sx + r + 6, n.sy, 90))){ g.globalAlpha = kmOverPanel(n.sx + r + 6, n.sy - 10, 110, 16) ? 0 : n.va*(KM.hover===n || KM.sel===n ? 1 : .8); g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = done ? '#F3DDBA' : '#D9E6F2'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText((done ? '✓ ' : '') + n.name, n.sx + r + 6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='sat'){ const r = 4.5*gt*depth*hov; kmSat(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*2.4;
-      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.3)){ g.globalAlpha = n.va*.9; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#BFE0FF'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(`${n.block.t} ${n.name}`, n.sx + r*2.6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.3)){ g.globalAlpha = kmOverPanel(n.sx + r*2.6, n.sy - 10, 130, 16) ? 0 : n.va*.9; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#BFE0FF'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(`${n.block.t} ${n.name}`, n.sx + r*2.6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='neb'){ const r = 26*gz*depth*hov; kmNeb(g, n.sx, n.sy, r, n.col, n.prog, TT, n.va, n.ph, still); n.sr = r*.8;
-      g.globalAlpha = n.va*.9; g.font = '650 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = `rgb(${n.col})`; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 8; g.textAlign = 'center'; g.fillText(`${n.name} · ${Math.round(n.prog*100)}%`, n.sx, n.sy + r*1.05 + 12); g.textAlign = 'start'; g.shadowBlur = 0; g.globalAlpha = 1; }
+      { const t = `${n.name} · ${Math.round(n.prog*100)}%`; g.font = '650 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; const tw = g.measureText(t).width; g.globalAlpha = kmOverPanel(n.sx - tw/2, n.sy + r*1.05, tw, 16) ? 0 : n.va*.9; } g.fillStyle = `rgb(${n.col})`; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 8; g.textAlign = 'center'; g.fillText(`${n.name} · ${Math.round(n.prog*100)}%`, n.sx, n.sy + r*1.05 + 12); g.textAlign = 'start'; g.shadowBlur = 0; g.globalAlpha = 1; }
     else if (n.type==='pulsar'){ const r = 4*gz*depth*hov; kmPulsar(g, n.sx, n.sy, r, TT, n.va, still); n.sr = r*3;
-      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.1)){ g.globalAlpha = n.va*.85; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#CFE6FF'; g.fillText(`Streak · ${currentStreak()} days`, n.sx + r*3, n.sy - r*2); g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.1)){ g.globalAlpha = kmOverPanel(n.sx + r*3, n.sy - r*2 - 12, 110, 16) ? 0 : n.va*.85; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#CFE6FF'; g.fillText(`Streak · ${currentStreak()} days`, n.sx + r*3, n.sy - r*2); g.globalAlpha = 1; } }
     else if (n.type==='const'){ const r = 12*gz*depth; kmConst(g, n.sx, n.sy, r, TT, n.va); n.sr = r*3; }
     else if (n.type==='hole'){ const r = 9*gz*depth*hov; kmHole(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*1.8;
-      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.2)){ g.globalAlpha = n.va*.85; g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F2B7A8'; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r*2.2 + 4, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.2)){ g.globalAlpha = kmOverPanel(n.sx + r*2.2 + 4, n.sy - 10, 140, 16) ? 0 : n.va*.85; g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F2B7A8'; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r*2.2 + 4, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='topic' && kmMastery(n.topic) < 50){ const r = 3.6*gt*depth*hov; kmRock(g, n.sx, n.sy, r, n.ph, TT, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 5;
       if (KM.hover===n || KM.sel===n || (labOK.has(n) && ((KM.labels && KM.cam.z > 1.5) || (conn && conn.has(n))))){ g.globalAlpha = n.va; g.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#D8CBBE'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r + 8, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='topic'){ const r = 3.4*gt*depth*hov, m = kmMastery(n.topic);
@@ -263,12 +265,12 @@ function kmDraw(now){
     g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; const cx0 = W/2, cy0 = H/2, M = Math.hypot(W,H)/2; KM.warp.forEach(([a0, d0, w0])=>{ const r1 = M*d0*(.6 + k*.5), r2 = r1 + M*.18*w0*Math.sin(k*Math.PI); const gr = g.createLinearGradient(cx0 + Math.cos(a0)*r1, cy0 + Math.sin(a0)*r1, cx0 + Math.cos(a0)*r2, cy0 + Math.sin(a0)*r2); gr.addColorStop(0,'rgba(200,225,255,0)'); gr.addColorStop(1,`rgba(220,235,255,${al.toFixed(3)})`); g.strokeStyle = gr; g.lineWidth = w0*1.2; g.beginPath(); g.moveTo(cx0 + Math.cos(a0)*r1, cy0 + Math.sin(a0)*r1); g.lineTo(cx0 + Math.cos(a0)*r2, cy0 + Math.sin(a0)*r2); g.stroke(); }); g.globalCompositeOperation = 'source-over'; } }
   if (!still) kmBokeh(g, W, H, TT, fade);
   // a soft dark band keeps the title readable over the core
-  if (KM.tA > .01){ const tr = Math.min(O.r, 380), ty = O.cy - tr*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.38*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
+  if (KM.tA > .01){ const tr = Math.min(O.r, 380), tcx = O.cx + KM.cam.x, ty = O.cy + KM.cam.y - tr*.02, tv = g.createRadialGradient(tcx, ty, 0, tcx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.38*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(tcx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
 }
 function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
   const t = document.querySelector('.km-title'), cv = document.getElementById('kmCanvas'); if (!t || !cv) return; const c = cv.getBoundingClientRect(); let b = null;
   t.querySelectorAll('small,h1,span').forEach(el=>{ const r = el.getBoundingClientRect(), w = el.tagName==='H1' ? r.width : Math.min(r.width, el.scrollWidth); const x0 = r.left + (r.width - w)/2 - c.left; b = b ? [Math.min(b[0],x0), Math.min(b[1],r.top-c.top), Math.max(b[2],x0+w), Math.max(b[3],r.bottom-c.top)] : [x0, r.top-c.top, x0+w, r.bottom-c.top]; });
-  KM.tBox = b; }
+  KM.tBox = b; KM.tBoxCam = [KM.cam.x, KM.cam.y]; }
 /* ---------- cosmic objects ---------- */
 const KM_STAR_COLS = ['255,214,170','190,215,255','255,190,140','236,240,255','255,166,140','200,225,255','255,232,196','176,200,255','255,205,160'];
 const KM_TASK_COLS = { train:['#F3D3C2','#C2603E','#3E1A10'], learn:['#DCE8F6','#6F93C2','#1B2A40'], money:['#F2E4C8','#B8955E','#3E2E14'], progress:['#E4F0E6','#7FA68A','#1E3326'], coach:['#EADCF2','#9A7BB5','#2C1E3A'], today:['#E8EEF2','#8EA4B4','#22303A'], def:['#E8E4DE','#A49A8E','#2E2A26'] };
@@ -485,7 +487,16 @@ function kmBands(g, x, y, r, col, seed, T, a, lx, ly){ // cloud bands and a soft
   const L = Math.hypot(lx,ly) || 1, sh = g.createLinearGradient(x + lx/L*r, y + ly/L*r, x - lx/L*r, y - ly/L*r); sh.addColorStop(.45,'rgba(0,0,0,0)'); sh.addColorStop(1,`rgba(0,0,0,${(.55*a).toFixed(2)})`);
   g.fillStyle = sh; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
 }
-function kmInTitle(x, y, w=0){ const b = KM.tBox; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
+function kmInTitle(x, y, w=0){ const b0 = KM.tBox, c0 = KM.tBoxCam || [0,0], b = b0 && [b0[0] + KM.cam.x - c0[0], b0[1] + KM.cam.y - c0[1], b0[2] + KM.cam.x - c0[0], b0[3] + KM.cam.y - c0[1]]; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
+function kmPanels(){ // screen boxes of the HTML panels over the canvas (canvas coords), refreshed 5× a second
+  const now = performance.now(); if (KM.pnl && now - KM.pnlT < 200) return KM.pnl; KM.pnlT = now;
+  const cv = document.getElementById('kmCanvas'), root = document.getElementById('km'); if (!cv || !root) return (KM.pnl = []);
+  const c = cv.getBoundingClientRect(), out = [];
+  root.querySelectorAll('.km-top,.km-side,.km-ask,.km-tip:not([hidden]),.km-an:not([hidden])').forEach(el => { const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    if (r.width < 4 || r.height < 4 || cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < .2) return;
+    out.push([r.left - c.left - 6, r.top - c.top - 4, r.width + 12, r.height + 8]); });
+  return (KM.pnl = out); }
+function kmOverPanel(x, y, w, h){ for (const b of kmPanels()) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return true; return false; }
 function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels never pile up
   const L = KM.labs || (KM.labs = []); for (const b of L) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return false; L.push([x, y, w, h]); return true; }
 function kmToWorld(x,y){ return [x,y]; }
@@ -564,15 +575,15 @@ function kmAskHTML(){
   </div>`;
 }
 function kmShellHTML(){
-  return `<div class="km" id="km" role="dialog" aria-modal="true" aria-label="Knowledge map">
+  return `<div class="km" id="km" role="dialog" aria-modal="true" aria-label="Orbit, your growth galaxy">
     <canvas id="kmCanvas" aria-label="Network of everything you are learning. Drag or use the arrow keys to spin it all the way round, scroll to zoom, tap a node."></canvas>
     <div class="km-vign" aria-hidden="true"></div>
     <header class="km-top">
-      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Knowledge map</b><small>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}'s engineering plan</small></div></div>
+      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Orbit</b><small>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}'s growth galaxy</small></div></div>
       <div class="km-tools" role="toolbar" aria-label="Map tools">
         <span class="km-grp" role="radiogroup" aria-label="Drag mode"><button data-a="km-mode" data-id="move" class="${KM.mode!=='rotate'?'on':''}" role="radio" aria-checked="${KM.mode!=='rotate'}" aria-label="Drag to move" title="Drag to move (pan)">${kmi('hand')}</button><button data-a="km-mode" data-id="rotate" class="${KM.mode==='rotate'?'on':''}" role="radio" aria-checked="${KM.mode==='rotate'}" aria-label="Drag to spin" title="Drag to spin 360°">${kmi('orbit')}</button></span>
         <span class="km-grp"><button data-a="km-layout" data-id="radial" class="${KM.layout==='radial'?'on':''}" aria-label="Network view">${kmi('radial')}</button><button data-a="km-layout" data-id="tree" class="${KM.layout==='tree'?'on':''}" aria-label="Tree view">${kmi('tree')}</button></span>
-        <span class="km-grp"><button data-a="km-zoom" data-id="1" aria-label="Zoom in">${kmi('plus')}</button><button data-a="km-zoom" data-id="-1" aria-label="Zoom out">${kmi('minus')}</button></span>
+        <span class="km-grp"><button data-a="km-zoom" data-id="1" aria-label="Zoom in">${kmi('plus')}</button><button class="km-zr num" id="kmZr" data-a="km-z1" aria-label="Zoom 1×. Tap to reset">1×</button><button data-a="km-zoom" data-id="-1" aria-label="Zoom out">${kmi('minus')}</button></span>
         <span class="km-grp"><button data-a="km-gaps" class="${KM.gaps?'on':''}" aria-label="Show gaps only">${kmi('filter')}</button></span>
         <span class="km-grp"><button data-a="km-labels" class="${KM.labels?'on':''}" aria-label="Show labels">${kmi('label')}</button></span>
         <span class="km-grp"><button data-a="km-fit" aria-label="Fit to screen">${kmi('fit')}</button></span>
@@ -582,7 +593,6 @@ function kmShellHTML(){
     <div class="km-title" aria-hidden="true"><small>Personal growth project</small><h1>${esc(typeof displayName==='function' ? displayName() : 'KsHan')}</h1><span class="num">Day ${typeof planDay==='function'?planDay():1} of 365 · ${currentStreak()}-day streak</span></div>
     <span class="km-hint" aria-hidden="true">Drag to move · pinch or scroll to zoom · tap anything</span>
     ${kmSidesHTML()}
-    ${kmNotchHTML()}
     <button class="km-dockbtn" data-a="km-dock" aria-label="Show the panels again"><span class="km-dockg" aria-hidden="true"><i></i><i></i><i></i></span><span>Panels</span></button>
     <div class="km-tip glass-km" id="kmTip" hidden></div>
     <div class="km-an glass-km" id="kmAn" hidden></div>
@@ -793,6 +803,7 @@ function kmAction(a, el){
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();
+  else if (a==='km-z1'){ kmCamTo(KM.cam.x/KM.cam.z, KM.cam.y/KM.cam.z, 1, 420); }
   else if (a==='km-zoom'){ { const f = +el.dataset.id > 0 ? 1.35 : 1/1.35, z = clamp(KM.cam.z*f,.4,24), k = z/KM.cam.z; kmCamTo(KM.cam.x*k, KM.cam.y*k, z, 420); } }
   else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,900,true,1.0); KM.tween.io = true; KM.camT = null; }
   else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : 1.0); }
@@ -814,5 +825,5 @@ document.addEventListener('keydown', e=>{ if (KM.open && KM.view==='graph' && !(
   if (e.key==='Escape' && KM.open){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); } });
 window.addEventListener('hashchange', ()=>{ if (location.hash==='#map') kmOpen(); else if (KM.open) kmClose(); });
 function kmLauncherHTML(){
-  return `<button class="km-launch" data-a="km-open"><span class="km-lorb" aria-hidden="true"></span><span class="km-lt"><b>Knowledge map</b><small>Everything you are learning as one network. Tap a topic to dive in.</small></span><span class="km-lgo">${kmi('send',16)}</span></button>`;
+  return `<button class="km-launch" data-a="km-open"><span class="km-lorb" aria-hidden="true"></span><span class="km-lt"><b>Orbit</b><small>Everything you are growing, circling you. Tap a star to dive in.</small></span><span class="km-lgo">${kmi('send',16)}</span></button>`;
 }

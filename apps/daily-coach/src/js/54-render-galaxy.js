@@ -225,5 +225,3 @@ function kmSidesHTML(){
     </div>`;
 }
 
-/* ---------- right-edge control in the map (iPhone Camera Control style): see 57-render-camctl.js ---------- */
-function kmNotchHTML(){ return kmcHTML(); }

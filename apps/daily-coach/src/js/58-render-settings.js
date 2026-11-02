@@ -29,7 +29,7 @@ function setToggle(label, key, on, note=''){ return `<div class="set-f row"><spa
 function setSeg(label, key, cur, opts){ return `<div class="set-f row"><span>${label}</span><div class="set-seg" role="radiogroup" aria-label="${label}">${opts.map(([v,l])=>`<button role="radio" aria-checked="${cur===v}" class="${cur===v?'on':''}" data-set-seg="${key}" data-v="${v}">${l}</button>`).join('')}</div></div>`; }
 function setBody(sec){
   const p = state.profile, s = state.settings;
-  if (sec==='profile') return `<h3>Profile</h3><p class="set-note">How the app talks about you. The display name is the big title in the knowledge map.</p>
+  if (sec==='profile') return `<h3>Profile</h3><p class="set-note">How the app talks about you. The display name is the big title in Orbit.</p>
     ${setField('Display name','profile.display', displayName())}${setField('Full name','profile.name', p.name)}${setField('City','profile.city', p.city)}
     ${setField('Height (cm)','profile.heightCm', p.heightCm, 'number', 'inputmode="decimal"')}${setField('Starting weight (kg)','profile.weightStart', p.weightStart, 'number', 'step="0.1" inputmode="decimal"')}${setField('Target weight (kg)','profile.weightTarget', p.weightTarget, 'number', 'step="0.1" inputmode="decimal"')}`;
   if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Light is soft pearl, dark is obsidian. Reduced motion stops every animation, the galaxy included.</p>

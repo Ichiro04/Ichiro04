@@ -41,6 +41,7 @@ body.km-open .tabbar,body.km-open .notch,body.km-open .topbar{visibility:hidden}
 .km-grp{display:flex;padding:3px;gap:2px;border-radius:10px;background:var(--k-glass2);border:1px solid var(--k-line);box-shadow:0 10px 24px -14px #000}
 .km-grp button{width:34px;height:32px;border-radius:7px;display:grid;place-items:center;color:var(--k-ink2);cursor:pointer;background:none;border:0;transition:background .2s,color .2s}
 .km-grp button:hover{color:var(--k-ink);background:rgba(255,255,255,.06)}
+.km-grp .km-zr{width:auto;min-width:40px;padding:0 6px;font-size:12px;font-weight:700;color:var(--k-ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .km-grp button.on{color:var(--k-teal);background:rgba(217,185,146,.13);box-shadow:inset 0 0 0 1px rgba(217,185,146,.35)}
 .km-right{display:flex;align-items:center;gap:8px}
 .km-new{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;font-size:13px;font-weight:600;color:var(--k-ink);background:rgba(255,255,255,.03);border:1px solid var(--k-line2);cursor:pointer}
@@ -273,9 +274,13 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km{--pw-ink:#F2F1ED;--pw-ink-2:#BDB3A8;--pw-ink-3:#857A70;--pw-line:rgba(242,241,237,.08);--pw-line-2:rgba(242,241,237,.16);--cr-accent:#C2304A;--cr-sand:#C9A882;
   background:radial-gradient(60% 55% at 50% 44%,#2A1416 0%,#160D0E 40%,#0B0909 72%,#050404 100%)}
 .km-time{display:none}
+/* dragging the map must never select text: that drew a crimson selection box over the title */
+.km,.km *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.km input,.km textarea,.km [contenteditable="true"]{-webkit-user-select:text;user-select:text}
 .km-title{position:absolute;left:var(--ox,50%);top:var(--oy,50%);transform:translate(-50%,-56%);z-index:2;width:calc(var(--or,200px)*1.4);text-align:center;pointer-events:none;
   display:grid;gap:5px;justify-items:center;opacity:0;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
 .km.titled .km-title{opacity:1;transform:translate(-50%,-50%)}
+.km-title{translate:var(--tx,0px) var(--ty,0px)} /* pan offset, set every frame by kmDraw */
 .km-title small{font-size:clamp(10.5px,calc(var(--or,200px)*.04),13px);color:#D9BC9C;letter-spacing:.14em;font-weight:650}
 .km-title h1{margin:0;font-family:var(--serif,Georgia,"Times New Roman",serif);font-weight:700;font-size:clamp(28px,calc(var(--or,200px)*.2),66px);letter-spacing:.03em;line-height:1.02;
   background:linear-gradient(180deg,#FBF6EE 30%,#E6CDB0 70%,#C9A882);-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -347,9 +352,7 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-tip small.hole{color:#F2A08E}
 .km-legend .km-li{gap:7px}
 
-/* ---------- right edge: room for the edge control (src/css/camctl.css) ---------- */
 .km-mini{display:none!important}
-@media(min-width:1100px){ .km-side.r{right:86px} .km-tip{right:388px} }
 
 /* ---------- panels tuck away while exploring ---------- */
 .km-side,.km-ask{transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s ease}
@@ -367,9 +370,6 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km-dockg{display:grid;grid-template-columns:repeat(3,5px);gap:3px}
 .km-dockg i{width:5px;height:5px;border-radius:50%;background:#E6CDB0}
 .km.focus .km-dockbtn{display:none}
-@media(max-width:760px){
-  .km-tip{right:64px}
-}
 
 /* map: drag modes, Ask AI, new legend items */
 .km-ai2{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 5px;border-radius:999px;font-size:13px;font-weight:700;color:#F6F1EA;cursor:pointer;border:0;
