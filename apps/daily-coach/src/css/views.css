@@ -453,7 +453,6 @@ html.reduce .reveal-w > span{transform:none;opacity:1}
 @keyframes ringfill{from{stroke-dashoffset:var(--full)}to{stroke-dashoffset:var(--dash)}}
 .ringfg{animation:ringfill 1.1s var(--ease-out) both}
 
-.tide-wave{animation:sway 9s ease-in-out infinite alternate;transform-origin:50% 50%}
 @keyframes sway{from{transform:translateX(-5px)}to{transform:translateX(5px)}}
 .tide-sun{animation:float 7s ease-in-out infinite alternate;transform-origin:50% 50%}
 @keyframes float{to{transform:translateY(-3.5px)}}

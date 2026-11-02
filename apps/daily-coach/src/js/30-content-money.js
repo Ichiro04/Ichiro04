@@ -29,7 +29,6 @@ const milestoneList = (() => {
 })();
 
 /* ---------- weight ---------- */
-function weighIns(){ return state.days; }
 function weightSeries(){
   return Object.keys(state.days).sort()
     .filter(k=>Number(state.days[k].weight) > 0)
@@ -55,7 +54,6 @@ function sessionFor(k=dkey()){
   const r = state.workouts[k];
   return SESSIONS[r && r.sessionId] || todaysSession(parseKey(k));
 }
-function setKeyDone(k, exId, i){ const r = wrec(k); return !!(r.sets[exId] && r.sets[exId][i]); }
 function toggleSet(k, exId, i, setsCount){
   const r = wrec(k, true);
   const arr = r.sets[exId] && r.sets[exId].length === setsCount ? r.sets[exId].slice() : new Array(setsCount).fill(false);

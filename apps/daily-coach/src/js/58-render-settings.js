@@ -23,7 +23,7 @@ const displayInitials = () => (displayName().replace(/[^A-Za-z]/g,'').slice(0,2)
 
 /* ---------- settings sheet ---------- */
 const SET = { open:false, sec:'profile' };
-const SET_SECS = [['profile','user','Profile'],['look','palette','Look and motion'],['goals','target','Goals and money'],['coach','sparkle','Coach and voice'],['tips','bell','Tips'],['data','shield','Your data']];
+const SET_SECS = [['profile','user','Profile'],['look','palette','Look and motion'],['goals','target','Goals and money'],['coach','sparkle','Coach and voice'],['auto','robot','Autopilot'],['tips','bell','Tips'],['data','shield','Your data']];
 function setField(label, key, val, type='text', extra=''){ return `<label class="set-f"><span>${label}</span><input type="${type}" data-set="${key}" value="${esc(val ?? '')}" ${extra}></label>`; }
 function setToggle(label, key, on, note=''){ return `<div class="set-f row"><span>${label}${note?`<small>${note}</small>`:''}</span><button class="set-tg${on?' on':''}" data-set-tg="${key}" role="switch" aria-checked="${!!on}" aria-label="${label}"><i></i></button></div>`; }
 function setSeg(label, key, cur, opts){ return `<div class="set-f row"><span>${label}</span><div class="set-seg" role="radiogroup" aria-label="${label}">${opts.map(([v,l])=>`<button role="radio" aria-checked="${cur===v}" class="${cur===v?'on':''}" data-set-seg="${key}" data-v="${v}">${l}</button>`).join('')}</div></div>`; }
@@ -32,7 +32,8 @@ function setBody(sec){
   if (sec==='profile') return `<h3>Profile</h3><p class="set-note">How the app talks about you. The display name is the big title in Orbit.</p>
     ${setField('Display name','profile.display', displayName())}${setField('Full name','profile.name', p.name)}${setField('City','profile.city', p.city)}
     ${setField('Height (cm)','profile.heightCm', p.heightCm, 'number', 'inputmode="decimal"')}${setField('Starting weight (kg)','profile.weightStart', p.weightStart, 'number', 'step="0.1" inputmode="decimal"')}${setField('Target weight (kg)','profile.weightTarget', p.weightTarget, 'number', 'step="0.1" inputmode="decimal"')}`;
-  if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Light is soft pearl, dark is obsidian. Reduced motion stops every animation, the galaxy included.</p>
+  if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Pick a style, then tune its glass. Every change saves at once and you can come back and edit it any time. Reduced motion stops every animation, the galaxy included.</p>
+    ${typeof skinPickHTML==='function' ? `<div class="set-sub">Style</div>${skinPickHTML()}${skinTuneHTML()}<div class="set-sub">Mode</div>` : ''}
     ${setSeg('Theme','theme', th, [['auto','Auto'],['light','Light'],['dark','Dark']])}
     ${setToggle('Reduce motion','reduceMotion', state.reduceMotion, 'Also follows your device setting')}
     ${setToggle('Wide side menu','railOpen', state.railOpen, 'Show names next to the icons (screens 900px and wider)')}
@@ -51,6 +52,17 @@ function setBody(sec){
     ${setSeg('Voice speed','voiceRate', String(state.voiceRate || 1), [['0.85','Slow'],['1','Normal'],['1.15','Fast']])}
     ${setSeg('Voice input language','voiceLang', state.voiceLang || 'en-GB', [['en-GB','English'],['my-MM','Burmese']])}
     <button class="set-btn" data-set-act="voicetest">${ic('volume',16)} Test the voice</button>`; }
+  if (sec==='auto'){ const a = apState(), s2 = ciStatus('2w'), s1 = ciStatus('1m'); return `<h3>Autopilot and check-ins</h3><p class="set-note">The autopilot runs inside this app: when you open it, when you come back to it and every 15 minutes while it is open. It builds today’s plan, works out tips from your numbers and prepares your check-ins. Nothing is sent anywhere.</p>
+    ${setToggle('Autopilot','ap.on', a.on, 'Switch everything below on or off')}
+    ${setToggle('Build today’s plan','ap.plan', a.plan, 'Tasks, day-plan blocks and your biggest gap, on the Coach tab')}
+    ${setToggle('Prepare check-ins','ap.checkins', a.checkins, 'A ready draft and a reminder when one is due')}
+    ${setToggle('Tips on the Coach tab','ap.tips', a.tips, 'Savings pace, best day, weakest habit, sleep, weight')}
+    ${setToggle('Carry over my own to-dos','ap.carry', a.carry, 'Unfinished items you added move to tomorrow')}
+    ${setField('2-week check-ins start from','autopilot.anchor', a.anchor, 'date')}
+    <div class="set-meter"><div><b>${esc(ciLabel(s2))}</b><small>2-week check-in</small></div><div><b>${esc(ciLabel(s1))}</b><small>Monthly check-in</small></div><div><b class="num">${(state.reviews||[]).length}</b><small>check-ins done</small></div></div>
+    <button class="set-btn" data-set-act="aprun">${ic('robot',16)} Run the autopilot now</button>
+    <div class="set-sub">Recent runs</div><ul class="set-log">${(a.log||[]).slice(0,8).map(l=>{ const d = new Date(l.ts); return `<li><span class="num">${shortDate(d)} ${pad2(d.getHours())}:${pad2(d.getMinutes())}</span>${esc(l.msg)}</li>`; }).join('') || '<li>Nothing yet.</li>'}</ul>
+    <p class="set-note"><b>Cloud builder:</b> a scheduled Claude run works on the app’s code at night (new features, fixes, content), tests it and pushes it to GitHub. It cannot see your logged data, which stays in this browser.</p>`; }
   if (sec==='tips') { const off = ((state.tipsOff||{})[dkey()]) || []; return `<h3>Tips</h3><p class="set-note">Tips on Today come from your own numbers. Dismissed ones come back the next day.</p>
     ${setToggle('Show tips on Today','tipsShow', state.tipsShow !== false)}
     <div class="set-f row"><span>Hidden today<small>${off.includes('*') ? 'All tips' : off.length ? off.length + ' tip' + (off.length>1?'s':'') : 'None'}</small></span><button class="set-btn sm" data-set-act="tipsback">Bring them back</button></div>`; }
@@ -76,6 +88,8 @@ document.addEventListener('click', e=>{
   const sec = e.target.closest('[data-set-sec]'); if (sec){ e.stopPropagation(); SET.sec = sec.dataset.setSec; ov.querySelectorAll('.set-ni').forEach(b=>b.classList.toggle('on', b===sec)); const body = document.getElementById('setBody'); body.classList.remove('in'); void body.offsetWidth; body.innerHTML = setBody(SET.sec); body.classList.add('in'); return; }
   const tg = e.target.closest('[data-set-tg]'); if (tg){ e.stopPropagation(); const k = tg.dataset.setTg, on = !tg.classList.contains('on'); tg.classList.toggle('on', on); tg.setAttribute('aria-checked', String(on));
     if (k==='aiDeep'){ if (typeof AI!=='undefined') AI.deep = on; }
+    else if (k==='gtSolid'){ skinSet('solid', on); }
+    else if (k.startsWith('ap.')){ const ap = apState(); ap[k.slice(3)] = on; apLog(`${tg.getAttribute('aria-label')} ${on ? 'on' : 'off'}.`); save(); if (k==='ap.on' && on) apRun('manual'); if (activeTab==='coach') renderView('coach'); }
     else { state[k] = on; save(); if (k==='reduceMotion') applyMotion(); if (k==='railOpen' && typeof mountRail==='function') mountRail(); if (k==='chatFab') chatFab(); if (k==='tipsShow' && activeTab==='today') renderView('today'); }
     return; }
   const sg = e.target.closest('[data-set-seg]'); if (sg){ e.stopPropagation(); const k = sg.dataset.setSeg, v = sg.dataset.v; sg.parentNode.querySelectorAll('button').forEach(b=>{ const on = b===sg; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
@@ -86,6 +100,7 @@ document.addEventListener('click', e=>{
     else { state[k] = v; save(); }
     return; }
   const act = e.target.closest('[data-set-act]'); if (act){ e.stopPropagation(); const a = act.dataset.setAct;
+    if (a==='aprun'){ if (state.coachPlan) state.coachPlan.date = ''; apRun('manual'); apLog('Run by hand from Settings.'); save(); document.getElementById('setBody').innerHTML = setBody('auto'); if (activeTab==='coach' || activeTab==='review') renderView(activeTab); toast('Autopilot ran: plan, tips and check-ins are up to date.','ok',1800); return; }
     if (a==='voicetest') aiSpeak(`Hello ${displayName()}. This is how your coach sounds.`, true);
     else if (a==='tipsback'){ if (state.tipsOff) delete state.tipsOff[dkey()]; save(); document.getElementById('setBody').innerHTML = setBody('tips'); if (activeTab==='today') renderView('today'); toast('Tips are back on Today.','ok',1600); }
     return; }

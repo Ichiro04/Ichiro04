@@ -40,6 +40,7 @@ function boot(){
   requestAnimationFrame(()=>{ moveLens(); });
   updateChrome();
   onScroll();
+  if (typeof apRun === 'function') setTimeout(()=>{ try { apRun('open'); } catch(e){ console.warn('autopilot', e); } }, 700);
   // keep the view fresh across midnight
   let dayAtBoot = dkey();
   setInterval(()=>{

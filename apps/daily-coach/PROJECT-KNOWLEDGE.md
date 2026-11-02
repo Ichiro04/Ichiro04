@@ -14,7 +14,7 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 
 ## What the app does
 
-**Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress and Coach. Settings opens from the gear in the date strip or from the rail.
+**Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress, Review and Coach. Settings opens from the gear in the date strip or from the rail.
 
 **Today.**
 - The daily system: the now card with a ring timer and Done / Partly / Missed, an up-next countdown, the 3 that matter, a feel strip and a day-plan timeline.
@@ -37,11 +37,19 @@ The map's controls:
 - The KsHan title moves with the galaxy, and labels never hide under the panels.
 - "Ask AI" opens the chat over the map with suggested questions.
 
+**Review.**
+- Check-ins every 2 weeks and every month. Each one fills in the numbers itself, gives the coach's read, asks for 1–5 ratings in six areas and three short questions, and sets a focus area for the next period.
+- Calendar with each day coloured by tasks done and dots for training, English, savings and weight; tap a day to see it and write a note.
+- Charts: this fortnight against the last (wave), daily focused time, balance wheel, fortnight trend and past check-ins.
+- "Edit layout" moves or hides sections.
+
 **Lab.**
 - **CAD workspace:** SolidWorks-style WebGL modeller with a feature tree, editable boss / cut / rib / fillet features, zoom / pan / rotate, display styles and full screen. Its exercises are the L-bracket, flanged bush, pillow block and V4 engine block, each checked against a generated drawing.
 - The older 3D CAD quiz, the drawings explorer and 8-question test, the V12 engine digital twin with a fault simulator, and the test bench.
 
 **Coach AI.**
+- Top of the Coach tab: today's plan (a to-do list the autopilot builds each morning, plus your own items), tips from your numbers, this week's wave and the autopilot card. "Edit layout" moves or hides these.
+- **Autopilot** runs inside the app (on opening, on coming back and every 15 minutes): plan, tips and check-in drafts. Switches in Settings → Autopilot. A cloud builder also works through `AUTOPILOT.md` at night and pushes code changes to GitHub.
 - A floating "Ask coach" button sits on every tab, with a mic.
 - In the chat:
   - The text box.
@@ -57,6 +65,7 @@ The map's controls:
 - Progress: streaks and charts.
 
 ## Look
+- Three styles in Settings → Look: Crimson pearl (default), Neumorphic glass and Glassmorphism. The glass styles can be tuned there: tint, accent, transparency, blur, soft depth, roundness, solid surfaces.
 - Palette: Crimson Depth #710014, Warm Sand #B38F6F, Soft Pearl #F2F1ED, Obsidian #161616.
 - Background: a procedural red / gold / cream mountain landscape.
 - The galaxy is deep blue space.

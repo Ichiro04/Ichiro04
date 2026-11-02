@@ -152,7 +152,6 @@ function kmLayout(snap){
   hh = R*ct*.98; KM.orb = { cx, cy, r:R }; KM.R = R;
   const el = document.getElementById('km'); if (el){ el.style.setProperty('--ox', cx+'px'); el.style.setProperty('--oy', cy+'px'); el.style.setProperty('--or', Math.min(R, 380)+'px'); el.style.setProperty('--oh', hh+'px'); requestAnimationFrame(kmTitleBox); }
 }
-function kmPos(n){ return [n.wx||0, n.wz||0]; }
 function kmIntroAt(n){ if (n.type==='core') return 0; const d = n.type==='domain' ? n : n.parent && n.parent.type==='domain' ? n.parent : n.parent && n.parent.parent ? n.parent.parent : n; return .9 + (d.orad||.5)*1.6 + (n.type==='domain'?0:.25) + ((n.ph*37)%1)*.15; }
 function kmWorld(n, T){ // disc coordinates (x, z) for each node, with differential rotation
   if (n.type==='core') return [0,0];
@@ -480,13 +479,6 @@ function kmPlanetRing(g, x, y, r, col, tilt, a, back){ // Saturn-style ring: bac
   [[1, .55, 2.2],[.86, .35, 1.4],[.74, .5, 1.6]].forEach(([k, al, w])=>{ g.strokeStyle = col[0]; g.globalAlpha = a*al; g.lineWidth = w*Math.max(1, r/12); g.beginPath(); g.ellipse(x, y, rx*k, ry*k, -.12, 0, 7); g.stroke(); });
   g.restore();
 }
-function kmBands(g, x, y, r, col, seed, T, a, lx, ly){ // cloud bands and a soft terminator on planets big enough to see
-  g.save(); g.globalAlpha = a*.35; g.beginPath(); g.arc(x,y,r,0,7); g.clip(); g.translate(x,y); g.rotate(-.25);
-  const rb = mulberry32(seed*7 + 3); for (let i=-6;i<=6;i++){ const yy = i*r*.16 + Math.sin(T*.3 + i + seed)*r*.025, h = r*(.04 + rb()*.09); g.fillStyle = i % 2 ? col[2] : col[0]; g.globalAlpha = a*(i % 2 ? .13 : .07)*(.6 + rb()*.6); g.fillRect(-r, yy, r*2, h); }
-  g.restore();
-  const L = Math.hypot(lx,ly) || 1, sh = g.createLinearGradient(x + lx/L*r, y + ly/L*r, x - lx/L*r, y - ly/L*r); sh.addColorStop(.45,'rgba(0,0,0,0)'); sh.addColorStop(1,`rgba(0,0,0,${(.55*a).toFixed(2)})`);
-  g.fillStyle = sh; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
-}
 function kmInTitle(x, y, w=0){ const b0 = KM.tBox, c0 = KM.tBoxCam || [0,0], b = b0 && [b0[0] + KM.cam.x - c0[0], b0[1] + KM.cam.y - c0[1], b0[2] + KM.cam.x - c0[0], b0[3] + KM.cam.y - c0[1]]; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
 function kmPanels(){ // screen boxes of the HTML panels over the canvas (canvas coords), refreshed 5× a second
   const now = performance.now(); if (KM.pnl && now - KM.pnlT < 200) return KM.pnl; KM.pnlT = now;
@@ -499,7 +491,6 @@ function kmPanels(){ // screen boxes of the HTML panels over the canvas (canvas 
 function kmOverPanel(x, y, w, h){ for (const b of kmPanels()) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return true; return false; }
 function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels never pile up
   const L = KM.labs || (KM.labs = []); for (const b of L) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return false; L.push([x, y, w, h]); return true; }
-function kmToWorld(x,y){ return [x,y]; }
 function kmDock(on){ // panels tuck away while you explore and come back from the centre button
   const root = document.getElementById('km'); if (!root || KM.view!=='graph') return; if (root.classList.contains('undocked') === !on) return;
   root.classList.toggle('undocked', !on); }
@@ -529,7 +520,6 @@ function kmChip(g, x, y, txt, a){
   g.beginPath(); g.roundRect ? g.roundRect(x, y-8, w, 16, 5) : g.rect(x, y-8, w, 16); g.fill(); g.stroke();
   g.fillStyle = '#F2F1ED'; g.fillText(txt, x+5, y+3.6); g.globalAlpha = 1;
 }
-function kmOverall(){ const ts = KM_DOMAINS.flatMap(d=>d.topics); let w = 0, sum = 0; KM_DOMAINS.forEach(d=>d.topics.forEach(t=>{ w += d.w/d.topics.length; sum += d.w/d.topics.length*kmMastery(t)/100; })); return Math.round(sum/w*100); }
 function kmLoop(now){
   KM.raf = 0; if (!KM.open) return;
   if (KM.view==='graph' || KM.view==='leaving') kmDraw(now);

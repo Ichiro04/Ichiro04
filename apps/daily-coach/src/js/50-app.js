@@ -36,6 +36,7 @@ const TABS = [
   { id:'lab',      name:'Lab',      icon:'wrench',   title:'Lab',      sub:'CAD, a real test bench and your engineering path.' },
   { id:'money',    name:'Money',    icon:'pound',    title:'Money',    sub:'£25,000 in twelve months, one logged coffee at a time.' },
   { id:'progress', name:'Progress', icon:'chart',    title:'Progress', sub:'Evidence, not vibes.' },
+  { id:'review',   name:'Review',   icon:'calendar', title:'Review',   sub:'Every two weeks and every month: look back, then aim.' },
   { id:'coach',    name:'Coach',    icon:'headset',  title:'Coach',    sub:'The honest read on your week.' }
 ];
 let activeTab = 'today';
@@ -71,9 +72,9 @@ function heroHTML(tab){
 function renderView(tab){
   const el = $('#view-'+tab);
   if (tab === 'lab'){ el.className = 'view'; mountLab(el); return; }
-  const wide = { today:true, learn:true, progress:true }[tab] ? ' wide' : '';
+  const wide = { today:true, learn:true, progress:true, review:true }[tab] ? ' wide' : '';
   el.className = 'view' + wide + (motionOff() ? '' : ' cascade');
-  const map = { today:renderToday, train:renderTrain, learn:renderLearn, money:renderMoney, progress:renderProgress, coach:renderCoach };
+  const map = { today:renderToday, train:renderTrain, learn:renderLearn, money:renderMoney, progress:renderProgress, review:renderReview, coach:renderCoach };
   el.innerHTML = (map[tab] || renderToday)();
   // each section arrives a beat after the one above it
   if (!motionOff()) Array.from(el.children).forEach((c,i)=>{ if (i < 12) c.style.setProperty('--ci', i); });
@@ -123,6 +124,7 @@ function updateChrome(){
     learn: `${Object.keys(state.knowledge).length}/${KNOWLEDGE_PACKS.length} packs`,
     money: money0(savedTotal()),
     progress: `${currentStreak()}-day streak`,
+    review: typeof ciStatus === 'function' ? `2-week check-in ${ciLabel(ciStatus('2w'))}` : '',
     coach: ''
   }[activeTab] || '';
   $('#miniTitle').textContent = (TABS.find(t=>t.id===activeTab)||{title:''}).title;
@@ -334,10 +336,6 @@ $('#restbar').addEventListener('click', e=>{
 /* ============================================================
    ACTIONS
    ============================================================ */
-function markTaskAuto(id, val){
-  const k = dkey();
-  if (taskDone(k,id) !== !!val){ setTask(k, id, !!val); }
-}
 function syncAutoTasks(){
   const k = dkey();
   const steps = dayRec(k).steps || 0;

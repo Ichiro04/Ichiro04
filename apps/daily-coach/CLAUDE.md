@@ -163,7 +163,7 @@ his weight or his money — state the number and the next action.
       added. `load()` swaps in the new list once, only if a saved list is still the old £1,050
       placeholder. `feasiblePerMonth()` no longer takes 10% off (the budget already has a £50 buffer),
       so the Money tab shows £1,303 realistic and £780 short, matching the plan. The weight target stays 72 kg and the IELTS target 7.0.
-- [ ] `state.settings.examDate` is stored but nothing counts down to it yet.
+- [ ] `state.settings.examDate` is stored but nothing counts down to it yet (the coach plan adds IELTS practice inside 60 days; a visible countdown is in `AUTOPILOT.md`).
 - [ ] The Coach is deterministic (`generateReply`). If it is ever wired to a real model, keep the
       grounded-data-first behaviour and never send the JSON store to a server without asking.
 - [ ] No service worker / install prompt. A trivial one would make it work offline on his phone.
@@ -365,3 +365,18 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
   - The HTML title follows the pan: `kmDraw` sets `--tx/--ty` on `#km` from `KM.cam` and `.km-title` uses `translate: var(--tx) var(--ty)`; the dark band under it and `kmInTitle` (via `KM.tBoxCam`) follow too.
   - Labels avoid the HTML panels: `kmPanels()` collects the boxes of `.km-top/.km-side/.km-ask/.km-tip/.km-an` (refreshed 5× a second) and seeds `KM.labs`, so a domain label flips to the free side or hides; free-standing labels (goal nebulae, tasks, satellites, pulsar, black holes) fade out under a panel (`kmOverPanel`).
   - Zoom readout `#kmZr` between + and − (e.g. "1.3×"); tapping it eases back to 1× (`km-z1`).
+
+## Review tab, autopilot and glass skins (Nov 2026)
+
+- **Review tab** (`62-render-review.js`, `review.css`; 8th tab, icon calendar, after Progress):
+  - Check-ins every 2 weeks (Mon–Sun fortnights from `state.autopilot.anchor`, default the Monday of `createdAt`) and every calendar month. `ciPeriod`, `ciPrev`, `ciStatus` (open / due ≤2 days / done / late up to 7 days after) live in `61-autopilot.js`.
+  - The form (sheet) fills the period's numbers (`periodStats(from,to)`), a rule-based read (`ciRead`), 1–5 ratings for six `AREAS`, three questions and a focus area. Saved to `state.reviews[]`; drafts in `state.reviewDraft[type+to]`. The focus area becomes `state.focusArea` and adds a daily plan item.
+  - Sections: check-in cards with countdown rings, this fortnight (wave chart against the last fortnight, daily balance bars, deltas), calendar (heat by tasks, dots for training / English / saved / weight, check-in days dashed, tap a day for details and an editable note), balance wheel (`areaScores` from data, last ratings dashed), fortnight trend, history, quote.
+  - A red dot on the Review tab when a check-in is due (`reviewBadge`).
+- **Autopilot** (`61-autopilot.js`): `apRun` on boot, on `visibilitychange` and every 15 minutes. Builds `state.coachPlan` once a day (`apBuildPlan`: scheduled tasks, day-plan blocks without a task, the weakest Orbit topic, due check-ins, sleep, IELTS inside 60 days, focus area; own items carry over), prepares check-in drafts with a toast, logs to `state.autopilot.log` (30 entries). Settings → Autopilot has the switches, the fortnight start date, the log and "Run now". Nothing leaves the browser.
+- **Coach tab** now wraps the old `renderCoach` (kept as `renderCoachChat`): Today's plan (tick, open, add, delete, rebuild), tips from numbers (`apTips`, 4 shown, more on tap), this week's wave, autopilot card, then the chat.
+- **Editable layouts:** `sectionsHTML(tab, defs)` gives Review and Coach an "Edit layout" mode (move up/down, hide/show, reset) stored in `state.layout[tab]`.
+- **Glass skins** (`63-skins.js`, `glass-themes.css`, loaded last): `state.skin` = `crimson` (default) | `neuglass` | `frost`, from the user's two reference posters. `state.skinTune[skin]` holds tint, accent, transparency, blur (max 20px), soft depth, roundness and a solid switch; they become `--gt-*` properties on `<html>`. Skins override the `--pw-*`, `--cr-*` and `--neu-*` tokens, so most of the app follows automatically. The landscape canvas is cleared and used as the backdrop. Orbit keeps its own deep-space look.
+- `waveSVG(vals, labels, id, prev)` is a shared smooth wave chart with a drifting swell (fixed-number keyframes).
+- Cloud builder: a scheduled Claude run works through `AUTOPILOT.md` one item per night and pushes to this branch.
+- Removed dead code: `weighIns`, `setKeyDone`, `tideArt` (+ `TIDE_COLORS`, `.tide-wave`), `markTaskAuto`, `kmPos`, `kmBands`, `kmToWorld`, `kmOverall`.
