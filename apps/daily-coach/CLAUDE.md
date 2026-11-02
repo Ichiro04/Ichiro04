@@ -232,3 +232,19 @@ gold = done/best.
   with health ring, alert, causes, suggestion, urgency and a live vibration trace. The model now
   has camshafts, valves that open on the right strokes, a flywheel and a belt drive.
 - `build.mjs` also writes `dist/artifact.html` (no doctype/html/head/body) for the Artifact tool.
+
+## Knowledge map (full-screen, from the user's reference video)
+
+`src/js/52-render-kmap.js` + `src/css/kmap.css`. A recreation of the motion and layout of a
+policy-graph concept video the user sent (frames extracted with ffmpeg), rebuilt on Kyaw's own
+content; none of the original product's name, branding or data is used.
+- Open from the launcher at the top of Lab and Learn → Packs/Career, or `#map`. Esc / X closes.
+- Scenes: gold dust → core ignition → blue streaks shoot to each node, which pop with a cyan
+  flare → settled network (canvas): tapered gold beams core→domain with travelling light pulses,
+  teal cross-links, dotted links to number nodes, drift, sparkles. Chrome fades in at 2.1 s.
+- Data: `KM_DOMAINS` (9 domains, % = weight in the plan) → topics linked to knowledge packs, Lab
+  panes or Learn sub-tabs. Mastery comes from real progress (`kmMastery`).
+- Ask bar with live KPIs → coach analysis panel (red "Critical gap" + "Study next") → focus view:
+  orb with fuzzy ring, five count tiles grow out on curves, the biggest list fans out from the gold
+  tile, detail panel slides in. "Explore in …" deep-links into the app (`window.knowPick`).
+- Single dark teal world by design (matches the video); narrow screens stack the focus view.

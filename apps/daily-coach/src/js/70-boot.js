@@ -36,7 +36,7 @@ function boot(){
   renderView(activeTab);
   $('#fabwrap').style.display = 'none';
   buildMotes();
-  startLights();
+  if (location.hash === '#map') setTimeout(kmOpen, 300); else startLights();
   requestAnimationFrame(()=>{ moveLens(); });
   updateChrome();
   onScroll();

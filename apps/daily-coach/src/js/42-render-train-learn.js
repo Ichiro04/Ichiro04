@@ -123,7 +123,7 @@ function renderLearn(){
   if (learnTab==='know') body = learnKnowHTML();
   if (learnTab==='words') body = learnWordsHTML();
   if (learnTab==='career') body = learnCareerHTML();
-  if (learnTab==='know' || learnTab==='career') body = labCardHTML() + body;
+  if (learnTab==='know' || learnTab==='career') body = kmLauncherHTML() + labCardHTML() + body;
   return `<div class="learnwrap">
     <div class="seg" role="tablist" aria-label="Learning modes">
       ${seg.map(([id,label])=>`<button role="tab" class="${learnTab===id?'on':''}" aria-selected="${learnTab===id}" data-a="learn-tab" data-id="${id}">${label}</button>`).join('')}
@@ -220,7 +220,7 @@ function learnSpeakHTML(){
 }
 function learnKnowHTML(){
   const doy = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0))/864e5);
-  const pack = KNOWLEDGE_PACKS[doy % KNOWLEDGE_PACKS.length];
+  const pack = (window.knowPick && KNOWLEDGE_PACKS.find(p=>p.id===window.knowPick)) || KNOWLEDGE_PACKS[doy % KNOWLEDGE_PACKS.length];
   const doneToday = state.knowledge[pack.id] === dkey();
   const learned = Object.keys(state.knowledge).length;
   return `

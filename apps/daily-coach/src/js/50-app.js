@@ -465,6 +465,7 @@ document.addEventListener('click', e=>{
     case 'lap-mode': { lap3d = el.dataset.id === '3d'; const box = document.getElementById('lapArt'); if (box){ box.classList.toggle('is3d', lap3d); box.querySelectorAll('.lapmode button').forEach(b=>b.classList.toggle('on', b===el)); } break; }
     case 'cad-part': case 'cad-view': case 'cad-spin': case 'cad-hide': case 'cad-answer': cadAction(a, el); break;
     case 'lab-pane': showLabPane(el.dataset.id); break;
+    case 'km-open': kmOpen(); break;
     case 'ds-status': case 'ds-step': case 'ds-feel': case 'ds-shape': dsAction(a, el); break;
     case 'dx-pick': case 'dx-step': case 'dx-mode': case 'dx-start': case 'dx-answer': case 'dx-next': dxAction(a, el); break;
     case 'v12-view': case 'v12-run': case 'v12-answer': case 'v12-fault': v12Action(a, el); break;
@@ -716,7 +717,7 @@ let labPane = 'cad';
 const LAB_PANES = [['cad','3D CAD'],['dwg','Drawings'],['v12','V12 engine'],['lab','Test bench']];
 function mountLab(el){
   if (!el.querySelector('.labseg')){
-    el.innerHTML = `<div class="labseg" role="tablist">${LAB_PANES.map(([k,l])=>`<button role="tab" data-a="lab-pane" data-id="${k}" aria-selected="${k===labPane}">${l}</button>`).join('')}</div>
+    el.innerHTML = kmLauncherHTML() + `<div class="labseg" role="tablist">${LAB_PANES.map(([k,l])=>`<button role="tab" data-a="lab-pane" data-id="${k}" aria-selected="${k===labPane}">${l}</button>`).join('')}</div>
       <div class="labpane" data-pane="cad">${cadCardHTML()}</div>
       <div class="labpane" data-pane="dwg">${dwgCardHTML()}</div>
       <div class="labpane" data-pane="v12">${v12CardHTML()}</div>
