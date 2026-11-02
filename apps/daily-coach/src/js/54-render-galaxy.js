@@ -116,6 +116,36 @@ const GAL = {
     g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = alpha; g.translate(v.cx, v.cy); g.scale(1, Math.cos(v.tilt)); g.rotate(v.yaw + GAL.spin(.42, T));
     g.drawImage(neb, -384*k, -384*k, 768*k, 768*k); g.restore();
   },
+  // star nebulae: domain-warped value noise for the cloud, ridged noise for fine bright filaments.
+  // Built once into small greyscale fields (cloud, filament), then tinted per domain into canvases.
+  snebField(seed, N=192){
+    const hash = (x,y)=>{ let h = (x*374761393 + y*668265263 + seed*2147483647) | 0; h = (h ^ (h >>> 13)) * 1274126177 | 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
+    const sm = t => t*t*(3-2*t);
+    const vn = (x,y)=>{ const xi = Math.floor(x), yi = Math.floor(y), xf = x-xi, yf = y-yi, u = sm(xf), w = sm(yf);
+      const a = hash(xi,yi), b = hash(xi+1,yi), c = hash(xi,yi+1), d = hash(xi+1,yi+1); return a + (b-a)*u + (c-a)*w + (a-b-c+d)*u*w; };
+    const fbm = (x,y,o=4)=>{ let v = 0, amp = .5, f = 1; for (let i=0;i<o;i++){ v += amp*vn(x*f, y*f); f *= 2.03; amp *= .5; } return v/(1 - Math.pow(.5,o)); };
+    const cloud = new Float32Array(N*N), fil = new Float32Array(N*N), k = 4/N;
+    for (let j=0;j<N;j++) for (let i=0;i<N;i++){
+      const x = i*k, y = j*k, dx = i/N*2-1, dy = j/N*2-1;
+      const qx = fbm(x + 1.7, y + 9.2), qy = fbm(x + 8.3, y + 2.8);                 // first warp
+      const rx = fbm(x + 3*qx + 1.2, y + 3*qy + 4.6), ry = fbm(x + 3*qx + 6.1, y + 3*qy + 1.3); // second warp
+      const f = fbm(x + 2.6*rx, y + 2.6*ry);
+      const rid = 1 - Math.abs(2*fbm(x*1.8 + 2.2*rx, y*1.8 + 2.2*ry, 4) - 1);       // ridges = filaments
+      const rr = Math.hypot(dx, dy) * (1 + (f - .5)*.9);                              // ragged edge
+      const env = Math.max(0, 1 - rr); const e2 = env*env*(3 - 2*env);
+      cloud[j*N+i] = Math.max(0, f - .32)*1.7*e2;
+      fil[j*N+i] = Math.pow(rid, 9)*e2*(.6 + .8*f);
+    }
+    return { N, cloud, fil };
+  },
+  snebTint(F, rgb){ // rgb like '255,214,170' -> canvas: coloured cloud, near-white filaments
+    const c = document.createElement('canvas'); c.width = c.height = F.N; const g = c.getContext('2d'), im = g.createImageData(F.N, F.N), d = im.data;
+    const [r,gg,b] = rgb.split(',').map(Number);
+    for (let i=0;i<F.N*F.N;i++){ const cl = Math.min(1, F.cloud[i]), fl = Math.min(1, F.fil[i]), a = Math.min(1, cl*.8 + fl);
+      if (a <= .002) continue; const wf = fl/(cl*.8 + fl + 1e-6);
+      d[i*4] = r + (255-r)*wf; d[i*4+1] = gg + (255-gg)*wf; d[i*4+2] = b + (255-b)*wf; d[i*4+3] = a*255; }
+    g.putImageData(im, 0, 0); return c;
+  },
   proj(rad, th, y, v){ // v: {cx, cy, R, yaw, tilt, persp?} -> [x, y, depth (near > 0), perspective scale]
     const x = rad*Math.cos(th + v.yaw), z = rad*Math.sin(th + v.yaw), d = z*Math.sin(v.tilt) + y*Math.cos(v.tilt), k = v.persp ? 1/Math.max(.35, 1 - d*v.persp) : 1;
     return [v.cx + x*v.R*k, v.cy + (z*Math.cos(v.tilt) - y*Math.sin(v.tilt))*v.R*k, d, k];

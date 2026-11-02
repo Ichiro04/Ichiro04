@@ -351,3 +351,10 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
   - `state.aiCache` reuses same-day answers to the same question.
   - `aiTurns` is kept small: about 70 words of rules, today's numbers, and the last 2 exchanges clipped to 320 characters each. It no longer repeats the question, which it used to send twice.
   - Keep any new AI feature behind `aiRoute` so it respects these settings.
+- **Star nebulae (galaxy plan step 1, add-only):**
+  - Each domain star gets a nebula drawn additively behind the links, stars and labels (`kmStarNebulae`).
+  - Textures: `GAL.snebField` builds 4 domain-warped value-noise fields (cloud) with ridged-noise filaments at 192 px, one per frame during the fly-in; `GAL.snebTint` makes one tinted canvas per domain (`KM.sneb`).
+  - Size and brightness follow `KM.study[domain]` (`kmStudyScores`: 55% topic mastery + 45% done day-plan minutes in that area, 1 − e^(−min/1800)), from a faint wisp at 0 to a bright cloud near 1. Size is capped at 36% of the shorter screen side and dimmed by √(cap/raw) when capped.
+  - `kmDustLanes`: four thin dark lanes on the inner edges of the spiral arms.
+  - Legend row "Star nebulae · study time" shows the average. The goal nebulae (`kmNeb`) are unchanged.
+  - Still with reduced motion. Frame time paid for by cached bokeh sprites (`kmBokehSprite`) and adaptive orbit-trail point counts: median 4.39 ms vs 4.85 ms before at 1440×900.

@@ -191,11 +191,13 @@ function kmDraw(now){
   kmStreaks(g, v, TT, ie*fade, still);
   GAL.drawDust(g, KM.dust, vD, TT, ie*fade*.95);
   kmBelt(g, v, TT, ie*fade);
+  kmDustLanes(g, v, TT, ie*fade);
   if (!still && ie > .9) kmNovae(g, vD, TT, now, fade);
   // project nodes
   const conn = KM.sel ? new Set([KM.sel, ...KM.edges.filter(e=>e.a===KM.sel||e.b===KM.sel).flatMap(e=>[e.a,e.b])]) : null;
   KM.nodes.forEach(n=>{ const w = kmWorld(n, TT), sc = 1+(1-ie)*.6, p = GAL.proj(Math.hypot(w[0],w[1])*sc, Math.atan2(w[1],w[0]), n.el||0, v); n.wx = w[0]; n.wz = w[1]; n.sx = p[0]; n.sy = p[1]; n.dz = p[2]; n.pk = p[3] || 1;
     let a = (still ? 1 : clamp((T - kmIntroAt(n))/.6, 0, 1)) * fade; if (conn && !conn.has(n)) a *= .25; if (KM.gaps && n.type==='topic' && kmMastery(n.topic) >= 100) a *= .25; n.va = a; });
+  kmStarNebulae(g, W, H, TT, still, fade);
   // links: soft, curved, low contrast
   g.lineCap = 'round';
   KM.edges.forEach(e=>{ const a = Math.min(e.a.va, e.b.va); if (a <= 0) return; const hot = KM.sel && (e.a===KM.sel || e.b===KM.sel);
@@ -347,21 +349,69 @@ function kmConst(g, x, y, r, T, a){ // last 14 days as a constellation: bright s
 function kmStreaks(g, v, T, a, still){ // glowing orbit trails round the sun, with light running along them
   if (a <= 0) return; if (!KM.streaks){ const r = mulberry32(17); KM.streaks = Array.from({length:30},(_,i)=>({ rad:.06 + Math.pow(i/30, 1.15)*1.05 + r()*.012, al:.03 + r()*.05, runs:Array.from({length:1 + (r() < .6 ? 1 : 0)},()=>({ ph:r()*7, len:.35 + r()*.9, sp:(.25 + r()*.5)*(r() < .15 ? -1 : 1) })), c:r() < .18 ? '255,190,140' : '170,210,255' })); }
   g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
-  KM.streaks.forEach(s=>{ g.strokeStyle = `rgba(${s.c},${(s.al*a).toFixed(3)})`; g.lineWidth = .8; g.beginPath(); for (let i=0;i<=56;i++){ const p = GAL.proj(s.rad, i/56*Math.PI*2, 0, v); i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); } g.stroke();
+  KM.streaks.forEach(s=>{ g.strokeStyle = `rgba(${s.c},${(s.al*a).toFixed(3)})`; g.lineWidth = .8; g.beginPath(); const np = Math.round(clamp(s.rad*v.R*.12, 28, 64)); for (let i=0;i<=np;i++){ const p = GAL.proj(s.rad, i/np*Math.PI*2, 0, v); i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); } g.stroke();
     if (still) return;
-    s.runs.forEach(rn=>{ const a0 = rn.ph + T*rn.sp*GAL.spin(s.rad, 1)*6, seg = 14; let prev = null;
+    s.runs.forEach(rn=>{ const a0 = rn.ph + T*rn.sp*GAL.spin(s.rad, 1)*6, seg = 9; let prev = null;
       for (let i=0;i<=seg;i++){ const t = i/seg, p = GAL.proj(s.rad, a0 - t*rn.len*Math.sign(rn.sp), 0, v); if (prev){ g.strokeStyle = `rgba(${s.c},${((1-t)*.55*a).toFixed(3)})`; g.lineWidth = 1.6*(1-t) + .4; g.beginPath(); g.moveTo(prev[0],prev[1]); g.lineTo(p[0],p[1]); g.stroke(); } prev = p; } }); });
   g.globalCompositeOperation = 'source-over';
 }
 function kmBelt(g, v, T, a){ if (!KM.belt || a <= 0) return; g.globalAlpha = a*.8;
   KM.belt.forEach(b=>{ const p = GAL.proj(b.r, b.th + GAL.spin(b.r, T)*.7, b.y, v), s = b.s*Math.min(1.6, v.R/420)*p[3]; g.fillStyle = b.c < .5 ? '#8C7D70' : b.c < .85 ? '#5E544C' : '#C9B8A6'; g.fillRect(p[0]-s/2, p[1]-s/2, s, s*.8); });
   g.globalAlpha = 1; }
+function kmBokehSprite(c){ // one cached disc per colour (same look as the old per-frame gradient, drawn at alpha 0.1 then scaled by globalAlpha)
+  KM.bokehSpr = KM.bokehSpr || {}; if (KM.bokehSpr[c]) return KM.bokehSpr[c];
+  const cv = document.createElement('canvas'); cv.width = cv.height = 64; const g = cv.getContext('2d'), gr = g.createRadialGradient(32,32,32*.55,32,32,32);
+  gr.addColorStop(0,`rgba(${c},.1)`); gr.addColorStop(.85,`rgba(${c},.15)`); gr.addColorStop(1,`rgba(${c},0)`); g.fillStyle = gr; g.beginPath(); g.arc(32,32,32,0,7); g.fill();
+  return (KM.bokehSpr[c] = cv);
+}
 function kmBokeh(g, W, H, T, fade){ // out-of-focus specks drifting in front of the camera (depth of field)
   if (!KM.bokeh){ const r = mulberry32(73); KM.bokeh = Array.from({length:34},()=>({ x:r(), y:r(), z:.3 + r()*.7, s:6 + r()*22, c:r() < .35 ? '255,196,150' : '170,205,240', ph:r()*6 })); }
   g.globalCompositeOperation = 'lighter';
   KM.bokeh.forEach(b=>{ const x = ((b.x*W + KM.yaw*90*b.z + Math.sin(T*.1 + b.ph)*14) % W + W) % W, y = b.y*H + Math.cos(T*.12 + b.ph)*10 + (KM.tilt - 1)*60*b.z, r = b.s*b.z, al = (.05 + .05*b.z)*fade*(.7 + .3*Math.sin(T*.6 + b.ph));
-    const gr = g.createRadialGradient(x,y,r*.55,x,y,r); gr.addColorStop(0,`rgba(${b.c},${al.toFixed(3)})`); gr.addColorStop(.85,`rgba(${b.c},${(al*1.5).toFixed(3)})`); gr.addColorStop(1,`rgba(${b.c},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); });
+    const spr = kmBokehSprite(b.c); g.globalAlpha = Math.min(1, al/.1); g.drawImage(spr, x - r, y - r, r*2, r*2); });
+  g.globalAlpha = 1;
   g.globalCompositeOperation = 'source-over';
+}
+/* ---------- star nebulae: a cloud round each domain star that grows with real study time ---------- */
+function kmStudyScores(){ // 0..1 per domain: mastery (packs, tests) plus minutes of done day-plan blocks in that area
+  const mins = { English:0, Career:0, Engineering:0 };
+  try { Object.keys(state.days||{}).forEach(k=>{ dayBlocks(k).forEach(b=>{ if (mins[b.cat] === undefined) return; const st = blockStatus(k, b); mins[b.cat] += st==='done' ? b.dur : st==='partly' ? b.dur/2 : 0; }); }); } catch(_){}
+  const nEng = KM_DOMAINS.filter(d=>d.id!=='english' && d.id!=='career').length || 1;
+  KM.study = {}; KM_DOMAINS.forEach(d=>{ const mast = d.topics.reduce((a,t)=>a + kmMastery(t), 0)/d.topics.length/100;
+    const m = d.id==='english' ? mins.English : d.id==='career' ? mins.Career : mins.Engineering/nEng;
+    KM.study[d.id] = clamp(.55*mast + .45*(1 - Math.exp(-m/1800)), 0, 1); }); // ~30 h logged in an area gets the time half most of the way
+}
+function kmStudyAvg(){ const v = Object.values(KM.study || {}); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0; }
+function kmSnebPrep(still){ // four base fields, built one per frame during the fly-in (all at once with reduced motion), tinted per domain
+  if (!KM.sneb) KM.sneb = { fields:[], tex:{} };
+  const S = KM.sneb; let budget = still ? 4 : 1;
+  while (S.fields.length < 4 && budget-- > 0) S.fields.push(GAL.snebField(31 + S.fields.length*17));
+  KM_DOMAINS.forEach((d,i)=>{ const f = S.fields[i % 4]; if (f && !S.tex[d.id]) S.tex[d.id] = GAL.snebTint(f, KM_STAR_COLS[i % KM_STAR_COLS.length]); });
+}
+function kmStarNebulae(g, W, H, T, still, fade){
+  kmSnebPrep(still); if (!KM.study) kmStudyScores();
+  const cap = Math.min(W, H)*.36, tilt = .74 + .26*Math.abs(Math.cos(KM.tilt));
+  g.save(); g.globalCompositeOperation = 'lighter';
+  KM.nodes.forEach(n=>{
+    if (n.type!=='domain' || !(n.va > 0)) return; const tex = KM.sneb.tex[n.id]; if (!tex) return;
+    const st = KM.study[n.id] || 0, raw = (KM.R||300)*KM.cam.z*(.06 + .2*st)*(n.pk || 1), size = Math.min(raw, cap);
+    if (n.sx + size < 0 || n.sx - size > W || n.sy + size < 0 || n.sy - size > H) return;
+    const blur = clamp(-(n.dz||0) - .35, 0, 1), wash = raw > cap ? Math.sqrt(cap/raw) : 1;   // dimmer when capped, so zooming in never floods the screen
+    g.globalAlpha = (.14 + .5*st)*n.va*fade*wash*(1 - blur*.4);
+    g.setTransform(1,0,0,1,0,0); g.translate(n.sx*KM.dpr, n.sy*KM.dpr); g.scale(KM.dpr, KM.dpr); g.rotate(n.ph + (still ? 0 : T*.012)); g.scale(1, tilt);
+    g.drawImage(tex, -size, -size, size*2, size*2);
+  });
+  g.restore();
+}
+function kmDustLanes(g, v, T, a){ // a few thin dark lanes hugging the inner edge of the spiral arms
+  if (a <= 0) return;
+  const lanes = [[0, -.2, .24, .96], [Math.PI, -.2, .26, .92], [0, .24, .46, .82], [Math.PI, .2, .5, .78]], wMax = clamp(v.R/320, .8, 3.2);
+  g.save(); g.lineCap = 'round'; g.globalCompositeOperation = 'source-over';
+  lanes.forEach(([arm, off, r0, r1], li)=>{ let prev = null; const n = 22;
+    for (let i=0;i<=n;i++){ const t = i/n, rad = r0 + (r1 - r0)*t, th = arm + Math.log(rad*5 + 1)*2.1 + off + GAL.spin(rad, T), p = GAL.proj(rad, th, 0, v);
+      if (prev){ const env = Math.sin(t*Math.PI); g.strokeStyle = `rgba(3,6,10,${(.42*env*a).toFixed(3)})`; g.lineWidth = wMax*(.4 + .6*env)*(li > 1 ? .7 : 1)*(p[3] || 1); g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(p[0], p[1]); g.stroke(); }
+      prev = p; } });
+  g.restore();
 }
 /* ---------- galaxy effects ---------- */
 function kmSky(g, W, H, T, now, fade, still){
@@ -496,7 +546,7 @@ function kmTimeline(){
 }
 function kmLegend(){
   const c = t => KM.nodes.filter(n=>n.type===t).length, weak = KM.nodes.filter(n=>n.type==='topic' && kmMastery(n.topic) < 50).length, done = KM.nodes.filter(n=>n.type==='task' && taskDone(dkey(), n.task.id)).length;
-  return `<div class="km-legh">Your universe</div>${[['sun','Sun','you','1'],['star','Stars','big areas', c('domain')],['planet','Planets','today\'s tasks', `${done}/${c('task')}`],['moon','Moons','topics you know', c('topic') - weak],['rock','Asteroids','need more training', weak],['hole','Black holes','mistakes to avoid', c('hole')],['sat','Satellites','coming up today', c('sat')],['neb','Nebulae','big goals', c('neb')],['pulsar','Pulsar','your streak', currentStreak()+'d']].map(([k,l,d,n])=>`<div class="km-li"><i class="km-dot ${k}"></i><span class="km-cnt num">${n}</span>${l}<small>${d}</small></div>`).join('')}
+  return `<div class="km-legh">Your universe</div>${[['sun','Sun','you','1'],['star','Stars','big areas', c('domain')],['planet','Planets','today\'s tasks', `${done}/${c('task')}`],['moon','Moons','topics you know', c('topic') - weak],['rock','Asteroids','need more training', weak],['hole','Black holes','mistakes to avoid', c('hole')],['sat','Satellites','coming up today', c('sat')],['neb','Nebulae','big goals', c('neb')],['pulsar','Pulsar','your streak', currentStreak()+'d'],['sneb','Star nebulae','study time', Math.round(kmStudyAvg()*100)+'%']].map(([k,l,d,n])=>`<div class="km-li"><i class="km-dot ${k}"></i><span class="km-cnt num">${n}</span>${l}<small>${d}</small></div>`).join('')}
     <div class="km-li tiny-note">Tap anything to read it. Tap a planet to tick the task off.</div>`;
 }
 const KM_ICONS = {
@@ -689,7 +739,7 @@ function kmOpen(){
   KM.labels = window.innerWidth >= 760;
   document.body.classList.add('km-open'); KM.open = true; KM.view = 'graph'; KM.sel = null; KM.focus = null; KM.cam = { x:0, y:0, z:1 }; KM.camT = { x:0, y:0, z:1 }; KM.st = 0; KM.stOff = undefined; KM.lastNow = 0; KM.pulses = []; KM.fx = { shoot:[], nova:[], nextShoot:0, nextNova:0 };
   const cv = document.getElementById('kmCanvas');
-  KM.W = cv.clientWidth; KM.H = cv.clientHeight; kmBuild(); kmResize(); kmWave();
+  KM.W = cv.clientWidth; KM.H = cv.clientHeight; kmBuild(); kmStudyScores(); kmResize(); kmWave();
   document.querySelector('.km-legend').innerHTML = kmLegend();
   KM.t0 = performance.now() - (motionOff() ? 10000 : 0);
   // fly-in: start high and far, sweep down to the low cinematic angle
