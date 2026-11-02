@@ -89,7 +89,7 @@ function cadDraw(){
   // floor shadow
   const fl = tp([b.c[0], b.c[1], b.mn[2]]);
   const sh = g.createRadialGradient(fl[0], fl[1]+4, 2, fl[0], fl[1]+4, b.r*s*1.1);
-  sh.addColorStop(0, dark?'rgba(224,48,28,.22)':'rgba(28,10,10,.20)'); sh.addColorStop(1,'rgba(0,0,0,0)');
+  sh.addColorStop(0, dark?'rgba(142,10,31,.22)':'rgba(22,22,22,.20)'); sh.addColorStop(1,'rgba(0,0,0,0)');
   g.fillStyle = sh; g.beginPath(); g.ellipse(fl[0], fl[1]+4, b.r*s*1.1, b.r*s*0.32*(0.4+Math.abs(Math.sin(cad.pitch))), 0, 0, Math.PI*2); g.fill();
   const light = V3.norm([-0.45,-0.7,0.6]);
   const vis = f => { const n = camXf(f.n, cad.yaw, cad.pitch); f._n = n; return n[1] < -1e-4; };

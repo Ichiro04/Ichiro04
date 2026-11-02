@@ -48,7 +48,7 @@ const KM_DOMAINS = [
     { n:'Speaking part 2', learn:'speak', kw:'speaking cue card' },
     { n:'Academic vocabulary', learn:'words', kw:'vocabulary words' } ] }
 ];
-const KM = { open:false, view:'graph', layout:'radial', t0:0, nodes:[], edges:[], cam:{ x:0, y:0, z:1 }, tween:null, sel:null, hover:null,
+const KM = { yaw:-.5, tilt:.95, vy:0, freeze:false, freezeT:0, open:false, view:'graph', layout:'radial', t0:0, nodes:[], edges:[], cam:{ x:0, y:0, z:1 }, tween:null, sel:null, hover:null,
   gaps:false, labels:true, raf:0, pulses:[], lastPulse:0, W:0, H:0, dpr:1, drag:null, ptr:new Map(), focus:null, tile:2, month:null, orbRaf:0, base:1 };
 
 /* ---------- progress from the app's own data ---------- */
@@ -108,28 +108,128 @@ function kmBuild(){
   kmLayout(true);
 }
 function kmLayout(snap){
-  const W = KM.W || 1200, H = KM.H || 800, asp = W/H;
-  const ex = clamp(asp*.62, .5, 1.25)*560, ey = clamp(.62/asp*1.3, .62, 1.15)*360;
-  const cols = KM_DOMAINS.length;
+  const W = KM.W || 1200, H = KM.H || 800, N = KM_DOMAINS.length;
   KM.nodes.forEach(n=>{
-    let rx = 0, ry = 0, tx = 0, ty = 0;
-    if (n.type==='domain'){ rx = Math.cos(n.a)*ex*n.R; ry = Math.sin(n.a)*ey*n.R; const i = KM_DOMAINS.indexOf(n.dom); tx = (i - (cols-1)/2) * (ex*2/cols); ty = -ey*.35; }
-    else if (n.type==='topic'){ const p = n.parent, pr = kmPos(p,'r'); const f = n.inner ? -.6 : 1; rx = pr[0] + Math.cos(n.ta)*ex*n.tr*f; ry = pr[1] + Math.sin(n.ta)*ey*n.tr*f; const j = n.dom.topics.indexOf(n.topic), pt = kmPos(p,'t'); tx = pt[0] + (j%2 ? 18 : -18); ty = pt[1] + 70 + j*58; }
-    else if (n.type==='practice' || n.type==='skill'){ const p = n.parent, pr = kmPos(p,'r'), pt = kmPos(p,'t'); rx = pr[0] + Math.cos(n.ta)*ex*n.tr; ry = pr[1] + Math.sin(n.ta)*ey*n.tr; tx = pt[0] + (n.type==='practice' ? 30 : -30); ty = pt[1] + (p.type==='domain' ? (n.type==='practice' ? -44 : -64) : 14); }
-    n.rx = rx; n.ry = ry; n.tx = tx; n.ty = ty;
-    if (snap || n.x===undefined){ n.x = KM.layout==='tree' ? tx : rx; n.y = KM.layout==='tree' ? ty : ry; }
+    if (n.type==='domain'){ const i = KM_DOMAINS.indexOf(n.dom); n.orad = .26 + i/(N-1)*.66; n.oth = i*2.39 + (n.ph%1)*.4; }
+    else if (n.type==='topic'){ const j = n.dom.topics.indexOf(n.topic), k = n.dom.topics.length; n.lr = .055 + (j%2)*.025; n.lth = j/k*Math.PI*2 + n.ph; }
+    else if (n.type==='practice' || n.type==='skill'){ n.lr = .02 + (n.ph%1)*.014; n.lth = n.ph*2; }
   });
-  const pts = KM.nodes.filter(n=>n.rx!==undefined), xs = pts.map(n=>n.rx), ys = pts.map(n=>n.ry);
-  const bw = Math.max(...xs) - Math.min(...xs) + (W < 760 ? 120 : 300), bh = Math.max(...ys) - Math.min(...ys) + 90, top = W < 760 ? 120 : 80, bot = W < 760 ? 200 : 60;
-  KM.base = Math.max(W < 760 ? .38 : .5, Math.min(W/bw, (H-top-bot)/bh));
-  KM.cx0 = (Math.max(...xs) + Math.min(...xs))/2 + (W < 760 ? 30 : 70); KM.cy0 = (Math.max(...ys) + Math.min(...ys))/2;
+  const wide = W >= 1100, top = W < 760 ? 112 : 76;
+  let r, cx = W/2, cy;
+  if (wide){ const bot = 178; r = Math.min((W - 2*300 - 70)/2, (H - top - bot)/2 - 8); cy = top + (H - top - bot)/2; }
+  else { const bot = W < 760 ? 186 : 176, mini = 74; r = Math.max(110, Math.min(W/2 - 16, (H - top - bot - mini)/2 - 6, 330)); const free = H - top - bot - (2*r + 22 + mini); cy = top + r + 6 + Math.max(0, free*.45); }
+  r = Math.max(110, r); KM.orb = { cx, cy, r }; KM.R = r*.9;
+  const el = document.getElementById('km'); if (el){ el.style.setProperty('--ox', cx+'px'); el.style.setProperty('--oy', cy+'px'); el.style.setProperty('--or', r+'px'); requestAnimationFrame(kmTitleBox); }
 }
-function kmPos(n, which){ return n.type==='core' ? [0,0] : which==='t' ? [n.tx, n.ty] : [n.rx, n.ry]; }
-function kmIntroAt(n){ if (n.type==='core') return 0; const d = Math.hypot(n.rx, n.ry); return .95 + d/760*1.25 + ((n.ph*37)%1)*.18; }
+function kmPos(n){ return [n.wx||0, n.wz||0]; }
+function kmIntroAt(n){ if (n.type==='core') return 0; const d = n.type==='domain' ? n : n.parent && n.parent.type==='domain' ? n.parent : n.parent && n.parent.parent ? n.parent.parent : n; return .9 + (d.orad||.5)*1.6 + (n.type==='domain'?0:.25) + ((n.ph*37)%1)*.15; }
+function kmWorld(n, T){ // disc coordinates (x, z) for each node, with differential rotation
+  if (n.type==='core') return [0,0];
+  if (n.type==='domain'){ const th = n.oth + (KM.freeze ? KM.freezeT : GAL.spin(n.orad, T)*.55); return [Math.cos(th)*n.orad, Math.sin(th)*n.orad]; }
+  const p = kmWorld(n.parent, T), sp = KM.freeze ? KM.freezeT : T; const th = n.lth + sp*(n.type==='topic' ? .12 : .3);
+  return [p[0] + Math.cos(th)*n.lr, p[1] + Math.sin(th)*n.lr];
+}
+const KM_PLANET = { domain:null, topic:['#FFFFFF','#C9D6EC','#3C4A66'], practice:['#FFF3E2','#D9BC9C','#6A4E34'], skill:['#F6D9DE','#C2304A','#4A0D14'] };
+function kmDraw(now){
+  const cv = document.getElementById('kmCanvas'); if (!cv) return;
+  const g = cv.getContext('2d'), W = KM.W, H = KM.H;
+  g.setTransform(KM.dpr,0,0,KM.dpr,0,0); g.clearRect(0,0,W,H);
+  const T = (now - KM.t0)/1000, still = motionOff(), TT = still ? 30 : T;
+  if (KM.tween){ const k = Math.min(1,(now-KM.tween.t0)/KM.tween.d), e = 1-Math.pow(1-k,3); KM.cam.x = KM.tween.x0+(KM.tween.x1-KM.tween.x0)*e; KM.cam.y = KM.tween.y0+(KM.tween.y1-KM.tween.y0)*e; KM.cam.z = KM.tween.z0+(KM.tween.z1-KM.tween.z0)*e; if (KM.tween.t1!==undefined) KM.tilt = kmWrap(KM.tween.t0v+(KM.tween.t1-KM.tween.t0v)*e); if (k>=1) KM.tween = null; }
+  if (!KM.drag && !still){ KM.yaw += KM.vy; KM.vy *= .94; if (!KM.tween){ KM.tilt = kmWrap(KM.tilt + (KM.vt||0)); } KM.vt = (KM.vt||0)*.94; }
+  if (!KM.freeze) KM.freezeT = TT;
+  { const want = KM.view==='graph' && !KM.sel && KM.cam.z < 1.3 && (still || T > 2.2) ? 1 : 0; KM.tA = (KM.tA||0) + (want - (KM.tA||0))*(still ? 1 : .12);
+    const root = document.getElementById('km'); if (root){ const on = KM.tA > .5; if (root.classList.contains('titled') !== on) root.classList.toggle('titled', on); } }
+  const intro = still ? 1 : clamp((T - .2)/2.2, 0, 1), ie = 1 - Math.pow(1-intro, 3);
+  const O = KM.orb || { cx:W/2, cy:H/2, r:Math.min(W,H)*.4 }, R = (KM.R||300)*KM.cam.z, v = { cx: O.cx + KM.cam.x, cy: O.cy + KM.cam.y, R, yaw: KM.yaw, tilt: KM.tilt };
+  const fade = KM.view==='leaving' ? clamp(1 - (now - KM.leaveT0)/600, 0, 1) : 1;
+  // background stars (screen space, gentle parallax with yaw)
+  if (!KM.stars){ const r = mulberry32(99); KM.stars = Array.from({length:260},()=>[r(), r(), r()*1.2+.3, r()*.6+.2, r()*6]); }
+  KM.stars.forEach(([x,y,s,a,tw])=>{ g.globalAlpha = a*(.7+.3*Math.sin(TT*1.2+tw))*fade; g.fillStyle = '#F2EEE8'; g.fillRect(((x*W + KM.yaw*20) % W + W) % W, y*H, s, s); }); g.globalAlpha = 1;
+  kmBezel(g, O, TT, fade*ie);
+  g.save(); g.beginPath(); g.arc(O.cx, O.cy, O.r, 0, 7); g.clip();
+  { const bg = g.createRadialGradient(O.cx, O.cy, 0, O.cx, O.cy, O.r); bg.addColorStop(0,'rgba(36,22,24,.9)'); bg.addColorStop(.65,'rgba(14,11,11,.94)'); bg.addColorStop(1,'rgba(6,5,5,.98)'); g.globalAlpha = fade; g.fillStyle = bg; g.fillRect(O.cx-O.r, O.cy-O.r, O.r*2, O.r*2); g.globalAlpha = 1;
+    const rs = mulberry32(5); g.fillStyle = '#F2EEE8'; for (let i=0;i<120;i++){ g.globalAlpha = (.15 + rs()*.5)*fade; const a = rs()*7, d = Math.sqrt(rs())*O.r; g.fillRect(O.cx + Math.cos(a)*d, O.cy + Math.sin(a)*d, rs()*1.2+.3, rs()*1.2+.3); } g.globalAlpha = 1; }
+  if (!KM.dust) KM.dust = GAL.dust(W < 760 ? 2600 : 4200, 77);
+  const vD = Object.assign({}, v, { R: R*(1 + (1-ie)*1.4) });
+  KM_DOMAINS.forEach((d,i)=>GAL.drawRing(g, .26 + i/(KM_DOMAINS.length-1)*.66, v, .09*ie*fade, TT));
+  if (!KM.neb) KM.neb = GAL.nebula(); GAL.drawNebula(g, KM.neb, vD, TT, ie*fade);
+  GAL.drawDust(g, KM.dust, vD, TT, ie*fade*.95);
+  // project nodes
+  const conn = KM.sel ? new Set([KM.sel, ...KM.edges.filter(e=>e.a===KM.sel||e.b===KM.sel).flatMap(e=>[e.a,e.b])]) : null;
+  KM.nodes.forEach(n=>{ const w = kmWorld(n, TT), p = GAL.proj(w[0]*(1+(1-ie)*.6), w[1]*(1+(1-ie)*.6), 0, v); n.wx = w[0]; n.wz = w[1]; n.sx = p[0]; n.sy = p[1]; n.dz = p[2];
+    let a = (still ? 1 : clamp((T - kmIntroAt(n))/.6, 0, 1)) * fade; if (conn && !conn.has(n)) a *= .25; if (KM.gaps && n.type==='topic' && kmMastery(n.topic) >= 100) a *= .25; n.va = a; });
+  // links: soft, curved, low contrast
+  g.lineCap = 'round';
+  KM.edges.forEach(e=>{ const a = Math.min(e.a.va, e.b.va); if (a <= 0) return; const hot = KM.sel && (e.a===KM.sel || e.b===KM.sel);
+    if (e.k==='beam'){ const gr = g.createLinearGradient(e.a.sx,e.a.sy,e.b.sx,e.b.sy); gr.addColorStop(0,`rgba(255,226,196,${(.32*a).toFixed(3)})`); gr.addColorStop(1,`rgba(201,168,130,${((hot?.5:.08)*a).toFixed(3)})`); g.strokeStyle = gr; g.lineWidth = hot ? 1.6 : 1; g.beginPath(); g.moveTo(e.a.sx,e.a.sy); g.lineTo(e.b.sx,e.b.sy); g.stroke(); return; }
+    if (e.k==='teal'){ const mx = (e.a.sx+e.b.sx)/2, my = (e.a.sy+e.b.sy)/2, cx = v.cx + (mx - v.cx)*.55, cy = v.cy + (my - v.cy)*.55; g.strokeStyle = `rgba(214,184,150,${((hot?.55:.16)*a).toFixed(3)})`; g.lineWidth = .9; g.beginPath(); g.moveTo(e.a.sx,e.a.sy); g.quadraticCurveTo(cx,cy,e.b.sx,e.b.sy); g.stroke(); return; }
+    g.strokeStyle = e.k==='thin' ? `rgba(226,232,242,${((hot?.7:.28)*a).toFixed(3)})` : `rgba(230,214,196,${(.2*a).toFixed(3)})`; g.lineWidth = e.k==='thin' ? .9 : .7;
+    if (e.k==='dot') g.setLineDash([1.5,3]); g.beginPath(); g.moveTo(e.a.sx,e.a.sy); g.lineTo(e.b.sx,e.b.sy); g.stroke(); g.setLineDash([]); });
+  // comets running out along the core links
+  if (!still && T > 2.6 && KM.view==='graph'){
+    if (now - KM.lastPulse > 420){ KM.lastPulse = now; const beams = KM.edges.filter(e=>e.k==='beam'); KM.pulses.push({ e:beams[Math.floor(Math.random()*beams.length)], t0:now, d:1800 + Math.random()*900 }); }
+    KM.pulses = KM.pulses.filter(p=>now - p.t0 < p.d); g.globalCompositeOperation = 'lighter';
+    KM.pulses.forEach(p=>{ const k = (now - p.t0)/p.d, a = p.e.a, b = p.e.b, x = a.sx+(b.sx-a.sx)*k, y = a.sy+(b.sy-a.sy)*k, al = Math.sin(k*Math.PI)*fade; const gr = g.createRadialGradient(x,y,0,x,y,7); gr.addColorStop(0,`rgba(255,240,220,${al.toFixed(2)})`); gr.addColorStop(1,'rgba(255,220,180,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x,y,7,0,7); g.fill(); });
+    g.globalCompositeOperation = 'source-over';
+  }
+  // core
+  const core = KM.nodes[0]; GAL.drawCore(g, core.sx, core.sy, R*.06*(still ? 1 : (T < 1.2 ? .4 + .9*Math.sin(clamp(T/1.2,0,1)*Math.PI/2) + (T>.7&&T<1.2? (1.2-T)*1.4 : 0) : 1)), fade);
+  core.sr = R*.06;
+  // nodes, far to near
+  const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = [];
+  // reserve label space front-to-back: domains first, then the nearest topics
+  const labOK = new Set(); g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
+  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (6 + n.w*.32)*Math.max(.7, Math.min(1.8, KM.cam.z)) : 4; if (kmLabelFree(n.sx + r + 6, n.sy - 10, w, n.type==='domain' ? 30 : 16)) labOK.add(n); });
+  const zs = Math.max(.7, Math.min(1.8, KM.cam.z));
+  list.forEach(n=>{
+    const depth = .8 + .25*(n.dz+1)/2, hov = KM.hover===n ? 1.25 : 1;
+    if (n.type==='domain'){ const r = (6 + n.w*.32)*zs*depth*hov, col = GAL_PLANETS[KM_DOMAINS.indexOf(n.dom) % GAL_PLANETS.length];
+      GAL.planet(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r;
+      g.globalAlpha = n.va; g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F4EFE8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 8;
+      const lab = W < 760 && n.name.length > 14 ? n.name.slice(0,13).trimEnd()+'…' : n.name; if (!labOK.has(n)) g.globalAlpha = n.va*.0; else if (kmInTitle(n.sx + r + 9, n.sy, g.measureText(lab).width)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, n.sx + r + 9, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, n.sx + r + 9, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(n.sx + r + 9, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
+    else if (n.type==='topic'){ const r = 3.6*zs*depth*hov, m = kmMastery(n.topic);
+      g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(n.sx,n.sy,0,n.sx,n.sy,r*5); gr.addColorStop(0,`rgba(${m>=100?'230,205,176':'200,216,240'},${(.7*n.va).toFixed(2)})`); gr.addColorStop(1,'rgba(180,200,240,0)'); g.fillStyle = gr; g.beginPath(); g.arc(n.sx,n.sy,r*5,0,7); g.fill(); g.globalCompositeOperation = 'source-over';
+      GAL.planet(g, n.sx, n.sy, r, m>=100 ? KM_PLANET.practice : KM_PLANET.topic, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 4;
+      if (KM.hover===n || KM.sel===n || (labOK.has(n) && ((KM.labels && KM.cam.z > 1.5) || (conn && conn.has(n))))){ g.globalAlpha = n.va; g.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#E8EEF8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r + 8, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+    else { const r = (n.type==='practice' ? 2 : 1.6)*zs*depth; g.globalAlpha = n.va; g.fillStyle = n.type==='practice' ? '#E6CDB0' : '#D44A62'; g.beginPath(); g.arc(n.sx,n.sy,r,0,7); g.fill(); g.globalAlpha = 1; n.sr = r + 5;
+      if (KM.labels && KM.cam.z > 2.2 && kmLabelFree(n.sx + r + 3, n.sy - 12, 18, 12)) kmChip(g, n.sx + r + 4, n.sy - 6, String(n.n), n.va*.85); }
+  });
+  // inner rim shading, then the dark band that keeps the title readable
+  { const vg = g.createRadialGradient(O.cx, O.cy, O.r*.72, O.cx, O.cy, O.r); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.55)'); g.fillStyle = vg; g.fillRect(O.cx-O.r, O.cy-O.r, O.r*2, O.r*2);
+    if (KM.tA > .01){ const ty = O.cy - O.r*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, O.r*.7); tv.addColorStop(0,`rgba(8,6,7,${(.62*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, O.r*.74, O.r*.3, 0, 0, 7); g.fill(); } }
+  g.restore();
+}
+function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
+  const t = document.querySelector('.km-title'), cv = document.getElementById('kmCanvas'); if (!t || !cv) return; const c = cv.getBoundingClientRect(); let b = null;
+  t.querySelectorAll('small,h1,span').forEach(el=>{ const r = el.getBoundingClientRect(), w = el.tagName==='H1' ? r.width : Math.min(r.width, el.scrollWidth); const x0 = r.left + (r.width - w)/2 - c.left; b = b ? [Math.min(b[0],x0), Math.min(b[1],r.top-c.top), Math.max(b[2],x0+w), Math.max(b[3],r.bottom-c.top)] : [x0, r.top-c.top, x0+w, r.bottom-c.top]; });
+  KM.tBox = b; }
+function kmInTitle(x, y, w=0){ const b = KM.tBox; return b && KM.tA > .3 && x < b[2] + 8 && x + w > b[0] - 8 && y + 18 > b[1] - 4 && y - 12 < b[3] + 4; }
+function kmLabelFree(x, y, w, h){ // simple collision check so zoomed-in labels never pile up
+  const L = KM.labs || (KM.labs = []); for (const b of L) if (x < b[0]+b[2] && x+w > b[0] && y < b[1]+b[3] && y+h > b[1]) return false; L.push([x, y, w, h]); return true; }
+function kmBezel(g, O, T, a){ // the instrument ring round the porthole: ticks, a sweeping arc, compass marks
+  if (a <= 0) return; const { cx, cy, r } = O;
+  g.save(); g.globalAlpha = a;
+  const glow = g.createRadialGradient(cx, cy, r*.96, cx, cy, r*1.32); glow.addColorStop(0,'rgba(194,48,74,.22)'); glow.addColorStop(1,'rgba(194,48,74,0)'); g.fillStyle = glow; g.beginPath(); g.arc(cx, cy, r*1.32, 0, 7); g.fill();
+  g.lineWidth = 9; g.strokeStyle = '#1A1615'; g.beginPath(); g.arc(cx, cy, r+5.5, 0, 7); g.stroke();
+  g.lineWidth = 1; g.strokeStyle = 'rgba(230,205,176,.35)'; g.beginPath(); g.arc(cx, cy, r+1, 0, 7); g.stroke();
+  g.strokeStyle = 'rgba(230,205,176,.16)'; g.beginPath(); g.arc(cx, cy, r+10.5, 0, 7); g.stroke();
+  for (let i=0;i<120;i++){ const th = i/120*Math.PI*2, big = i%10===0, r0 = r+14, r1 = r0 + (big ? 9 : 4); g.strokeStyle = big ? 'rgba(230,205,176,.55)' : 'rgba(230,205,176,.18)'; g.lineWidth = big ? 1.4 : 1; g.beginPath(); g.moveTo(cx+Math.cos(th)*r0, cy+Math.sin(th)*r0); g.lineTo(cx+Math.cos(th)*r1, cy+Math.sin(th)*r1); g.stroke(); }
+  const s0 = T*.35; g.lineCap = 'round'; g.lineWidth = 2.4; const sw = g.createLinearGradient(cx+Math.cos(s0)*r, cy+Math.sin(s0)*r, cx+Math.cos(s0+1.1)*r, cy+Math.sin(s0+1.1)*r); sw.addColorStop(0,'rgba(194,48,74,0)'); sw.addColorStop(1,'rgba(224,90,110,.95)');
+  g.strokeStyle = sw; g.beginPath(); g.arc(cx, cy, r+5.5, s0, s0+1.1); g.stroke();
+  g.fillStyle = '#E6CDB0'; g.beginPath(); g.arc(cx+Math.cos(s0+1.1)*(r+5.5), cy+Math.sin(s0+1.1)*(r+5.5), 2.6, 0, 7); g.fill();
+  if (r > 150){ g.font = '600 10px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = 'rgba(230,205,176,.55)'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    [['N',-Math.PI/2],['E',0],['S',Math.PI/2],['W',Math.PI]].forEach(([l,th])=>g.fillText(l, cx+Math.cos(th)*(r+34), cy+Math.sin(th)*(r+34))); g.textAlign = 'start'; g.textBaseline = 'alphabetic'; }
+  g.restore();
+}
+function kmToWorld(x,y){ return [x,y]; }
+function kmWrap(a){ const P = Math.PI*2; return ((a + Math.PI) % P + P) % P - Math.PI; } // full 360° turns in both directions
+function kmCamTo(x, y, z, d=700, raw, tilt){ KM.tween = { t0:performance.now(), d: motionOff() ? 1 : d, x0:KM.cam.x, y0:KM.cam.y, z0:KM.cam.z, x1:x, y1:y, z1:clamp(z,.5,4) }; if (tilt!==undefined){ KM.vt = 0; KM.tween.t0v = KM.tilt; KM.tween.t1 = tilt + Math.PI*2*Math.round((KM.tilt - tilt)/(Math.PI*2)); } }
+function kmCenterOn(n, z){ const z1 = clamp(z,.5,4), f = z1/KM.cam.z, O = KM.orb || { cx:KM.W/2, cy:KM.H/2 }; const ox = n.sx - (O.cx + KM.cam.x), oy = n.sy - (O.cy + KM.cam.y); kmCamTo(-ox*f, -oy*f, z1); }
 
 const KM_COL = {
-  core:['#FFF3D6','#E2AE63','#7C4A1C'], domain:['#FFE3EC','#E58AA6','#8E3456'], topic:['#E6E0FF','#9C8BF0','#4A3BA8'],
-  practice:['#D9FFF0','#56CF9C','#1C6B4E'], skill:['#FFE7C2','#E0A050','#7A4A14']
+  core:['#FFFFFA','#F0D2AE','#8A5A34'], domain:['#F6D9DE','#B3203A','#3A0710'], topic:['#FFFFFF','#C9D6EC','#3C4A66'],
+  practice:['#FFF3E2','#E6CDB0','#6A4E34'], skill:['#F6D9DE','#D44A62','#4A0D14']
 };
 function kmSphere(g, x, y, r, col, a, glow){
   g.globalAlpha = a;
@@ -142,102 +242,9 @@ function kmSphere(g, x, y, r, col, a, glow){
 }
 function kmChip(g, x, y, txt, a){
   g.globalAlpha = a; g.font = '700 10px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
-  const w = g.measureText(txt).width + 10; g.fillStyle = 'rgba(16,24,26,.86)'; g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 1;
+  const w = g.measureText(txt).width + 10; g.fillStyle = 'rgba(22,17,17,.88)'; g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 1;
   g.beginPath(); g.roundRect ? g.roundRect(x, y-8, w, 16, 5) : g.rect(x, y-8, w, 16); g.fill(); g.stroke();
-  g.fillStyle = '#E8EFEE'; g.fillText(txt, x+5, y+3.6); g.globalAlpha = 1;
-}
-function kmDraw(now){
-  const cv = document.getElementById('kmCanvas'); if (!cv) return;
-  const g = cv.getContext('2d'), W = KM.W, H = KM.H;
-  g.setTransform(KM.dpr,0,0,KM.dpr,0,0); g.clearRect(0,0,W,H);
-  const T = (now - KM.t0)/1000, still = motionOff();
-  // camera tween
-  if (KM.tween){ const k = Math.min(1,(now-KM.tween.t0)/KM.tween.d), e = 1-Math.pow(1-k,3); KM.cam.x = KM.tween.x0+(KM.tween.x1-KM.tween.x0)*e; KM.cam.y = KM.tween.y0+(KM.tween.y1-KM.tween.y0)*e; KM.cam.z = KM.tween.z0+(KM.tween.z1-KM.tween.z0)*e; if (k>=1) KM.tween = null; }
-  // layout tween toward radial or tree positions
-  KM.nodes.forEach(n=>{ const p = kmPos(n, KM.layout==='tree' ? 't' : 'r'); n.x += (p[0]-n.x)*(still ? 1 : .12); n.y += (p[1]-n.y)*(still ? 1 : .12); });
-  const s = KM.base*KM.cam.z, ox = W/2 - (KM.cam.x + (KM.cx0||0))*s, oy = H/2 - (KM.cam.y + (KM.cy0||0))*s + (W<760 ? -30 : -10);
-  const drift = n => still ? [0,0] : [Math.sin(T*.35 + n.ph)*2.2, Math.cos(T*.3 + n.ph*1.3)*2.2];
-  const P = n => { const d = drift(n); return [ox + (n.x + d[0])*s, oy + (n.y + d[1])*s]; };
-  const vis = n => still ? 1 : clamp((T - kmIntroAt(n))/.35, 0, 1);
-  const fade = KM.view==='leaving' ? clamp(1 - (now - KM.leaveT0)/600, 0, 1) : 1;
-  const conn = KM.sel ? new Set([KM.sel, ...KM.edges.filter(e=>e.a===KM.sel||e.b===KM.sel).flatMap(e=>[e.a,e.b])]) : null;
-  const dim = n => { let a = fade; if (conn && !conn.has(n)) a *= .22; if (KM.gaps && n.type==='topic' && kmMastery(n.topic) >= 100) a *= .25; return a; };
-  const core = KM.nodes[0], C = P(core);
-  // ---- intro: gold dust, ignition flash, blue streaks
-  if (!still && T < 1.4){
-    g.globalCompositeOperation = 'lighter';
-    const k = clamp(T/1, 0, 1);
-    for (let i=0;i<180;i++){ const a = i*2.399 + T*1.8, rr = (60*(1-k) + 8) * (0.4 + ((i*13)%10)/10) * (1 + .3*Math.sin(i+T*3)); g.fillStyle = `rgba(255,${190+(i%40)},${110+(i%60)},${(.55*(1-clamp((T-.9)/.5,0,1))).toFixed(2)})`; g.fillRect(C[0]+Math.cos(a)*rr*s*1.6, C[1]+Math.sin(a)*rr*s*1.6, 1.6, 1.6); }
-    if (T > .7){ const f = 1 - clamp((T-.7)/.7, 0, 1), rr = (40 + 140*(1-f))*s*1.4; const gr = g.createRadialGradient(C[0],C[1],0,C[0],C[1],rr); gr.addColorStop(0,`rgba(255,250,230,${(.9*f).toFixed(2)})`); gr.addColorStop(.35,`rgba(120,200,255,${(.5*f).toFixed(2)})`); gr.addColorStop(1,'rgba(80,160,255,0)'); g.fillStyle = gr; g.beginPath(); g.arc(C[0],C[1],rr,0,7); g.fill(); }
-    g.globalCompositeOperation = 'source-over';
-  }
-  if (!still){
-    g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
-    KM.nodes.forEach(n=>{ if (n.type==='core') return; const at = kmIntroAt(n), k = (T - (at - .5))/.5; if (k <= 0 || k >= 1.25) return; const p = P(n), e = 1-Math.pow(1-clamp(k,0,1),3), t0 = Math.max(0, e - .28);
-      const hx = C[0] + (p[0]-C[0])*e, hy = C[1] + (p[1]-C[1])*e, tx = C[0] + (p[0]-C[0])*t0, ty = C[1] + (p[1]-C[1])*t0, al = k > 1 ? 1 - (k-1)/.25 : 1;
-      const gr = g.createLinearGradient(tx,ty,hx,hy); gr.addColorStop(0,'rgba(90,170,255,0)'); gr.addColorStop(1,`rgba(140,210,255,${(.95*al).toFixed(2)})`);
-      g.strokeStyle = gr; g.lineWidth = n.type==='domain' ? 2.6 : 1.6; g.beginPath(); g.moveTo(tx,ty); g.lineTo(hx,hy); g.stroke();
-      g.fillStyle = `rgba(200,235,255,${al.toFixed(2)})`; g.beginPath(); g.arc(hx,hy,n.type==='domain'?3.4:2,0,7); g.fill(); });
-    g.globalCompositeOperation = 'source-over';
-  }
-  // ---- edges
-  KM.edges.forEach(e=>{
-    const va = Math.min(vis(e.a), vis(e.b)); if (va <= 0) return;
-    const a = P(e.a), b = P(e.b), al = Math.min(dim(e.a), dim(e.b)) * va, hot = KM.sel && (e.a===KM.sel || e.b===KM.sel);
-    if (e.k==='beam'){
-      const dx = b[0]-a[0], dy = b[1]-a[1], L = Math.hypot(dx,dy)||1, nx = -dy/L, ny = dx/L, w0 = 11*Math.min(1.4,s*1.6), w1 = 1.4;
-      g.globalCompositeOperation = 'lighter'; g.globalAlpha = al;
-      const gr = g.createLinearGradient(a[0],a[1],b[0],b[1]); gr.addColorStop(0,'rgba(255,214,150,.55)'); gr.addColorStop(.6,'rgba(232,170,110,.22)'); gr.addColorStop(1,'rgba(232,170,110,.08)');
-      g.fillStyle = gr; g.beginPath(); g.moveTo(a[0]+nx*w0, a[1]+ny*w0); g.lineTo(b[0]+nx*w1, b[1]+ny*w1); g.lineTo(b[0]-nx*w1, b[1]-ny*w1); g.lineTo(a[0]-nx*w0, a[1]-ny*w0); g.closePath(); g.fill();
-      g.strokeStyle = hot ? 'rgba(255,240,210,.95)' : 'rgba(255,226,180,.7)'; g.lineWidth = hot ? 1.8 : 1.1; g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke();
-      const ux = dx/L, uy = dy/L, tipx = b[0] - ux*(e.b.r*s*1.4+9), tipy = b[1] - uy*(e.b.r*s*1.4+9);
-      g.fillStyle = 'rgba(255,230,190,.85)'; g.beginPath(); g.moveTo(tipx+ux*7, tipy+uy*7); g.lineTo(tipx+nx*3.5, tipy+ny*3.5); g.lineTo(tipx-nx*3.5, tipy-ny*3.5); g.closePath(); g.fill();
-      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-    } else {
-      g.globalAlpha = al; g.lineWidth = e.k==='teal' ? 1.1 : .9;
-      g.strokeStyle = e.k==='teal' ? 'rgba(111,211,199,.6)' : e.k==='thin' ? 'rgba(232,215,225,.42)' : 'rgba(220,230,228,.32)';
-      if (e.k==='dot') g.setLineDash([2,3]); g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
-    }
-  });
-  // ---- light pulses travelling out along the beams
-  if (!still && T > 2.4 && KM.view==='graph'){
-    if (now - KM.lastPulse > 260){ KM.lastPulse = now; const beams = KM.edges.filter(e=>e.k==='beam'||e.k==='teal'); KM.pulses.push({ e:beams[Math.floor(Math.random()*beams.length)], t0:now, d:1400 + Math.random()*900 }); }
-    g.globalCompositeOperation = 'lighter';
-    KM.pulses = KM.pulses.filter(p=>now - p.t0 < p.d);
-    KM.pulses.forEach(p=>{ const k = (now - p.t0)/p.d, a = P(p.e.a), b = P(p.e.b), x = a[0]+(b[0]-a[0])*k, y = a[1]+(b[1]-a[1])*k, al = Math.sin(k*Math.PI)*fade;
-      const gr = g.createRadialGradient(x,y,0,x,y,9); gr.addColorStop(0,`rgba(255,248,225,${al.toFixed(2)})`); gr.addColorStop(1,'rgba(255,210,150,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x,y,9,0,7); g.fill(); });
-    g.globalCompositeOperation = 'source-over';
-  }
-  // ---- nodes
-  const order = ['practice','skill','topic','domain','core'];
-  order.forEach(type=>KM.nodes.filter(n=>n.type===type).forEach(n=>{
-    const v = vis(n); if (v <= 0) return;
-    const p = P(n), pop = still ? 1 : (v < 1 ? .6 + .55*Math.sin(v*Math.PI*.82) : 1), a = dim(n) * Math.min(1, v*1.4);
-    const rr = n.r * Math.max(.8, Math.min(1.6, s*1.35)) * pop * (KM.hover===n ? 1.18 : 1);
-    if (!still){ const k = (T - kmIntroAt(n))/.6; if (k > 0 && k < 1){ g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(p[0],p[1],0,p[0],p[1],rr*5); gr.addColorStop(0,`rgba(150,215,255,${(.8*(1-k)).toFixed(2)})`); gr.addColorStop(1,'rgba(150,215,255,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p[0],p[1],rr*5,0,7); g.fill(); g.globalCompositeOperation = 'source-over'; } }
-    if (n.type==='core'){
-      g.save(); g.translate(p[0],p[1]); g.rotate(still ? 0 : T*.08); g.globalAlpha = a;
-      for (let i=0;i<120;i++){ const an = i/120*Math.PI*2, l = rr+3 + ((i*7)%9) + (still ? 0 : Math.sin(T*2+i)*1.5); g.strokeStyle = i%3 ? 'rgba(232,180,110,.75)' : 'rgba(255,236,200,.9)'; g.lineWidth = 1; g.beginPath(); g.moveTo(Math.cos(an)*(rr+1), Math.sin(an)*(rr+1)); g.lineTo(Math.cos(an)*l, Math.sin(an)*l); g.stroke(); }
-      g.restore();
-      kmSphere(g, p[0], p[1], rr, KM_COL.core, a, 4.2);
-      g.globalAlpha = a; g.strokeStyle = 'rgba(255,230,190,.35)'; g.setLineDash([1.5,3]); g.beginPath(); g.arc(p[0],p[1],rr+18,0,7); g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
-    } else kmSphere(g, p[0], p[1], rr, KM_COL[n.type], a, n.type==='domain' ? 3 : n.type==='topic' ? 2.2 : 2.6);
-    if (n.spark && !still){ const tw = .5 + .5*Math.sin(T*2.4 + n.ph*3); g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(p[0],p[1],0,p[0],p[1],rr*6); gr.addColorStop(0,`rgba(255,255,230,${(.9*tw*a).toFixed(2)})`); gr.addColorStop(1,'rgba(255,255,200,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p[0],p[1],rr*6,0,7); g.fill(); g.globalCompositeOperation = 'source-over'; }
-    // labels
-    g.textBaseline = 'alphabetic';
-    if (n.type==='core' || n.type==='domain'){
-      const lab = n.type==='core' ? n.name : n.name, pct = n.type==='core' ? kmOverall() + '%' : n.w + '%';
-      g.globalAlpha = a; g.font = `${n.type==='core'?650:600} ${n.type==='core'?15:13}px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif`;
-      g.fillStyle = '#F2F6F5'; g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 6;
-      const short = W < 760 && lab.length > 14 ? lab.slice(0,13).trimEnd()+'…' : lab;
-      g.fillText(short, p[0] + rr + 12, p[1] + 2); g.shadowBlur = 0; kmChip(g, p[0] + rr + 12, p[1] + 16, pct, a*.95);
-    } else if ((n.type==='practice' || n.type==='skill') && KM.labels){ kmChip(g, p[0] + rr + 4, p[1] - 6, String(n.n), a*.9); }
-    else if (n.type==='topic' && (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.45) || (conn && conn.has(n)))){
-      g.globalAlpha = a; g.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#E9E4FF'; g.shadowColor = 'rgba(0,0,0,.85)'; g.shadowBlur = 6;
-      g.fillText(n.name, p[0] + rr + 10, p[1] + 4); g.shadowBlur = 0; g.globalAlpha = 1;
-    }
-    n.sx = p[0]; n.sy = p[1]; n.sr = rr;
-  }));
+  g.fillStyle = '#F2F1ED'; g.fillText(txt, x+5, y+3.6); g.globalAlpha = 1;
 }
 function kmOverall(){ const ts = KM_DOMAINS.flatMap(d=>d.topics); let w = 0, sum = 0; KM_DOMAINS.forEach(d=>d.topics.forEach(t=>{ w += d.w/d.topics.length; sum += d.w/d.topics.length*kmMastery(t)/100; })); return Math.round(sum/w*100); }
 function kmLoop(now){
@@ -287,10 +294,10 @@ function kmAskHTML(){
 }
 function kmShellHTML(){
   return `<div class="km" id="km" role="dialog" aria-modal="true" aria-label="Knowledge map">
-    <canvas id="kmCanvas" aria-label="Network of everything you are learning. Drag to move, scroll to zoom, tap a node."></canvas>
+    <canvas id="kmCanvas" aria-label="Network of everything you are learning. Drag or use the arrow keys to spin it all the way round, scroll to zoom, tap a node."></canvas>
     <div class="km-vign" aria-hidden="true"></div>
     <header class="km-top">
-      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Knowledge map</b><small>Kyaw's engineering plan</small></div></div>
+      <div class="km-brand"><button class="km-ib" data-a="km-back" aria-label="Close the map">${kmi('menu',18)}</button><span class="km-logo">${ic('gears',18)}</span><div><b>Knowledge map</b><small>KsHan's engineering plan</small></div></div>
       <div class="km-tools" role="toolbar" aria-label="Map tools">
         <span class="km-grp"><button data-a="km-layout" data-id="radial" class="${KM.layout==='radial'?'on':''}" aria-label="Network view">${kmi('radial')}</button><button data-a="km-layout" data-id="tree" class="${KM.layout==='tree'?'on':''}" aria-label="Tree view">${kmi('tree')}</button></span>
         <span class="km-grp"><button data-a="km-zoom" data-id="1" aria-label="Zoom in">${kmi('plus')}</button><button data-a="km-zoom" data-id="-1" aria-label="Zoom out">${kmi('minus')}</button></span>
@@ -300,8 +307,9 @@ function kmShellHTML(){
       </div>
       <div class="km-right"><button class="km-new" data-a="km-plan">${kmi('plus',15)} New study plan</button><button class="km-ib" data-a="km-search" aria-label="Search">${kmi('search',17)}</button><span class="km-av">KS</span><button class="km-ib" data-a="km-close" aria-label="Back to the app">${kmi('x',17)}</button></div>
     </header>
-    <aside class="km-time" aria-label="Plan months"><canvas id="kmWave" aria-hidden="true"></canvas><div class="km-months">${kmTimeline()}</div></aside>
-    <div class="km-legend glass-km">${kmLegend()}</div>
+    <div class="km-title" aria-hidden="true"><small>Personal growth project</small><h1>KsHan</h1><span class="num">Day ${typeof planDay==='function'?planDay():1} of 365 · ${currentStreak()}-day streak</span></div>
+    <span class="km-hint" aria-hidden="true">Drag to spin 360° · pinch or scroll to zoom · tap a planet</span>
+    ${kmSidesHTML()}
     <div class="km-tip glass-km" id="kmTip" hidden></div>
     <div class="km-an glass-km" id="kmAn" hidden></div>
     ${kmAskHTML()}
@@ -314,13 +322,11 @@ function kmWave(){
   const g = cv.getContext('2d'); g.setTransform(d,0,0,d,0,0);
   const start = parseKey(state.createdAt || dkey()), r = mulberry32(7);
   for (let y=0;y<H;y+=2){ const day = addDays(start, Math.floor(y/H*365)), v = day <= new Date() && typeof focusOf==='function' ? focusOf(dkey(day)) : 0;
-    const w = 2 + r()*5 + Math.min(16, v/8); g.fillStyle = v > 0 ? 'rgba(255,214,150,.75)' : 'rgba(200,215,212,.28)'; g.fillRect(0, y, w, 1.2); }
+    const w = 2 + r()*5 + Math.min(16, v/8); g.fillStyle = v > 0 ? 'rgba(255,214,150,.75)' : 'rgba(220,205,190,.25)'; g.fillRect(0, y, w, 1.2); }
 }
 
 /* ---------- interaction ---------- */
-function kmToWorld(x,y){ const s = KM.base*KM.cam.z; return [(x - KM.W/2)/s + KM.cam.x + (KM.cx0||0), (y - KM.H/2 - (KM.W<760?-30:-10))/s + KM.cam.y + (KM.cy0||0)]; }
-function kmHit(x,y){ let best = null, bd = 1e9; KM.nodes.forEach(n=>{ if (n.sx===undefined) return; const d = Math.hypot(n.sx-x, n.sy-y); if (d < Math.max(14, n.sr+8) && d < bd){ bd = d; best = n; } }); return best; }
-function kmCamTo(x, y, z, d=700, raw){ const x1 = raw ? x : x - (KM.cx0||0), y1 = raw ? y : y - (KM.cy0||0); KM.tween = { t0:performance.now(), d: motionOff() ? 1 : d, x0:KM.cam.x, y0:KM.cam.y, z0:KM.cam.z, x1, y1, z1:clamp(z,.5,4) }; }
+function kmHit(x,y){ if (KM.orb && Math.hypot(x-KM.orb.cx, y-KM.orb.cy) > KM.orb.r) return null; let best = null, bd = 1e9; KM.nodes.forEach(n=>{ if (n.sx===undefined) return; const d = Math.hypot(n.sx-x, n.sy-y); if (d < Math.max(14, n.sr+8) && d < bd){ bd = d; best = n; } }); return best; }
 function kmTip(n){
   const tip = document.getElementById('kmTip'); if (!tip) return;
   if (!n || n.type==='core'){ tip.hidden = true; return; }
@@ -364,7 +370,7 @@ function kmFocus(t){
   const node = KM.nodes.find(n=>n.type==='topic' && n.topic===t);
   KM.focus = t; KM.sel = node || null; { const L = kmItems(t).map(x=>x.list.length); KM.tile = L.indexOf(Math.max(...L)); }
   document.getElementById('kmAn').hidden = true; document.getElementById('kmTip').hidden = true;
-  if (node && !motionOff()){ kmCamTo(node.x, node.y, 3.2, 650); KM.view = 'leaving'; KM.leaveT0 = performance.now(); document.getElementById('km').classList.add('leaving'); }
+  if (node && !motionOff()){ KM.freeze = true; kmCenterOn(node, 3.4); KM.tween.d = 650; KM.view = 'leaving'; KM.leaveT0 = performance.now(); document.getElementById('km').classList.add('leaving'); }
   else { KM.view = 'focus'; kmShowFocus(); }
 }
 function kmShowFocus(){
@@ -427,11 +433,11 @@ function kmOrb(){
     const W = cv.clientWidth, H = cv.clientHeight, d = Math.min(2, devicePixelRatio||1); if (cv.width !== W*d){ cv.width = W*d; cv.height = H*d; }
     const g = cv.getContext('2d'); g.setTransform(d,0,0,d,0,0); g.clearRect(0,0,W,H);
     const cx = W/2, cy = H/2, r = Math.min(W,H)*.2, T = motionOff() ? 0 : now/1000;
-    const halo = g.createRadialGradient(cx,cy,r,cx,cy,r*3.2); halo.addColorStop(0,'rgba(120,110,230,.18)'); halo.addColorStop(1,'rgba(40,60,70,0)'); g.fillStyle = halo; g.beginPath(); g.arc(cx,cy,r*3.2,0,7); g.fill();
+    const halo = g.createRadialGradient(cx,cy,r,cx,cy,r*3.2); halo.addColorStop(0,'rgba(179,32,58,.2)'); halo.addColorStop(1,'rgba(60,20,24,0)'); g.fillStyle = halo; g.beginPath(); g.arc(cx,cy,r*3.2,0,7); g.fill();
     g.save(); g.translate(cx,cy); g.rotate(T*.15);
-    for (let i=0;i<220;i++){ const a = i/220*Math.PI*2, w = Math.sin(i*1.7)*.5+.5, l = r*1.12 + w*r*.38 + (T ? Math.sin(T*2+i*.4)*2 : 0); g.strokeStyle = i%4===0 ? 'rgba(111,211,199,.55)' : i%3 ? 'rgba(150,135,240,.6)' : 'rgba(225,215,255,.75)'; g.lineWidth = 1; g.beginPath(); g.moveTo(Math.cos(a)*r*1.08, Math.sin(a)*r*1.08); g.lineTo(Math.cos(a)*l, Math.sin(a)*l); g.stroke(); }
+    for (let i=0;i<220;i++){ const a = i/220*Math.PI*2, w = Math.sin(i*1.7)*.5+.5, l = r*1.12 + w*r*.38 + (T ? Math.sin(T*2+i*.4)*2 : 0); g.strokeStyle = i%4===0 ? 'rgba(217,185,146,.55)' : i%3 ? 'rgba(194,48,74,.6)' : 'rgba(246,217,222,.75)'; g.lineWidth = 1; g.beginPath(); g.moveTo(Math.cos(a)*r*1.08, Math.sin(a)*r*1.08); g.lineTo(Math.cos(a)*l, Math.sin(a)*l); g.stroke(); }
     g.restore();
-    kmSphere(g, cx, cy, r, KM_COL.topic, 1, 2.4);
+    kmSphere(g, cx, cy, r, KM_COL.domain, 1, 2.4);
     g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.ellipse(cx-r*.3, cy-r*.38, r*.28, r*.16, -.6, 0, 7); g.fill();
     if (!motionOff()) KM.orbRaf = requestAnimationFrame(draw);
   };
@@ -441,14 +447,14 @@ function kmUnfocus(){
   const root = document.getElementById('km'); root.classList.remove('focus');
   document.getElementById('kmFocus').hidden = true; document.getElementById('kmAsk').classList.remove('docked');
   cancelAnimationFrame(KM.orbRaf); KM.view = 'graph'; KM.focus = null;
-  const n = KM.sel; if (n) kmCamTo(n.x, n.y, 1.5, 700); kmKick();
+  const n = KM.sel; if (n){ KM.freeze = true; kmCenterOn(n, 1.6); } kmKick();
 }
 
 /* ---------- open / close ---------- */
 function kmKick(){ if (!KM.raf) KM.raf = requestAnimationFrame(kmLoop); }
 function kmOpen(){
   if (KM.open) return;
-  KM.labels = window.innerWidth >= 760;
+  KM.labels = window.innerWidth >= 760; KM.yaw = -.5; KM.tilt = .72; KM.tA = 0; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
   document.body.insertAdjacentHTML('beforeend', kmShellHTML());
   KM.labels = window.innerWidth >= 760;
   document.body.classList.add('km-open'); KM.open = true; KM.view = 'graph'; KM.sel = null; KM.focus = null; KM.cam = { x:0, y:0, z:1 }; KM.pulses = [];
@@ -474,8 +480,8 @@ function kmBind(){
     const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     if (KM.ptr.has(e.pointerId)){
       const prev = KM.ptr.get(e.pointerId); KM.ptr.set(e.pointerId, { x:e.clientX, y:e.clientY });
-      if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); if (d0 > 0) KM.cam.z = clamp(KM.cam.z*d1/d0, .5, 4); return; }
-      if (KM.drag){ const s = KM.base*KM.cam.z; KM.cam.x -= (e.clientX-prev.x)/s; KM.cam.y -= (e.clientY-prev.y)/s; KM.drag.moved += Math.abs(e.clientX-prev.x)+Math.abs(e.clientY-prev.y); }
+      if (KM.ptr.size===2){ const [a,b] = [...KM.ptr.values()], o = [...KM.ptr.entries()].find(([id])=>id!==e.pointerId)[1]; const d0 = Math.hypot(prev.x-o.x, prev.y-o.y), d1 = Math.hypot(a.x-b.x, a.y-b.y); if (d0 > 0){ const z = clamp(KM.cam.z*d1/d0, .5, 4), k = z/KM.cam.z; KM.cam.x *= k; KM.cam.y *= k; KM.cam.z = z; } return; }
+      if (KM.drag){ const dx = e.clientX-prev.x, dy = e.clientY-prev.y; if (e.shiftKey){ KM.cam.x += dx; KM.cam.y += dy; } else { KM.yaw += dx*.007; KM.vy = dx*.0035; KM.tilt = kmWrap(KM.tilt - dy*.007); KM.vt = -dy*.0035; } KM.drag.moved += Math.abs(dx)+Math.abs(dy); }
       return;
     }
     const h = kmHit(x,y); if (h !== KM.hover){ KM.hover = h; cv.style.cursor = h ? 'pointer' : 'grab'; }
@@ -483,13 +489,13 @@ function kmBind(){
   const up = e=>{
     const was = KM.drag; KM.ptr.delete(e.pointerId); if (KM.ptr.size===0) KM.drag = null;
     if (was && was.moved < 6 && e.type==='pointerup'){ const r = cv.getBoundingClientRect(), n = kmHit(e.clientX-r.left, e.clientY-r.top);
-      if (!n){ KM.sel = null; kmTip(null); return; }
+      if (!n){ KM.sel = null; KM.freeze = false; kmTip(null); return; }
       if (n.type==='topic' && KM.sel===n){ kmFocus(n.topic); return; }
-      KM.sel = n; kmTip(n); if (n.type!=='core') kmCamTo(n.x, n.y, Math.max(KM.cam.z, n.type==='domain' ? 1.5 : 1.8)); else kmCamTo(0,0,1,700,true);
+      KM.sel = n; KM.freeze = n.type!=='core'; kmTip(n); if (n.type!=='core') kmCenterOn(n, Math.max(KM.cam.z, n.type==='domain' ? 1.5 : 1.9)); else kmCamTo(0,0,1,700,true);
     }
   };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-  cv.addEventListener('wheel', e=>{ e.preventDefault(); const r = cv.getBoundingClientRect(), x = e.clientX-r.left, y = e.clientY-r.top, w0 = kmToWorld(x,y); KM.tween = null; KM.cam.z = clamp(KM.cam.z * Math.exp(-e.deltaY*.0015), .5, 4); const w1 = kmToWorld(x,y); KM.cam.x += w0[0]-w1[0]; KM.cam.y += w0[1]-w1[1]; }, { passive:false });
+  cv.addEventListener('wheel', e=>{ e.preventDefault(); KM.tween = null; const f = Math.exp(-e.deltaY*.0015), z = clamp(KM.cam.z*f, .5, 4); const k = z/KM.cam.z; KM.cam.x *= k; KM.cam.y *= k; KM.cam.z = z; }, { passive:false });
   document.getElementById('kmForm').addEventListener('submit', e=>{ e.preventDefault(); const q = document.getElementById('kmQ').value.trim(); if (KM.view!=='graph'){ const hit = kmMatch(q); if (hit){ kmUnfocus(); setTimeout(()=>kmFocus(hit), 300); } else { kmUnfocus(); setTimeout(()=>kmAnalyse(q), 300); } return; } kmAnalyse(q); });
   root.addEventListener('click', e=>{ const el = e.target.closest('[data-a]'); if (!el || !root.contains(el)) return; kmAction(el.dataset.a, el); e.stopPropagation(); });
   window.addEventListener('resize', kmResize);
@@ -498,9 +504,9 @@ function kmAction(a, el){
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();
-  else if (a==='km-zoom'){ kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z * (+el.dataset.id > 0 ? 1.35 : 1/1.35), 300, true); }
-  else if (a==='km-fit'){ KM.sel = null; kmTip(null); kmCamTo(0,0,1,700,true); }
-  else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(0, KM.layout==='tree' ? 80 : 0, 1, 700, true); }
+  else if (a==='km-zoom'){ { const f = +el.dataset.id > 0 ? 1.35 : 1/1.35, z = clamp(KM.cam.z*f,.5,4), k = z/KM.cam.z; kmCamTo(KM.cam.x*k, KM.cam.y*k, z, 300); } }
+  else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,700,true,.72); }
+  else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : .72); }
   else if (a==='km-gaps'){ KM.gaps = !KM.gaps; el.classList.toggle('on', KM.gaps); toast(KM.gaps ? 'Showing gaps only: learned topics are dimmed.' : 'Showing every topic.', 'ok', 1600); }
   else if (a==='km-labels'){ KM.labels = !KM.labels; el.classList.toggle('on', KM.labels); }
   else if (a==='km-search'){ document.getElementById('kmQ').focus(); }
@@ -515,7 +521,8 @@ function kmAction(a, el){
     else if (t.lab){ labPane = t.lab; setTab('lab', { force:true }); setTimeout(()=>showLabPane(t.lab), 60); }
     else if (t.learn){ learnTab = t.learn; setTab('learn', { force:true }); } }
 }
-document.addEventListener('keydown', e=>{ if (e.key==='Escape' && KM.open){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); } });
+document.addEventListener('keydown', e=>{ if (KM.open && KM.view==='graph' && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))){ const k = { ArrowLeft:[-.12,0], ArrowRight:[.12,0], ArrowUp:[0,-.12], ArrowDown:[0,.12] }[e.key]; if (k){ e.preventDefault(); KM.yaw += k[0]; KM.tilt = kmWrap(KM.tilt + k[1]); kmKick(); return; } }
+  if (e.key==='Escape' && KM.open){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); } });
 window.addEventListener('hashchange', ()=>{ if (location.hash==='#map') kmOpen(); else if (KM.open) kmClose(); });
 function kmLauncherHTML(){
   return `<button class="km-launch" data-a="km-open"><span class="km-lorb" aria-hidden="true"></span><span class="km-lt"><b>Knowledge map</b><small>Everything you are learning as one network. Tap a topic to dive in.</small></span><span class="km-lgo">${kmi('send',16)}</span></button>`;

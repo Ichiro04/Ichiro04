@@ -36,7 +36,7 @@ function renderMoney(){
   <div class="glass ringcard" data-tilt>
     <div class="glare"></div>
     <div class="ringrow">
-      ${ring(pct,112,9,{label:Math.round(pct*100), sub:`of ${money0(goal)}`, c1:'#F08A3C', c2:'#F8ECAC', c3:'#F2563A', fromTo:true})}
+      ${ring(pct,112,9,{label:Math.round(pct*100), sub:`of ${money0(goal)}`, c1:'#B38F6F', c2:'#E6CDB0', c3:'#C9946E', fromTo:true})}
       <div class="ringmeta">
         <div class="big">${money0(saved)} <span class="tiny" style="font-weight:600">of ${money0(goal)}</span></div>
         <div class="tiny">The £25,000 year · ${daysLeft} days left</div>
@@ -116,7 +116,7 @@ function renderMoney(){
 
       <div class="h2">Close the gap <span class="side">${money0(leverTotal)} available</span></div>
       <div class="glass list">
-        ${levers.map(l=>`<div class="lrow"><span class="lic" style="color:#7B1103">${ic('bolt',16)}</span><span class="lt"><span class="a" style="font-size:14px">${esc(l.n)}</span></span><span class="lr" style="color:#7B1103">+${money0(l.v)}</span></div>`).join('')}
+        ${levers.map(l=>`<div class="lrow"><span class="lic" style="color:#710014">${ic('bolt',16)}</span><span class="lt"><span class="a" style="font-size:14px">${esc(l.n)}</span></span><span class="lr" style="color:#710014">+${money0(l.v)}</span></div>`).join('')}
       </div>
 
       <div class="h2">Milestones</div>
@@ -124,12 +124,12 @@ function renderMoney(){
         ${milestoneList.map(m=>{
           const hit = saved >= m.v;
           return `<div class="goal" style="margin-bottom:8px">
-            <div class="gt"><span class="row" style="gap:7px">${hit?`<span style="color:#7B1103">${ic('check',15)}</span>`:`<span class="dot" style="background:var(--track)"></span>`}${money0(m.v)}</span><span>${hit?'banked':money0(m.v-saved)+' to go'}</span></div>
+            <div class="gt"><span class="row" style="gap:7px">${hit?`<span style="color:#710014">${ic('check',15)}</span>`:`<span class="dot" style="background:var(--track)"></span>`}${money0(m.v)}</span><span>${hit?'banked':money0(m.v-saved)+' to go'}</span></div>
             <div class="pbar"><i class="${hit?'teal':''}" style="width:${clamp(saved/m.v*100,0,100)}%"></i></div>
           </div>`;
         }).join('')}
         ${savingsRecent.length?`<div class="divider"></div><div style="display:grid;gap:6px">
-          ${savingsRecent.map(s=>`<div class="row between" style="font-size:13px"><span class="tiny">${shortDate(parseKey(s.date))} · ${esc(s.note||'deposit')}</span><b class="mono" style="color:#7B1103">+${money0(s.amount)}</b></div>`).join('')}
+          ${savingsRecent.map(s=>`<div class="row between" style="font-size:13px"><span class="tiny">${shortDate(parseKey(s.date))} · ${esc(s.note||'deposit')}</span><b class="mono" style="color:#710014">+${money0(s.amount)}</b></div>`).join('')}
         </div>`:''}
       </div>
     </div>

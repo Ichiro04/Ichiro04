@@ -44,8 +44,8 @@
 /* small tag under the train day orb */
 .dtag{font-size:9.5px;font-weight:700;color:var(--ink-3);letter-spacing:.02em;
   width:16px;height:16px;border-radius:5px;display:grid;place-items:center;background:var(--track)}
-.dcell.done .dtag{background:rgba(123,17,3,.3);color:#7B1103}
-html[data-theme="dark"] .dcell.done .dtag{color:var(--lteal);background:rgba(123,17,3,.28)}
+.dcell.done .dtag{background:rgba(113,0,20,.3);color:#710014}
+html[data-theme="dark"] .dcell.done .dtag{color:var(--lteal);background:rgba(113,0,20,.28)}
 
 /* condensed chrome should not fight the hero */
 .topbar{transition:opacity .34s var(--ease-out), transform .44s var(--ease-spring)}
@@ -86,7 +86,7 @@ html[data-theme="dark"] .dcell.done .dtag{color:var(--lteal);background:rgba(123
 
 /* stat cards read as glass, not haze */
 .glass.stat{background:linear-gradient(158deg,rgba(255,255,255,.70),rgba(255,255,255,.44) 62%,rgba(255,255,255,.62))}
-html[data-theme="dark"] .glass.stat{background:linear-gradient(158deg,rgba(242,86,58,.16),rgba(158,134,112,.09) 62%,rgba(242,86,58,.12))}
+html[data-theme="dark"] .glass.stat{background:linear-gradient(158deg,rgba(179,143,111,.16),rgba(158,134,112,.09) 62%,rgba(179,143,111,.12))}
 
 /* fab gets out of the way while you read */
 .fabwrap{transition:opacity .3s var(--ease-out), transform .4s var(--ease-out)}

@@ -76,9 +76,9 @@ function v12Draw(){
     if (it.r){
       const a = tp(it.r.a), b = tp(it.r.b);
       const r = it.r;
-      g.strokeStyle = r.hot ? '#F2563A' : r.belt ? (dark?'rgba(248,236,172,.55)':'rgba(85,13,8,.55)') : r.valve==='in' ? '#F8ECAC' : r.valve==='ex' ? (dark?'#A68D74':'#8A5A4E') : r.web ? (dark?'#3A1612':'#8A6A5C') : (dark?'#C9B49A':'#6E4A3E');
+      g.strokeStyle = r.hot ? '#C9946E' : r.belt ? (dark?'rgba(230,205,176,.55)':'rgba(74,13,20,.55)') : r.valve==='in' ? '#E6CDB0' : r.valve==='ex' ? (dark?'#978A7E':'#766A60') : r.web ? (dark?'#2C2A28':'#8A6A5C') : (dark?'#C9B49A':'#6E4A3E');
       g.lineWidth = r.hot ? 4.5 : r.belt ? 1.6 : r.valve ? 1.8 : r.web ? 4.5 : 3; g.lineCap = 'round';
-      if (r.hot){ g.shadowColor = '#F2563A'; g.shadowBlur = 14; } else g.shadowBlur = 0;
+      if (r.hot){ g.shadowColor = '#C9946E'; g.shadowBlur = 14; } else g.shadowBlur = 0;
       g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke(); g.shadowBlur = 0; return;
     }
     const f = it.f, lam = Math.max(0, V3.dot(f._n, light)), k = 0.42 + 0.62*lam, c = col[f.mat] || col.steel, sp = Math.pow(lam,16)*55;
@@ -91,9 +91,9 @@ function v12Draw(){
     const b = sg*VG.bank, u = [0,Math.sin(b),Math.cos(b)], ev = [0,u[2],-u[1]], x0 = -10 + (sg>0?VG.off:0), x1 = 5*VG.sp + 10 + (sg>0?VG.off:0);
     const P = (x,w,e) => tp([x, u[1]*w + ev[1]*e, u[2]*w + ev[2]*e]);
     const q = [P(x0,VG.deck,-VG.bore-2),P(x1,VG.deck,-VG.bore-2),P(x1,VG.deck,VG.bore+2),P(x0,VG.deck,VG.bore+2)];
-    g.fillStyle = dark ? 'rgba(255,255,255,.035)' : 'rgba(85,13,8,.05)'; g.strokeStyle = dark ? 'rgba(242,86,58,.35)' : 'rgba(184,18,2,.35)'; g.lineWidth = 1;
+    g.fillStyle = dark ? 'rgba(255,255,255,.035)' : 'rgba(74,13,20,.05)'; g.strokeStyle = dark ? 'rgba(179,143,111,.35)' : 'rgba(113,0,20,.35)'; g.lineWidth = 1;
     g.beginPath(); q.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath(); g.fill(); g.stroke();
-    const lb = P(x1+6, VG.deck, 0); g.font = '800 11px -apple-system,system-ui,sans-serif'; g.fillStyle = dark?'#F2563A':'#B81202'; g.textAlign = 'center'; g.fillText(sg<0?'Bank A':'Bank B', lb[0], lb[1]);
+    const lb = P(x1+6, VG.deck, 0); g.font = '800 11px -apple-system,system-ui,sans-serif'; g.fillStyle = dark?'#C9946E':'#8A0A1E'; g.textAlign = 'center'; g.fillText(sg<0?'Bank A':'Bank B', lb[0], lb[1]);
   });
   // glass cylinder liners, combustion glow, spark, numbers
   M.cyls.forEach(k=>{
@@ -106,8 +106,8 @@ function v12Draw(){
       g.fillStyle = `rgba(255,${90+Math.round(80*(1-ph/180))},30,${a.toFixed(2)})`;
       g.beginPath(); top.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); crown.slice().reverse().forEach(p=>g.lineTo(p[0],p[1])); g.closePath(); g.fill();
     }
-    g.strokeStyle = dark ? 'rgba(248,236,172,.28)' : 'rgba(85,13,8,.28)'; g.lineWidth = 1;
-    if (mis){ g.strokeStyle = `rgba(242,86,58,${(0.5+0.5*Math.sin(performance.now()/180)).toFixed(2)})`; g.lineWidth = 2.4; }
+    g.strokeStyle = dark ? 'rgba(230,205,176,.28)' : 'rgba(74,13,20,.28)'; g.lineWidth = 1;
+    if (mis){ g.strokeStyle = `rgba(179,143,111,${(0.5+0.5*Math.sin(performance.now()/180)).toFixed(2)})`; g.lineWidth = 2.4; }
     [top, bot].forEach(r=>{ g.beginPath(); r.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath(); g.stroke(); });
     if (!mis && ph < 22){
       const d = tp([k.x, k.u[1]*VG.deck, k.u[2]*VG.deck]), rr = 9*(1 - ph/22) + 3;
@@ -115,7 +115,7 @@ function v12Draw(){
       g.fillStyle = gr; g.beginPath(); g.arc(d[0],d[1],rr*2.2,0,Math.PI*2); g.fill();
     }
     const lb = tp([k.x, k.u[1]*(VG.deck+7), k.u[2]*(VG.deck+7)]);
-    g.font = '700 10px -apple-system,system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = (mis || (F==='bearing'&&k.c===3)) ? '#F2563A' : k.phase < 60 ? (dark?'#F8ECAC':'#B81202') : (dark?'#C9B49A':'#550D08');
+    g.font = '700 10px -apple-system,system-ui,sans-serif'; g.textAlign = 'center'; g.fillStyle = (mis || (F==='bearing'&&k.c===3)) ? '#C9946E' : k.phase < 60 ? (dark?'#E6CDB0':'#8A0A1E') : (dark?'#C9B49A':'#4A0D14');
     g.fillText(String(k.c), lb[0], lb[1]+3);
   });
   v12Panel(M.cyls);
@@ -143,7 +143,7 @@ function v12Panel(cyls){
 }
 
 function v12TwinHTML(){
-  const F = V12_FAULTS[V12.fault], h = F.health, r = 46, C = 2*Math.PI*r, col = h>=85 ? '#C9902E' : h>=65 ? '#F08A3C' : '#E0301C';
+  const F = V12_FAULTS[V12.fault], h = F.health, r = 46, C = 2*Math.PI*r, col = h>=85 ? '#A9845F' : h>=65 ? '#B38F6F' : '#B3203A';
   return `<div class="v12-twin" id="v12Twin">
     <div class="ds-ch"><div class="h3">Digital twin</div><span class="tiny">simulate a fault, then diagnose it</span></div>
     <div class="v12-faults">${Object.entries(V12_FAULTS).map(([k,f])=>`<button data-a="v12-fault" data-id="${k}" class="${k===V12.fault?'on':''} ${k==='none'?'ok':''}">${esc(k==='none'?'Healthy':f.name)}</button>`).join('')}</div>
@@ -170,10 +170,10 @@ function v12Vib(){
   if (F==='timing') v += Math.sin(th*Math.PI/97)*0.25 + (Math.random()-.5)*0.18;
   V12.vib.push(v); if (V12.vib.length > 160) V12.vib.shift();
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  g.strokeStyle = dark?'rgba(248,236,172,.08)':'rgba(85,13,8,.08)'; g.lineWidth = 1;
+  g.strokeStyle = dark?'rgba(230,205,176,.08)':'rgba(74,13,20,.08)'; g.lineWidth = 1;
   for (let y=H/4;y<H;y+=H/4){ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
-  g.setLineDash([4,4]); g.strokeStyle = 'rgba(224,48,28,.6)'; [H*0.14, H*0.86].forEach(y=>{ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }); g.setLineDash([]);
-  const h = V12_FAULTS[F].health, col = h>=85 ? (dark?'#F8ECAC':'#C9902E') : h>=65 ? '#F08A3C' : '#F2563A';
+  g.setLineDash([4,4]); g.strokeStyle = 'rgba(142,10,31,.6)'; [H*0.14, H*0.86].forEach(y=>{ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }); g.setLineDash([]);
+  const h = V12_FAULTS[F].health, col = h>=85 ? (dark?'#E6CDB0':'#A9845F') : h>=65 ? '#B38F6F' : '#C9946E';
   g.strokeStyle = col; g.lineWidth = 1.8; g.shadowColor = col; g.shadowBlur = 8; g.beginPath();
   V12.vib.forEach((s,i)=>{ const x = i/159*W, y = H/2 - s*H*0.42; i ? g.lineTo(x,y) : g.moveTo(x,y); }); g.stroke(); g.shadowBlur = 0;
 }
@@ -189,7 +189,7 @@ function v12CardHTML(){
     <div class="v12-ctrl"><label for="v12Speed" class="tiny">Slow motion</label><input type="range" id="v12Speed" min="0.04" max="1.2" step="0.01" value="${V12.speed}"><span class="tiny num" id="v12SpeedTxt"></span></div>
     <div class="v12-ang tiny num" id="v12Ang"></div>
     <div class="v12-order" aria-label="Firing order">${V12.order.map(c=>`<i><b class="num">${c}</b><span>${c<=6?'A':'B'}</span></i>`).join('')}</div>
-    <div class="v12-legend">${STROKE.map(([k,l])=>`<span><i class="lg-${k}"></i>${l}</span>`).join('')}<span><i style="background:#F8ECAC"></i>intake valve</span><span><i style="background:#A68D74"></i>exhaust valve</span></div>
+    <div class="v12-legend">${STROKE.map(([k,l])=>`<span><i class="lg-${k}"></i>${l}</span>`).join('')}<span><i style="background:#E6CDB0"></i>intake valve</span><span><i style="background:#978A7E"></i>exhaust valve</span></div>
     ${v12TwinHTML()}
     <div class="v12-split">
       <svg viewBox="0 0 160 170" id="v12Cut" class="v12cut" role="img" aria-label="Cut-away of cylinder 1">

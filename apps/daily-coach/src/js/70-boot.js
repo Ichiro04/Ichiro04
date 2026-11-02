@@ -28,7 +28,7 @@ function buildMotes(){
    BOOT
    ============================================================ */
 function boot(){
-  applyTheme(); applyMotion();
+  applyTheme(); applyMotion(); paintLandscape();
   buildTabbar();
   // hydrate any static icon slots written as <span data-ic="name">
   $$('[data-ic]').forEach(el=>{ el.innerHTML = ic(el.dataset.ic, 15); });

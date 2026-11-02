@@ -53,14 +53,14 @@ function orbPaint(cv, mode){
   const cx = W/2, cy = H/2, r = Math.min(W,H)*.36*(1+beat), dark = document.documentElement.getAttribute('data-theme')==='dark';
   // outer glow
   const gR = Math.min(W,H)/2 - 1;
-  let gr = g.createRadialGradient(cx,cy,r*.6,cx,cy,gR); gr.addColorStop(0,'rgba(242,86,58,.42)'); gr.addColorStop(.55,'rgba(184,18,2,.14)'); gr.addColorStop(1,'rgba(184,18,2,0)');
+  let gr = g.createRadialGradient(cx,cy,r*.6,cx,cy,gR); gr.addColorStop(0,'rgba(179,143,111,.42)'); gr.addColorStop(.55,'rgba(113,0,20,.14)'); gr.addColorStop(1,'rgba(113,0,20,0)');
   g.fillStyle = gr; g.beginPath(); g.arc(cx,cy,gR,0,7); g.fill();
   g.save(); g.beginPath(); g.arc(cx,cy,r,0,7); g.clip();
-  gr = g.createRadialGradient(cx-r*.3,cy-r*.35,r*.1,cx,cy,r); gr.addColorStop(0,'#FFE7B8'); gr.addColorStop(.35,'#F2873E'); gr.addColorStop(.75,'#B81202'); gr.addColorStop(1,'#470A08');
+  gr = g.createRadialGradient(cx-r*.3,cy-r*.35,r*.1,cx,cy,r); gr.addColorStop(0,'#F3E6D6'); gr.addColorStop(.35,'#C9A27E'); gr.addColorStop(.75,'#8A0A1E'); gr.addColorStop(1,'#3A0710');
   g.fillStyle = gr; g.fillRect(cx-r,cy-r,r*2,r*2);
   // moving liquid blobs
   g.globalCompositeOperation = 'lighter';
-  const blobs = [['rgba(248,236,172,.55)',.55,.9,1.3],['rgba(255,140,90,.45)',.7,-.7,1.7],['rgba(255,120,190,.32)',.6,1.1,2.1],['rgba(255,214,150,.4)',.45,-1.3,1.1]];
+  const blobs = [['rgba(230,205,176,.55)',.55,.9,1.3],['rgba(196,140,110,.45)',.7,-.7,1.7],['rgba(214,170,180,.32)',.6,1.1,2.1],['rgba(230,205,176,.4)',.45,-1.3,1.1]];
   blobs.forEach(([c,s,ph,f],i)=>{ const a = T*sp*.35*f + ph*3, bx = cx + Math.cos(a)*r*.42, by = cy + Math.sin(a*1.3+i)*r*.38, br = r*s*(1+.12*Math.sin(T*sp+i));
     const b = g.createRadialGradient(bx,by,0,bx,by,br); b.addColorStop(0,c); b.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = b; g.beginPath(); g.arc(bx,by,br,0,7); g.fill(); });
   // caustic ribbons
@@ -70,12 +70,12 @@ function orbPaint(cv, mode){
   // holographic rim + specular
   g.save(); g.translate(cx,cy); g.rotate(T*.3);
   const rim = g.createConicGradient ? g.createConicGradient(0,0,0) : null;
-  if (rim){ [[0,'rgba(248,236,172,.9)'],[.25,'rgba(255,120,190,.7)'],[.5,'rgba(242,86,58,.85)'],[.75,'rgba(255,214,150,.8)'],[1,'rgba(248,236,172,.9)']].forEach(([o,c])=>rim.addColorStop(o,c)); g.strokeStyle = rim; }
-  else g.strokeStyle = 'rgba(248,236,172,.7)';
+  if (rim){ [[0,'rgba(230,205,176,.9)'],[.25,'rgba(214,170,180,.7)'],[.5,'rgba(179,143,111,.85)'],[.75,'rgba(230,205,176,.8)'],[1,'rgba(230,205,176,.9)']].forEach(([o,c])=>rim.addColorStop(o,c)); g.strokeStyle = rim; }
+  else g.strokeStyle = 'rgba(230,205,176,.7)';
   g.lineWidth = Math.max(1.5, r*.025); g.beginPath(); g.arc(0,0,r-1,0,7); g.stroke(); g.restore();
   g.fillStyle = 'rgba(255,255,255,.5)'; g.beginPath(); g.ellipse(cx-r*.32, cy-r*.42, r*.26, r*.12, -.55, 0, 7); g.fill();
   g.fillStyle = 'rgba(255,255,255,.18)'; g.beginPath(); g.ellipse(cx+r*.35, cy+r*.45, r*.18, r*.07, -.6, 0, 7); g.fill();
-  if (st==='thinking' && !motionOff()){ g.strokeStyle = 'rgba(248,236,172,.55)'; g.lineWidth = 2; g.beginPath(); g.arc(cx,cy,r*1.14,T*3,T*3+1.4); g.stroke(); g.beginPath(); g.arc(cx,cy,r*1.14,T*3+Math.PI,T*3+Math.PI+1.4); g.stroke(); }
+  if (st==='thinking' && !motionOff()){ g.strokeStyle = 'rgba(230,205,176,.55)'; g.lineWidth = 2; g.beginPath(); g.arc(cx,cy,r*1.14,T*3,T*3+1.4); g.stroke(); g.beginPath(); g.arc(cx,cy,r*1.14,T*3+Math.PI,T*3+Math.PI+1.4); g.stroke(); }
 }
 function orbLoop(){
   cancelAnimationFrame(AI.orbRaf);

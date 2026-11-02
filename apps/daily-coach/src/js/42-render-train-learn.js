@@ -187,7 +187,7 @@ function learnEssayHTML(){
 
   <div class="h2">Band 7 non-negotiables</div>
   <div class="glass list">
-    ${BAND7_RULES.map(r=>`<div class="lrow"><span class="lic" style="color:#7B1103;background:rgba(123,17,3,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(r)}</span></span></div>`).join('')}
+    ${BAND7_RULES.map(r=>`<div class="lrow"><span class="lic" style="color:#710014;background:rgba(113,0,20,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(r)}</span></span></div>`).join('')}
   </div>
   </div>`;
 }
@@ -201,7 +201,7 @@ function learnSpeakHTML(){
   <div class="glass card">
     <div class="week">${days.map((k,i)=>{
       const d = parseKey(k), isT = k===dkey(), on = !!state.ielts.speaking[k];
-      return `<div class="dcell ${isT?'today':''}"><span class="dow">${DAYS[i][0]}</span><span class="orb ${on?'':''}" style="${on?'background:linear-gradient(150deg,#7B1103,#E8D7A6)':''}"><b style="${on?'color:#fff':''}">${on?'✓':d.getDate()}</b></span></div>`;
+      return `<div class="dcell ${isT?'today':''}"><span class="dow">${DAYS[i][0]}</span><span class="orb ${on?'':''}" style="${on?'background:linear-gradient(150deg,#710014,#E8D7A6)':''}"><b style="${on?'color:#fff':''}">${on?'✓':d.getDate()}</b></span></div>`;
     }).join('')}</div>
     <div class="tiny" style="margin-top:14px">Speaking improves by being recorded. Use your phone’s voice memo, play it back once, then name one thing to fix — speed, verb endings, or filler words.</div>
   </div>
@@ -239,7 +239,7 @@ function learnKnowHTML(){
   <div class="h2">Bring this to the shop floor</div>
   <div class="glass card">
     <div class="row" style="gap:10px;align-items:flex-start">
-      <span class="lic" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(240,138,60,.16);color:#A0560E;flex:0 0 auto">${ic('bolt',18)}</span>
+      <span class="lic" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(179,143,111,.16);color:#A0560E;flex:0 0 auto">${ic('bolt',18)}</span>
       <div><div class="h3" style="font-size:14.5px">One question for the floor</div><div class="tiny" style="margin-top:3px">${esc(pack.new)}</div></div>
     </div>
     <div class="callout" style="margin-top:12px">${ic('info',14)} You are not learning this for an exam. You are learning it so that on the floor, when something goes wrong, you have a second explanation before anyone speaks.</div>
@@ -354,12 +354,12 @@ function learnCareerHTML(){
 
   <div class="h2">What is already strong</div>
   <div class="glass list">
-    ${CV_STRENGTHS.map(x=>`<div class="lrow"><span class="lic" style="color:#7B1103;background:rgba(123,17,3,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
+    ${CV_STRENGTHS.map(x=>`<div class="lrow"><span class="lic" style="color:#710014;background:rgba(113,0,20,.16)">${ic('check',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
   </div>
 
   <div class="h2">Fix these on the CV <span class="side">before the next application</span></div>
   <div class="glass list">
-    ${CV_FIXES.map(x=>`<div class="lrow"><span class="lic" style="color:#A0560E;background:rgba(240,138,60,.16)">${ic('bolt',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
+    ${CV_FIXES.map(x=>`<div class="lrow"><span class="lic" style="color:#A0560E;background:rgba(179,143,111,.16)">${ic('bolt',16)}</span><span class="lt"><span class="a" style="font-weight:520;font-size:14px">${esc(x)}</span></span></div>`).join('')}
   </div>
 
   <div class="glass card" style="margin-top:12px">

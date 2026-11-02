@@ -8,7 +8,7 @@ function coachClassicHTML(){
   <div class="glass card" data-tilt>
     <div class="glare"></div>
     <div class="row" style="gap:12px">
-      <div class="upic" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(150deg,var(--sky),var(--lteal));color:#1C0A0A;box-shadow:0 10px 22px -12px rgba(184,18,2,.7)">${ic('sparkles',24)}</div>
+      <div class="upic" style="width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(150deg,var(--sky),var(--lteal));color:#161616;box-shadow:0 10px 22px -12px rgba(113,0,20,.7)">${ic('sparkles',24)}</div>
       <div style="flex:1"><div class="h3">Race engineer</div><div class="tiny">Team radio: reads your numbers, calls the next move</div></div>
     </div>
     <div class="divider"></div>

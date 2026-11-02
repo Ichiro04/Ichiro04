@@ -187,9 +187,9 @@ function notchHTML(){
   const bar = (p,col) => `<div class="nb"><i style="width:${Math.round(clamp(p,0,1)*100)}%;background:${col}"></i></div>`;
   const midnight = (()=>{ const n = new Date(), m = 1440 - (n.getHours()*60+n.getMinutes()); return fmtHM(m); })();
   return `<aside class="notch" id="notch" aria-label="Progress gauges">
-    ${ring(dn/tot,'#E0301C','flag','Today',`<b>Today</b><div class="nl"><span>Tasks</span><span>Resets in ${midnight}</span></div>${bar(dn/tot,'#E0301C')}<div class="nl"><span>${dn} of ${tot} done</span><span>${dn>=4?'streak day ✓':(4-dn)+' to streak'}</span></div>`)}
-    ${ring(bt?bd/bt:0,'#F8ECAC','target','This week',`<b>This week</b><div class="nl"><span>Day-plan blocks</span><span>Resets Monday</span></div>${bar(bt?bd/bt:0,'#F8ECAC')}<div class="nl"><span>${bd} of ${bt} blocks</span><span>${fmtHM(focusOf(k))} focus today</span></div>`)}
-    ${ring(saved/goal,'#F08A3C','pound','Savings',`<b>Savings goal</b><div class="nl"><span>${money0(saved)} of ${money0(goal)}</span><span>${Math.round(saved/goal*100)}%</span></div>${bar(saved/goal,'#F08A3C')}<div class="nl"><span>Plan year</span><span>${money0(Math.max(0,goal-saved))} to go</span></div>`)}
+    ${ring(dn/tot,'#B3203A','flag','Today',`<b>Today</b><div class="nl"><span>Tasks</span><span>Resets in ${midnight}</span></div>${bar(dn/tot,'#B3203A')}<div class="nl"><span>${dn} of ${tot} done</span><span>${dn>=4?'streak day ✓':(4-dn)+' to streak'}</span></div>`)}
+    ${ring(bt?bd/bt:0,'#E6CDB0','target','This week',`<b>This week</b><div class="nl"><span>Day-plan blocks</span><span>Resets Monday</span></div>${bar(bt?bd/bt:0,'#E6CDB0')}<div class="nl"><span>${bd} of ${bt} blocks</span><span>${fmtHM(focusOf(k))} focus today</span></div>`)}
+    ${ring(saved/goal,'#B38F6F','pound','Savings',`<b>Savings goal</b><div class="nl"><span>${money0(saved)} of ${money0(goal)}</span><span>${Math.round(saved/goal*100)}%</span></div>${bar(saved/goal,'#B38F6F')}<div class="nl"><span>Plan year</span><span>${money0(Math.max(0,goal-saved))} to go</span></div>`)}
   </aside>`;
 }
 function mountNotch(){ const old = document.getElementById('notch'); const html = notchHTML(); if (old) old.outerHTML = html; else document.body.insertAdjacentHTML('beforeend', html); }

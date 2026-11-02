@@ -41,6 +41,7 @@ function renderToday(){
   const sub = done===total&&total ? 'Every task done. The day is yours.' : done>=4 ? 'Streak day secured. Push for the flag.' : `${Math.max(0,4-done)} more for a streak day.`;
 
   return `
+  ${kmLauncherHTML()}
   ${daySystemHTML()}
   <div class="tcol a">
   <div class="glass pw-hero" data-tilt>

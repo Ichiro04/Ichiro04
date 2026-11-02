@@ -263,3 +263,27 @@ dock with history, send/stop, new chat).
   JSON store never leaves the browser. Without `sample` (or if declined) the rule-based
   `generateReply` answers. No microphone: artifacts cannot use it, so input is typed.
 - `state.chatArchive` keeps up to 10 earlier chats for "Recent activities".
+
+## Crimson pearl (current theme) and the galaxy map
+
+- **Palette** (from the user's reference): Crimson Depth #710014, Warm Sand #B38F6F, Soft Pearl
+  #F2F1ED, Obsidian #161616. `src/css/crimson.css` loads last: tokens for pearl (light) and
+  obsidian (dark), serif hero title, neumorphic icon tiles, crimson pill buttons.
+- **Background:** `paintLandscape()` in `54-render-galaxy.js` paints a procedural red/gold/cream
+  mountain landscape (ink ridges, mist, gold-leaf specks) on a fixed canvas, repainted on resize and
+  theme change. No third-party art is embedded.
+- **Knowledge map = galaxy dashboard.** Opening the map (launcher card on Today, Lab, Learn, or `#map`)
+  shows a satellite-style console: a round porthole in the centre holding the galaxy, with the main
+  title **"KsHan"** (the user's chosen name, keep it) over the core. The left column has Today, Legend
+  and 14 days; the right column has Next block, £25k goal and Upcoming; the ask bar sits underneath.
+  Below 1100px the columns collapse into a three-chip strip.
+  - `kmLayout` computes `KM.orb {cx, cy, r}` and sets `--ox/--oy/--or` on `#km` for the HTML title.
+  - `kmDraw` draws the bezel (`kmBezel`: ticks, sweeping arc, compass marks), clips to the circle,
+    then draws the nebula texture (`GAL.nebula`, painted once), spiral dust, orbit rings, links and
+    planets.
+  - Spin a full 360° both ways: drag (with inertia) or the arrow keys. `KM.tilt` is wrapped by
+    `kmWrap`, not clamped. Wheel or pinch zooms; Shift+drag pans.
+  - The title fades out (`KM.tA`, `.km.titled`) when a node is selected, when zoomed past 1.3× or
+    in focus view. Labels that overlap the title text (`kmTitleBox`) fade with it, and
+    `kmLabelFree` stops zoomed labels from piling up.
+- The user asked that the view changes **without renaming things**: keep existing labels and names.
