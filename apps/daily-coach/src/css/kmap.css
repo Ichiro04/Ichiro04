@@ -326,3 +326,23 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 .km.focus .km-side,.km.focus .km-mini,.km.focus .km-title,.km.focus .km-hint{display:none}
 .km.leaving .km-title,.km.leaving .km-hint{opacity:0}
 @media(prefers-reduced-motion:reduce){.km-title{transition:none}}
+
+/* ============================================================
+   COSMOS — cinematic deep-blue space (from the user's references):
+   sun = you, stars = big areas, planets = today's tasks,
+   asteroids = topics needing training, black holes = mistakes.
+   ============================================================ */
+.km{--k-glass:rgba(10,18,26,.7);--k-glass2:rgba(14,24,34,.84);--k-line:rgba(190,220,255,.1);--k-line2:rgba(190,220,255,.18);
+  background:radial-gradient(80% 55% at 50% 42%,#13283A 0%,#0B1A27 38%,#060F18 70%,#02060A 100%)}
+.km-vign{background:radial-gradient(120% 90% at 50% 45%,transparent 50%,rgba(0,0,0,.6) 100%)}
+.km .cc-panel::before{background:linear-gradient(90deg,transparent,rgba(170,210,255,.35),transparent)}
+.km-li small{margin-left:auto;font-size:10.5px;color:var(--k-ink3)}
+.km-dot.sun{background:radial-gradient(circle at 40% 40%,#FFFFFF,#FFD9A8 40%,#E07A3A);color:rgba(255,190,120,.8)}
+.km-dot.star{background:radial-gradient(circle,#FFFFFF 0 25%,#BFD8FF 45%,rgba(190,215,255,0) 72%);color:rgba(190,215,255,.9);box-shadow:0 0 10px rgba(190,215,255,.9)}
+.km-dot.planet{background:radial-gradient(circle at 35% 35%,#DCE8F6,#6F93C2 55%,#1B2A40);color:rgba(111,147,194,.6)}
+.km-dot.moon{background:radial-gradient(circle at 35% 35%,#FFFFFF,#C9D6EC 55%,#3C4A66);color:rgba(200,216,240,.6)}
+.km-dot.rock{border-radius:40% 55% 45% 60%;background:linear-gradient(135deg,#B9A898,#6E6158 55%,#231D1A);box-shadow:none}
+.km-dot.hole{background:radial-gradient(circle,#000 0 42%,#FFE6C8 46%,#FF9A5A 58%,rgba(255,120,60,0) 74%);color:rgba(255,150,90,.7)}
+.km-tipp{margin:0;font-size:13px;line-height:1.5;color:var(--k-ink2)}
+.km-tip small.hole{color:#F2A08E}
+.km-legend .km-li{gap:7px}

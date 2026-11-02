@@ -116,16 +116,16 @@ const GAL = {
     g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = alpha; g.translate(v.cx, v.cy); g.scale(1, Math.cos(v.tilt)); g.rotate(v.yaw + GAL.spin(.42, T));
     g.drawImage(neb, -384*k, -384*k, 768*k, 768*k); g.restore();
   },
-  proj(rad, th, y, v){ // v: {cx, cy, R, yaw, tilt}
-    const x = rad*Math.cos(th + v.yaw), z = rad*Math.sin(th + v.yaw);
-    return [v.cx + x*v.R, v.cy + (z*Math.cos(v.tilt) - y*Math.sin(v.tilt))*v.R, z*Math.sin(v.tilt) + y*Math.cos(v.tilt)];
+  proj(rad, th, y, v){ // v: {cx, cy, R, yaw, tilt, persp?} -> [x, y, depth (near > 0), perspective scale]
+    const x = rad*Math.cos(th + v.yaw), z = rad*Math.sin(th + v.yaw), d = z*Math.sin(v.tilt) + y*Math.cos(v.tilt), k = v.persp ? 1/Math.max(.35, 1 - d*v.persp) : 1;
+    return [v.cx + x*v.R*k, v.cy + (z*Math.cos(v.tilt) - y*Math.sin(v.tilt))*v.R*k, d, k];
   },
   spin(rad, T){ return T * .06 / Math.sqrt(rad + .05); },
   drawDust(g, dust, v, T, alpha=1){
     g.globalCompositeOperation = 'lighter'; let cur = -1; const sc = Math.min(1.25, v.R/420);
     for (const p of dust){
       if (p.b !== cur){ cur = p.b; const c = GAL.MW_COLS[p.ci], lv = (p.b % 4 + .6)/4; g.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${(lv*alpha*.9).toFixed(3)})`; }
-      const [x,y] = GAL.proj(p.r, p.th + GAL.spin(p.r,T), p.y, v), s = Math.max(.6, Math.min(1.8, p.s*sc)); g.fillRect(x - s/2, y - s/2, s, s);
+      const q = GAL.proj(p.r, p.th + GAL.spin(p.r,T), p.y, v), x = q[0], y = q[1], s = Math.max(.6, Math.min(2.2, p.s*sc*q[3])); g.fillRect(x - s/2, y - s/2, s, s);
     }
     g.globalCompositeOperation = 'source-over';
   },
@@ -133,8 +133,8 @@ const GAL = {
     g.globalCompositeOperation = 'lighter';
     let gr = g.createRadialGradient(x,y,0,x,y,r*6); gr.addColorStop(0,`rgba(255,236,210,${.75*a})`); gr.addColorStop(.18,`rgba(230,190,150,${.35*a})`); gr.addColorStop(.5,`rgba(140,30,50,${.12*a})`); gr.addColorStop(1,'rgba(0,0,0,0)');
     g.fillStyle = gr; g.beginPath(); g.arc(x,y,r*6,0,7); g.fill();
-    gr = g.createLinearGradient(x-r*9,y,x+r*9,y); gr.addColorStop(0,'rgba(255,230,200,0)'); gr.addColorStop(.5,`rgba(255,240,220,${.55*a})`); gr.addColorStop(1,'rgba(255,230,200,0)');
-    g.fillStyle = gr; g.fillRect(x-r*9, y-.8, r*18, 1.6);
+    gr = g.createLinearGradient(x-Math.min(r*9,240),y,x+Math.min(r*9,240),y); gr.addColorStop(0,'rgba(255,230,200,0)'); gr.addColorStop(.5,`rgba(255,240,220,${.55*a})`); gr.addColorStop(1,'rgba(255,230,200,0)');
+    g.fillStyle = gr; g.fillRect(x-Math.min(r*9,240), y-.8, Math.min(r*18,480), 1.6);
     gr = g.createRadialGradient(x,y,0,x,y,r); gr.addColorStop(0,`rgba(255,255,250,${a})`); gr.addColorStop(.6,`rgba(255,226,190,${.8*a})`); gr.addColorStop(1,'rgba(255,200,160,0)');
     g.fillStyle = gr; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
     g.globalCompositeOperation = 'source-over';

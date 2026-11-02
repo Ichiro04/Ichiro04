@@ -320,3 +320,7 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
   - Solar-system detail: `kmSun` (corona rays, glow, lens flare when off-centre), moon orbit rings round each planet past 1.3× or when selected, Saturn rings (`kmPlanetRing`, every third domain), cloud bands and a terminator on big planets (`kmBands`). Planets grow with zoom.
   - Effects: `kmSky` (nebula clouds with parallax, spiked twinkling stars, shooting stars), `kmNovae` (a rare supernova flash) and `kmComets` (tails point away from the sun).
   - All effects are skipped with reduced motion.
+- **Cosmos redesign (from the user's cinematic space references):**
+  - Mapping: sun = KsHan; stars = domains (`kmStar`); planets = today's tasks on the inner orbits (`kmGloss`; tapping one gives Mark as done through `setTask`); moons = topics at 50% mastery or more; asteroids = topics under 50% (`kmRock`) plus a decorative belt (`KM.belt`); black holes = `KM_HOLES` mistakes to avoid (`kmHole`: horizon, photon ring, lensed accretion disc, infalling matter).
+  - Look: deep-blue background, glowing orbit trails with running light (`kmStreaks`), a warm sun bloom and anamorphic streak, and out-of-focus bokeh in front (`kmBokeh`).
+  - Camera: `GAL.proj` takes `v.persp` for real perspective (near is bigger), the default tilt is a low 1.0 rad, and opening plays a 3-second top-down fly-in (`tween.io` ease).

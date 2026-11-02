@@ -48,6 +48,14 @@ const KM_DOMAINS = [
     { n:'Speaking part 2', learn:'speak', kw:'speaking cue card' },
     { n:'Academic vocabulary', learn:'words', kw:'vocabulary words' } ] }
 ];
+const KM_HOLES = [ // black holes: the mistakes that pull you backwards
+  { n:'Reading the wrong projection', dom:'cad', tip:'Check the projection symbol in the title block before you read any view. First angle puts the plan below the front view.' },
+  { n:'Skipping isolation (LOTO)', dom:'maint', tip:'Never reach into a machine that is not locked off, tagged and proven dead. Every time, even for a quick jam.' },
+  { n:'Changing two settings at once', dom:'ops', tip:'On a line problem change one thing, wait for it to settle, measure, then decide the next change.' },
+  { n:'Short IELTS essays', dom:'english', tip:'Task 2 needs at least 250 words. Plan for 280 in 40 minutes and leave 3 minutes to check.' },
+  { n:'Spending before saving', dom:null, tip:'Move the savings on payday first and live on what is left. The £25k plan only works in that order.' },
+  { n:'Missing two days in a row', dom:null, tip:'One missed day is life. Two in a row starts a new habit. Do the smallest task to keep the chain.' }
+];
 const KM = { yaw:-.5, tilt:.95, vy:0, freeze:false, freezeT:0, open:false, view:'graph', layout:'radial', t0:0, nodes:[], edges:[], cam:{ x:0, y:0, z:1 }, tween:null, sel:null, hover:null,
   gaps:false, labels:true, raf:0, pulses:[], lastPulse:0, W:0, H:0, dpr:1, drag:null, ptr:new Map(), focus:null, tile:2, month:null, orbRaf:0, base:1 };
 
@@ -104,19 +112,26 @@ function kmBuild(){
   // cross links between related topics in neighbouring domains
   const topics = nodes.filter(n=>n.type==='topic');
   for (let i=0;i<7;i++){ const a = topics[Math.floor(rnd()*topics.length)], b = topics[Math.floor(rnd()*topics.length)]; if (a!==b && a.dom!==b.dom) edges.push({ a, b, k:'teal' }); }
+  // planets = today's tasks on the inner orbits round the sun
+  const tasks = typeof tasksForDay==='function' ? tasksForDay(dkey()) : [];
+  tasks.forEach((t,i)=>nodes.push({ id:'task:'+t.id, type:'task', name:t.name, task:t, orad:.085 + i*(.19/Math.max(1, tasks.length-1)), oth:i*2.39 + rnd()*.6, r:6, ph:rnd()*6, ringed:i % 3 === 2 }));
+  // black holes = mistakes to avoid, out past the stars
+  KM_HOLES.forEach((h,i)=>nodes.push({ id:'hole:'+i, type:'hole', name:h.n, hole:h, orad:1.02 + (i % 2)*.09, oth:i/KM_HOLES.length*Math.PI*2 + .6, r:10, ph:rnd()*6 }));
+  // a thin asteroid belt between the planets and the stars
+  KM.belt = Array.from({length:220},()=>({ r:.3 + rnd()*.04, th:rnd()*Math.PI*2, y:(rnd()-.5)*.012, s:.6 + rnd()*1.4, c:rnd() }));
   KM.nodes = nodes; KM.edges = edges;
   kmLayout(true);
 }
 function kmLayout(snap){
   const W = KM.W || 1200, H = KM.H || 800, N = KM_DOMAINS.length;
   KM.nodes.forEach(n=>{
-    if (n.type==='domain'){ const i = KM_DOMAINS.indexOf(n.dom); n.orad = .26 + i/(N-1)*.66; n.oth = i*2.39 + (n.ph%1)*.4; }
+    if (n.type==='domain'){ const i = KM_DOMAINS.indexOf(n.dom); n.orad = .38 + i/(N-1)*.58; n.oth = i*2.39 + (n.ph%1)*.4; }
     else if (n.type==='topic'){ const j = n.dom.topics.indexOf(n.topic), k = n.dom.topics.length; n.lr = .1 + (j%2)*.045; n.lth = j/k*Math.PI*2 + n.ph; }
     else if (n.type==='practice' || n.type==='skill'){ n.lr = .028 + (n.ph%1)*.02; n.lth = n.ph*2; }
   });
   const wide = W >= 1100, top = W < 760 ? 112 : 76;
   // no frame: the galaxy fills the screen like a mind map, between the side panels on wide screens
-  const ct = Math.cos(.55); let R, cx = W/2, cy, hh;
+  const ct = Math.cos(1.0); let R, cx = W/2, cy, hh;
   if (wide){ const bot = 170; R = Math.min((W - 2*290)/2*.92, (H - top - bot)/2/(ct*.98)); cy = top + (H - top - bot)/2 + 8; }
   else { const bot = W < 760 ? 186 : 176, mini = 70; R = Math.max(120, Math.min(W*.56, (H - top - bot - mini)/2/(ct*.98), 420)); const used = 2*R*ct*.98 + 18 + mini, free = H - top - bot - used; cy = top + R*ct*.98 + Math.max(0, free*.4); }
   hh = R*ct*.98; KM.orb = { cx, cy, r:R }; KM.R = R;
@@ -126,7 +141,7 @@ function kmPos(n){ return [n.wx||0, n.wz||0]; }
 function kmIntroAt(n){ if (n.type==='core') return 0; const d = n.type==='domain' ? n : n.parent && n.parent.type==='domain' ? n.parent : n.parent && n.parent.parent ? n.parent.parent : n; return .9 + (d.orad||.5)*1.6 + (n.type==='domain'?0:.25) + ((n.ph*37)%1)*.15; }
 function kmWorld(n, T){ // disc coordinates (x, z) for each node, with differential rotation
   if (n.type==='core') return [0,0];
-  if (n.type==='domain'){ const th = n.oth + (KM.freeze ? KM.freezeT : GAL.spin(n.orad, T)*.55); return [Math.cos(th)*n.orad, Math.sin(th)*n.orad]; }
+  if (n.type==='domain' || n.type==='task' || n.type==='hole'){ const th = n.oth + GAL.spin(n.orad, KM.freeze ? KM.freezeT : T)*(n.type==='task' ? .9 : n.type==='hole' ? .3 : .55); return [Math.cos(th)*n.orad, Math.sin(th)*n.orad]; }
   const p = kmWorld(n.parent, T), sp = KM.freeze ? KM.freezeT : T; const th = n.lth + sp*(n.type==='topic' ? .12 : .3);
   return [p[0] + Math.cos(th)*n.lr, p[1] + Math.sin(th)*n.lr];
 }
@@ -138,7 +153,7 @@ function kmDraw(now){
   const T = (now - KM.t0)/1000, still = motionOff(), dt = Math.min(.05, Math.max(0, (now - (KM.lastNow||now))/1000)); KM.lastNow = now;
   // orbital time slows as you zoom in, so whatever you zoom towards stays in view
   KM.st = (KM.st||0) + dt*clamp(Math.pow(1.4/KM.cam.z, 1.6), .015, 1); const TT = still ? 30 : (T < 3 ? T : KM.st + (KM.stOff ?? (KM.stOff = T - KM.st)));
-  if (KM.tween){ const k = Math.min(1,(now-KM.tween.t0)/KM.tween.d), e = 1-Math.pow(1-k,3); KM.cam.x = KM.tween.x0+(KM.tween.x1-KM.tween.x0)*e; KM.cam.y = KM.tween.y0+(KM.tween.y1-KM.tween.y0)*e; KM.cam.z = KM.tween.z0+(KM.tween.z1-KM.tween.z0)*e; if (KM.tween.t1!==undefined) KM.tilt = kmWrap(KM.tween.t0v+(KM.tween.t1-KM.tween.t0v)*e); if (k>=1) KM.tween = null; }
+  if (KM.tween){ const k = Math.min(1,(now-KM.tween.t0)/KM.tween.d), e = KM.tween.io ? (k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2) : 1-Math.pow(1-k,3); KM.cam.x = KM.tween.x0+(KM.tween.x1-KM.tween.x0)*e; KM.cam.y = KM.tween.y0+(KM.tween.y1-KM.tween.y0)*e; KM.cam.z = KM.tween.z0+(KM.tween.z1-KM.tween.z0)*e; if (KM.tween.t1!==undefined) KM.tilt = kmWrap(KM.tween.t0v+(KM.tween.t1-KM.tween.t0v)*e); if (k>=1) KM.tween = null; }
   if (KM.yawT === undefined){ KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
   if (KM.tween || still){ if (still && !KM.tween){ KM.yaw = KM.yawT; KM.tilt = KM.tiltT; } KM.yawT = KM.yaw; KM.tiltT = KM.tilt; }
   else { // smooth follow: drags move a target and the view eases toward it every frame, then glides on with inertia
@@ -150,18 +165,20 @@ function kmDraw(now){
   { const want = KM.view==='graph' && !KM.sel && KM.cam.z < 1.3 && (still || T > 2.2) ? 1 : 0; KM.tA = (KM.tA||0) + (want - (KM.tA||0))*(still ? 1 : .12);
     const root = document.getElementById('km'); if (root){ const on = KM.tA > .5; if (root.classList.contains('titled') !== on) root.classList.toggle('titled', on); } }
   const intro = still ? 1 : clamp((T - .2)/2.2, 0, 1), ie = 1 - Math.pow(1-intro, 3);
-  const O = KM.orb || { cx:W/2, cy:H/2, r:Math.min(W,H)*.4 }, R = (KM.R||300)*KM.cam.z, v = { cx: O.cx + KM.cam.x, cy: O.cy + KM.cam.y, R, yaw: KM.yaw, tilt: KM.tilt };
+  const O = KM.orb || { cx:W/2, cy:H/2, r:Math.min(W,H)*.4 }, R = (KM.R||300)*KM.cam.z, v = { cx: O.cx + KM.cam.x, cy: O.cy + KM.cam.y, R, yaw: KM.yaw, tilt: KM.tilt, persp:.3/Math.max(1, Math.sqrt(KM.cam.z)) };
   const fade = KM.view==='leaving' ? clamp(1 - (now - KM.leaveT0)/600, 0, 1) : 1;
   kmSky(g, W, H, TT, now, fade, still);
   if (!KM.dust) KM.dust = GAL.dust(W < 760 ? 3200 : 5200, 77);
   const vD = Object.assign({}, v, { R: R*(1 + (1-ie)*1.4) });
   KM_DOMAINS.forEach((d,i)=>GAL.drawRing(g, .26 + i/(KM_DOMAINS.length-1)*.66, v, .09*ie*fade, TT));
   if (!KM.neb) KM.neb = GAL.nebula(); GAL.drawNebula(g, KM.neb, vD, TT, ie*fade);
+  kmStreaks(g, v, TT, ie*fade, still);
   GAL.drawDust(g, KM.dust, vD, TT, ie*fade*.95);
+  kmBelt(g, v, TT, ie*fade);
   if (!still && ie > .9) kmNovae(g, vD, TT, now, fade);
   // project nodes
   const conn = KM.sel ? new Set([KM.sel, ...KM.edges.filter(e=>e.a===KM.sel||e.b===KM.sel).flatMap(e=>[e.a,e.b])]) : null;
-  KM.nodes.forEach(n=>{ const w = kmWorld(n, TT), p = GAL.proj(w[0]*(1+(1-ie)*.6), w[1]*(1+(1-ie)*.6), 0, v); n.wx = w[0]; n.wz = w[1]; n.sx = p[0]; n.sy = p[1]; n.dz = p[2];
+  KM.nodes.forEach(n=>{ const w = kmWorld(n, TT), p = GAL.proj(w[0]*(1+(1-ie)*.6), w[1]*(1+(1-ie)*.6), 0, v); n.wx = w[0]; n.wz = w[1]; n.sx = p[0]; n.sy = p[1]; n.dz = p[2]; n.pk = p[3] || 1;
     let a = (still ? 1 : clamp((T - kmIntroAt(n))/.6, 0, 1)) * fade; if (conn && !conn.has(n)) a *= .25; if (KM.gaps && n.type==='topic' && kmMastery(n.topic) >= 100) a *= .25; n.va = a; });
   // links: soft, curved, low contrast
   g.lineCap = 'round';
@@ -191,16 +208,23 @@ function kmDraw(now){
   const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = [];
   // reserve label space front-to-back: domains first, then the nearest topics
   const labOK = new Set(); g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
-  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (7.5 + n.w*.4)*clamp(Math.pow(KM.cam.z,.75), .75, 10) : 3.4*clamp(Math.pow(KM.cam.z,.8), .8, 12), h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
+  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill'||n.type==='task'||n.type==='hole') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (5 + n.w*.28)*1.6*clamp(Math.pow(KM.cam.z,.75), .75, 10) : 3.4*clamp(Math.pow(KM.cam.z,.8), .8, 12), h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
   const zs = Math.max(.7, Math.min(1.8, KM.cam.z));
   list.forEach(n=>{
-    const depth = .8 + .25*(n.dz+1)/2, hov = KM.hover===n ? 1.25 : 1;
-    if (n.type==='domain'){ const di = KM_DOMAINS.indexOf(n.dom), r = (7.5 + n.w*.4)*gz*depth*hov, col = GAL_PLANETS[di % GAL_PLANETS.length], ringed = di % 3 === 1;
-      if (ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, true);
-      GAL.planet(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va); if (r > 13) kmBands(g, n.sx, n.sy, r, col, di, TT, n.va, core.sx-n.sx, core.sy-n.sy);
-      if (ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, false); n.sr = r;
+    const depth = n.pk || 1, hov = KM.hover===n ? 1.25 : 1, blur = clamp(-(n.dz||0) - .35, 0, 1)*(KM.cam.z < 2 ? 1 : 0);
+    if (n.type==='domain'){ const di = KM_DOMAINS.indexOf(n.dom), r = (5 + n.w*.28)*gz*depth*hov;
+      kmStar(g, n.sx, n.sy, r, KM_STAR_COLS[di % KM_STAR_COLS.length], TT, n.va*(1 - blur*.35), n.ph, still); n.sr = r*1.6;
       g.globalAlpha = n.va; g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F4EFE8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 8;
-      const lab = W < 760 && n.name.length > 16 ? n.name.slice(0,15).trimEnd()+'…' : n.name, lw = g.measureText(lab).width, lx = n.lside < 0 ? n.sx - r - 9 - lw : n.sx + r + 9; if (!labOK.has(n)) g.globalAlpha = 0; else if (kmInTitle(lx, n.sy, lw)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, lx, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, lx, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(lx, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
+      const lab = W < 760 && n.name.length > 16 ? n.name.slice(0,15).trimEnd()+'…' : n.name, lw = g.measureText(lab).width, lx = n.lside < 0 ? n.sx - r*1.6 - 9 - lw : n.sx + r*1.6 + 9; if (!labOK.has(n)) g.globalAlpha = 0; else if (kmInTitle(lx, n.sy, lw)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, lx, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, lx, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(lx, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
+    else if (n.type==='task'){ const r = (5.2 + (n.task.go==='train' ? 1.5 : 0))*gt*depth*hov, done = taskDone(dkey(), n.task.id), col = KM_TASK_COLS[n.task.go] || KM_TASK_COLS.def;
+      if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, true);
+      kmGloss(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va*(1 - blur*.4), done, TT);
+      if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, false); n.sr = r + 5;
+      if (KM.hover===n || KM.sel===n || (KM.labels && (KM.cam.z > 1.35 || W >= 1100) && !kmInTitle(n.sx + r + 6, n.sy, 90))){ g.globalAlpha = n.va*(KM.hover===n || KM.sel===n ? 1 : .8); g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = done ? '#F3DDBA' : '#D9E6F2'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText((done ? '✓ ' : '') + n.name, n.sx + r + 6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+    else if (n.type==='hole'){ const r = 9*gz*depth*hov; kmHole(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*1.8;
+      if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.2)){ g.globalAlpha = n.va*.85; g.font = '600 11.5px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F2B7A8'; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r*2.2 + 4, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
+    else if (n.type==='topic' && kmMastery(n.topic) < 50){ const r = 3.6*gt*depth*hov; kmRock(g, n.sx, n.sy, r, n.ph, TT, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 5;
+      if (KM.hover===n || KM.sel===n || (labOK.has(n) && ((KM.labels && KM.cam.z > 1.5) || (conn && conn.has(n))))){ g.globalAlpha = n.va; g.font = '600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#D8CBBE'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(n.name, n.sx + r + 8, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='topic'){ const r = 3.4*gt*depth*hov, m = kmMastery(n.topic);
       g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(n.sx,n.sy,0,n.sx,n.sy,r*3.4); gr.addColorStop(0,`rgba(${m>=100?'230,205,176':'200,216,240'},${(.3*n.va).toFixed(2)})`); gr.addColorStop(1,'rgba(180,200,240,0)'); g.fillStyle = gr; g.beginPath(); g.arc(n.sx,n.sy,r*3.4,0,7); g.fill(); g.globalCompositeOperation = 'source-over';
       GAL.planet(g, n.sx, n.sy, r, m>=100 ? KM_PLANET.practice : KM_PLANET.topic, core.sx-n.sx, core.sy-n.sy, n.va); n.sr = r + 4;
@@ -208,6 +232,7 @@ function kmDraw(now){
     else { const r = (n.type==='practice' ? 2 : 1.6)*gd*depth; g.globalAlpha = n.va; g.fillStyle = n.type==='practice' ? '#E6CDB0' : '#D44A62'; g.beginPath(); g.arc(n.sx,n.sy,r,0,7); g.fill(); g.globalAlpha = 1; n.sr = r + 5;
       if (KM.labels && KM.cam.z > 2.2 && kmLabelFree(n.sx + r + 3, n.sy - 12, 18, 12)) kmChip(g, n.sx + r + 4, n.sy - 6, String(n.n), n.va*.85); }
   });
+  if (!still) kmBokeh(g, W, H, TT, fade);
   // a soft dark band keeps the title readable over the core
   if (KM.tA > .01){ const tr = Math.min(O.r, 380), ty = O.cy - tr*.02, tv = g.createRadialGradient(O.cx, ty, 0, O.cx, ty, tr*.7); tv.addColorStop(0,`rgba(8,6,7,${(.38*KM.tA).toFixed(3)})`); tv.addColorStop(1,'rgba(8,6,7,0)'); g.fillStyle = tv; g.beginPath(); g.ellipse(O.cx, ty, tr*.74, tr*.3, 0, 0, 7); g.fill(); }
 }
@@ -215,13 +240,76 @@ function kmTitleBox(){ // union of the title's text lines, in canvas coordinates
   const t = document.querySelector('.km-title'), cv = document.getElementById('kmCanvas'); if (!t || !cv) return; const c = cv.getBoundingClientRect(); let b = null;
   t.querySelectorAll('small,h1,span').forEach(el=>{ const r = el.getBoundingClientRect(), w = el.tagName==='H1' ? r.width : Math.min(r.width, el.scrollWidth); const x0 = r.left + (r.width - w)/2 - c.left; b = b ? [Math.min(b[0],x0), Math.min(b[1],r.top-c.top), Math.max(b[2],x0+w), Math.max(b[3],r.bottom-c.top)] : [x0, r.top-c.top, x0+w, r.bottom-c.top]; });
   KM.tBox = b; }
+/* ---------- cosmic objects ---------- */
+const KM_STAR_COLS = ['255,214,170','190,215,255','255,190,140','236,240,255','255,166,140','200,225,255','255,232,196','176,200,255','255,205,160'];
+const KM_TASK_COLS = { train:['#F3D3C2','#C2603E','#3E1A10'], learn:['#DCE8F6','#6F93C2','#1B2A40'], money:['#F2E4C8','#B8955E','#3E2E14'], progress:['#E4F0E6','#7FA68A','#1E3326'], coach:['#EADCF2','#9A7BB5','#2C1E3A'], today:['#E8EEF2','#8EA4B4','#22303A'], def:['#E8E4DE','#A49A8E','#2E2A26'] };
+function kmStar(g, x, y, r, c, T, a, ph, still){ // a big name: hot core, coloured halo, soft cross spikes that breathe
+  const tw = still ? 1 : .85 + .15*Math.sin(T*1.7 + ph*3);
+  g.globalCompositeOperation = 'lighter';
+  let gr = g.createRadialGradient(x,y,0,x,y,r*5*tw); gr.addColorStop(0,`rgba(${c},${(.5*a).toFixed(3)})`); gr.addColorStop(.25,`rgba(${c},${(.16*a).toFixed(3)})`); gr.addColorStop(1,`rgba(${c},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x,y,r*5*tw,0,7); g.fill();
+  const L = r*(4.2 + 1.2*tw); g.lineCap = 'round';
+  [[0,1],[Math.PI/2,1],[Math.PI/4,.45],[-Math.PI/4,.45]].forEach(([ang,k])=>{ const dx = Math.cos(ang)*L*k, dy = Math.sin(ang)*L*k, sg = g.createLinearGradient(x-dx,y-dy,x+dx,y+dy); sg.addColorStop(0,`rgba(${c},0)`); sg.addColorStop(.5,`rgba(255,255,255,${(.7*a*k).toFixed(3)})`); sg.addColorStop(1,`rgba(${c},0)`); g.strokeStyle = sg; g.lineWidth = Math.max(.8, r*.12); g.beginPath(); g.moveTo(x-dx,y-dy); g.lineTo(x+dx,y+dy); g.stroke(); });
+  gr = g.createRadialGradient(x,y,0,x,y,r); gr.addColorStop(0,`rgba(255,255,255,${a})`); gr.addColorStop(.45,`rgba(${c},${(.9*a).toFixed(3)})`); gr.addColorStop(1,`rgba(${c},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
+  g.globalCompositeOperation = 'source-over';
+}
+function kmGloss(g, x, y, r, col, lx, ly, a, done, T){ // a task as a glossy planet, rim-lit by the sun; done planets glow warm
+  if (done){ g.globalCompositeOperation = 'lighter'; const h = g.createRadialGradient(x,y,r*.8,x,y,r*2.4); h.addColorStop(0,`rgba(255,200,140,${(.35*a).toFixed(3)})`); h.addColorStop(1,'rgba(255,170,110,0)'); g.fillStyle = h; g.beginPath(); g.arc(x,y,r*2.4,0,7); g.fill(); g.globalCompositeOperation = 'source-over'; }
+  GAL.planet(g, x, y, r, col, lx, ly, a*(done ? 1 : .85));
+  const L = Math.hypot(lx,ly) || 1, ux = lx/L, uy = ly/L, ang = Math.atan2(uy, ux);
+  g.globalAlpha = a; g.strokeStyle = done ? 'rgba(255,226,186,.95)' : 'rgba(190,220,255,.75)'; g.lineWidth = Math.max(1, r*.14); g.beginPath(); g.arc(x, y, r*.98, ang - 1.1, ang + 1.1); g.stroke();
+  g.fillStyle = 'rgba(255,255,255,.75)'; g.beginPath(); g.ellipse(x + ux*r*.42 - uy*r*.2, y + uy*r*.42 + ux*r*.2, r*.2, r*.11, ang, 0, 7); g.fill();
+  const sh = g.createRadialGradient(x - ux*r*.5, y - uy*r*.5, r*.2, x - ux*r*.3, y - uy*r*.3, r*1.1); sh.addColorStop(0,'rgba(0,0,0,.55)'); sh.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = sh; g.beginPath(); g.arc(x,y,r,0,7); g.fill();
+  g.globalAlpha = 1;
+}
+function kmRock(g, x, y, r, seed, T, lx, ly, a){ // a topic that needs more training: a tumbling, lumpy asteroid
+  const rr = mulberry32(Math.floor(seed*1e4)), n = 9, rot = T*(.3 + (seed % 1)*.5) + seed, pts = [];
+  for (let i=0;i<n;i++){ const ang = rot + i/n*Math.PI*2, k = .7 + rr()*.45; pts.push([x + Math.cos(ang)*r*k, y + Math.sin(ang)*r*k*.85]); }
+  const L = Math.hypot(lx,ly) || 1, gr = g.createLinearGradient(x + lx/L*r, y + ly/L*r, x - lx/L*r, y - ly/L*r); gr.addColorStop(0,'#B9A898'); gr.addColorStop(.5,'#6E6158'); gr.addColorStop(1,'#231D1A');
+  g.globalAlpha = a; g.fillStyle = gr; g.beginPath(); pts.forEach((p,i)=>i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1])); g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(220,200,180,.35)'; g.lineWidth = .7; g.stroke();
+  g.fillStyle = 'rgba(30,24,20,.5)'; for (let i=0;i<2;i++){ g.beginPath(); g.arc(x + (rr()-.5)*r, y + (rr()-.5)*r*.8, r*(.12 + rr()*.12), 0, 7); g.fill(); }
+  g.globalAlpha = 1;
+}
+function kmHole(g, x, y, r, T, a, ph, still){ // a mistake to avoid: event horizon, photon ring, lensed hot accretion disc, matter spiralling in
+  const rot = still ? 0 : T*.6, tilt = .28;
+  const disc = (front) => { g.save(); g.beginPath(); front ? g.rect(x - r*4, y, r*8, r*4) : g.rect(x - r*4, y - r*4, r*8, r*4); g.clip(); g.globalCompositeOperation = 'lighter';
+    for (let k=0;k<5;k++){ const rk = r*(1.35 + k*.38), al = (.5 - k*.08)*a; const gr = g.createLinearGradient(x - rk, y, x + rk, y); gr.addColorStop(0,`rgba(255,150,90,${(al*.45).toFixed(3)})`); gr.addColorStop(.5,`rgba(255,226,190,${al.toFixed(3)})`); gr.addColorStop(1,`rgba(255,120,70,${(al*1.4).toFixed(3)})`);
+      g.strokeStyle = gr; g.lineWidth = r*(.32 - k*.04); g.beginPath(); g.ellipse(x, y, rk, rk*tilt, -.08, 0, 7); g.stroke(); }
+    g.restore(); };
+  // lensed back of the disc arching over the top and under the bottom
+  g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(255,200,150,${(.35*a).toFixed(3)})`; g.lineWidth = r*.22; g.beginPath(); g.ellipse(x, y, r*1.32, r*1.2, 0, Math.PI*1.04, Math.PI*1.96); g.stroke(); g.strokeStyle = `rgba(255,170,120,${(.16*a).toFixed(3)})`; g.beginPath(); g.ellipse(x, y, r*1.25, r*1.1, 0, Math.PI*.06, Math.PI*.94); g.stroke(); g.restore();
+  disc(false);
+  const hz = g.createRadialGradient(x,y,r*.75,x,y,r*1.05); hz.addColorStop(0,'rgba(0,0,0,1)'); hz.addColorStop(1,'rgba(0,0,0,.9)'); g.globalAlpha = a; g.fillStyle = hz; g.beginPath(); g.arc(x,y,r*1.02,0,7); g.fill(); g.globalAlpha = 1;
+  g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(255,236,210,${(.85*a).toFixed(3)})`; g.lineWidth = Math.max(1, r*.07); g.beginPath(); g.arc(x,y,r*1.06,0,7); g.stroke(); g.globalCompositeOperation = 'source-over';
+  disc(true);
+  if (!still){ g.globalCompositeOperation = 'lighter'; for (let i=0;i<10;i++){ const life = ((T*.35 + i/10 + ph) % 1), rad = r*(3.6 - life*2.5), ang = rot*1.5 + i*2.4 + life*5; g.fillStyle = `rgba(255,214,170,${(a*life*.8).toFixed(3)})`; g.beginPath(); g.arc(x + Math.cos(ang)*rad, y + Math.sin(ang)*rad*tilt*1.4, 1 + life, 0, 7); g.fill(); } g.globalCompositeOperation = 'source-over'; }
+}
+function kmStreaks(g, v, T, a, still){ // glowing orbit trails round the sun, with light running along them
+  if (a <= 0) return; if (!KM.streaks){ const r = mulberry32(17); KM.streaks = Array.from({length:30},(_,i)=>({ rad:.06 + Math.pow(i/30, 1.15)*1.05 + r()*.012, al:.03 + r()*.05, runs:Array.from({length:1 + (r() < .6 ? 1 : 0)},()=>({ ph:r()*7, len:.35 + r()*.9, sp:(.25 + r()*.5)*(r() < .15 ? -1 : 1) })), c:r() < .18 ? '255,190,140' : '170,210,255' })); }
+  g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  KM.streaks.forEach(s=>{ g.strokeStyle = `rgba(${s.c},${(s.al*a).toFixed(3)})`; g.lineWidth = .8; g.beginPath(); for (let i=0;i<=56;i++){ const p = GAL.proj(s.rad, i/56*Math.PI*2, 0, v); i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); } g.stroke();
+    if (still) return;
+    s.runs.forEach(rn=>{ const a0 = rn.ph + T*rn.sp*GAL.spin(s.rad, 1)*6, seg = 14; let prev = null;
+      for (let i=0;i<=seg;i++){ const t = i/seg, p = GAL.proj(s.rad, a0 - t*rn.len*Math.sign(rn.sp), 0, v); if (prev){ g.strokeStyle = `rgba(${s.c},${((1-t)*.55*a).toFixed(3)})`; g.lineWidth = 1.6*(1-t) + .4; g.beginPath(); g.moveTo(prev[0],prev[1]); g.lineTo(p[0],p[1]); g.stroke(); } prev = p; } }); });
+  g.globalCompositeOperation = 'source-over';
+}
+function kmBelt(g, v, T, a){ if (!KM.belt || a <= 0) return; g.globalAlpha = a*.8;
+  KM.belt.forEach(b=>{ const p = GAL.proj(b.r, b.th + GAL.spin(b.r, T)*.7, b.y, v), s = b.s*Math.min(1.6, v.R/420)*p[3]; g.fillStyle = b.c < .5 ? '#8C7D70' : b.c < .85 ? '#5E544C' : '#C9B8A6'; g.fillRect(p[0]-s/2, p[1]-s/2, s, s*.8); });
+  g.globalAlpha = 1; }
+function kmBokeh(g, W, H, T, fade){ // out-of-focus specks drifting in front of the camera (depth of field)
+  if (!KM.bokeh){ const r = mulberry32(73); KM.bokeh = Array.from({length:34},()=>({ x:r(), y:r(), z:.3 + r()*.7, s:6 + r()*22, c:r() < .35 ? '255,196,150' : '170,205,240', ph:r()*6 })); }
+  g.globalCompositeOperation = 'lighter';
+  KM.bokeh.forEach(b=>{ const x = ((b.x*W + KM.yaw*90*b.z + Math.sin(T*.1 + b.ph)*14) % W + W) % W, y = b.y*H + Math.cos(T*.12 + b.ph)*10 + (KM.tilt - 1)*60*b.z, r = b.s*b.z, al = (.05 + .05*b.z)*fade*(.7 + .3*Math.sin(T*.6 + b.ph));
+    const gr = g.createRadialGradient(x,y,r*.55,x,y,r); gr.addColorStop(0,`rgba(${b.c},${al.toFixed(3)})`); gr.addColorStop(.85,`rgba(${b.c},${(al*1.5).toFixed(3)})`); gr.addColorStop(1,`rgba(${b.c},0)`); g.fillStyle = gr; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); });
+  g.globalCompositeOperation = 'source-over';
+}
 /* ---------- galaxy effects ---------- */
 function kmSky(g, W, H, T, now, fade, still){
   // faint coloured nebula clouds far behind the galaxy, painted once per size, gentle parallax
-  if (!KM.sky || KM.sky.w !== W || KM.sky.h !== H){ const c = document.createElement('canvas'); c.width = Math.ceil(W/2); c.height = Math.ceil(H/2); const q = c.getContext('2d'), r = mulberry32(404);
-    [[150,40,70],[90,70,150],[40,90,130],[179,143,111],[120,30,60]].forEach((col,i)=>{ for (let k=0;k<3;k++){ const x = r()*c.width, y = r()*c.height, rad = (.25 + r()*.35)*Math.max(c.width,c.height), gr = q.createRadialGradient(x,y,0,x,y,rad); gr.addColorStop(0,`rgba(${col},${.045 + r()*.035})`); gr.addColorStop(1,`rgba(${col},0)`); q.fillStyle = gr; q.fillRect(0,0,c.width,c.height); } });
+  if (!KM.sky || KM.sky.w !== W || KM.sky.h !== H){ const c = document.createElement('canvas'); c.width = Math.ceil(W*.6); c.height = Math.ceil(H/2); const q = c.getContext('2d'), r = mulberry32(404);
+    [[24,60,96],[18,44,80],[50,100,140],[200,140,90],[30,80,110]].forEach((col,i)=>{ for (let k=0;k<3;k++){ const x = r()*c.width, y = r()*c.height, rad = (.25 + r()*.35)*Math.max(c.width,c.height), gr = q.createRadialGradient(x,y,0,x,y,rad); gr.addColorStop(0,`rgba(${col},${.045 + r()*.035})`); gr.addColorStop(1,`rgba(${col},0)`); q.fillStyle = gr; q.fillRect(0,0,c.width,c.height); } });
     KM.sky = { c, w:W, h:H }; }
-  g.globalAlpha = fade; const ox = ((KM.yaw*30) % W + W) % W; g.drawImage(KM.sky.c, -ox, 0, W, H); g.drawImage(KM.sky.c, W - ox, 0, W, H); g.globalAlpha = 1;
+  g.globalAlpha = fade; const ox = W*.1 + Math.sin(KM.yaw*.5)*W*.09; g.drawImage(KM.sky.c, -ox, 0, W*1.2, H); g.globalAlpha = 1;
   // background stars, a few with diffraction spikes that twinkle
   if (!KM.stars){ const r = mulberry32(99); KM.stars = Array.from({length:340},(_,i)=>[r(), r(), r()*1.2+.3, r()*.6+.2, r()*6, i < 16]); }
   g.fillStyle = '#F2EEE8';
@@ -254,6 +342,8 @@ function kmSun(g, x, y, r, T, a, still){ // the core as a star: corona, slow ray
   g.globalCompositeOperation = 'lighter';
   if (!still){ g.save(); g.translate(x,y); g.rotate(T*.05); for (let i=0;i<12;i++){ g.rotate(Math.PI/6); const L = r*(3.2 + .8*Math.sin(T*.8 + i*1.7)); const gr = g.createLinearGradient(0,0,L,0); gr.addColorStop(0,`rgba(255,226,180,${(.16*a).toFixed(3)})`); gr.addColorStop(1,'rgba(255,200,150,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0,-r*.18); g.lineTo(L,0); g.lineTo(0,r*.18); g.fill(); } g.restore(); }
   const pul = still ? 1 : 1 + .05*Math.sin(T*1.6); const gr = g.createRadialGradient(x,y,r*.6,x,y,r*2.4*pul); gr.addColorStop(0,`rgba(255,214,160,${(.38*a).toFixed(3)})`); gr.addColorStop(1,'rgba(200,80,60,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x,y,r*2.4*pul,0,7); g.fill();
+  { const bl = g.createRadialGradient(x,y,0,x,y,r*9); bl.addColorStop(0,`rgba(255,170,90,${(.22*a).toFixed(3)})`); bl.addColorStop(.4,`rgba(255,120,60,${(.06*a).toFixed(3)})`); bl.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle = bl; g.beginPath(); g.arc(x,y,r*9,0,7); g.fill();
+    const AL = Math.min(r*16, 380), AH = Math.min(r*.1, 3), an = g.createLinearGradient(x - AL, y, x + AL, y); an.addColorStop(0,'rgba(255,190,130,0)'); an.addColorStop(.5,`rgba(255,226,190,${(.3*a).toFixed(3)})`); an.addColorStop(1,'rgba(255,190,130,0)'); g.fillStyle = an; g.fillRect(x - AL, y - AH, AL*2, AH*2); }
   g.globalCompositeOperation = 'source-over';
   GAL.drawCore(g, x, y, r, a);
   const O = KM.orb; if (O && !still){ const dx = O.cx - x, dy = O.cy - y, d = Math.hypot(dx,dy); if (d > 40){ g.globalCompositeOperation = 'lighter';
@@ -341,10 +431,9 @@ function kmTimeline(){
   return months.map((d,i)=>`<button class="${i===sel?'on':''}" data-a="km-month" data-id="${i}">${i===sel ? `${MONTHS[d.getMonth()].slice(0,3)} ${d.getFullYear()}` : MONTHS[d.getMonth()].slice(0,3)}</button>`).join('');
 }
 function kmLegend(){
-  const c = t => KM.nodes.filter(n=>n.type===t).length, topics = KM_DOMAINS.flatMap(d=>d.topics), gap = Math.round(topics.filter(t=>kmMastery(t)<100).length/topics.length*100);
-  const mo = dkey().slice(0,7), upd = Object.values(state.knowledge||{}).filter(d=>String(d).startsWith(mo)).length;
-  return `<div class="km-legh">Legend</div>${[['core','Core',c('core')],['domain','Domains',c('domain')],['topic','Topics',c('topic')],['practice','Practice',c('practice')],['skill','Key points',c('skill')]].map(([k,l,n])=>`<div class="km-li"><i class="km-dot ${k}"></i><span class="km-cnt num">${n}</span>${l}</div>`).join('')}
-    <div class="km-li sep"><span>Gaps</span><b class="num">${gap}%</b></div><div class="km-li"><span>Learned this month</span><b class="num">${upd}</b></div><div class="km-li tiny-note">% next to a domain = its weight in your plan</div>`;
+  const c = t => KM.nodes.filter(n=>n.type===t).length, weak = KM.nodes.filter(n=>n.type==='topic' && kmMastery(n.topic) < 50).length, done = KM.nodes.filter(n=>n.type==='task' && taskDone(dkey(), n.task.id)).length;
+  return `<div class="km-legh">Your universe</div>${[['sun','Sun','you','1'],['star','Stars','big areas', c('domain')],['planet','Planets','today\'s tasks', `${done}/${c('task')}`],['moon','Moons','topics you know', c('topic') - weak],['rock','Asteroids','need more training', weak],['hole','Black holes','mistakes to avoid', c('hole')]].map(([k,l,d,n])=>`<div class="km-li"><i class="km-dot ${k}"></i><span class="km-cnt num">${n}</span>${l}<small>${d}</small></div>`).join('')}
+    <div class="km-li tiny-note">Tap anything to read it. Tap a planet to tick the task off.</div>`;
 }
 const KM_ICONS = {
   radial:'<circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="1.8"/><circle cx="19" cy="6" r="1.8"/><circle cx="5" cy="18" r="1.8"/><circle cx="19" cy="18" r="1.8"/><path d="M10 10.5 6.4 7.2M14 10.5l3.6-3.3M10 13.5l-3.6 3.3M14 13.5l3.6 3.3"/>',
@@ -398,11 +487,13 @@ function kmHit(x,y){ let best = null, bd = 1e9; KM.nodes.forEach(n=>{ if (n.sx==
 function kmTip(n){
   const tip = document.getElementById('kmTip'); if (!tip) return;
   if (!n || n.type==='core'){ tip.hidden = true; return; }
+  if (n.type==='task'){ const done = taskDone(dkey(), n.task.id); tip.innerHTML = `<small>Planet · today's task</small><b>${esc(n.name)}</b><div class="km-tipr"><span>${esc(n.task.meta||'')}</span><span>${done?'Done':'To do'}</span></div><button class="km-open" data-a="km-task" data-id="${esc(n.task.id)}">${done?'Mark as not done':'Mark as done'} ${kmi('send',14)}</button>`; tip.hidden = false; return; }
+  if (n.type==='hole'){ tip.innerHTML = `<small class="hole">Black hole · mistake to avoid</small><b>${esc(n.name)}</b><p class="km-tipp">${esc(n.hole.tip)}</p>`; tip.hidden = false; return; }
   const t = n.type==='topic' ? n.topic : n.parent && n.parent.type==='topic' ? n.parent.topic : null, d = n.dom || (n.parent && n.parent.dom);
   if (n.type==='domain'){ const ts = n.dom.topics, m = Math.round(ts.reduce((a,x)=>a+kmMastery(x),0)/ts.length);
     tip.innerHTML = `<small>Domain · ${n.w}% of your plan</small><b>${esc(n.name)}</b><div class="km-tipr"><span>${ts.length} topics</span><span>${m}% mastered</span></div><div class="km-tipl">${ts.map(x=>`<button data-a="km-topic" data-id="${esc(x.n)}">${esc(x.n)}<span>${kmMastery(x)}%</span></button>`).join('')}</div>`;
   } else if (t){ const m = kmMastery(t);
-    tip.innerHTML = `<small>${esc(d.name)}${t.plan?' · coming next':''}</small><b>${esc(t.n)}</b><div class="km-tipr"><span>Mastery ${m}%</span><span>${kmItems(t)[2].list.length} practice questions</span></div><button class="km-open" data-a="km-topic" data-id="${esc(t.n)}">Open topic ${kmi('send',14)}</button>`;
+    tip.innerHTML = `<small>${m < 50 ? 'Asteroid · needs more training · ' : 'Moon · '}${esc(d.name)}${t.plan?' · coming next':''}</small><b>${esc(t.n)}</b><div class="km-tipr"><span>Mastery ${m}%</span><span>${kmItems(t)[2].list.length} practice questions</span></div><button class="km-open" data-a="km-topic" data-id="${esc(t.n)}">Open topic ${kmi('send',14)}</button>`;
   } else { tip.hidden = true; return; }
   tip.hidden = false;
 }
@@ -522,7 +613,7 @@ function kmUnfocus(){
 function kmKick(){ if (!KM.raf) KM.raf = requestAnimationFrame(kmLoop); }
 function kmOpen(){
   if (KM.open) return;
-  KM.labels = window.innerWidth >= 760; KM.yaw = KM.yawT = -.5; KM.tilt = KM.tiltT = .55; KM.vy = KM.vt = 0; KM.tA = 0; KM.neb = null; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
+  KM.labels = window.innerWidth >= 760; KM.yaw = KM.yawT = -.5; KM.tilt = KM.tiltT = .2; KM.vy = KM.vt = 0; KM.tA = 0; KM.neb = null; KM.freeze = false; KM.layout = 'radial'; KM.dust = null;
   document.body.insertAdjacentHTML('beforeend', kmShellHTML());
   KM.labels = window.innerWidth >= 760;
   document.body.classList.add('km-open'); KM.open = true; KM.view = 'graph'; KM.sel = null; KM.focus = null; KM.cam = { x:0, y:0, z:1 }; KM.camT = { x:0, y:0, z:1 }; KM.st = 0; KM.stOff = undefined; KM.lastNow = 0; KM.pulses = []; KM.fx = { shoot:[], nova:[], nextShoot:0, nextNova:0 };
@@ -530,6 +621,8 @@ function kmOpen(){
   KM.W = cv.clientWidth; KM.H = cv.clientHeight; kmBuild(); kmResize(); kmWave();
   document.querySelector('.km-legend').innerHTML = kmLegend();
   KM.t0 = performance.now() - (motionOff() ? 10000 : 0);
+  // fly-in: start high and far, sweep down to the low cinematic angle
+  if (motionOff()){ KM.tilt = KM.tiltT = 1.0; } else { KM.cam = { x:0, y:0, z:.42 }; KM.camT = null; kmCamTo(0, 0, 1, 3000, true, 1.0); KM.tween.io = true; KM.yawT = KM.yaw = -1.4; KM.vy = .006; }
   if (!motionOff()) document.getElementById('km').classList.add('intro');
   kmKick(); kmBind();
   try { if (location.hash !== '#map') history.replaceState(null, '', '#map'); } catch(e){}
@@ -569,12 +662,14 @@ function kmBind(){
   window.addEventListener('resize', kmResize);
 }
 function kmAction(a, el){
+  if (a==='km-task'){ const id = el.dataset.id, k = dkey(), now = !taskDone(k, id); setTask(k, id, now); const n = KM.nodes.find(x=>x.id==='task:'+id); if (n) kmTip(n);
+    const leg = document.querySelector('.km-legend'); if (leg) leg.innerHTML = kmLegend(); toast(now ? `${n ? n.name : 'Task'} done · ${countDone(k)}/${tasksForDay(k).length}` : 'Marked as not done', 'ok', 1600); try { if (typeof renderView==='function') renderView(activeTab); updateChrome(); } catch(e){} return; }
   if (a==='km-close') kmClose();
   else if (a==='km-back'){ if (KM.view!=='graph') kmUnfocus(); else kmClose(); }
   else if (a==='km-unfocus') kmUnfocus();
   else if (a==='km-zoom'){ { const f = +el.dataset.id > 0 ? 1.35 : 1/1.35, z = clamp(KM.cam.z*f,.4,24), k = z/KM.cam.z; kmCamTo(KM.cam.x*k, KM.cam.y*k, z, 420); } }
-  else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,700,true,.55); KM.camT = null; }
-  else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : .55); }
+  else if (a==='km-fit'){ KM.sel = null; kmTip(null); KM.freeze = false; kmCamTo(0,0,1,900,true,1.0); KM.tween.io = true; KM.camT = null; }
+  else if (a==='km-layout'){ KM.layout = el.dataset.id; document.querySelectorAll('[data-a="km-layout"]').forEach(b=>b.classList.toggle('on', b===el)); kmCamTo(KM.cam.x, KM.cam.y, KM.cam.z, 900, true, KM.layout==='tree' ? .06 : 1.0); }
   else if (a==='km-gaps'){ KM.gaps = !KM.gaps; el.classList.toggle('on', KM.gaps); toast(KM.gaps ? 'Showing gaps only: learned topics are dimmed.' : 'Showing every topic.', 'ok', 1600); }
   else if (a==='km-labels'){ KM.labels = !KM.labels; el.classList.toggle('on', KM.labels); }
   else if (a==='km-search'){ document.getElementById('kmQ').focus(); }
