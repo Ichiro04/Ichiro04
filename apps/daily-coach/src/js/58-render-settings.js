@@ -40,12 +40,17 @@ function setBody(sec){
   if (sec==='goals') return `<h3>Goals and money</h3><p class="set-note">These drive the rings, the savings plan and the coach’s advice.</p>
     ${setField('Savings goal (£)','settings.goal', s.goal, 'number', 'inputmode="decimal"')}${setField('Monthly income (£)','settings.income', s.income, 'number', 'inputmode="decimal"')}${setField('Opening savings (£)','settings.opening', s.opening, 'number', 'inputmode="decimal"')}
     ${setField('Daily steps goal','settings.stepsGoal', s.stepsGoal, 'number', 'inputmode="numeric"')}${setField('IELTS target band','settings.ieltsTarget', s.ieltsTarget, 'number', 'step="0.5" min="4" max="9" inputmode="decimal"')}${setField('IELTS exam date','settings.examDate', s.examDate, 'date')}`;
-  if (sec==='coach') return `<h3>Coach and voice</h3><p class="set-note">Answers come from Claude when it is allowed here, otherwise from the built-in coach. Only a short summary of today’s numbers is sent, never your whole record.</p>
+  if (sec==='coach'){ const u = typeof aiUsage==='function' ? aiUsage() : { calls:0, tin:0, tout:0 }; return `<h3>Coach and voice</h3>
+    <div class="set-meter"><div><b class="num">${u.calls}</b><small>Claude answers today</small></div><div><b class="num">≈ ${(u.tin + u.tout).toLocaleString('en-GB')}</b><small>tokens today</small></div><div><b class="num">${aiCap()}</b><small>daily limit</small></div></div>
+    ${setSeg('AI usage','aiMode', state.aiMode || 'saver', [['saver','Saver'],['smart','Smart'],['off','Off']])}
+    <p class="set-note">${{ saver:'<b>Saver</b> (lowest usage): the built-in coach answers from your own numbers. Claude is used only when you press “Ask Claude” under an answer, or for translation.', smart:'<b>Smart</b>: questions about today, money, training, IELTS or your job get the free built-in answer; other questions go to Claude.', off:'<b>Off</b>: Claude is never used. Everything is answered by the built-in coach.' }[state.aiMode || 'saver']}</p>
+    ${setSeg('Daily Claude limit','aiCap', String(aiCap()), [['5','5'],['10','10'],['20','20'],['50','50']])}`
+  + `<p class="set-note">Answers come from Claude when it is allowed here, otherwise from the built-in coach. Only a short summary of today’s numbers is sent, never your whole record.</p>
     ${setToggle('Deeper answers','aiDeep', typeof AI!=='undefined' && AI.deep, 'Slower, more thought through')}
     ${setToggle('Read answers aloud','voiceOut', state.voiceOut, 'Uses your device’s voice')}
     ${setSeg('Voice speed','voiceRate', String(state.voiceRate || 1), [['0.85','Slow'],['1','Normal'],['1.15','Fast']])}
     ${setSeg('Voice input language','voiceLang', state.voiceLang || 'en-GB', [['en-GB','English'],['my-MM','Burmese']])}
-    <button class="set-btn" data-set-act="voicetest">${ic('volume',16)} Test the voice</button>`;
+    <button class="set-btn" data-set-act="voicetest">${ic('volume',16)} Test the voice</button>`; }
   if (sec==='tips') { const off = ((state.tipsOff||{})[dkey()]) || []; return `<h3>Tips</h3><p class="set-note">Tips on Today come from your own numbers. Dismissed ones come back the next day.</p>
     ${setToggle('Show tips on Today','tipsShow', state.tipsShow !== false)}
     <div class="set-f row"><span>Hidden today<small>${off.includes('*') ? 'All tips' : off.length ? off.length + ' tip' + (off.length>1?'s':'') : 'None'}</small></span><button class="set-btn sm" data-set-act="tipsback">Bring them back</button></div>`; }
@@ -76,6 +81,8 @@ document.addEventListener('click', e=>{
   const sg = e.target.closest('[data-set-seg]'); if (sg){ e.stopPropagation(); const k = sg.dataset.setSeg, v = sg.dataset.v; sg.parentNode.querySelectorAll('button').forEach(b=>{ const on = b===sg; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     if (k==='theme'){ state.theme = v; save(); applyTheme(); if (typeof mountRail==='function') mountRail(); }
     else if (k==='voiceRate'){ state.voiceRate = +v; save(); }
+    else if (k==='aiCap'){ state.aiCap = +v; save(); document.getElementById('setBody').innerHTML = setBody('coach'); }
+    else if (k==='aiMode'){ state.aiMode = v; save(); document.getElementById('setBody').innerHTML = setBody('coach'); toast({ saver:'Saver on: Claude only when you ask for it.', smart:'Smart: simple questions answered for free.', off:'Claude is off.' }[v], 'ok', 1800); }
     else { state[k] = v; save(); }
     return; }
   const act = e.target.closest('[data-set-act]'); if (act){ e.stopPropagation(); const a = act.dataset.setAct;
@@ -171,7 +178,7 @@ function aiListen(){
     document.getElementById('aiMic').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); aiListen(); });
     document.getElementById('aiSpk').addEventListener('click', e=>{ e.stopPropagation(); state.voiceOut = !state.voiceOut; save(); const b = e.currentTarget; b.classList.toggle('on', state.voiceOut); b.innerHTML = ic(state.voiceOut?'volume':'mute',19); b.setAttribute('aria-pressed', String(state.voiceOut)); b.setAttribute('aria-label', state.voiceOut?'Stop reading answers aloud':'Read answers aloud'); if (!state.voiceOut && 'speechSynthesis' in window) speechSynthesis.cancel(); toast(state.voiceOut ? 'Answers will be read aloud.' : 'Voice off.', 'ok', 1500); });
   }; }
-{ const _send = aiSend; aiSend = async function(p){ const n = state.chat.length, byVoice = !!AI.voiceTurn; AI.voiceTurn = false; await _send(p); const last = state.chat[state.chat.length-1]; if (AI.mode!=='translate' && state.chat.length > n && last && last.role==='coach') aiSpeak(last.text, byVoice); }; }
+{ const _send = aiSend; aiSend = async function(p, o){ const n = state.chat.length, byVoice = !!AI.voiceTurn; AI.voiceTurn = false; await _send(p, o); const last = state.chat[state.chat.length-1]; if (AI.mode!=='translate' && state.chat.length > n && last && last.role==='coach') aiSpeak(last.text, byVoice); }; }
 { const _close = aiClose; aiClose = function(){ if (AI.rec){ try { AI.rec.abort(); } catch(_){} AI.rec = null; } if ('speechSynthesis' in window) speechSynthesis.cancel(); return _close(); }; }
 
 /* ---------- floating chat button on every tab ---------- */

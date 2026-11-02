@@ -29,19 +29,34 @@ function coachContext(){
     `Career: Huhtamaki thermo machine operator application, latest stage passed: ${stage||'applied'}.`
   ].filter(Boolean).join('\n');
 }
-const AI_RULES = `You are the coach inside Kyaw Soe Han's personal growth app. Kyaw is 22, a mechanical engineering graduate (BEng, Portsmouth, 2:2) living in Southsea, UK. He has applied (not yet hired) to Huhtamaki as a thermo machine operator and wants a design or manufacturing engineering job, IELTS Academic band 7+, a fitter body (no equipment) and £25,000 saved in a year. He has 1.5 to 2 hours a day. His past work: automated packaging lines at Barfoots, CNC programming at a plastics printer.
-Style: British English, direct and warm, specific numbers instead of adjectives, no hype, never moralise about weight or money. Keep replies under 120 words unless he asks for more. End with one clear next step when it fits. Plain text only, no markdown headings; short lists are fine.
-His numbers right now:
+const AI_RULES = `You coach Kyaw (22, BEng Mech Eng, Southsea UK; applied to Huhtamaki as thermo machine operator). Goals: engineering job, IELTS 7+, fitness, £25k saved. British English, direct, numbers not adjectives, never moralise. Max 80 words, plain text, end with one next step.
+Now:
 `;
 const AI_TRANSLATE = `Translate between English and Burmese (Myanmar). If the text is English, reply with the Burmese translation; if it is Burmese, reply with natural British English. Then add one line in English starting "Note:" only if a word has no direct equivalent. No other commentary.`;
 
-function aiTurns(userText){
-  const hist = state.chat.slice(-12).map(m=>({ role: m.role==='user' ? 'user' : 'assistant', content: m.text })).filter(m=>m.content);
-  while (hist.length && hist[0].role !== 'user') hist.shift();
-  const rules = AI.mode==='translate' ? AI_TRANSLATE : AI_RULES + coachContext();
-  if (AI.mode==='translate') return [{ role:'user', content: rules + '\n\nText:\n' + userText }];
-  return [{ role:'user', content: rules }, ...hist, { role:'user', content: userText }];
+function aiTurns(userText){ // kept small on purpose: short rules, today's numbers, the last two exchanges
+  if (AI.mode==='translate') return [{ role:'user', content: AI_TRANSLATE + '\n\nText:\n' + userText }];
+  const clip = t => { t = String(t||''); return t.length > 320 ? t.slice(0, 320) + '…' : t; };
+  const past = state.chat.slice(0, -1).slice(-4).map(m=>({ role: m.role==='user' ? 'user' : 'assistant', content: clip(m.text) })).filter(m=>m.content);
+  while (past.length && past[0].role !== 'assistant') past.shift(); // the rules message is a user turn, so history starts with an answer
+  return [{ role:'user', content: AI_RULES + coachContext() }, ...(past.length ? past : [{ role:'assistant', content:'Ready.' }]), { role:'user', content: userText }];
 }
+/* ---------- token saver: answer locally first, cache, daily cap, usage meter ---------- */
+const AI_LOCAL = /\b(today|plan|next|now|streak|tasks?|money|spend|spent|saving|save|savings|budget|£|train|training|workout|session|weight|weigh|steps|review|week|stuck|tired|motivat|lazy|essay|ielts|speaking|band|interview|huhtamaki|job|cv|sleep)\b/i;
+function aiUsage(){ const d = dkey(); if (!state.aiUsage || state.aiUsage.d !== d) state.aiUsage = { d, calls:0, tin:0, tout:0 }; return state.aiUsage; }
+function aiCap(){ return Number(state.aiCap) || 20; }
+function aiRoute(text, force){ // 'claude' or 'local'
+  if (AI.mode==='translate') return 'claude';
+  const mode = state.aiMode || 'saver';
+  if (mode==='off') return 'local';
+  if (force) return 'claude';
+  if (aiUsage().calls >= aiCap()) return 'local';
+  if (mode==='saver') return 'local';
+  return AI_LOCAL.test(text) ? 'local' : 'claude';
+}
+const aiKey = t => (AI.mode + '|' + dkey() + '|' + String(t).toLowerCase().replace(/[^a-z0-9£ ]+/g,' ').replace(/\s+/g,' ').trim());
+function aiCacheGet(t){ const c = state.aiCache || {}; return c[aiKey(t)] || null; }
+function aiCachePut(t, reply){ const c = state.aiCache = state.aiCache || {}, today = dkey(); Object.keys(c).forEach(k=>{ if (!k.includes('|' + today + '|')) delete c[k]; }); c[aiKey(t)] = reply; const ks = Object.keys(c); if (ks.length > 30) delete c[ks[0]]; }
 
 /* ---------- liquid orb ---------- */
 function orbPaint(cv, mode){
@@ -159,25 +174,28 @@ function aiClose(){ AI.ctl?.abort(); document.getElementById('aiChat')?.classLis
 function aiHint(){ const h = document.getElementById('aiHint'); if (!h) return; h.textContent = AI.state==='thinking' ? 'Thinking…' : AI.state==='speaking' ? (AI.mode==='translate'?'Translating':'Answering') : AI.state==='listening' ? 'I’m listening…' : AI.mode==='translate' ? 'Type English or Burmese' : 'Go ahead! I’m listening'; document.getElementById('aiChat')?.setAttribute('data-state', AI.state);
   const m = document.getElementById('aiMain'); if (m){ m.innerHTML = AI.state==='thinking'||AI.state==='speaking' ? '<span class="ai-stop"></span>' : ic('arrowRight',26); m.setAttribute('aria-label', AI.state==='thinking'||AI.state==='speaking' ? 'Stop' : 'Send'); } }
 function aiScroll(){ const l = document.getElementById('aiLog'); if (l) l.scrollTop = l.scrollHeight; }
-async function aiSend(preset){
+async function aiSend(preset, opt={}){
   if (AI.state==='thinking' || AI.state==='speaking'){ AI.ctl?.abort(); return; }
   const q = document.getElementById('aiQ'), text = (preset ?? q.value).trim(); if (!text) { q.focus(); return; }
   q.value = ''; q.style.height = 'auto';
   const list = AI.mode==='translate' ? AI.tr : state.chat;
-  list.push({ role:'user', text, ts:Date.now() }); if (AI.mode!=='translate') save();
+  if (!opt.again){ list.push({ role:'user', text, ts:Date.now() }); if (AI.mode!=='translate') save(); }
   document.getElementById('aiChat').classList.add('has-log');
   const log = document.getElementById('aiLog'); log.innerHTML = aiLogHTML();
   // light the question up word by word
   const qEl = log.querySelector('.ai-q:last-of-type'); if (qEl && !motionOff()){ const n = text.split(/\s+/).length; qEl.innerHTML = aiWords(text, 0); let i = 0; const iv = setInterval(()=>{ qEl.innerHTML = aiWords(text, ++i); if (i >= n) clearInterval(iv); }, 70); }
   const ans = document.createElement('div'); ans.className = 'ai-a live'; ans.innerHTML = '<span class="ai-think"><i></i><i></i><i></i></span>'; log.appendChild(ans); aiScroll();
   AI.state = 'thinking'; aiHint();
-  let reply = '';
-  if (aiOnline()){
+  let reply = '', fromCache = false; const route = aiOnline() ? aiRoute(text, opt.force) : 'local';
+  if (route==='claude'){ const hit = aiCacheGet(text); if (hit){ reply = hit; fromCache = true; } }
+  if (route==='claude' && !reply){
     AI.ctl = new AbortController();
     try {
-      const r = await AI.sample(aiTurns(text), { cache:false, signal:AI.ctl.signal, modelTier: AI.deep && AI.mode!=='translate' ? 'default' : 'quick',
+      const turns = aiTurns(text), u = aiUsage(); if (u.calls >= aiCap() && opt.force) toast(`Over today’s limit of ${aiCap()} Claude answers, but you asked for this one.`, 'warn', 2400);
+      const r = await AI.sample(turns, { cache:false, signal:AI.ctl.signal, modelTier: AI.deep && AI.mode!=='translate' ? 'default' : 'quick',
         onText: ({ text:t })=>{ if (AI.state!=='speaking'){ AI.state = 'speaking'; aiHint(); } ans.textContent = t; aiScroll(); } });
       reply = r.text + (r.truncated ? '\n\n(Cut short. Ask for less at a time.)' : '');
+      u.calls++; u.tin += Math.round(JSON.stringify(turns).length/4); u.tout += Math.round(r.text.length/4); save(); if (r.text && !r.truncated) aiCachePut(text, r.text);
     } catch(e){
       reply = e.text || '';
       if (e.code==='not_granted' || e.code==='sampling_disabled' || e.code==='not_declared' || e.code==='capability_disabled'){ AI.sample = 'denied'; toast('Claude is not allowed here, so the offline coach answered.','warn',3200); }
@@ -187,13 +205,16 @@ async function aiSend(preset){
       if (e.code==='cancelled' && reply) reply += ' …';
     }
   }
-  if (!reply && AI.mode!=='translate' && (!aiOnline() || AI.sample==='denied')){
+  let local = false;
+  if (!reply && AI.mode!=='translate' && (route==='local' || !aiOnline() || AI.sample==='denied')){ local = true;
     AI.state = 'speaking'; aiHint(); const full = generateReply(text);
     if (motionOff()) reply = full; else { for (let i=0;i<=full.length;i+=3){ ans.textContent = full.slice(0,i); aiScroll(); await new Promise(r=>setTimeout(r,12)); } reply = full; }
   }
   if (!reply && AI.mode==='translate' && !aiOnline()) reply = 'Translation needs Coach AI (Claude), which is not available in this view.';
   ans.classList.remove('live');
-  if (reply){ ans.textContent = reply; list.push({ role: AI.mode==='translate' ? 'assistant' : 'coach', text:reply, ts:Date.now() }); if (AI.mode!=='translate') save(); }
+  if (reply){ ans.textContent = reply; list.push({ role: AI.mode==='translate' ? 'assistant' : 'coach', text:reply, ts:Date.now() }); if (AI.mode!=='translate') save();
+    if (fromCache) ans.insertAdjacentHTML('beforeend', '<span class="ai-tag">saved answer · no tokens used</span>');
+    if (local && aiOnline() && (state.aiMode||'saver')!=='off'){ const b = document.createElement('button'); b.className = 'ai-esc'; b.innerHTML = `${ic('sparkle',14)} Ask Claude for a fuller answer`; b.addEventListener('click', e=>{ e.stopPropagation(); b.remove(); aiSend(text, { force:true, again:true }); }); ans.appendChild(b); } }
   else ans.remove();
   AI.state = 'idle'; AI.ctl = null; aiHint(); aiScroll();
 }

@@ -41,6 +41,7 @@ const DEFAULT_STATE = {
   reduceMotion: false,
   railOpen: false,          // desktop side menu expanded
   tipsOff: {},
+  aiMode: 'saver', aiCap: 20, aiUsage: null, aiCache: {},
   voiceOut: false, voiceRate: 1, voiceLang: 'en-GB', chatFab: true, tipsShow: true,              // dateKey -> [tip ids hidden today] ('*' hides all)
   createdAt: dkey(),
   profile: { display:'KsHan', name:'Kyaw Soe Han', heightCm:170, weightStart:81, weightTarget:72, city:'Southsea, Portsmouth', degree:'BEng Mechanical Engineering, Portsmouth 2025' },

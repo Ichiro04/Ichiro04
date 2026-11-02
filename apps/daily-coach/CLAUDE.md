@@ -340,3 +340,9 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
   - New items: satellites = the next 3 day-plan blocks (`kmSat`); nebulae = the big goals (£25k, IELTS, target weight) with progress arcs (`kmNeb`); pulsar = the streak, which spins faster with the streak (`kmPulsar`); constellation = the last 14 days (`kmConst`).
   - New effects: tap ripples, warp streaks on long camera flights, meteor showers and a hover ring.
   - "Ask AI" and a mic sit in the map's top bar. The chat opens over the map (`.over-map`) with suggested questions about the selected item.
+- **Token saver (Claude usage):**
+  - `state.aiMode` decides when Claude is called: `saver` (the default) means the built-in `generateReply` answers everything and Claude is called only from the "Ask Claude for a fuller answer" button; `smart` keeps questions matching `AI_LOCAL` local and sends the rest to Claude; `off` never calls Claude.
+  - The routing is in `aiRoute`. `state.aiCap` (default 20) is a daily limit on Claude calls, and `state.aiUsage` counts calls and estimated tokens (chars / 4), shown in Settings → Coach and voice.
+  - `state.aiCache` reuses same-day answers to the same question.
+  - `aiTurns` is kept small: about 70 words of rules, today's numbers, and the last 2 exchanges clipped to 320 characters each. It no longer repeats the question, which it used to send twice.
+  - Keep any new AI feature behind `aiRoute` so it respects these settings.
