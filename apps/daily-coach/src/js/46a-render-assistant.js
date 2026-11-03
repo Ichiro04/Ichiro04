@@ -75,7 +75,7 @@ function aiCachePut(t, reply){ const c = state.aiCache = state.aiCache || {}, to
 
 /* ---------- liquid orb ---------- */
 function orbPaint(cv, mode){
-  const W = cv.clientWidth, H = cv.clientHeight, d = Math.min(2, devicePixelRatio||1); if (!W || !H) return;
+  const W = cv.clientWidth, H = cv.clientHeight, d = Math.min(2, devicePixelRatio||1); if (Math.min(W, H) < 8) return; // too small to draw (mid-animation): radii would go negative
   if (cv.width !== Math.round(W*d) || cv.height !== Math.round(H*d)){ cv.width = Math.round(W*d); cv.height = Math.round(H*d); }
   const g = cv.getContext('2d'); g.setTransform(d,0,0,d,0,0); g.clearRect(0,0,W,H);
   const T = motionOff() ? 1.2 : performance.now()/1000, st = AI.state, sp = st==='thinking' ? 2.6 : st==='speaking' ? 1.6 : 0.7;

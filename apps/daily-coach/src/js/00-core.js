@@ -1,3 +1,11 @@
+/* Safety net (3 Nov 2026): a canvas arc or ellipse with a negative radius throws an
+   IndexSizeError and stops that frame (the user saw it from the coach orb while it was
+   ~1 px wide). Negative radii are clamped to 0, which simply draws nothing. */
+(() => { const P = typeof CanvasRenderingContext2D !== 'undefined' && CanvasRenderingContext2D.prototype; if (!P || P.arc.__safe) return;
+  const arc = P.arc, ell = P.ellipse;
+  P.arc = function(x, y, r, a0, a1, ccw){ return arc.call(this, x, y, r > 0 ? r : 0, a0, a1, ccw); }; P.arc.__safe = true;
+  if (ell) P.ellipse = function(x, y, rx, ry, rot, a0, a1, ccw){ return ell.call(this, x, y, rx > 0 ? rx : 0, ry > 0 ? ry : 0, rot, a0, a1, ccw); };
+})();
 /* ============================================================
    DAILY COACH · core — utils, storage, state, content model
    ============================================================ */

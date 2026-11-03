@@ -87,6 +87,8 @@ Rules that must not drift:
 
 ### Gotchas worth knowing
 
+0. A canvas `arc`/`ellipse` with a negative radius throws `IndexSizeError`. `00-core.js` clamps negative radii to 0 for the whole app (3 Nov 2026, after the coach orb threw while ~1 px wide); still guard tiny canvases (`orbPaint` skips anything under 8 px).
+
 1. **Never put `var()` inside a keyframe that animates `transform`.** CSS won't interpolate it and the
    value snaps to the end state — this is exactly what once made the tap light flare across a whole
    card. Pattern in use: a wrapper holds the final size (`--bs`), inner layers animate with fixed
