@@ -14,7 +14,7 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 
 ## What the app does
 
-**Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress, Review and Coach. Settings opens from the gear in the date strip or from the rail.
+**Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names (the small arrow at the bottom switches). Its menu scrolls up and down, so more tabs can be added. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress, Review and Coach. Settings opens from the gear in the date strip or from the rail.
 
 **Today.**
 - The daily system: the now card with a ring timer and Done / Partly / Missed, an up-next countdown, the 3 that matter and a feel strip.
@@ -66,7 +66,7 @@ The map's controls:
 
 **Money / Progress / Train / Learn.**
 - Train: sessions with animated exercise figures.
-- Learn: IELTS essays (write in the app with a timer, word count and linking words, then score yourself on the four criteria to get a band and a trend), an IELTS plan counting down to the exam date, a "This week's study" board of weekly targets, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
+- Learn: IELTS essays (write in the app with a timer, word count and linking words, then score yourself on the four criteria to get a band and a trend), an IELTS plan counting down to the exam date, a Study plan with Day / Week / Month / Finished views and separate English, Engineering and Career columns, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
 - Money: the £25k savings plan and spending log. The savings year starts on the date set in Settings → Goals.
 - Progress: streaks and charts, and a week schedule grid (areas × days, every block marked Done, Partly, Missed, Not logged or Planned).
 

@@ -80,31 +80,69 @@ function planBoardHTML(){
 }
 function pbRedraw(){ const el = document.getElementById('planBoard'); if (!el) return; const y = window.scrollY; el.outerHTML = planBoardHTML(); window.scrollTo(0, y); }
 
-/* ---------- Learn: this week's study board ---------- */
-function studyItems(){
-  const ws = startOfWeek(), from = dkey(ws), to = dkey(addDays(ws, 6)), s = periodStats(from, to);
-  const blockDone = id => { let n = 0; for (let i = 0; i < 7; i++){ const k = dkey(addDays(ws, i)); if (k > dkey()) break; const b = dayBlocks(k).find(x => x.id === id); if (b && blockStatus(k, b) === 'done') n++; } return n; };
-  const taskN = id => { let n = 0; for (let i = 0; i < 7; i++){ const k = dkey(addDays(ws, i)); if (taskDone(k, id)) n++; } return n; };
-  return [
-    { id:'essay', tag:'English', name:'IELTS Task 2 essays', note:'Write and score in Learn → Essay', n:s.essays, of:3, go:'learn:essay' },
-    { id:'speak', tag:'English', name:'Speaking cue cards', note:'1 minute to plan, 2 to talk', n:s.speaking, of:3, go:'learn:speak' },
-    { id:'vocab', tag:'English', name:'Vocabulary drills', note:'10 words in your own sentences', n:taskN('vocab'), of:7, go:'learn:words' },
-    { id:'packs', tag:'Engineering', name:'Knowledge packs', note:'Read, then recall out loud', n:s.packs, of:5, go:'learn:know' },
-    { id:'lab', tag:'Engineering', name:'Lab practice', note:'3D CAD or the drawing test', n:blockDone('labpractice'), of:2, go:'lab' },
-    { id:'jobs', tag:'Career', name:'Job search blocks', note:'Two applications or one follow-up', n:blockDone('jobs'), of:6, go:'learn:career' },
-    { id:'career', tag:'Career', name:'Career 15 minutes', note:'Portfolio, drawing or interview questions', n:Math.max(blockDone('career'), taskN('career')), of:1, go:'learn:career' }
-  ];
+/* ---------- Learn: study board (user, 3 Nov 2026: Day / Week / Month / Finished,
+   English, Engineering and Career kept apart, never mixed) ----------
+   Targets are the blocks the day plan schedules in the period; done = those blocks done
+   (a ticked task counts too, through blockStatus). */
+const SB_AREAS = [
+  ['English', 'en', [['essay', 'IELTS Task 2 essay', 'Write and score it in Learn → Essay', 'learn:essay'], ['speaking', 'Speaking cue card', '1 minute to plan, 2 to talk', 'learn:speak'], ['vocab', 'Vocabulary drill', '10 words in your own sentences', 'learn:words']]],
+  ['Engineering', 'eg', [['knowledge', 'Knowledge pack', 'Read, then recall out loud', 'learn:know'], ['labpractice', 'Lab practice', '3D CAD or the drawing test', 'lab']]],
+  ['Career', 'ca', [['jobs', 'Job search', 'Two applications or one follow-up', 'learn:career'], ['career', 'Career 15 minutes', 'Portfolio, drawing or interview questions', 'learn:career']]]
+];
+const SB = { view: null };
+const sbView = () => SB.view || state.studyView || 'week';
+function sbRange(v){
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  if (v === 'day') return [t, t];
+  if (v === 'month') return [new Date(t.getFullYear(), t.getMonth(), 1), new Date(t.getFullYear(), t.getMonth() + 1, 0)];
+  const ws = startOfWeek(); return [ws, addDays(ws, 6)];
+}
+function sbCount(id, from, to){
+  const today = dkey(); let of = 0, n = 0, due = 0;
+  for (let d = new Date(from); d <= to; d = addDays(d, 1)){ const k = dkey(d), b = dayBlocks(k).find(x => x.id === id); if (!b || b.skip) continue;
+    of++; if (k <= today){ due++; if (blockStatus(k, b) === 'done') n++; } }
+  return { of, n, due };
+}
+function sbCard(area, tone, [id, name, note, go], from, to, v){
+  const c = sbCount(id, from, to); if (!c.of) return '';
+  const done = c.n >= c.of, behind = !done && c.n < c.due - (v === 'day' ? 0 : 1), pct = Math.round(c.n / c.of * 100);
+  const chip = done ? ['Done', 'ok'] : c.n === 0 && c.due === 0 ? ['Not started', 'muted'] : behind ? ['Behind', 'late'] : c.n ? ['On track', 'mid'] : ['To do', 'muted'];
+  return `<article class="pb-card sb-card${done ? ' is-done' : ''}">
+    <div class="pb-top"><b class="pb-name">${esc(name)}</b><button class="pb-more" data-sb-go="${go}" aria-label="Open ${esc(name)}">${ic('arrowRight', 15)}</button></div>
+    <small class="pb-note">${esc(note)}</small>
+    <div class="pb-prog"><span class="pb-dots">${c.of <= 14 ? pbDots(c.n, c.of) : `<span class="sb-bar"><i style="width:${pct}%"></i></span>`}</span><em class="num">${c.n}/${c.of}</em></div>
+    <div class="pb-foot"><span class="pb-time">${v === 'day' ? 'Today' : v === 'week' ? 'This week' : 'This month'}</span><span class="pb-due ${chip[1]}">${chip[0]}</span></div></article>`;
+}
+/* finished: what you actually completed this month, newest first, per area */
+function sbFinished(ids){
+  const t = new Date(), from = new Date(t.getFullYear(), t.getMonth(), 1), out = [];
+  for (let d = new Date(t); d >= from; d = addDays(d, -1)){ const k = dkey(d);
+    dayBlocks(k).forEach(b => { if (ids.includes(b.id) && !b.skip && blockStatus(k, b) === 'done') out.push({ k, d: new Date(d), b }); }); }
+  return out;
+}
+function sbFinishedCol(area, tone, items){
+  const list = sbFinished(items.map(i => i[0])), essays = (state.ielts && state.ielts.essays) || [];
+  const row = f => { const e = f.b.id === 'essay' ? essays.find(x => x.date === f.k && x.band) : null, pk = f.b.id === 'knowledge' && typeof KNOWLEDGE_PACKS !== 'undefined' ? KNOWLEDGE_PACKS.find(p => (state.knowledge || {})[p.id] === f.k) : null;
+    return `<li><span class="sb-tick">${ic('check', 12)}</span><span class="sb-ft"><b>${esc(f.b.name)}</b><small>${esc(e ? 'Band ' + e.band : pk ? pk.title : f.b.note)}</small></span><span class="sb-fd num">${f.k === dkey() ? 'Today' : DAYS[isoWeekday(f.d)] + ' ' + f.d.getDate()}</span></li>`; };
+  return `<ul class="sb-fin">${list.slice(0, 10).map(row).join('') || `<li class="sb-none">Nothing finished in ${esc(area === 'English' ? area : area.toLowerCase())} yet this month.</li>`}${list.length > 10 ? `<li class="sb-none">+ ${list.length - 10} more this month</li>` : ''}</ul>`;
 }
 function studyBoardHTML(){
-  const items = studyItems(), left = 6 - isoWeekday(new Date()), cols = [['To do', 'todo', i => i.n === 0], ['In progress', 'doing', i => i.n > 0 && i.n < i.of], ['Done', 'done', i => i.n >= i.of]];
-  const all = items.reduce((a, i) => a + Math.min(i.n, i.of), 0), tot = items.reduce((a, i) => a + i.of, 0);
-  return `<section class="sb" id="studyBoard"><div class="h2">This week’s study <span class="side num">${all} of ${tot} · ${left > 0 ? left + ' day' + (left > 1 ? 's' : '') + ' left' : 'last day'}</span></div>
-    <div class="pb-board sb-board">${cols.map(([l, c, f]) => { const its = items.filter(f);
-      return `<section class="pb-col ${c}"><header><i></i><b>${l}</b><span class="num">${its.length}</span></header><div class="pb-list">${its.map(i => `<article class="pb-card sb-card">
-        <div class="pb-top"><span class="pb-tag ${PB_TONE[i.tag]}">${i.tag}</span><button class="pb-more" data-sb-go="${i.go}" aria-label="Open ${esc(i.name)}">${ic('arrowRight', 15)}</button></div>
-        <b class="pb-name">${esc(i.name)}</b><small class="pb-note">${esc(i.note)}</small>
-        <div class="pb-prog"><span>Progress</span><span class="pb-dots">${pbDots(Math.min(i.n, i.of), i.of)}</span><em class="num">${Math.min(i.n, i.of)}/${i.of}</em></div></article>`).join('') || `<div class="pb-empty">${c === 'done' ? 'Weekly targets you hit land here' : 'Nothing here'}</div>`}</div></section>`; }).join('')}</div></section>`;
+  const v = sbView(), [from, to] = sbRange(v);
+  let all = 0, tot = 0;
+  const cols = SB_AREAS.map(([area, tone, items]) => {
+    const sums = items.map(i => sbCount(i[0], from, to)), n = sums.reduce((a, c) => a + Math.min(c.n, c.of), 0), of = sums.reduce((a, c) => a + c.of, 0);
+    const fin = v === 'finished' ? sbFinished(items.map(i => i[0])).length : 0; all += n; tot += of;
+    const body = v === 'finished' ? sbFinishedCol(area, tone, items) : (items.map(i => sbCard(area, tone, i, from, to, v)).join('') || `<div class="pb-empty">Nothing planned for ${v === 'day' ? 'today' : 'this ' + v}.</div>`);
+    return `<section class="pb-col sb-col ${tone}"><header><span class="pb-tag ${tone}">${area}</span><span class="num">${v === 'finished' ? fin : n + '/' + of}</span></header>
+      ${v === 'finished' ? '' : `<div class="sb-area-bar"><i style="width:${of ? Math.round(n / of * 100) : 0}%"></i></div>`}<div class="pb-list">${body}</div></section>`; });
+  const left = v === 'week' ? 6 - isoWeekday(new Date()) : v === 'month' ? Math.round((to - new Date()) / 864e5) : 0;
+  const side = v === 'finished' ? 'this month, newest first' : `${all} of ${tot}${v === 'day' ? ' today' : ` · ${left > 0 ? left + ' day' + (left > 1 ? 's' : '') + ' left' : 'last day'}`}`;
+  const views = [['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['finished', 'Finished']];
+  return `<section class="sb" id="studyBoard"><div class="pb-head"><div class="h2">Study plan <span class="side num">${side}</span></div>
+      <div class="pb-views" role="tablist" aria-label="Study period">${views.map(([id, l]) => `<button role="tab" aria-selected="${v === id}" class="${v === id ? 'on' : ''}" data-sb-view="${id}">${id === 'finished' ? ic('check', 14) : ic('calendar', 14)}<span>${l}</span></button>`).join('')}</div></div>
+    <div class="pb-board sb-board">${cols.join('')}</div></section>`;
 }
+document.addEventListener('click', e => { const b = e.target.closest('[data-sb-view]'); if (!b) return; e.stopPropagation(); state.studyView = SB.view = b.dataset.sbView; save(); const el = document.getElementById('studyBoard'); if (el){ const y = window.scrollY; el.outerHTML = studyBoardHTML(); window.scrollTo(0, y); } if (typeof fillView === 'function') setTimeout(() => fillView('learn'), 30); }, true);
 renderLearn = (orig => function(){ return orig.apply(this, arguments).replace('<div class="learngrid">', studyBoardHTML() + '<div class="learngrid">'); })(renderLearn);
 
 /* ---------- Progress: week schedule grid ---------- */

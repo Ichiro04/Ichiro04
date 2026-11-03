@@ -3755,7 +3755,7 @@ html[data-theme="dark"] .pb-views button.on{background:rgba(255,255,255,.12)}
 .pb-col header{display:flex;align-items:center;gap:8px;padding:2px 4px 10px}
 .pb-col header i{width:8px;height:8px;border-radius:50%;background:var(--cc)}
 .pb-col header b{font-size:13.5px;font-weight:750;color:var(--pw-ink)}
-.pb-col header span{margin-left:auto;min-width:24px;height:22px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:11.5px;font-weight:750;color:var(--pw-ink-2);background:var(--pw-panel,rgba(255,255,255,.7));box-shadow:inset 0 0 0 1px var(--pw-line)}
+.pb-col header span.num{margin-left:auto;min-width:24px;height:22px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:11.5px;font-weight:750;color:var(--pw-ink-2);background:var(--pw-panel,rgba(255,255,255,.7));box-shadow:inset 0 0 0 1px var(--pw-line)}
 .pb-list{display:grid;gap:10px}
 .pb-empty{padding:16px 10px;border-radius:14px;border:1.5px dashed var(--pw-line-2);font-size:12px;color:var(--pw-ink-3);text-align:center}
 .pb-card{position:relative;display:grid;gap:7px;padding:12px 12px 11px;border-radius:15px;background:var(--pw-panel,rgba(255,255,255,.85));
@@ -3975,6 +3975,55 @@ html[data-theme="dark"] .set-chip{background:rgba(0,0,0,.2);color:#E6CDB0}
 .ds-row3 > div{display:flex;flex-direction:column;min-width:0}
 .ds-row3 > div > .glass:last-child{flex:1 1 auto}
 @media (max-width:899px){ .sb .pb-board{margin:0;padding:0 0 6px} .sb{min-width:0;overflow:hidden} }
+
+/* ---------- rail fixes (3 Nov 2026, user: the ">" popped out and the red focus box was too big) ---------- */
+@media (min-width:900px){
+  /* the expand button lives inside the rail, under the profile, instead of floating on the edge */
+  .rail-tog{position:static!important;align-self:center;width:36px!important;height:28px!important;margin:8px 0 0;border-radius:10px!important;
+    background:transparent!important;box-shadow:none!important;color:var(--pw-ink-3)!important;order:99}
+  .rail-tog:hover{background:rgba(113,0,20,.06)!important;color:var(--pw-ink)!important;transform:none!important}
+  .rail.open .rail-tog{align-self:flex-end;margin-right:6px}
+  /* the hidden label takes no room when the rail is slim, so the button is only as wide as its icon */
+  .rail:not(.open) .rail-n{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .rail:not(.open) .rail-i{justify-content:center;padding:0}
+  /* keyboard focus: a sand ring round the icon, never a big red box */
+  .rail-i:focus-visible,.rail-tog:focus-visible{outline:none!important}
+  .rail-i:focus-visible .rail-ic{box-shadow:0 0 0 2px var(--pw-panel,#fff),0 0 0 4px #B38F6F!important}
+  .rail-tog:focus-visible{box-shadow:0 0 0 2px #B38F6F!important}
+  .rail-i:focus:not(:focus-visible){outline:none!important}
+}
+@media (min-width:900px){
+  .rail-mid{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;margin:0 -10px;padding:0 10px;scrollbar-width:none;overscroll-behavior:contain;
+    --fu:0px;--fd:0px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 var(--fu),#000 calc(100% - var(--fd)),transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 var(--fu),#000 calc(100% - var(--fd)),transparent 100%)}
+  .rail-mid::-webkit-scrollbar{display:none}
+  .rail-mid.more-up{--fu:22px}.rail-mid.more-down{--fd:22px}
+  .rail-mid .rail-tip{display:none!important}
+  .rail-ftip{position:fixed;z-index:400;transform:translate(-4px,-50%);padding:7px 11px;border-radius:10px;font-size:12.5px;font-weight:700;color:#F2F1ED;background:#161616;
+    box-shadow:0 8px 20px -8px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .15s,transform .2s;white-space:nowrap}
+  .rail-ftip.on{opacity:1;transform:translate(0,-50%)}
+  html[data-theme="dark"] .rail-ftip{color:#161616;background:#F2F1ED}
+}
+@media (max-width:899px){ .rail-ftip{display:none} }
+/* study plan: one column per area */
+.sb-col header{gap:8px}
+.sb-col header .pb-tag{font-size:12px;height:24px}
+.sb-area-bar{height:4px;border-radius:4px;margin:0 4px 10px;background:rgba(127,127,127,.15);overflow:hidden}
+.sb-area-bar i{display:block;height:100%;border-radius:4px;background:var(--tc)}
+.sb-col.en{--tc:var(--t-en)}.sb-col.eg{--tc:var(--t-eg)}.sb-col.ca{--tc:var(--t-ca)}
+.sb-col .pb-dot.on{background:var(--tc)!important}
+.sb-card .pb-top .pb-name{flex:1;min-width:0}
+.sb-card.is-done .pb-name{text-decoration:line-through;color:var(--pw-ink-2)}
+.sb-bar{display:block;flex:1;height:8px;border-radius:8px;background:rgba(127,127,127,.18);overflow:hidden}
+.sb-bar i{display:block;height:100%;background:var(--tc)}
+.sb-fin{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sb-fin li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:var(--pw-panel,rgba(255,255,255,.8));box-shadow:inset 0 0 0 1px var(--pw-line)}
+html[data-theme="dark"] .sb-fin li{background:rgba(255,255,255,.04)}
+.sb-fin li.sb-none{display:block;text-align:center;font-size:12px;color:var(--pw-ink-3);background:transparent;box-shadow:none;border:1.5px dashed var(--pw-line-2)}
+.sb-tick{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--tc)}
+html[data-theme="dark"] .sb-tick{color:#1b1310}
+.sb-ft{display:grid;min-width:0}.sb-ft b{font-size:13px;font-weight:750;color:var(--pw-ink)}.sb-ft small{font-size:11.5px;color:var(--pw-ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-fd{font-size:11.5px;font-weight:700;color:var(--pw-ink-2)}
+@media (max-width:899px){ .sb .pb-board.sb-board{display:grid;grid-template-columns:1fr;overflow:visible} .sb .pb-col{flex:none} }
 
 </style>
 <style data-src="src/css/glass-themes.css">
@@ -9771,10 +9820,10 @@ function railHTML(){
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   return `<nav class="rail${open?' open':''}" id="rail" aria-label="Sections">
     <div class="rail-brand"><span class="rail-logo" aria-hidden="true"></span><span class="rail-bt"><b>KsHan</b><small>Personal growth</small></span></div>
-    <div class="rail-sec">Main menu</div>
+    <div class="rail-mid"><div class="rail-sec">Main menu</div>
     <div class="rail-list" role="tablist"><span class="rail-lens" aria-hidden="true"><i></i></span>${TABS.map(item).join('')}</div>
     <div class="rail-sec">Explore</div>
-    <div class="rail-list">${extra('map','gauge','Orbit')}${extra('cad','wrench','CAD workspace')}${extra('theme', dark ? 'sun' : 'moon', dark ? 'Light mode' : 'Dark mode')}</div>
+    <div class="rail-list">${extra('map','gauge','Orbit')}${extra('cad','wrench','CAD workspace')}${extra('theme', dark ? 'sun' : 'moon', dark ? 'Light mode' : 'Dark mode')}</div></div>
     <div class="rail-foot"><span class="rail-av">KS</span><span class="rail-bt"><b>KsHan</b><small>${todayDone()}/${todayTotal()} today · ${currentStreak()}-day streak</small></span></div>
     <button class="rail-tog" data-rail-tog aria-label="${open?'Collapse':'Expand'} the side menu" aria-expanded="${open}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   </nav>`;
@@ -11700,31 +11749,69 @@ function planBoardHTML(){
 }
 function pbRedraw(){ const el = document.getElementById('planBoard'); if (!el) return; const y = window.scrollY; el.outerHTML = planBoardHTML(); window.scrollTo(0, y); }
 
-/* ---------- Learn: this week's study board ---------- */
-function studyItems(){
-  const ws = startOfWeek(), from = dkey(ws), to = dkey(addDays(ws, 6)), s = periodStats(from, to);
-  const blockDone = id => { let n = 0; for (let i = 0; i < 7; i++){ const k = dkey(addDays(ws, i)); if (k > dkey()) break; const b = dayBlocks(k).find(x => x.id === id); if (b && blockStatus(k, b) === 'done') n++; } return n; };
-  const taskN = id => { let n = 0; for (let i = 0; i < 7; i++){ const k = dkey(addDays(ws, i)); if (taskDone(k, id)) n++; } return n; };
-  return [
-    { id:'essay', tag:'English', name:'IELTS Task 2 essays', note:'Write and score in Learn → Essay', n:s.essays, of:3, go:'learn:essay' },
-    { id:'speak', tag:'English', name:'Speaking cue cards', note:'1 minute to plan, 2 to talk', n:s.speaking, of:3, go:'learn:speak' },
-    { id:'vocab', tag:'English', name:'Vocabulary drills', note:'10 words in your own sentences', n:taskN('vocab'), of:7, go:'learn:words' },
-    { id:'packs', tag:'Engineering', name:'Knowledge packs', note:'Read, then recall out loud', n:s.packs, of:5, go:'learn:know' },
-    { id:'lab', tag:'Engineering', name:'Lab practice', note:'3D CAD or the drawing test', n:blockDone('labpractice'), of:2, go:'lab' },
-    { id:'jobs', tag:'Career', name:'Job search blocks', note:'Two applications or one follow-up', n:blockDone('jobs'), of:6, go:'learn:career' },
-    { id:'career', tag:'Career', name:'Career 15 minutes', note:'Portfolio, drawing or interview questions', n:Math.max(blockDone('career'), taskN('career')), of:1, go:'learn:career' }
-  ];
+/* ---------- Learn: study board (user, 3 Nov 2026: Day / Week / Month / Finished,
+   English, Engineering and Career kept apart, never mixed) ----------
+   Targets are the blocks the day plan schedules in the period; done = those blocks done
+   (a ticked task counts too, through blockStatus). */
+const SB_AREAS = [
+  ['English', 'en', [['essay', 'IELTS Task 2 essay', 'Write and score it in Learn → Essay', 'learn:essay'], ['speaking', 'Speaking cue card', '1 minute to plan, 2 to talk', 'learn:speak'], ['vocab', 'Vocabulary drill', '10 words in your own sentences', 'learn:words']]],
+  ['Engineering', 'eg', [['knowledge', 'Knowledge pack', 'Read, then recall out loud', 'learn:know'], ['labpractice', 'Lab practice', '3D CAD or the drawing test', 'lab']]],
+  ['Career', 'ca', [['jobs', 'Job search', 'Two applications or one follow-up', 'learn:career'], ['career', 'Career 15 minutes', 'Portfolio, drawing or interview questions', 'learn:career']]]
+];
+const SB = { view: null };
+const sbView = () => SB.view || state.studyView || 'week';
+function sbRange(v){
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  if (v === 'day') return [t, t];
+  if (v === 'month') return [new Date(t.getFullYear(), t.getMonth(), 1), new Date(t.getFullYear(), t.getMonth() + 1, 0)];
+  const ws = startOfWeek(); return [ws, addDays(ws, 6)];
+}
+function sbCount(id, from, to){
+  const today = dkey(); let of = 0, n = 0, due = 0;
+  for (let d = new Date(from); d <= to; d = addDays(d, 1)){ const k = dkey(d), b = dayBlocks(k).find(x => x.id === id); if (!b || b.skip) continue;
+    of++; if (k <= today){ due++; if (blockStatus(k, b) === 'done') n++; } }
+  return { of, n, due };
+}
+function sbCard(area, tone, [id, name, note, go], from, to, v){
+  const c = sbCount(id, from, to); if (!c.of) return '';
+  const done = c.n >= c.of, behind = !done && c.n < c.due - (v === 'day' ? 0 : 1), pct = Math.round(c.n / c.of * 100);
+  const chip = done ? ['Done', 'ok'] : c.n === 0 && c.due === 0 ? ['Not started', 'muted'] : behind ? ['Behind', 'late'] : c.n ? ['On track', 'mid'] : ['To do', 'muted'];
+  return `<article class="pb-card sb-card${done ? ' is-done' : ''}">
+    <div class="pb-top"><b class="pb-name">${esc(name)}</b><button class="pb-more" data-sb-go="${go}" aria-label="Open ${esc(name)}">${ic('arrowRight', 15)}</button></div>
+    <small class="pb-note">${esc(note)}</small>
+    <div class="pb-prog"><span class="pb-dots">${c.of <= 14 ? pbDots(c.n, c.of) : `<span class="sb-bar"><i style="width:${pct}%"></i></span>`}</span><em class="num">${c.n}/${c.of}</em></div>
+    <div class="pb-foot"><span class="pb-time">${v === 'day' ? 'Today' : v === 'week' ? 'This week' : 'This month'}</span><span class="pb-due ${chip[1]}">${chip[0]}</span></div></article>`;
+}
+/* finished: what you actually completed this month, newest first, per area */
+function sbFinished(ids){
+  const t = new Date(), from = new Date(t.getFullYear(), t.getMonth(), 1), out = [];
+  for (let d = new Date(t); d >= from; d = addDays(d, -1)){ const k = dkey(d);
+    dayBlocks(k).forEach(b => { if (ids.includes(b.id) && !b.skip && blockStatus(k, b) === 'done') out.push({ k, d: new Date(d), b }); }); }
+  return out;
+}
+function sbFinishedCol(area, tone, items){
+  const list = sbFinished(items.map(i => i[0])), essays = (state.ielts && state.ielts.essays) || [];
+  const row = f => { const e = f.b.id === 'essay' ? essays.find(x => x.date === f.k && x.band) : null, pk = f.b.id === 'knowledge' && typeof KNOWLEDGE_PACKS !== 'undefined' ? KNOWLEDGE_PACKS.find(p => (state.knowledge || {})[p.id] === f.k) : null;
+    return `<li><span class="sb-tick">${ic('check', 12)}</span><span class="sb-ft"><b>${esc(f.b.name)}</b><small>${esc(e ? 'Band ' + e.band : pk ? pk.title : f.b.note)}</small></span><span class="sb-fd num">${f.k === dkey() ? 'Today' : DAYS[isoWeekday(f.d)] + ' ' + f.d.getDate()}</span></li>`; };
+  return `<ul class="sb-fin">${list.slice(0, 10).map(row).join('') || `<li class="sb-none">Nothing finished in ${esc(area === 'English' ? area : area.toLowerCase())} yet this month.</li>`}${list.length > 10 ? `<li class="sb-none">+ ${list.length - 10} more this month</li>` : ''}</ul>`;
 }
 function studyBoardHTML(){
-  const items = studyItems(), left = 6 - isoWeekday(new Date()), cols = [['To do', 'todo', i => i.n === 0], ['In progress', 'doing', i => i.n > 0 && i.n < i.of], ['Done', 'done', i => i.n >= i.of]];
-  const all = items.reduce((a, i) => a + Math.min(i.n, i.of), 0), tot = items.reduce((a, i) => a + i.of, 0);
-  return `<section class="sb" id="studyBoard"><div class="h2">This week’s study <span class="side num">${all} of ${tot} · ${left > 0 ? left + ' day' + (left > 1 ? 's' : '') + ' left' : 'last day'}</span></div>
-    <div class="pb-board sb-board">${cols.map(([l, c, f]) => { const its = items.filter(f);
-      return `<section class="pb-col ${c}"><header><i></i><b>${l}</b><span class="num">${its.length}</span></header><div class="pb-list">${its.map(i => `<article class="pb-card sb-card">
-        <div class="pb-top"><span class="pb-tag ${PB_TONE[i.tag]}">${i.tag}</span><button class="pb-more" data-sb-go="${i.go}" aria-label="Open ${esc(i.name)}">${ic('arrowRight', 15)}</button></div>
-        <b class="pb-name">${esc(i.name)}</b><small class="pb-note">${esc(i.note)}</small>
-        <div class="pb-prog"><span>Progress</span><span class="pb-dots">${pbDots(Math.min(i.n, i.of), i.of)}</span><em class="num">${Math.min(i.n, i.of)}/${i.of}</em></div></article>`).join('') || `<div class="pb-empty">${c === 'done' ? 'Weekly targets you hit land here' : 'Nothing here'}</div>`}</div></section>`; }).join('')}</div></section>`;
+  const v = sbView(), [from, to] = sbRange(v);
+  let all = 0, tot = 0;
+  const cols = SB_AREAS.map(([area, tone, items]) => {
+    const sums = items.map(i => sbCount(i[0], from, to)), n = sums.reduce((a, c) => a + Math.min(c.n, c.of), 0), of = sums.reduce((a, c) => a + c.of, 0);
+    const fin = v === 'finished' ? sbFinished(items.map(i => i[0])).length : 0; all += n; tot += of;
+    const body = v === 'finished' ? sbFinishedCol(area, tone, items) : (items.map(i => sbCard(area, tone, i, from, to, v)).join('') || `<div class="pb-empty">Nothing planned for ${v === 'day' ? 'today' : 'this ' + v}.</div>`);
+    return `<section class="pb-col sb-col ${tone}"><header><span class="pb-tag ${tone}">${area}</span><span class="num">${v === 'finished' ? fin : n + '/' + of}</span></header>
+      ${v === 'finished' ? '' : `<div class="sb-area-bar"><i style="width:${of ? Math.round(n / of * 100) : 0}%"></i></div>`}<div class="pb-list">${body}</div></section>`; });
+  const left = v === 'week' ? 6 - isoWeekday(new Date()) : v === 'month' ? Math.round((to - new Date()) / 864e5) : 0;
+  const side = v === 'finished' ? 'this month, newest first' : `${all} of ${tot}${v === 'day' ? ' today' : ` · ${left > 0 ? left + ' day' + (left > 1 ? 's' : '') + ' left' : 'last day'}`}`;
+  const views = [['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['finished', 'Finished']];
+  return `<section class="sb" id="studyBoard"><div class="pb-head"><div class="h2">Study plan <span class="side num">${side}</span></div>
+      <div class="pb-views" role="tablist" aria-label="Study period">${views.map(([id, l]) => `<button role="tab" aria-selected="${v === id}" class="${v === id ? 'on' : ''}" data-sb-view="${id}">${id === 'finished' ? ic('check', 14) : ic('calendar', 14)}<span>${l}</span></button>`).join('')}</div></div>
+    <div class="pb-board sb-board">${cols.join('')}</div></section>`;
 }
+document.addEventListener('click', e => { const b = e.target.closest('[data-sb-view]'); if (!b) return; e.stopPropagation(); state.studyView = SB.view = b.dataset.sbView; save(); const el = document.getElementById('studyBoard'); if (el){ const y = window.scrollY; el.outerHTML = studyBoardHTML(); window.scrollTo(0, y); } if (typeof fillView === 'function') setTimeout(() => fillView('learn'), 30); }, true);
 renderLearn = (orig => function(){ return orig.apply(this, arguments).replace('<div class="learngrid">', studyBoardHTML() + '<div class="learngrid">'); })(renderLearn);
 
 /* ---------- Progress: week schedule grid ---------- */
@@ -11928,6 +12015,35 @@ function setNavRefresh(){
 }
 /* opening Settings on a phone shows the menu first */
 setOpen = (orig => function(sec){ SET.page = !!sec; return orig.apply(this, arguments); })(setOpen);
+
+/* ---------- rail: the menu list scrolls when there are more tabs than fit (user, 3 Nov 2026) ----------
+   Labels for the slim rail are one floating tip (a scrolling list would clip tips that stick out),
+   the lens is measured again whenever the rail changes size, and the active tab scrolls into view. */
+const RTIP = { el: null };
+function railTipShow(btn){
+  if (!btn || document.querySelector('#rail.open')) return railTipHide();
+  if (!RTIP.el){ RTIP.el = document.createElement('div'); RTIP.el.className = 'rail-ftip'; RTIP.el.setAttribute('aria-hidden', 'true'); document.body.appendChild(RTIP.el); }
+  const r = btn.getBoundingClientRect(), name = btn.getAttribute('aria-label') || '';
+  RTIP.el.textContent = name; RTIP.el.style.top = (r.top + r.height / 2) + 'px'; RTIP.el.style.left = (r.right + 12) + 'px'; RTIP.el.classList.add('on');
+}
+function railTipHide(){ if (RTIP.el) RTIP.el.classList.remove('on'); }
+document.addEventListener('mouseover', e => { const b = e.target.closest && e.target.closest('#rail .rail-i'); if (b) railTipShow(b); else if (e.target.closest && !e.target.closest('#rail')) railTipHide(); });
+document.addEventListener('focusin', e => { const b = e.target.closest && e.target.closest('#rail .rail-i'); if (b && b.matches(':focus-visible')) railTipShow(b); else railTipHide(); });
+document.addEventListener('mouseleave', railTipHide);
+document.addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('rail-mid')) railTipHide(); }, true);
+function railFit(){
+  const r = document.getElementById('rail'); if (!r) return;
+  const mid = r.querySelector('.rail-mid'); if (!mid) return;
+  if (typeof railLens === 'function') railLens(false);
+  const on = r.querySelector('[data-rail].on'); if (on){ const t = on.offsetTop, b = t + on.offsetHeight; if (t < mid.scrollTop || b > mid.scrollTop + mid.clientHeight) mid.scrollTop = t - mid.clientHeight / 2 + on.offsetHeight / 2; }
+  mid.classList.toggle('more-up', mid.scrollTop > 2); mid.classList.toggle('more-down', mid.scrollTop + mid.clientHeight < mid.scrollHeight - 2);
+  if (!r.dataset.ro && 'ResizeObserver' in window){ r.dataset.ro = '1'; new ResizeObserver(() => { if (typeof railLens === 'function') railLens(false); }).observe(r.querySelector('.rail-list') || r); }
+  if (!mid.dataset.sc){ mid.dataset.sc = '1'; mid.addEventListener('scroll', () => { mid.classList.toggle('more-up', mid.scrollTop > 2); mid.classList.toggle('more-down', mid.scrollTop + mid.clientHeight < mid.scrollHeight - 2); }, { passive: true }); }
+}
+if (typeof mountRail === 'function') mountRail = (orig => function(){ const r = orig.apply(this, arguments); setTimeout(railFit, 30); setTimeout(railFit, 450); return r; })(mountRail);
+if (typeof railSync === 'function') railSync = (orig => function(){ const r = orig.apply(this, arguments); setTimeout(railFit, 20); return r; })(railSync);
+window.addEventListener('resize', () => { clearTimeout(RTIP.rt); RTIP.rt = setTimeout(railFit, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(railFit, 50));
 
 </script>
 <script data-src="src/js/70-boot.js">

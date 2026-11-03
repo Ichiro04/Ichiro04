@@ -115,3 +115,32 @@ function setNavRefresh(){
 }
 /* opening Settings on a phone shows the menu first */
 setOpen = (orig => function(sec){ SET.page = !!sec; return orig.apply(this, arguments); })(setOpen);
+
+/* ---------- rail: the menu list scrolls when there are more tabs than fit (user, 3 Nov 2026) ----------
+   Labels for the slim rail are one floating tip (a scrolling list would clip tips that stick out),
+   the lens is measured again whenever the rail changes size, and the active tab scrolls into view. */
+const RTIP = { el: null };
+function railTipShow(btn){
+  if (!btn || document.querySelector('#rail.open')) return railTipHide();
+  if (!RTIP.el){ RTIP.el = document.createElement('div'); RTIP.el.className = 'rail-ftip'; RTIP.el.setAttribute('aria-hidden', 'true'); document.body.appendChild(RTIP.el); }
+  const r = btn.getBoundingClientRect(), name = btn.getAttribute('aria-label') || '';
+  RTIP.el.textContent = name; RTIP.el.style.top = (r.top + r.height / 2) + 'px'; RTIP.el.style.left = (r.right + 12) + 'px'; RTIP.el.classList.add('on');
+}
+function railTipHide(){ if (RTIP.el) RTIP.el.classList.remove('on'); }
+document.addEventListener('mouseover', e => { const b = e.target.closest && e.target.closest('#rail .rail-i'); if (b) railTipShow(b); else if (e.target.closest && !e.target.closest('#rail')) railTipHide(); });
+document.addEventListener('focusin', e => { const b = e.target.closest && e.target.closest('#rail .rail-i'); if (b && b.matches(':focus-visible')) railTipShow(b); else railTipHide(); });
+document.addEventListener('mouseleave', railTipHide);
+document.addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('rail-mid')) railTipHide(); }, true);
+function railFit(){
+  const r = document.getElementById('rail'); if (!r) return;
+  const mid = r.querySelector('.rail-mid'); if (!mid) return;
+  if (typeof railLens === 'function') railLens(false);
+  const on = r.querySelector('[data-rail].on'); if (on){ const t = on.offsetTop, b = t + on.offsetHeight; if (t < mid.scrollTop || b > mid.scrollTop + mid.clientHeight) mid.scrollTop = t - mid.clientHeight / 2 + on.offsetHeight / 2; }
+  mid.classList.toggle('more-up', mid.scrollTop > 2); mid.classList.toggle('more-down', mid.scrollTop + mid.clientHeight < mid.scrollHeight - 2);
+  if (!r.dataset.ro && 'ResizeObserver' in window){ r.dataset.ro = '1'; new ResizeObserver(() => { if (typeof railLens === 'function') railLens(false); }).observe(r.querySelector('.rail-list') || r); }
+  if (!mid.dataset.sc){ mid.dataset.sc = '1'; mid.addEventListener('scroll', () => { mid.classList.toggle('more-up', mid.scrollTop > 2); mid.classList.toggle('more-down', mid.scrollTop + mid.clientHeight < mid.scrollHeight - 2); }, { passive: true }); }
+}
+if (typeof mountRail === 'function') mountRail = (orig => function(){ const r = orig.apply(this, arguments); setTimeout(railFit, 30); setTimeout(railFit, 450); return r; })(mountRail);
+if (typeof railSync === 'function') railSync = (orig => function(){ const r = orig.apply(this, arguments); setTimeout(railFit, 20); return r; })(railSync);
+window.addEventListener('resize', () => { clearTimeout(RTIP.rt); RTIP.rt = setTimeout(railFit, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(railFit, 50));

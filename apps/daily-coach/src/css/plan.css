@@ -40,7 +40,7 @@ html[data-theme="dark"] .pb-views button.on{background:rgba(255,255,255,.12)}
 .pb-col header{display:flex;align-items:center;gap:8px;padding:2px 4px 10px}
 .pb-col header i{width:8px;height:8px;border-radius:50%;background:var(--cc)}
 .pb-col header b{font-size:13.5px;font-weight:750;color:var(--pw-ink)}
-.pb-col header span{margin-left:auto;min-width:24px;height:22px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:11.5px;font-weight:750;color:var(--pw-ink-2);background:var(--pw-panel,rgba(255,255,255,.7));box-shadow:inset 0 0 0 1px var(--pw-line)}
+.pb-col header span.num{margin-left:auto;min-width:24px;height:22px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:11.5px;font-weight:750;color:var(--pw-ink-2);background:var(--pw-panel,rgba(255,255,255,.7));box-shadow:inset 0 0 0 1px var(--pw-line)}
 .pb-list{display:grid;gap:10px}
 .pb-empty{padding:16px 10px;border-radius:14px;border:1.5px dashed var(--pw-line-2);font-size:12px;color:var(--pw-ink-3);text-align:center}
 .pb-card{position:relative;display:grid;gap:7px;padding:12px 12px 11px;border-radius:15px;background:var(--pw-panel,rgba(255,255,255,.85));
@@ -260,3 +260,52 @@ html[data-theme="dark"] .set-chip{background:rgba(0,0,0,.2);color:#E6CDB0}
 .ds-row3 > div{display:flex;flex-direction:column;min-width:0}
 .ds-row3 > div > .glass:last-child{flex:1 1 auto}
 @media (max-width:899px){ .sb .pb-board{margin:0;padding:0 0 6px} .sb{min-width:0;overflow:hidden} }
+
+/* ---------- rail fixes (3 Nov 2026, user: the ">" popped out and the red focus box was too big) ---------- */
+@media (min-width:900px){
+  /* the expand button lives inside the rail, under the profile, instead of floating on the edge */
+  .rail-tog{position:static!important;align-self:center;width:36px!important;height:28px!important;margin:8px 0 0;border-radius:10px!important;
+    background:transparent!important;box-shadow:none!important;color:var(--pw-ink-3)!important;order:99}
+  .rail-tog:hover{background:rgba(113,0,20,.06)!important;color:var(--pw-ink)!important;transform:none!important}
+  .rail.open .rail-tog{align-self:flex-end;margin-right:6px}
+  /* the hidden label takes no room when the rail is slim, so the button is only as wide as its icon */
+  .rail:not(.open) .rail-n{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .rail:not(.open) .rail-i{justify-content:center;padding:0}
+  /* keyboard focus: a sand ring round the icon, never a big red box */
+  .rail-i:focus-visible,.rail-tog:focus-visible{outline:none!important}
+  .rail-i:focus-visible .rail-ic{box-shadow:0 0 0 2px var(--pw-panel,#fff),0 0 0 4px #B38F6F!important}
+  .rail-tog:focus-visible{box-shadow:0 0 0 2px #B38F6F!important}
+  .rail-i:focus:not(:focus-visible){outline:none!important}
+}
+@media (min-width:900px){
+  .rail-mid{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;margin:0 -10px;padding:0 10px;scrollbar-width:none;overscroll-behavior:contain;
+    --fu:0px;--fd:0px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 var(--fu),#000 calc(100% - var(--fd)),transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 var(--fu),#000 calc(100% - var(--fd)),transparent 100%)}
+  .rail-mid::-webkit-scrollbar{display:none}
+  .rail-mid.more-up{--fu:22px}.rail-mid.more-down{--fd:22px}
+  .rail-mid .rail-tip{display:none!important}
+  .rail-ftip{position:fixed;z-index:400;transform:translate(-4px,-50%);padding:7px 11px;border-radius:10px;font-size:12.5px;font-weight:700;color:#F2F1ED;background:#161616;
+    box-shadow:0 8px 20px -8px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .15s,transform .2s;white-space:nowrap}
+  .rail-ftip.on{opacity:1;transform:translate(0,-50%)}
+  html[data-theme="dark"] .rail-ftip{color:#161616;background:#F2F1ED}
+}
+@media (max-width:899px){ .rail-ftip{display:none} }
+/* study plan: one column per area */
+.sb-col header{gap:8px}
+.sb-col header .pb-tag{font-size:12px;height:24px}
+.sb-area-bar{height:4px;border-radius:4px;margin:0 4px 10px;background:rgba(127,127,127,.15);overflow:hidden}
+.sb-area-bar i{display:block;height:100%;border-radius:4px;background:var(--tc)}
+.sb-col.en{--tc:var(--t-en)}.sb-col.eg{--tc:var(--t-eg)}.sb-col.ca{--tc:var(--t-ca)}
+.sb-col .pb-dot.on{background:var(--tc)!important}
+.sb-card .pb-top .pb-name{flex:1;min-width:0}
+.sb-card.is-done .pb-name{text-decoration:line-through;color:var(--pw-ink-2)}
+.sb-bar{display:block;flex:1;height:8px;border-radius:8px;background:rgba(127,127,127,.18);overflow:hidden}
+.sb-bar i{display:block;height:100%;background:var(--tc)}
+.sb-fin{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sb-fin li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:var(--pw-panel,rgba(255,255,255,.8));box-shadow:inset 0 0 0 1px var(--pw-line)}
+html[data-theme="dark"] .sb-fin li{background:rgba(255,255,255,.04)}
+.sb-fin li.sb-none{display:block;text-align:center;font-size:12px;color:var(--pw-ink-3);background:transparent;box-shadow:none;border:1.5px dashed var(--pw-line-2)}
+.sb-tick{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--tc)}
+html[data-theme="dark"] .sb-tick{color:#1b1310}
+.sb-ft{display:grid;min-width:0}.sb-ft b{font-size:13px;font-weight:750;color:var(--pw-ink)}.sb-ft small{font-size:11.5px;color:var(--pw-ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-fd{font-size:11.5px;font-weight:700;color:var(--pw-ink-2)}
+@media (max-width:899px){ .sb .pb-board.sb-board{display:grid;grid-template-columns:1fr;overflow:visible} .sb .pb-col{flex:none} }

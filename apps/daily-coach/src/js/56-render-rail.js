@@ -14,10 +14,10 @@ function railHTML(){
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   return `<nav class="rail${open?' open':''}" id="rail" aria-label="Sections">
     <div class="rail-brand"><span class="rail-logo" aria-hidden="true"></span><span class="rail-bt"><b>KsHan</b><small>Personal growth</small></span></div>
-    <div class="rail-sec">Main menu</div>
+    <div class="rail-mid"><div class="rail-sec">Main menu</div>
     <div class="rail-list" role="tablist"><span class="rail-lens" aria-hidden="true"><i></i></span>${TABS.map(item).join('')}</div>
     <div class="rail-sec">Explore</div>
-    <div class="rail-list">${extra('map','gauge','Orbit')}${extra('cad','wrench','CAD workspace')}${extra('theme', dark ? 'sun' : 'moon', dark ? 'Light mode' : 'Dark mode')}</div>
+    <div class="rail-list">${extra('map','gauge','Orbit')}${extra('cad','wrench','CAD workspace')}${extra('theme', dark ? 'sun' : 'moon', dark ? 'Light mode' : 'Dark mode')}</div></div>
     <div class="rail-foot"><span class="rail-av">KS</span><span class="rail-bt"><b>KsHan</b><small>${todayDone()}/${todayTotal()} today · ${currentStreak()}-day streak</small></span></div>
     <button class="rail-tog" data-rail-tog aria-label="${open?'Collapse':'Expand'} the side menu" aria-expanded="${open}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   </nav>`;
