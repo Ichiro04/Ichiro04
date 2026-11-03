@@ -120,9 +120,11 @@ document.addEventListener('click', e => {
   if (a === 'task'){ const k = b.dataset.k, id = b.dataset.id, on = !taskDone(k, id); setTask(k, id, on); save();
     const t = TASK_DEFS.find(x => x.id === id); toast(`${t ? t.name : 'Task'} ${on ? 'ticked' : 'unticked'} for ${shortDate(parseKey(k))}.`, 'ok', 1600);
     const sec = b.closest('.lay-sec'); if (sec){ const tools = sec.querySelector('.lay-tools'); sec.innerHTML = (tools ? tools.outerHTML : '') + calHTML(); }
+    else { const card = b.closest('.cal'); if (card) card.outerHTML = calHTML(); }
     updateChrome(); return; }
   CAL.m = new Date(CAL.m.getFullYear(), CAL.m.getMonth() + (a === 'next' ? 1 : -1), 1);
   const sec = b.closest('.lay-sec'); if (sec){ const tools = sec.querySelector('.lay-tools'); sec.innerHTML = (tools ? tools.outerHTML : '') + calHTML(); }
+  else { const card = b.closest('.cal'); if (card) card.outerHTML = calHTML(); }
 }, true);
 document.addEventListener('input', e => { const t = e.target.closest('[data-cal-note]'); if (!t) return; const r = dayRec(t.dataset.calNote, true); r.note = t.value.slice(0, 600); clearTimeout(CAL.nt); CAL.nt = setTimeout(save, 400); });
 

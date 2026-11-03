@@ -418,6 +418,7 @@ function wsSheet(){
       ${balloons}
     </svg></div>
     <div class="cws-tbl"><div class="cws-tbh"><span>Item</span><span>Feature</span><span>Size</span></div>${ex.feats.map((f,i)=>`<div class="cws-tbr" data-w="sel" data-id="${f.id}"><b>${letters[i]}</b><span>${esc(f.name)}<small>${{boss:'Extruded boss',cut:'Extruded cut',rib:'Rib'}[f.type]} · ${WS_PLANE_NAME[f.plane]}${f.angle?` tilted ${f.angle}°`:''}</small></span><span class="num">${esc(wsDims(f))}</span></div>`).join('')}
+      <div class="cws-howto"><b>How to use this sheet</b><ol><li>Each letter on the drawing matches a row here and a feature in the tree.</li><li>Tap a row to select that feature, then change its sizes until it matches.</li><li>Press Check: every feature within ±0.6 mm gets a tick.</li><li>First-angle projection: the plan view sits under the front view, the left view on the right.</li></ol><p>${ex.feats.length} features · build them in order, boss first, then cuts and ribs.</p></div>
       <div class="cws-title"><div><small>Part</small><b>${esc(ex.part)}</b></div><div><small>Material</small><b>${esc(ex.mat)}</b></div><div><small>Units</small><b>mm</b></div><div><small>Projection</small><b>First angle</b></div></div></div>`;
 }
 

@@ -47,8 +47,8 @@ html[data-theme="dark"] .xw{background:rgba(255,255,255,.03)}
 .xlist li span{color:var(--pw-ink-3)}
 
 /* heat grids */
-.xheat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,16px);grid-template-columns:repeat(var(--w),16px);gap:4px;justify-content:start}
-.xh{width:16px;height:16px;border-radius:4px;background:var(--pw-line)}
+.xheat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:repeat(var(--w),minmax(0,22px));gap:3px;justify-content:space-between}
+.xh{aspect-ratio:1/1;width:100%;border-radius:4px;background:var(--pw-line)}
 .xh.l1{background:rgba(var(--gt-accent-rgb,113,0,20),.15)}.xh.l2{background:rgba(var(--gt-accent-rgb,113,0,20),.32)}
 .xh.l3{background:rgba(var(--gt-accent-rgb,113,0,20),.55)}.xh.l4{background:var(--cr-crimson)}.xh.fut{opacity:.3}
 
@@ -199,3 +199,21 @@ html.reduce .xs-card,html.reduce .xb i,html.reduce .xfs i,html.reduce .xhb i b,h
 .sch-m{margin-top:10px;font-size:14px;font-weight:700;color:var(--pw-ink)}
 @media(max-width:600px){ .kpi b{font-size:24px} .stx-c{height:180px} .qa-g{grid-template-columns:1fr 1fr} }
 @media(max-width:600px){ .stx-h{flex-direction:column;align-items:stretch} .stx-tabs{overflow-x:auto;scrollbar-width:none} .stx-tabs::-webkit-scrollbar{display:none} .stx-tabs button{flex:0 0 auto} }
+
+/* filler cards (65-fill.js) */
+.fill-card{margin-top:16px;animation:cpIn .5s cubic-bezier(.2,.8,.2,1) both}
+.fill-card > *{margin-bottom:0!important}
+.xl-side > .fill-card{margin-top:0}
+.fill-card .ci-card,.fill-card .ex-cd,.fill-card .qt{margin:0}
+.fl-tip{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--pw-line)}
+.fl-tip:first-of-type{border-top:0}
+.fl-tip p{margin:0;font-size:13px;line-height:1.45;color:var(--pw-ink)}
+.fl-plan{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:4px}
+.fl-plan li{display:grid;grid-template-columns:44px 1fr;gap:8px;font-size:13px;color:var(--pw-ink);padding:6px 0;border-bottom:1px solid var(--pw-line)}
+.fl-plan li span{color:var(--pw-ink-3);font-size:11.5px}
+.fl-plan li.on{color:var(--pw-ink-3);text-decoration:line-through}
+html.reduce .fill-card{animation:none}
+.fl-big{margin:0;font-size:22px;font-weight:750;color:var(--cr-crimson);letter-spacing:-.01em}
+.fl-ex,.fl-q{margin:6px 0 0;font-size:13px;line-height:1.5;color:var(--pw-ink)}
+.fl-ex{font-style:italic;color:var(--pw-ink-2)}
+.fl-d summary{cursor:pointer;margin-top:8px;font-size:12.5px;font-weight:650;color:var(--cr-crimson)}
