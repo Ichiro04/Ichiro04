@@ -3,12 +3,18 @@
  * version that runs inside the Daily Coach "Lab" tab, in an iframe (srcdoc).
  * Each patch must apply exactly once or the build fails.
  */
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const here = dirname(fileURLToPath(import.meta.url));
+const vendor = f => readFileSync(resolve(here, 'vendor', f), 'utf8');
+
 export function embedLab(src){
   let s = src;
   const rep = (from, to) => {
     const n = s.split(from).length - 1;
     if (n !== 1) throw new Error(`lab embed: expected 1 match, found ${n}: ${from.slice(0,70)}`);
-    s = s.replace(from, to);
+    s = s.replace(from, typeof to === 'function' ? to : to);
   };
   // no link back to the coach: we are inside it
   s = s.replace(/<a class="levelchip coachlink"[^>]*>[^<]*<\/a>/, '');
@@ -34,5 +40,8 @@ function localLoad(){ if(!LOCAL_OK) return; let d=null; try{ d=JSON.parse(localS
   rep('if(location.hash!=="#"+tab){ try{ history.replaceState(null,"","#"+tab); }catch(e){ location.hash=tab; } }', 'try{ parent.postMessage({labTab:tab},"*"); }catch(e){}');
   rep('window.addEventListener("hashchange", ()=>go(location.hash.slice(1)));', 'document.addEventListener("click",e=>{ const a=e.target.closest&&e.target.closest("a[href]"); if(!a) return; const h=a.getAttribute("href")||""; if(h.startsWith("#")){ e.preventDefault(); go(h.slice(1)); window.scrollTo(0,0); } else if(/^https?:/i.test(h)){ a.target="_blank"; a.rel="noopener"; } });');
   rep('go(location.hash.slice(1) || "trends");', 'go(window.LAB_START || "trends");');
+  // three.js r128 (MIT, lab/vendor) is bundled so the 3D bench works offline; no CDN
+  rep('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>', () => '<script>' + vendor('three.min.js') + '</script>');
+  rep('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>', () => '<script>' + vendor('OrbitControls.js') + '</script>');
   return s;
 }

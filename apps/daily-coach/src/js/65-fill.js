@@ -37,7 +37,7 @@ function fillPool(tab){
   const plan = () => { try { const k = dkey(), it = apPlan().items.slice(0, 8); return `<section class="glass xs-card"><div class="xs-h"><b>Today’s plan</b><small>${it.filter(i => apItemDone(k, i)).length} of ${apPlan().items.length} done · full list on Coach</small></div><ul class="fl-plan">${it.map(i => `<li class="${apItemDone(k, i) ? 'on' : ''}"><span class="num">${esc(i.time || '')}</span>${esc(i.t)}</li>`).join('')}</ul><button class="lay-btn" data-xs="go" data-go="coach">${ic('arrowRight', 14)} Open the coach</button></section>`; } catch(_){ return ''; } };
   const orbit = () => typeof kmLauncherHTML === 'function' && !has('.km-launch') ? kmLauncherHTML() : '';
   const exam = () => typeof examCountHTML === 'function' && !has('.ex-cd') ? examCountHTML('review') : '';
-  const quote = () => typeof quoteHTML === 'function' && !has('.qt') ? quoteHTML() : '';
+  const quote = () => typeof quoteHTML === 'function' && !has('.qt, .mv') ? quoteHTML() : '';
   const wheel = () => typeof wheelHTML === 'function' && !has('.wh') ? wheelHTML() : '';
   const cal = () => typeof calHTML === 'function' && !has('.cal') ? calHTML() : '';
   const sched = () => typeof schedHTML === 'function' && !has('.sch') ? schedHTML() : '';

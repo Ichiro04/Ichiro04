@@ -172,7 +172,7 @@ function learnEssayHTML(){
     </form>
     ${essays.length?`<div class="divider"></div><div style="display:grid;gap:2px">
       ${essays.slice(0,5).map(e=>`<div class="row between" style="gap:10px;padding:6px 0">
-        <span class="tiny" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.prompt)}</span>
+        <span class="tiny" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.prompt)}</span>
         <span class="chip ${e.band>=7?'chip-teal':'chip-orange'}">${e.words}w${e.band?' · '+e.band:''}</span>
       </div>`).join('')}
     </div>`:''}

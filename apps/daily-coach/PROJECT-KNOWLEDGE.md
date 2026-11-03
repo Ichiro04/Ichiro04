@@ -20,7 +20,8 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 - The daily system: the now card with a ring timer and Done / Partly / Missed, an up-next countdown, the 3 that matter, a feel strip and a day-plan timeline.
 - **Today's wave:** the day plan drawn as an animated wave, with done blocks filled in crimson and a "Now" marker.
 - **Tips** worked out from the data, up to 3 at a time, each dismissible for today.
-- The task list: four tasks makes a streak day.
+- The task list: four tasks makes a streak day. The **streak saver** forgives one missed day a week (never two in a row); switch it off in Settings → Goals.
+- **Morning letter:** a quote of the day (keep it with the heart, or tap for another) and a short letter from "you, one year from now" written from today's numbers: tasks left, streak, savings, IELTS countdown and your quietest area. "Read it to me" reads it aloud, and "Your lines" adds your own lines to the quotes.
 
 **Orbit (the knowledge map / galaxy).** It opens from the launcher card. It's a 3D cinematic space scene built from real data:
 - Sun = KsHan.
@@ -64,9 +65,11 @@ The map's controls:
 
 **Money / Progress / Train / Learn.**
 - Train: sessions with animated exercise figures.
-- Learn: IELTS essays, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
-- Money: the £25k savings plan and spending log.
+- Learn: IELTS essays (write in the app with a timer, word count and linking words, then score yourself on the four criteria to get a band and a trend), an IELTS plan counting down to the exam date, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
+- Money: the £25k savings plan and spending log. The savings year starts on the date set in Settings → Goals.
 - Progress: streaks and charts.
+
+**Backup and reminders.** Settings → Your data saves a backup file to a folder you pick once a week (or downloads one). The day plan is also in Google Calendar as "Daily Coach · …" events with phone reminders. The Lab works offline.
 
 ## Look
 - Three styles in Settings → Look: Crimson pearl (default), Neumorphic glass and Glassmorphism. The glass styles can be tuned there: tint, accent, transparency, blur, soft depth, roundness, solid surfaces.

@@ -27,6 +27,8 @@ A scheduled Claude run works through this list at night: **one item per run**. T
 - [x] (3 Nov, chat) Today's right-edge ring panel removed (the user confirmed: no side bars).
 - idea, needs OK: install as a phone app (service worker + manifest) so it works offline from the home screen.
 - idea, needs OK: weekly "export my check-ins" as a Google Doc through the connected Google Drive.
-- idea, needs OK: Lab test bench works offline: bundle the 3D library into the file (adds about 600 KB) or redraw the bench with the app's own WebGL renderer, so it no longer loads three.js from a CDN.
+- [x] (3 Nov, chat) Lab test bench works offline: three.js r128 bundled into the file.
 - idea, needs OK: Orbit on a phone: keep star and goal labels inside the screen (slide them in or flip them to the other side near the edge) so "Mec…" and "£25k saving…" are readable.
 - idea, needs OK: Settings → Goals: set the start date of the £25k year (today it is the day the app was first opened), so "Day N of 365" and "days left" match when saving really started.
+- [x] (3 Nov, chat) Streak saver, savings-year start date, IELTS plan to exam, essay writer with self-scoring, weekly backup, phone reminders in Google Calendar, morning letter on Today.
+- idea, needs OK: install on phone (needs public hosting; the repo is private and has personal data, so ask first).
