@@ -21,7 +21,7 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 - **Today's wave:** the day plan drawn as an animated wave, with done blocks filled in crimson and a "Now" marker.
 - **Tips** worked out from the data, up to 3 at a time, each dismissible for today.
 - The task list: four tasks makes a streak day. The **streak saver** forgives one missed day a week (never two in a row); switch it off in Settings → Goals.
-- **Morning letter:** a quote of the day (keep it with the heart, or tap for another) and a short letter from "you, one year from now" written from today's numbers: tasks left, streak, savings, IELTS countdown and your quietest area. "Read it to me" reads it aloud, and "Your lines" adds your own lines to the quotes.
+- **Morning letter** (the first thing on Today): a quote of the day (keep it with the heart, or tap for another) and a short letter from "you, one year from now" written from today's numbers: tasks left, streak, savings, IELTS countdown and your quietest area. "Read it to me" reads it aloud, and "Your lines" adds your own lines to the quotes.
 
 **Orbit (the knowledge map / galaxy).** It opens from the launcher card. It's a 3D cinematic space scene built from real data:
 - Sun = KsHan.

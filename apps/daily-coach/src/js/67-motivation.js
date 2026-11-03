@@ -124,10 +124,16 @@ function mvLetter(){
   return { greet, lines, close };
 }
 
+/* three small numbers under the quote on wide screens */
+function mvStatsHTML(){
+  const k = dkey(), done = countDone(k), tot = tasksForDay(k).length, goal = Number(state.settings.goal) || 25000, saved = typeof savedTotal === 'function' ? savedTotal() : 0;
+  const cell = (v, l) => `<div><b class="num">${v}</b><span>${l}</span></div>`;
+  return `<div class="mv-stats">${cell(currentStreak(), 'day streak')}${cell(`${done}/${tot}`, 'tasks today')}${cell(Math.round(saved / goal * 100) + '%', 'of ' + money0(goal))}</div>`;
+}
 function mvHTML(){
   const m = mvState(), q = mvPick(MV.shift), fav = m.favs.includes(q[1]), L = mvLetter(), speak = 'speechSynthesis' in window;
   const date = new Date().toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
-  return `<div class="h2">Morning letter <span class="side">${esc(date)}</span></div>
+  return `<section class="mv-top"><div class="h2">Morning letter <span class="side">${esc(date)}</span></div>
   <div class="glass mv" id="mvCard">
     <div class="mv-q">
       <span class="mv-mark" aria-hidden="true">${ic('quote', 30)}</span>
@@ -139,6 +145,7 @@ function mvHTML(){
         <button class="mv-ib ${fav ? 'on' : ''}" data-mv="fav" aria-pressed="${fav}" aria-label="${fav ? 'Remove from kept lines' : 'Keep this line'}">${ic('heart', 17)}</button>
         <button class="mv-ib" data-mv="next" aria-label="Show another line">${ic('rotate', 17)}</button>
       </div>
+      ${mvStatsHTML()}
     </div>
     <div class="mv-letter">
       <p class="mv-hi">${esc(L.greet)}</p>
@@ -156,7 +163,7 @@ function mvHTML(){
       ${m.mine.length ? `<ul class="mv-list">${m.mine.map((t, i) => `<li><span>${esc(t)}</span><button class="mv-x ${MV.del === i ? 'sure' : ''}" data-mv="del" data-i="${i}" aria-label="${MV.del === i ? 'Tap again to remove' : 'Remove this line'}">${MV.del === i ? 'Remove?' : ic('x', 14)}</button></li>`).join('')}</ul>` : ''}
       ${m.favs.length ? `<div class="tiny mv-kept">${ic('heart', 13)} ${m.favs.length} ${m.favs.length > 1 ? 'kept lines come' : 'kept line comes'} back more often.</div>` : ''}
     </div>
-  </div>`;
+  </div></section>`;
 }
 
 /* point the quote of the day at a given line (the pool changes size when you add or keep one) */
@@ -177,11 +184,8 @@ function mvAdd(){
   mvRedraw(true); toast('Added. It is today’s line now.', 'ok', 1600);
 }
 
-/* insert the card at the top of Today's right column */
-renderToday = (orig => function(){
-  const html = orig.apply(this, arguments);
-  return html.replace('<div class="tcol b">', '<div class="tcol b">' + mvHTML());
-})(renderToday);
+/* the letter opens the Today tab, above everything else (the user asked for it at the top) */
+renderToday = (orig => function(){ return mvHTML() + orig.apply(this, arguments); })(renderToday);
 
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-mv]'); if (!b) return;
