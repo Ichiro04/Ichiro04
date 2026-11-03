@@ -186,7 +186,6 @@ const GAL = {
     g.globalAlpha = 1;
   }
 };
-const GAL_PLANETS = [['#F6D9DE','#B3203A','#3A0710'],['#F3E6D6','#C9A882','#5A4430'],['#FFFFFF','#DAD4C8','#4E4A44'],['#E9D5E0','#8E5A7A','#2A1624'],['#E2ECF6','#8FA7C8','#1E2A3C']];
 
 /* ---------- galaxy dashboard panels (shown inside the knowledge map) ---------- */
 function kmRing(p, sz, col){ const r = sz/2-5, C = 2*Math.PI*r; return `<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}" class="cc-ring" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="t"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="f" style="stroke:${col};stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C*(1-clamp(p,0,1))).toFixed(1)}"/></svg>`; }

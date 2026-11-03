@@ -243,7 +243,6 @@ function toast(msg, kind='ok', ms=2600){
 }
 
 /* ---------- sheet ---------- */
-let sheetResolve = null;
 function openSheet({ title, body, actions='' }){
   const scrim = $('#scrim'), sheet = $('#sheet');
   sheet.innerHTML = `<div class="grab"></div>

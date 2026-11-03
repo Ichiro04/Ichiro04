@@ -104,7 +104,6 @@ function renderToday(){
 }
 
 /* cue card (shared with Learn tab) */
-let cueIndex = 0;
 function currentCue(){
   if (!state.ielts.cueSeen.__idx) state.ielts.cueSeen.__idx = (new Date().getDate() + new Date().getMonth()*31) % CUE_CARDS.length;
   return CUE_CARDS[state.ielts.cueSeen.__idx % CUE_CARDS.length];

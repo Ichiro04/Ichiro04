@@ -1835,6 +1835,9 @@ html[data-theme="dark"] .t-ye{color:var(--pw-yellow)}
 .ds-dots button{width:16px;height:16px;border-radius:50%;background:var(--pw-line-2)}
 .ds-dots button.on{background:var(--pw-yellow);box-shadow:0 0 8px rgba(148,112,79,.6)}
 .ds-dots b{margin-left:4px;font-size:13px}
+/* bigger invisible tap area on the 16px energy dots (phone thumbs); the dots look the same */
+.ds-dots button{position:relative}
+.ds-dots button::after{content:'';position:absolute;inset:-5px -2.5px}
 .ds-seg{display:flex;padding:3px;gap:2px;border-radius:999px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}
 .ds-seg button{padding:5px 10px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--pw-ink-3)}
 .ds-seg button.on{background:var(--pw-red);color:#fff}
@@ -2295,6 +2298,15 @@ body.km-open .tabbar,body.km-open .notch,body.km-open .topbar{visibility:hidden}
 .km-lt b{display:block;font-size:16px;font-weight:700}
 .km-lt small{display:block;font-size:12.5px;color:#BDB3A8;margin-top:2px}
 .km-lgo{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#F6F1EA;background:linear-gradient(180deg,#A3142C,#710014)}
+
+/* ---------- phones: the map toolbar is 424px wide at 32px buttons, so the hand and fit buttons
+   fell off a 390px screen. Tighter buttons and gaps keep all of it on screen. ---------- */
+@media(max-width:440px){
+  .km .km-tools{gap:4px;max-width:calc(100vw - 16px)}
+  .km .km-grp{padding:2px}
+  .km .km-grp button{width:28px;height:30px}
+  .km .km-grp .km-zr{min-width:34px;padding:0 4px}
+}
 
 /* ---------- narrow screens ---------- */
 @media(max-width:860px){
@@ -7190,7 +7202,6 @@ const GAL = {
     g.globalAlpha = 1;
   }
 };
-const GAL_PLANETS = [['#F6D9DE','#B3203A','#3A0710'],['#F3E6D6','#C9A882','#5A4430'],['#FFFFFF','#DAD4C8','#4E4A44'],['#E9D5E0','#8E5A7A','#2A1624'],['#E2ECF6','#8FA7C8','#1E2A3C']];
 
 /* ---------- galaxy dashboard panels (shown inside the knowledge map) ---------- */
 function kmRing(p, sz, col){ const r = sz/2-5, C = 2*Math.PI*r; return `<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}" class="cc-ring" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="t"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="f" style="stroke:${col};stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C*(1-clamp(p,0,1))).toFixed(1)}"/></svg>`; }
@@ -7460,7 +7471,6 @@ function renderToday(){
 }
 
 /* cue card (shared with Learn tab) */
-let cueIndex = 0;
 function currentCue(){
   if (!state.ielts.cueSeen.__idx) state.ielts.cueSeen.__idx = (new Date().getDate() + new Date().getMonth()*31) % CUE_CARDS.length;
   return CUE_CARDS[state.ielts.cueSeen.__idx % CUE_CARDS.length];
@@ -7898,8 +7908,8 @@ function renderMoney(){
   const onPace = proj <= allowance;
   const need = needPerMonth(), feasible = feasiblePerMonth();
   const gap = Math.max(0, need - feasible);
-  const monthsLeft = Math.max(0, 12 - (now.getMonth() - new Date(state.createdAt).getMonth() + 12*0)%12);
-  const daysLeft = Math.max(1, Math.ceil((new Date(now.getFullYear()+1, now.getMonth(), now.getDate()) - now)/864e5));
+  // the £25k year runs from the plan start (createdAt), matching "Day N of 365" in the status bar
+  const daysLeft = Math.max(1, 366 - planDay());
   const perDay = Math.max(0,(goal - saved)/daysLeft);
 
   const byCat = CATS.map(c=>({ ...c, total: state.expenses.filter(e=>(e.date||'').startsWith(monthKey(now)) && e.cat===c.id).reduce((a,e)=>a+Number(e.amount||0),0) })).filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
@@ -8730,7 +8740,6 @@ function toast(msg, kind='ok', ms=2600){
 }
 
 /* ---------- sheet ---------- */
-let sheetResolve = null;
 function openSheet({ title, body, actions='' }){
   const scrim = $('#scrim'), sheet = $('#sheet');
   sheet.innerHTML = `<div class="grab"></div>

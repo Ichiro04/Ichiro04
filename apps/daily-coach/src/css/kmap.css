@@ -221,6 +221,15 @@ body.km-open .tabbar,body.km-open .notch,body.km-open .topbar{visibility:hidden}
 .km-lt small{display:block;font-size:12.5px;color:#BDB3A8;margin-top:2px}
 .km-lgo{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#F6F1EA;background:linear-gradient(180deg,#A3142C,#710014)}
 
+/* ---------- phones: the map toolbar is 424px wide at 32px buttons, so the hand and fit buttons
+   fell off a 390px screen. Tighter buttons and gaps keep all of it on screen. ---------- */
+@media(max-width:440px){
+  .km .km-tools{gap:4px;max-width:calc(100vw - 16px)}
+  .km .km-grp{padding:2px}
+  .km .km-grp button{width:28px;height:30px}
+  .km .km-grp .km-zr{min-width:34px;padding:0 4px}
+}
+
 /* ---------- narrow screens ---------- */
 @media(max-width:860px){
   .km-tools{position:absolute;left:50%;transform:translateX(-50%);top:calc(60px + env(safe-area-inset-top,0px))}

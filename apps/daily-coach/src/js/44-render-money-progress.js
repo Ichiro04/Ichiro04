@@ -12,8 +12,8 @@ function renderMoney(){
   const onPace = proj <= allowance;
   const need = needPerMonth(), feasible = feasiblePerMonth();
   const gap = Math.max(0, need - feasible);
-  const monthsLeft = Math.max(0, 12 - (now.getMonth() - new Date(state.createdAt).getMonth() + 12*0)%12);
-  const daysLeft = Math.max(1, Math.ceil((new Date(now.getFullYear()+1, now.getMonth(), now.getDate()) - now)/864e5));
+  // the £25k year runs from the plan start (createdAt), matching "Day N of 365" in the status bar
+  const daysLeft = Math.max(1, 366 - planDay());
   const perDay = Math.max(0,(goal - saved)/daysLeft);
 
   const byCat = CATS.map(c=>({ ...c, total: state.expenses.filter(e=>(e.date||'').startsWith(monthKey(now)) && e.cat===c.id).reduce((a,e)=>a+Number(e.amount||0),0) })).filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
