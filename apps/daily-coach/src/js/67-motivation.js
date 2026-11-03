@@ -204,7 +204,7 @@ document.addEventListener('click', e => {
     const ss = window.speechSynthesis; if (!ss) return;
     if (ss.speaking){ ss.cancel(); return; }
     const L = mvLetter(), u = new SpeechSynthesisUtterance([mvPick(MV.shift)[1], L.greet, ...L.lines, L.close].join(' '));
-    u.lang = 'en-GB'; u.rate = .95; const v = ss.getVoices().find(x => /en-GB/i.test(x.lang)); if (v) u.voice = v; ss.speak(u);
+    u.lang = 'en-GB'; u.rate = (state.voiceRate || 1) * .95; voiceSay(u); ss.speak(u);
   }
 }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'mvIn'){ e.preventDefault(); mvAdd(); } });

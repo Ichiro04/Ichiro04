@@ -105,18 +105,6 @@ function feelHTML(){
     <div class="ds-fi ds-shape"><small>Day shape</small><div class="ds-seg">${[['full','Full'],['short','Short'],['minimum','Minimum']].map(([v,l])=>`<button class="${shape===v?'on':''}" data-a="ds-shape" data-v="${v}">${l}</button>`).join('')}</div><span class="tiny">${shape==='full'?'Every block at full length':shape==='short'?'Blocks cut to 60%':'Only the 3 that matter, 15 min each'}</span></div>
   </div>`;
 }
-const STATUS_TAG = { done:['Done','good'], partly:['Partly','next'], missed:['Missed','late'], now:['Now','live'], '':['Open','muted'], skip:['Skipped','muted'] };
-function planHTML(){
-  const k = dkey(), B = dayBlocks(k), S = nowState(k), m = nowMin();
-  return `<div class="glass ds-plan"><ol class="ds-way">${B.map(b=>{
-    const s = blockStatus(k,b), isNow = S.kind==='now' && S.b && S.b.id===b.id, key = b.skip ? 'skip' : isNow && !s ? 'now' : s, [lbl,tone] = STATUS_TAG[key];
-    const next = s==='' ? 'done' : s==='done' ? 'partly' : s==='partly' ? 'missed' : '';
-    return `<li class="ds-wp ${key||'open'} ${b.start+b.dur < m && !s && !b.skip ? 'overdue':''}"><span class="ds-wt num">${b.t}</span><span class="ds-wn"></span>
-      <span class="ds-wb"><b>${esc(b.name)}</b><small>${b.skip?'skipped on a minimum day':`${esc(b.note)} · ${b.dur} min`}</small></span>
-      ${b.skip?`<span class="pw-tag muted">Skipped</span>`:`<button class="pw-tag ${tone}" data-a="ds-status" data-id="${b.id}" data-v="${next}" aria-label="${esc(b.name)}: ${lbl}. Tap to change">${lbl}</button>`}</li>`; }).join('')}
-    <li class="ds-wp sleep"><span class="ds-wt num">22:45</span><span class="ds-wn"></span><span class="ds-wb"><b>Lights out</b><small>Aim for 7 h 30 before a 06:15 start</small></span><span class="pw-tag muted">Sleep</span></li>
-  </ol><div class="tiny" style="margin-top:8px">Tap a tag to cycle Done → Partly → Missed → Open. Done also ticks the matching task.</div></div>`;
-}
 function focusOf(k){ return dayBlocks(k).reduce((s,b)=>{ const st = blockStatus(k,b); return s + (st==='done' ? b.dur : st==='partly' ? b.dur/2 : 0); }, 0); }
 function numbersHTML(){
   const k = dkey(), f = focusOf(k), sl = sleepMins(dayRec(k));
@@ -156,8 +144,9 @@ function daySystemHTML(){
     ${upNextStrip()}
     <div class="ds-row2">${threeHTML()}${feelHTML()}</div>
     ${numbersHTML()}
-    <div class="ds-row3"><div><div class="h2">Day plan <span class="side num">${dayBlocks(dkey()).filter(b=>!b.skip).length} blocks</span></div>${planHTML()}</div>
-      <div><div class="h2">Focus <span class="side">and where it went</span></div>${focusChartHTML()}${timeBarsHTML()}</div></div>
+    ${planBoardHTML()}
+    <div class="ds-row3"><div><div class="h2">Focus <span class="side">last 14 days</span></div>${focusChartHTML()}</div>
+      <div><div class="h2">Where the time went <span class="side">this week</span></div>${timeBarsHTML()}</div></div>
   </section>`;
 }
 function dsAction(a, el){

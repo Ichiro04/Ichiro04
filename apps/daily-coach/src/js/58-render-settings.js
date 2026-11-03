@@ -49,6 +49,7 @@ function setBody(sec){
   + `<p class="set-note">Answers come from Claude when it is allowed here, otherwise from the built-in coach. Only a short summary of today’s numbers is sent, never your whole record.</p>
     ${setToggle('Deeper answers','aiDeep', typeof AI!=='undefined' && AI.deep, 'Slower, more thought through')}
     ${setToggle('Read answers aloud','voiceOut', state.voiceOut, 'Uses your device’s voice')}
+    ${voicePickHTML()}
     ${setSeg('Voice speed','voiceRate', String(state.voiceRate || 1), [['0.85','Slow'],['1','Normal'],['1.15','Fast']])}
     ${setSeg('Voice input language','voiceLang', state.voiceLang || 'en-GB', [['en-GB','English'],['my-MM','Burmese']])}
     <button class="set-btn" data-set-act="voicetest">${ic('volume',16)} Test the voice</button>`; }
@@ -69,6 +70,14 @@ function setBody(sec){
   return `<h3>Your data</h3><p class="set-note">Everything lives in this browser only. Export a backup before clearing site data or switching phones.</p>
     <div class="set-acts"><button class="set-btn" data-a="export">${ic('download',16)} Export backup</button><button class="set-btn" data-a="import">${ic('upload',16)} Import backup</button><button class="set-btn danger" data-a="reset">${ic('x',16)} Reset everything</button></div>`;
 }
+function voicePickHTML(){
+  const vs = voiceList(), cur = pickVoice(), fem = vs.filter(voiceIsFemale), other = vs.filter(v => !voiceIsFemale(v) && !VOICE_M.test(v.name));
+  if (!vs.length) return `<div class="set-f row" data-ico="speaker"><span>Voice<small>Your device has not loaded its voices yet. Open this page again in a moment.</small></span></div>`;
+  const opt = v => `<option value="${esc(v.name)}" ${cur && cur.name === v.name ? 'selected' : ''}>${esc(v.name.replace(/^(Microsoft|Google) /, ''))} · ${esc(v.lang)}</option>`;
+  return `<label class="set-f" data-ico="speaker"><span>Voice<small>${cur ? (voiceIsFemale(cur) ? 'Female voice' : 'Closest voice on this device') : 'Device default'}</small></span>
+    <select class="set-sel" data-set-voice aria-label="Voice"><option value="">Automatic (female)</option>${fem.length ? `<optgroup label="Female voices">${fem.map(opt).join('')}</optgroup>` : ''}${other.length ? `<optgroup label="Other voices">${other.map(opt).join('')}</optgroup>` : ''}</select></label>`;
+}
+document.addEventListener('change', e => { const s = e.target.closest('[data-set-voice]'); if (!s) return; state.voiceName = s.value; save(); aiSpeak(`Hello ${displayName()}. This is your coach.`, true); });
 function setHTML(){
   return `<div class="set-ov" id="setOv" role="dialog" aria-modal="true" aria-label="Settings">
     <div class="set-sheet">
@@ -117,12 +126,28 @@ function setApply(i, live){
 }
 document.addEventListener('keydown', e=>{ if (e.key==='Escape' && SET.open){ e.stopPropagation(); setClose(); } }, true);
 
-/* ---------- voice ---------- */
+/* ---------- voice ----------
+   The user asked for a woman's voice (like Siri, Gemini or Claude), never a man's.
+   Browsers do not say a voice's gender, so known names are used: female names first,
+   known male names never picked automatically. Settings → Coach and voice can pin one. */
+const VOICE_F = /female|woman|samantha|serena|karen|moira|tessa|fiona|victoria|allison|\bava\b|susan|zoe|kate|stephanie|martha|catherine|emily|libby|sonia|hazel|zira|aria|jenny|emma|michelle|natasha|clara|sara|maisie|abbi|bella|hollie|olivia|amy|joanna|kendra|kimberly|salli|ivy|nicole|heather|siri|en-gb-x-gba|en-gb-x-gbc|en-gb-x-gbg|en-us-x-sfg|en-us-x-tpc|en-us-x-iob/i;
+const VOICE_M = /\bmale\b|daniel|arthur|oliver|george|ryan|thomas|\balex\b|fred|aaron|gordon|rishi|david|\bmark\b|\bguy\b|christopher|eric|roger|brian|elliot|noah|ethan|alfie|\blee\b|james|william|ralph|albert|bruce|junior|en-gb-x-gbb|en-gb-x-gbd|en-gb-x-rjs|en-us-x-iol|en-us-x-iom|en-us-x-tpd/i;
+function voiceList(){ try { return ('speechSynthesis' in window) ? speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang)) : []; } catch(_){ return []; } }
+function voiceIsFemale(v){ return VOICE_F.test(v.name + ' ' + (v.voiceURI || '')) && !/\bmale\b/i.test(v.name.replace(/female/i, '')); }
+function pickVoice(){
+  const vs = voiceList(); if (!vs.length) return null;
+  if (state.voiceName){ const v = vs.find(x => x.name === state.voiceName); if (v) return v; }
+  const gb = v => /en[-_]GB/i.test(v.lang), notM = v => !VOICE_M.test(v.name + ' ' + (v.voiceURI || ''));
+  return vs.find(v => gb(v) && voiceIsFemale(v) && /natural|neural|online|enhanced|premium/i.test(v.name))
+      || vs.find(v => gb(v) && voiceIsFemale(v)) || vs.find(v => voiceIsFemale(v))
+      || vs.find(v => gb(v) && notM(v)) || vs.find(notM) || null;
+}
+function voiceSay(u){ const v = pickVoice(); if (v){ u.voice = v; u.lang = v.lang; } u.pitch = v && voiceIsFemale(v) ? 1 : 1.12; return u; }
+if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (SET.open && SET.sec === 'coach'){ const b = document.getElementById('setBody'); if (b) b.innerHTML = setBody('coach'); } }); } catch(_){} }
 function aiSpeak(text, force){
   if (!('speechSynthesis' in window)){ if (force) toast('This browser cannot read text aloud.','warn',2400); return; }
   if (!force && !state.voiceOut) return;
-  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(text).replace(/[*_#`>]/g,'').slice(0, 900)); u.lang = 'en-GB'; u.rate = state.voiceRate || 1;
-    const vs = speechSynthesis.getVoices(); const v = vs.find(x=>/en-GB/i.test(x.lang) && /Daniel|Serena|Google UK|Natural|Neural/i.test(x.name)) || vs.find(x=>/en-GB/i.test(x.lang)); if (v) u.voice = v;
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(text).replace(/[*_#`>]/g,'').slice(0, 900)); u.lang = 'en-GB'; u.rate = state.voiceRate || 1; voiceSay(u);
     u.onstart = ()=>{ document.getElementById('aiChat')?.classList.add('voicing'); }; u.onend = u.onerror = ()=>{ document.getElementById('aiChat')?.classList.remove('voicing'); };
     speechSynthesis.speak(u); } catch(_){ }
 }

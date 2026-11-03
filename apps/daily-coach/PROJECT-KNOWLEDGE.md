@@ -17,7 +17,8 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 **Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress, Review and Coach. Settings opens from the gear in the date strip or from the rail.
 
 **Today.**
-- The daily system: the now card with a ring timer and Done / Partly / Missed, an up-next countdown, the 3 that matter, a feel strip and a day-plan timeline.
+- The daily system: the now card with a ring timer and Done / Partly / Missed, an up-next countdown, the 3 that matter and a feel strip.
+- **Day plan** in three views: a Board (To do / In progress / Done / Missed; drag cards or tap to move them), a Timeline on an hour grid with a now line, and a List with All / Open / Done / Missed filters.
 - **Today's wave:** the day plan drawn as an animated wave, with done blocks filled in crimson and a "Now" marker.
 - **Tips** worked out from the data, up to 3 at a time, each dismissible for today.
 - The task list: four tasks makes a streak day. The **streak saver** forgives one missed day a week (never two in a row); switch it off in Settings → Goals.
@@ -65,9 +66,11 @@ The map's controls:
 
 **Money / Progress / Train / Learn.**
 - Train: sessions with animated exercise figures.
-- Learn: IELTS essays (write in the app with a timer, word count and linking words, then score yourself on the four criteria to get a band and a trend), an IELTS plan counting down to the exam date, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
+- Learn: IELTS essays (write in the app with a timer, word count and linking words, then score yourself on the four criteria to get a band and a trend), an IELTS plan counting down to the exam date, a "This week's study" board of weekly targets, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
 - Money: the £25k savings plan and spending log. The savings year starts on the date set in Settings → Goals.
-- Progress: streaks and charts.
+- Progress: streaks and charts, and a week schedule grid (areas × days, every block marked Done, Partly, Missed, Not logged or Planned).
+
+**Settings.** A "Me" card at the top (your profile page with day, streak, savings and essays), groups You / App / Data with an icon and the current value on each item, search, and an icon on every row. On a phone the menu comes first and each page has a Back button. Read-aloud uses a female voice; pick another in Coach and voice.
 
 **Backup and reminders.** Settings → Your data saves a backup file to a folder you pick once a week (or downloads one). The day plan is also in Google Calendar as "Daily Coach · …" events with phone reminders. The Lab works offline.
 

@@ -608,25 +608,6 @@ html[data-theme="dark"] .t-ye{color:var(--pw-yellow)}
 .ds-kv small{font-size:13px;font-weight:650;color:var(--pw-ink-3);margin-left:2px}
 /* timeline */
 .ds-row3{display:grid;gap:4px}
-.ds-plan{padding:12px 14px!important}
-.ds-way{list-style:none;margin:0;padding:0;position:relative}
-.ds-way::before{content:"";position:absolute;left:52px;top:10px;bottom:10px;width:2px;background:var(--pw-line-2)}
-.ds-wp{display:grid;grid-template-columns:42px 22px 1fr auto;align-items:center;gap:6px;padding:8px 0}
-.ds-wt{font-size:12.5px;font-weight:750;color:var(--pw-ink-3)}
-.ds-wn{width:12px;height:12px;border-radius:50%;background:var(--pw-panel);box-shadow:0 0 0 2px var(--pw-line-2);justify-self:center;position:relative;z-index:1}
-.ds-wb{display:grid;min-width:0}
-.ds-wb b{font-size:14px;font-weight:750}
-.ds-wb small{font-size:12px;color:var(--pw-ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ds-wp.done .ds-wn{background:var(--pw-green);box-shadow:0 0 0 2px var(--pw-green)}
-.ds-wp.partly .ds-wn{background:var(--pw-yellow);box-shadow:0 0 0 2px var(--pw-yellow)}
-.ds-wp.missed .ds-wn{background:var(--pw-red);box-shadow:0 0 0 2px var(--pw-red)}
-.ds-wp.now .ds-wn{background:var(--pw-red);box-shadow:0 0 0 4px rgba(142,10,31,.25),0 0 14px rgba(142,10,31,.7);animation:nowPulse 1.6s ease-in-out infinite}
-@keyframes nowPulse{50%{box-shadow:0 0 0 7px rgba(142,10,31,.08),0 0 6px rgba(142,10,31,.4)}}
-.ds-wp.now .ds-wt,.ds-wp.now .ds-wb b{color:var(--pw-red)}
-.ds-wp.done .ds-wb b{color:var(--pw-ink-3);text-decoration:line-through;text-decoration-color:var(--pw-green)}
-.ds-wp.skip{opacity:.45}
-.ds-wp.overdue .ds-wt{color:var(--pw-red)}
-.ds-wp.sleep .ds-wn{background:var(--pw-purple);box-shadow:0 0 0 2px var(--pw-purple)}
 /* focus chart + time bars */
 .ds-chart,.ds-tbars{padding:14px!important}
 .ds-tbars{margin-top:14px}
@@ -643,7 +624,7 @@ html[data-theme="dark"] .t-ye{color:var(--pw-yellow)}
 .ds-brow b{text-align:right;font-size:12.5px}
 .ds-brow .ds-bar{height:7px}
 .f-rd{background:var(--pw-red)!important}.f-bl{background:#E6CDB0!important}.f-pu{background:var(--pw-purple)!important}.f-ye{background:var(--pw-yellow)!important}.f-gr{background:var(--pw-green)!important}.f-mu{background:var(--pw-ink-3)!important}
-html.reduce .ds-bars14 rect,html.reduce .ds-wp.now .ds-wn{animation:none}
+html.reduce .ds-bars14 rect{animation:none}
 
 /* ============================================================
    WIDE SCREENS: tabs move into the top strip, 12-column grid
