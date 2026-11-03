@@ -61,7 +61,7 @@ The map's controls:
   - The text box.
   - A mic. Voice works in the Chrome app; the claude.ai viewer blocks the microphone, so device dictation is the fallback.
   - Read-aloud answers.
-  - Chat language: English, မြန်မာ (Burmese) or 日本語 (Japanese). Answers come in that language (through Claude), the mic listens for it, and read-aloud uses a female voice for it where the device has one.
+  - Chat language: English, မြန်မာ (Burmese) or 日本語 (Japanese). The coach understands all three, typed or spoken (or mixed), and always answers in the chat language through Claude. The small button next to the mic picks the language it listens for. Read-aloud uses a voice for the answer's language; Settings → Coach and voice shows which voices the device has (Burmese: Edge's Microsoft Nilar, or SM Myanmar TTS on Android).
   - Translation between English, Burmese and Japanese (Japanese includes rōmaji).
 - **Token saver:** Saver (the default) gives built-in answers and calls Claude only on "Ask Claude"; Smart sends only open questions to Claude; Off never calls it. There's a daily limit (default 20), a same-day answer cache and a usage meter in Settings.
 

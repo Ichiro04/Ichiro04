@@ -451,3 +451,8 @@ html.reduce .ag *{animation:none!important}
   .agx-crumb em{display:none}
 }
 html.reduce .agx *{animation:none!important}
+/* no text selection on the dashboards: a tap or double tap on a label used to select it,
+   and the claude.ai viewer then opened its "Add a comment" box */
+.ag,.ag *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ag svg text{pointer-events:none}
+.ag g[data-ag-sel] text,.ag g[data-agp] text{pointer-events:none}

@@ -101,3 +101,9 @@ html[data-theme="dark"] .ai-lang button.on{color:#161616;background:linear-gradi
 [lang="my"]{font-family:"Myanmar Text","Noto Sans Myanmar","Myanmar Sangam MN","Padauk",system-ui,sans-serif;line-height:1.95!important}
 [lang="ja"]{font-family:"Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",system-ui,sans-serif;line-height:1.75}
 .ai-q[lang="my"],.ai-a[lang="my"],.ai-b[lang="my"]{word-break:normal;overflow-wrap:anywhere}
+.ai-mlang{flex:0 0 auto;align-self:center;min-width:40px;height:30px;padding:0 8px;margin-left:-4px;border-radius:999px;font-family:inherit;font-size:11.5px;font-weight:800;line-height:1;cursor:pointer;
+  color:var(--pw-ink-2);background:var(--pw-panel-2);border:0;box-shadow:inset 0 0 0 1px var(--pw-line-2)}
+.ai-mlang:hover{color:var(--pw-ink)}
+.set-ok{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;color:#8A0A1E;background:rgba(138,10,30,.1)}
+.set-ok.on{color:#3E6B22;background:rgba(94,122,58,.15)}
+html[data-theme="dark"] .set-ok{color:#F08A9C}html[data-theme="dark"] .set-ok.on{color:#A9C486}
