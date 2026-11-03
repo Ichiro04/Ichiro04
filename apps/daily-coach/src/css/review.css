@@ -8,7 +8,7 @@
 .rv > .lay-bar,.rv > .lay-foot{grid-column:1/-1}
 @media(min-width:1100px){
   .rv{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-auto-flow:row dense}
-  .rv > .lay-sec[data-sec="due"],.rv > .lay-sec[data-sec="pulse"]{grid-column:1/-1}
+  .rv > .lay-sec[data-sec="due"],.rv > .lay-sec[data-sec="exam"],.rv > .lay-sec[data-sec="pulse"]{grid-column:1/-1}
   .rv > .lay-sec[data-sec="cal"],.rv > .lay-sec[data-sec="history"]{grid-column:1}
   .rv > .lay-sec[data-sec="wheel"],.rv > .lay-sec[data-sec="trend"],.rv > .lay-sec[data-sec="quote"]{grid-column:2}
 }
@@ -224,3 +224,38 @@ html[data-theme="dark"] .cal-tasks span,html[data-theme="dark"] .cal-facts span{
 
 html.reduce .wv-line{animation:none;stroke-dashoffset:0}
 html.reduce .wv-swell,html.reduce .wv-dot.last,html.reduce .ci-tag.due,html.reduce .cp-item,html.reduce .cp-tip,html.reduce .pl-bars i,html.reduce .tr-col i,html.reduce .wh-auto,html.reduce .lay-sec.editing,html.reduce .tab.has-due .tic::after{animation:none!important}
+
+/* IELTS countdown */
+.ex-cd{display:flex;align-items:center;gap:14px;padding:14px 16px;margin-bottom:16px;width:100%;text-align:left;color:var(--pw-ink)}
+.ex-cd.ex-none{gap:12px}.ex-cd.ex-none > span{flex:1}.ex-cd.ex-none b{display:block;font-size:14px}.ex-cd.ex-none small{display:block;font-size:12px;color:var(--pw-ink-3)}
+.ex-ring{position:relative;flex:0 0 auto;width:64px;height:64px}
+.ex-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ex-ring circle{fill:none;stroke:var(--pw-line-2);stroke-width:5}
+.ex-ring circle.v{stroke:var(--cr-crimson);stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--p));transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ex-ring b{position:absolute;left:0;right:0;top:15px;text-align:center;font-size:20px;font-weight:750;line-height:1}
+.ex-ring small{position:absolute;left:0;right:0;top:37px;text-align:center;font-size:9.5px;color:var(--pw-ink-3)}
+.ex-tx{flex:1;min-width:0}.ex-tx > b{display:block;font-size:15px}.ex-tx > small{display:block;font-size:12px;color:var(--pw-ink-3)}
+.ex-tx p{margin:6px 0;font-size:13px;line-height:1.45;color:var(--pw-ink-2)}
+.ex-chips{display:flex;flex-wrap:wrap;gap:6px}.ex-chips span{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:4px 8px;border-radius:999px;background:rgba(var(--gt-accent-rgb,179,143,111),.12);color:var(--pw-ink-2)}
+.ex-go{flex:0 0 auto;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--pw-ink-2);background:var(--neu-face);box-shadow:2px 2px 6px var(--neu-lo),-2px -2px 6px var(--neu-hi)}
+.ex-cd.close .ex-ring circle.v{stroke:#B4552E}
+.view.wide > .ex-cd{flex:1 1 100%}
+/* calendar task chips are buttons for past days */
+.cal-tasks button{display:inline-flex;align-items:center;gap:5px;font:500 12px/1.2 inherit;font-family:inherit;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.4);box-shadow:inset 0 0 0 1px var(--pw-line);color:var(--pw-ink-2);transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+html[data-theme="dark"] .cal-tasks button{background:rgba(255,255,255,.04)}
+.cal-tasks button:active{transform:scale(.94)}
+.cal-tasks button.on{color:var(--cr-crimson);box-shadow:inset 0 0 0 1px rgba(var(--gt-accent-rgb,113,0,20),.35);background:rgba(var(--gt-accent-rgb,113,0,20),.07)}
+.cal-hint{margin:-2px 0 8px}
+/* money month */
+.mm{display:grid;gap:8px;padding:12px;border-radius:16px;background:rgba(var(--gt-accent-rgb,179,143,111),.07);box-shadow:inset 0 0 0 1px var(--pw-line)}
+.mm-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.mm-bars{display:grid;gap:8px}
+.mm-b{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:10px;font-size:12.5px;color:var(--pw-ink-2)}
+.mm-b i{position:relative;height:10px;border-radius:6px;background:var(--pw-line)}
+.mm-b i b{position:absolute;left:0;top:0;bottom:0;width:calc(var(--w)*100%);border-radius:6px;background:var(--cr-crimson);transform-origin:left;animation:mmGrow .8s cubic-bezier(.2,.8,.2,1) both}
+.mm-b i u{position:absolute;top:-3px;bottom:-3px;left:calc(var(--w)*100%);width:2px;border-radius:1px;background:var(--pw-ink)}
+.mm-b em{font-style:normal;font-size:12px;color:var(--pw-ink)}
+@keyframes mmGrow{from{transform:scaleX(0)}to{transform:none}}
+html.reduce .mm-b i b{animation:none}
+/* panels out of view skip the blur (see glassWatch) */
+.gl-off,html[data-skin] .gl-off{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}

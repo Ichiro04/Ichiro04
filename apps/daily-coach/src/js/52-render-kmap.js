@@ -13,7 +13,8 @@ const KM_DOMAINS = [
     { n:'Tray sealing and lidding', pack:'lidding', kw:'seal lidding tray' },
     { n:'Vacuum and modified atmosphere', pack:'micvac', kw:'vacuum map gas micvac' },
     { n:'Bagging lines (VFFS)', pack:'vffs', kw:'bagging vffs jaws' },
-    { n:'Flow wrap and registration', pack:'flowwrap', kw:'flow wrap photo eye registration' } ] },
+    { n:'Flow wrap and registration', pack:'flowwrap', kw:'flow wrap photo eye registration' },
+    { n:'Trim press faults', pack:'trim', kw:'trim press die cut angel hair hanging' } ] },
   { id:'mfg', name:'Manufacturing', w:16, icon:'gears', topics:[
     { n:'CNC machining and tolerance', pack:'cnc', kw:'cnc machining lathe mill' },
     { n:'Rotational moulding', pack:'rotomould', kw:'roto rotational moulding cooling' },
@@ -21,11 +22,11 @@ const KM_DOMAINS = [
   { id:'ops', name:'Quality and operations', w:12, icon:'chart', topics:[
     { n:'OEE that means something', pack:'oee', kw:'oee efficiency availability' },
     { n:'Root-cause analysis', pack:'rca', kw:'root cause rca fishbone why' },
-    { n:'SPC and capability', kw:'spc cpk capability control chart', plan:true } ] },
+    { n:'SPC and capability', pack:'spc', kw:'spc cpk capability control chart' } ] },
   { id:'maint', name:'Maintenance', w:11, icon:'wrench', topics:[
     { n:'PPM and condition monitoring', pack:'ppm', kw:'ppm maintenance condition monitoring' },
     { n:'Engine fault diagnosis', lab:'v12', kw:'fault diagnosis misfire bearing knock twin' },
-    { n:'Safe isolation (LOTO)', kw:'loto isolation lock safety', plan:true } ] },
+    { n:'Safe isolation (LOTO)', pack:'loto', kw:'loto isolation lock safety' } ] },
   { id:'cad', name:'CAD and drawings', w:13, icon:'pen', topics:[
     { n:'3D CAD practice', lab:'cad', kw:'cad 3d model solidworks' },
     { n:'Reading technical drawings', lab:'dwg', kw:'drawing read views projection first angle' },

@@ -49,6 +49,36 @@ const KNOWLEDGE_PACKS = [
     ],
     ask:'A corner keeps thinning until it splits. Name three process changes you would try, in order.',
     new:'Ask to see a rejected part and its cross-section. Learn where your process is thin before you propose anything.' },
+  { id:'trim', title:'Thermoforming trim press: faults and first checks', tag:'Your application',
+    points:[
+      'The trim press cuts the formed web into parts. Most trim faults are registration faults: if the web arrives in the wrong place, a perfect tool still cuts in the wrong place. Check the index length and the chain or pin grip first.',
+      'Angel hair and plastic dust mean a blunt or badly set steel-rule die, or a cut that is too fast for a cold web. Look at the cut edge under a light: clean and shiny is good, white and fibrous is a worn or mis-set edge.',
+      'Hanging parts (not fully cut) come from uneven die height, a worn cutting plate or low tonnage on one side. Check the same cavity every time before you touch the settings: a pattern points at the tool, random points at the machine.',
+      'Web temperature at the press matters. A web that has cooled too far cracks at the cut; one that is still warm stretches and leaves burrs. Note the time from forming to trim when the fault starts.',
+      'Never clear a jam with the guard open or the press live. Isolate, lock off, prove dead, then clear. Most trim press injuries happen during a "quick" jam.'
+    ],
+    ask:'Cavity 3 of 8 keeps leaving a hanging corner. What do you check first, and why that before the press settings?',
+    new:'On a line walk, ask how often the trim tools are sharpened or shimmed and where that is recorded. A missing record is a good first improvement.' },
+  { id:'spc', title:'SPC and process capability (Cp, Cpk)', tag:'Quality',
+    points:[
+      'A control chart answers one question: is the process doing anything unusual? Points inside the limits with no pattern mean leave it alone. Adjusting a stable process makes it worse.',
+      'Control limits come from the process (about ±3 standard deviations of the data). Specification limits come from the customer. Never draw one and call it the other.',
+      'Act on a signal: one point outside a limit, seven points in a row on one side of the centre line, or six rising or falling in a row. Write down what changed at that time.',
+      'Cp compares the spec width with the process spread. Cpk also checks centring: it uses the nearer spec limit. Cpk of 1.33 or more is the usual target; under 1.0 means you are making scrap.',
+      'Measure before you trust: a gauge that varies more than about 10% of the tolerance hides the real process. Check the gauge, then the chart.'
+    ],
+    ask:'Wall thickness has Cp 1.6 but Cpk 0.9. What does that tell you, and what is the one change you would make?',
+    new:'Ask which dimensions on your line are charted, who looks at the charts, and what happens when a point goes out. If nobody knows, that is the finding.' },
+  { id:'loto', title:'Safe isolation: lock out, tag out, prove dead', tag:'Safety',
+    points:[
+      'Isolation is a sequence, not a switch: tell people, stop the machine normally, isolate every energy source, lock and tag each one with your own lock, then prove it is dead before you touch anything.',
+      'Count the energies: electrical, pneumatic, hydraulic, gravity, springs, heat and stored pressure. A packaging line often has electrical plus compressed air plus hot jaws, so one lock is rarely enough.',
+      'Prove dead means try to start it, check the air gauge reads zero, bleed stored pressure and support anything that could drop. Only then is it safe.',
+      'Your lock, your key, your body. Never let someone else remove your lock and never work under someone else\'s isolation.',
+      'Restarting is part of isolation: tools out, guards on, people clear, then remove locks in reverse order and tell everyone before the first cycle.'
+    ],
+    ask:'You are asked to clear a film jam on a flow wrap "quickly, it\'s only stopped". Walk through exactly what you do.',
+    new:'In your first week, ask to be shown the isolation points for your line and practise them once with a supervisor. It also shows you take safety seriously.' },
   { id:'cnc', title:'CNC machining and holding tolerance', tag:'Your experience',
     points:[
       'Cutting speed, feed per tooth, depth of cut. Chipload too small rubs and work-hardens; too large chatters. Listen to the cut before you touch the screen.',

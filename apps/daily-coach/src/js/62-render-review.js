@@ -49,9 +49,10 @@ function ciFormHTML(type, to){
   const tile = (l, v, sub) => `<div class="ci-n"><small>${l}</small><b class="num">${v}</b>${sub ? `<i>${sub}</i>` : ''}</div>`;
   const delta = (a, b, unit = '') => b === null || b === undefined ? '' : `${a - b >= 0 ? '▲' : '▼'} ${num(Math.abs(a - b))}${unit}`;
   return `<div class="ci-form" data-ci-key="${key}" data-done="${done ? done.id : ''}">
-    <p class="tiny">${shortDate(parseKey(from))} to ${shortDate(parseKey(to))} · ${s.days} day${s.days === 1 ? '' : 's'} logged so far. The numbers fill themselves in.</p>
+    <p class="tiny">${shortDate(parseKey(from))} to ${shortDate(parseKey(to))} · ${s.days} day${s.days === 1 ? '' : 's'}${to >= dkey() ? ' so far' : ''}. The numbers fill themselves in.</p>
     <div class="ci-nums">${tile('Tasks done', s.pct + '%', delta(s.pct, pv.days ? pv.pct : null, ' pts'))}${tile('Streak days', s.streakDays, '')}${tile('Training', s.train, delta(s.train, pv.days ? pv.train : null))}${tile('Essays · speaking', `${s.essays} · ${s.speaking}`, '')}${tile('Packs read', s.packs, '')}${tile('Focused time', `${num(s.focus / 60)}h`, '')}${tile('Saved', money0(s.saved), '')}${tile('Spent', money0(s.spent), `budget ${money0(s.budget)}`)}${tile('Sleep', s.sleepAvg ? `${Math.floor(s.sleepAvg / 60)}h ${Math.round(s.sleepAvg % 60)}m` : '—', '')}${tile('Weight', s.weightChange === null ? '—' : `${s.weightChange > 0 ? '+' : ''}${num(s.weightChange)} kg`, '')}</div>
     <div class="ci-read"><span class="ds-it">${ic('sparkle', 15)}</span><p>${esc(read.text)}</p></div>
+    ${type === '1m' ? moneyMonthHTML(from, to, s) : ''}
     <div class="h3" style="margin-top:14px">How did each area go?</div><p class="tiny">1 = badly, 5 = very well. The dot shows what your numbers say.</p>
     <div class="ci-rates">${AREAS.map(([id, name, icon]) => `<div class="ci-rate"><span>${ic(icon, 15)} ${name}</span><div class="ci-dots" role="radiogroup" aria-label="${name}">${[1,2,3,4,5].map(n => `<button role="radio" aria-checked="${d.ratings[id] === n}" class="${d.ratings[id] >= n ? 'on' : ''}${Math.round(sc[id]) === n ? ' auto' : ''}" data-ci="rate" data-id="${id}" data-v="${n}">${n}</button>`).join('')}</div></div>`).join('')}</div>
     <label class="ci-q"><b>What went well?</b><textarea data-ci-f="well" rows="2" placeholder="One or two things you are proud of">${esc(d.well)}</textarea></label>
@@ -59,7 +60,7 @@ function ciFormHTML(type, to){
     <label class="ci-q"><b>One change for the next ${type === '1m' ? 'month' : 'two weeks'}</b><textarea data-ci-f="change" rows="2" placeholder="Small enough to start tomorrow">${esc(d.change)}</textarea></label>
     <div class="h3" style="margin-top:12px">Focus area</div><p class="tiny">The autopilot adds one daily item for it. Suggested: ${esc(AREAS.find(a => a[0] === read.focus)[1])}.</p>
     <div class="ci-focus">${AREAS.map(([id, name, icon]) => `<button class="${(d.focus || read.focus) === id ? 'on' : ''}" data-ci="focus" data-id="${id}">${ic(icon, 14)} ${name}</button>`).join('')}</div>
-    <div class="ci-acts">${done ? `<button class="btn btn-soft" data-ci="delete" data-id="${done.id}">${ic('trash', 15)} Delete</button>` : ''}<button class="btn btn-primary" data-ci="save">${ic('check', 15)} ${done ? 'Save changes' : 'Finish check-in'}</button></div>
+    <div class="ci-acts">${done ? `<button class="btn btn-soft" data-ci="delete" data-id="${done.id}">${ic('trash', 15)} Delete</button><button class="btn btn-soft" data-ci="copy" data-id="${done.id}">${ic('edit', 15)} Copy as text</button>` : ''}<button class="btn btn-primary" data-ci="save">${ic('check', 15)} ${done ? 'Save changes' : 'Finish check-in'}</button></div>
   </div>`;
 }
 function ciDraftOf(form){ const key = form.dataset.ciKey, id = form.dataset.done; return id ? state.reviews.find(r => r.id === id) : state.reviewDraft[key]; }
@@ -77,6 +78,9 @@ document.addEventListener('click', e => {
     state.focusArea = rec.focus; apLog(`${CI_NAME[rec.type]} saved. Focus: ${areaLow(AREAS.find(x => x[0] === rec.focus)[1])}.`);
     if (state.coachPlan) state.coachPlan.date = ''; save(); closeSheet(); toast('Check-in saved. Your plan now follows the new focus.', 'ok', 2200); renderView(activeTab); reviewBadge();
   }
+  else if (a === 'copy'){ const r = state.reviews.find(x => x.id === b.dataset.id); if (!r) return; const txt = ciText(r);
+    const ok = () => toast('Copied. Paste it into your notes.', 'ok', 1800);
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, () => ciCopyFallback(txt, ok)); else ciCopyFallback(txt, ok); }
   else if (a === 'delete'){ state.reviews = state.reviews.filter(r => r.id !== b.dataset.id); save(); closeSheet(); renderView(activeTab); toast('Check-in deleted.', 'ok', 1400); }
 }, true);
 document.addEventListener('input', e => { const f = e.target.closest('[data-ci-f]'); if (!f) return; const d = ciDraftOf(f.closest('.ci-form')); if (!d) return; d[f.dataset.ciF] = f.value.slice(0, 600); clearTimeout(CAL.t); CAL.t = setTimeout(save, 400); });
@@ -104,7 +108,8 @@ function calHTML(){
 function calDayHTML(k){
   const r = dayRec(k), d = parseKey(k), list = tasksForDay(k), sl = sleepMins(r), sp = (state.expenses || []).filter(e => e.date === k).reduce((a, e) => a + (+e.amount || 0), 0), sv = (state.savings || []).filter(s => s.date === k).reduce((a, s) => a + (+s.amount || 0), 0);
   return `<div class="cal-dh"><b>${prettyDate(d)}</b><span class="chip">${countDone(k)}/${list.length} tasks</span></div>
-    <div class="cal-tasks">${list.map(t => `<span class="${taskDone(k, t.id) ? 'on' : ''}">${ic(taskDone(k, t.id) ? 'check' : t.icon, 13)} ${esc(t.name)}</span>`).join('') || '<span>No tasks scheduled</span>'}</div>
+    <div class="cal-tasks">${list.map(t => k > dkey() ? `<span>${ic(t.icon, 13)} ${esc(t.name)}</span>` : `<button class="${taskDone(k, t.id) ? 'on' : ''}" data-cal="task" data-k="${k}" data-id="${t.id}" aria-pressed="${taskDone(k, t.id)}">${ic(taskDone(k, t.id) ? 'check' : t.icon, 13)} ${esc(t.name)}</button>`).join('') || '<span>No tasks scheduled</span>'}</div>
+    ${k <= dkey() && list.length ? '<p class="tiny cal-hint">Tap a task to fix a missed log for this day.</p>' : ''}
     <div class="cal-facts"><span>${ic('clock', 13)} ${num(focusOf(k) / 60)}h focused</span><span>${ic('moon', 13)} ${sl ? `${Math.floor(sl / 60)}h ${sl % 60}m sleep` : 'no sleep logged'}</span><span>${ic('steps', 13)} ${(+r.steps || 0).toLocaleString('en-GB')} steps</span><span>${ic('cart', 13)} ${money(sp)} spent</span>${sv ? `<span>${ic('piggy', 13)} ${money(sv)} saved</span>` : ''}${+r.weight > 0 ? `<span>${ic('scale', 13)} ${num(r.weight)} kg</span>` : ''}</div>
     <label class="cal-note"><small>Note for this day</small><textarea data-cal-note="${k}" rows="2" placeholder="What happened, what you learned">${esc(r.note || '')}</textarea></label>`;
 }
@@ -112,6 +117,10 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-cal]'); if (!b) return; e.stopPropagation();
   const a = b.dataset.cal;
   if (a === 'pick'){ CAL.sel = b.dataset.k; document.querySelectorAll('.cal-d.sel').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); const box = document.getElementById('calDay'); if (box){ box.innerHTML = calDayHTML(CAL.sel); box.classList.remove('in'); void box.offsetWidth; box.classList.add('in'); } return; }
+  if (a === 'task'){ const k = b.dataset.k, id = b.dataset.id, on = !taskDone(k, id); setTask(k, id, on); save();
+    const t = TASK_DEFS.find(x => x.id === id); toast(`${t ? t.name : 'Task'} ${on ? 'ticked' : 'unticked'} for ${shortDate(parseKey(k))}.`, 'ok', 1600);
+    const sec = b.closest('.lay-sec'); if (sec){ const tools = sec.querySelector('.lay-tools'); sec.innerHTML = (tools ? tools.outerHTML : '') + calHTML(); }
+    updateChrome(); return; }
   CAL.m = new Date(CAL.m.getFullYear(), CAL.m.getMonth() + (a === 'next' ? 1 : -1), 1);
   const sec = b.closest('.lay-sec'); if (sec){ const tools = sec.querySelector('.lay-tools'); sec.innerHTML = (tools ? tools.outerHTML : '') + calHTML(); }
 }, true);
@@ -168,6 +177,7 @@ function renderReview(){
   setTimeout(reviewBadge, 0);
   return `<div class="rv">` + sectionsHTML('review', [
     ['due', 'Check-ins', () => `<div class="ci-row">${ciCardHTML('2w')}${ciCardHTML('1m')}</div>`],
+    ['exam', 'IELTS countdown', () => examCountHTML('review')],
     ['pulse', 'This fortnight', pulseHTML],
     ['cal', 'Calendar', calHTML],
     ['wheel', 'Balance wheel', wheelHTML],
@@ -176,3 +186,24 @@ function renderReview(){
     ['quote', 'Quote', quoteHTML]
   ]) + `</div>`;
 }
+
+/* ---------- money month (monthly check-in) ---------- */
+function moneyMonthHTML(from, to, s){
+  const sp = spendByCat(from, to), top = CATS.map(c => ({ c, v: sp[c.id], b: catBudget(c.id) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v).slice(0, 3);
+  const total = savedTotal(), goal = +state.settings.goal || 25000, left = Math.max(0, goal - total), need = needPerMonth(), pace = s.saved;
+  const months = pace > 0 ? Math.ceil(left / pace) : null, mx = Math.max(1, ...top.map(x => Math.max(x.v, x.b)));
+  return `<div class="mm"><div class="h3">Money month</div>
+    <div class="mm-row"><div class="ci-n"><small>Saved this month</small><b class="num">${money0(s.saved)}</b><i>${pace >= need ? 'on plan' : `${money0(need - pace)} under the plan`}</i></div>
+      <div class="ci-n"><small>Spent this month</small><b class="num">${money0(s.spent)}</b><i>budget ${money0(fixedTotal())}</i></div>
+      <div class="ci-n"><small>Towards ${money0(goal)}</small><b class="num">${money0(total)}</b><i>${months ? `about ${months} month${months === 1 ? '' : 's'} at this pace` : 'start saving to see a date'}</i></div></div>
+    ${top.length ? `<div class="mm-bars">${top.map(x => `<div class="mm-b"><span>${esc(x.c.name)}</span><i><b style="--w:${(x.v / mx).toFixed(3)}"></b>${x.b ? `<u style="--w:${(x.b / mx).toFixed(3)}"></u>` : ''}</i><em class="num">${money0(x.v)}${x.b ? ` / ${money0(x.b)}` : ''}</em></div>`).join('')}</div><p class="tiny">Top 3 categories · the line marks the budget</p>` : '<p class="tiny">No spending logged this month.</p>'}
+  </div>`;
+}
+function ciText(r){
+  const n = r.nums || {}, rate = AREAS.map(([id, name]) => `${name} ${r.ratings && r.ratings[id] ? r.ratings[id] : '–'}/5`).join(', ');
+  return [`${CI_NAME[r.type]}: ${shortDate(parseKey(r.from))} – ${shortDate(parseKey(r.to))}`,
+    `Tasks ${n.pct}% · training ${n.train} · essays ${n.essays} · speaking ${n.speaking} · packs ${n.packs} · saved ${money0(n.saved || 0)} · spent ${money0(n.spent || 0)}`,
+    `Ratings: ${rate}`, r.well ? `Went well: ${r.well}` : '', r.block ? `Got in the way: ${r.block}` : '', r.change ? `One change: ${r.change}` : '',
+    `Focus next: ${(AREAS.find(a => a[0] === r.focus) || [, '–'])[1]}`, r.coach ? `Coach: ${r.coach}` : ''].filter(Boolean).join('\n');
+}
+function ciCopyFallback(txt, ok){ const t = document.createElement('textarea'); t.value = txt; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); ok(); } catch(_){ toast('Could not copy here. Select the text and copy it by hand.', 'warn', 2600); } t.remove(); }

@@ -3162,7 +3162,7 @@ html[data-theme="dark"] .set-meter div{background:rgba(255,255,255,.04);box-shad
 .rv > .lay-bar,.rv > .lay-foot{grid-column:1/-1}
 @media(min-width:1100px){
   .rv{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-auto-flow:row dense}
-  .rv > .lay-sec[data-sec="due"],.rv > .lay-sec[data-sec="pulse"]{grid-column:1/-1}
+  .rv > .lay-sec[data-sec="due"],.rv > .lay-sec[data-sec="exam"],.rv > .lay-sec[data-sec="pulse"]{grid-column:1/-1}
   .rv > .lay-sec[data-sec="cal"],.rv > .lay-sec[data-sec="history"]{grid-column:1}
   .rv > .lay-sec[data-sec="wheel"],.rv > .lay-sec[data-sec="trend"],.rv > .lay-sec[data-sec="quote"]{grid-column:2}
 }
@@ -3379,6 +3379,41 @@ html[data-theme="dark"] .cal-tasks span,html[data-theme="dark"] .cal-facts span{
 html.reduce .wv-line{animation:none;stroke-dashoffset:0}
 html.reduce .wv-swell,html.reduce .wv-dot.last,html.reduce .ci-tag.due,html.reduce .cp-item,html.reduce .cp-tip,html.reduce .pl-bars i,html.reduce .tr-col i,html.reduce .wh-auto,html.reduce .lay-sec.editing,html.reduce .tab.has-due .tic::after{animation:none!important}
 
+/* IELTS countdown */
+.ex-cd{display:flex;align-items:center;gap:14px;padding:14px 16px;margin-bottom:16px;width:100%;text-align:left;color:var(--pw-ink)}
+.ex-cd.ex-none{gap:12px}.ex-cd.ex-none > span{flex:1}.ex-cd.ex-none b{display:block;font-size:14px}.ex-cd.ex-none small{display:block;font-size:12px;color:var(--pw-ink-3)}
+.ex-ring{position:relative;flex:0 0 auto;width:64px;height:64px}
+.ex-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ex-ring circle{fill:none;stroke:var(--pw-line-2);stroke-width:5}
+.ex-ring circle.v{stroke:var(--cr-crimson);stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--p));transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.ex-ring b{position:absolute;left:0;right:0;top:15px;text-align:center;font-size:20px;font-weight:750;line-height:1}
+.ex-ring small{position:absolute;left:0;right:0;top:37px;text-align:center;font-size:9.5px;color:var(--pw-ink-3)}
+.ex-tx{flex:1;min-width:0}.ex-tx > b{display:block;font-size:15px}.ex-tx > small{display:block;font-size:12px;color:var(--pw-ink-3)}
+.ex-tx p{margin:6px 0;font-size:13px;line-height:1.45;color:var(--pw-ink-2)}
+.ex-chips{display:flex;flex-wrap:wrap;gap:6px}.ex-chips span{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:4px 8px;border-radius:999px;background:rgba(var(--gt-accent-rgb,179,143,111),.12);color:var(--pw-ink-2)}
+.ex-go{flex:0 0 auto;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--pw-ink-2);background:var(--neu-face);box-shadow:2px 2px 6px var(--neu-lo),-2px -2px 6px var(--neu-hi)}
+.ex-cd.close .ex-ring circle.v{stroke:#B4552E}
+.view.wide > .ex-cd{flex:1 1 100%}
+/* calendar task chips are buttons for past days */
+.cal-tasks button{display:inline-flex;align-items:center;gap:5px;font:500 12px/1.2 inherit;font-family:inherit;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.4);box-shadow:inset 0 0 0 1px var(--pw-line);color:var(--pw-ink-2);transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+html[data-theme="dark"] .cal-tasks button{background:rgba(255,255,255,.04)}
+.cal-tasks button:active{transform:scale(.94)}
+.cal-tasks button.on{color:var(--cr-crimson);box-shadow:inset 0 0 0 1px rgba(var(--gt-accent-rgb,113,0,20),.35);background:rgba(var(--gt-accent-rgb,113,0,20),.07)}
+.cal-hint{margin:-2px 0 8px}
+/* money month */
+.mm{display:grid;gap:8px;padding:12px;border-radius:16px;background:rgba(var(--gt-accent-rgb,179,143,111),.07);box-shadow:inset 0 0 0 1px var(--pw-line)}
+.mm-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.mm-bars{display:grid;gap:8px}
+.mm-b{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:10px;font-size:12.5px;color:var(--pw-ink-2)}
+.mm-b i{position:relative;height:10px;border-radius:6px;background:var(--pw-line)}
+.mm-b i b{position:absolute;left:0;top:0;bottom:0;width:calc(var(--w)*100%);border-radius:6px;background:var(--cr-crimson);transform-origin:left;animation:mmGrow .8s cubic-bezier(.2,.8,.2,1) both}
+.mm-b i u{position:absolute;top:-3px;bottom:-3px;left:calc(var(--w)*100%);width:2px;border-radius:1px;background:var(--pw-ink)}
+.mm-b em{font-style:normal;font-size:12px;color:var(--pw-ink)}
+@keyframes mmGrow{from{transform:scaleX(0)}to{transform:none}}
+html.reduce .mm-b i b{animation:none}
+/* panels out of view skip the blur (see glassWatch) */
+.gl-off,html[data-skin] .gl-off{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
 </style>
 <style data-src="src/css/glass-themes.css">
 /* ============================================================
@@ -3403,8 +3438,8 @@ html[data-skin]{
               calc(-8px * var(--gt-depth)) calc(-8px * var(--gt-depth)) calc(22px * var(--gt-depth)) rgba(255,255,255,calc(.75 * var(--gt-depth)));
   --gt-rim:inset 1px 1px 0 rgba(255,255,255,.8),inset -1px -1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(255,255,255,.35);
 }
-html[data-skin="neuglass"]{ --pw-ink:#4A433D; --pw-ink-2:#6A625A; --pw-ink-3:#8F867C; --pw-line:rgba(74,67,61,.08); --pw-line-2:rgba(74,67,61,.15) }
-html[data-skin="frost"]{ --pw-ink:#3C4651; --pw-ink-2:#5A6673; --pw-ink-3:#8793A0; --pw-line:rgba(60,70,81,.08); --pw-line-2:rgba(60,70,81,.14);
+html[data-skin="neuglass"]{ --pw-ink:#423B35; --pw-ink-2:#584F47; --pw-ink-3:#665D54; /* contrast ≥ 4.5:1 on the palest panel */ --pw-line:rgba(74,67,61,.08); --pw-line-2:rgba(74,67,61,.15) }
+html[data-skin="frost"]{ --pw-ink:#35404B; --pw-ink-2:#4C5763; --pw-ink-3:#5E6A77; /* contrast ≥ 4.5:1 on the palest panel */ --pw-line:rgba(60,70,81,.08); --pw-line-2:rgba(60,70,81,.14);
   --neu-lo:rgba(70,100,130,calc(.06 + .18 * var(--gt-depth)));
   --gt-shadow:0 calc(18px * var(--gt-depth)) calc(44px * var(--gt-depth)) rgba(70,100,130,calc(.2 * var(--gt-depth))),0 2px 6px rgba(70,100,130,.06);
   --gt-rim:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.55);
@@ -3481,7 +3516,7 @@ html[data-skin] .hero h1,html[data-skin][data-theme="dark"] .hero h1{font-family
 html[data-skin="neuglass"] .hero h1{color:rgba(255,255,255,.92)!important;font-weight:750!important;letter-spacing:.005em!important;
   text-shadow:-1px -1px 0 rgba(255,255,255,.7),1px 1px 1px rgba(90,80,70,.18),4px 6px 14px rgba(90,80,70,.28)}
 html[data-skin="frost"] .hero h1{color:#56606B!important;font-weight:300!important;letter-spacing:-.02em!important}
-html[data-skin="frost"] .hero .sub{color:var(--gt-accent)}
+html[data-skin="frost"] .hero .sub{color:var(--cr-crimson)}
 html[data-skin][data-theme="dark"] .hero h1{color:#F4F1EC!important;text-shadow:0 2px 18px rgba(var(--gt-accent-rgb),.45)}
 html[data-skin] .hero h1::after,html[data-skin] .h2::before{background:var(--cr-sand)!important}
 
@@ -3991,6 +4026,36 @@ const KNOWLEDGE_PACKS = [
     ],
     ask:'A corner keeps thinning until it splits. Name three process changes you would try, in order.',
     new:'Ask to see a rejected part and its cross-section. Learn where your process is thin before you propose anything.' },
+  { id:'trim', title:'Thermoforming trim press: faults and first checks', tag:'Your application',
+    points:[
+      'The trim press cuts the formed web into parts. Most trim faults are registration faults: if the web arrives in the wrong place, a perfect tool still cuts in the wrong place. Check the index length and the chain or pin grip first.',
+      'Angel hair and plastic dust mean a blunt or badly set steel-rule die, or a cut that is too fast for a cold web. Look at the cut edge under a light: clean and shiny is good, white and fibrous is a worn or mis-set edge.',
+      'Hanging parts (not fully cut) come from uneven die height, a worn cutting plate or low tonnage on one side. Check the same cavity every time before you touch the settings: a pattern points at the tool, random points at the machine.',
+      'Web temperature at the press matters. A web that has cooled too far cracks at the cut; one that is still warm stretches and leaves burrs. Note the time from forming to trim when the fault starts.',
+      'Never clear a jam with the guard open or the press live. Isolate, lock off, prove dead, then clear. Most trim press injuries happen during a "quick" jam.'
+    ],
+    ask:'Cavity 3 of 8 keeps leaving a hanging corner. What do you check first, and why that before the press settings?',
+    new:'On a line walk, ask how often the trim tools are sharpened or shimmed and where that is recorded. A missing record is a good first improvement.' },
+  { id:'spc', title:'SPC and process capability (Cp, Cpk)', tag:'Quality',
+    points:[
+      'A control chart answers one question: is the process doing anything unusual? Points inside the limits with no pattern mean leave it alone. Adjusting a stable process makes it worse.',
+      'Control limits come from the process (about ±3 standard deviations of the data). Specification limits come from the customer. Never draw one and call it the other.',
+      'Act on a signal: one point outside a limit, seven points in a row on one side of the centre line, or six rising or falling in a row. Write down what changed at that time.',
+      'Cp compares the spec width with the process spread. Cpk also checks centring: it uses the nearer spec limit. Cpk of 1.33 or more is the usual target; under 1.0 means you are making scrap.',
+      'Measure before you trust: a gauge that varies more than about 10% of the tolerance hides the real process. Check the gauge, then the chart.'
+    ],
+    ask:'Wall thickness has Cp 1.6 but Cpk 0.9. What does that tell you, and what is the one change you would make?',
+    new:'Ask which dimensions on your line are charted, who looks at the charts, and what happens when a point goes out. If nobody knows, that is the finding.' },
+  { id:'loto', title:'Safe isolation: lock out, tag out, prove dead', tag:'Safety',
+    points:[
+      'Isolation is a sequence, not a switch: tell people, stop the machine normally, isolate every energy source, lock and tag each one with your own lock, then prove it is dead before you touch anything.',
+      'Count the energies: electrical, pneumatic, hydraulic, gravity, springs, heat and stored pressure. A packaging line often has electrical plus compressed air plus hot jaws, so one lock is rarely enough.',
+      'Prove dead means try to start it, check the air gauge reads zero, bleed stored pressure and support anything that could drop. Only then is it safe.',
+      'Your lock, your key, your body. Never let someone else remove your lock and never work under someone else\'s isolation.',
+      'Restarting is part of isolation: tools out, guards on, people clear, then remove locks in reverse order and tell everyone before the first cycle.'
+    ],
+    ask:'You are asked to clear a film jam on a flow wrap "quickly, it\'s only stopped". Walk through exactly what you do.',
+    new:'In your first week, ask to be shown the isolation points for your line and practise them once with a supervisor. It also shows you take safety seriously.' },
   { id:'cnc', title:'CNC machining and holding tolerance', tag:'Your experience',
     points:[
       'Cutting speed, feed per tooth, depth of cut. Chipload too small rubs and work-hardens; too large chatters. Listen to the cut before you touch the screen.',
@@ -4114,6 +4179,11 @@ const STORIES = [
 ];
 
 const QUESTION_BANK = [
+  { q:'What would you check first if a thermoformer starts making thin corners?', a:'Heat first: the sheet temperature profile, especially the heater zones over those corners. Then the plug assist timing and depth, then vacuum timing. Change one thing at a time and cut a part in half to measure the wall, before and after.' },
+  { q:'How do you make sure a machine is safe before you clear a jam?', a:'Stop it normally, isolate every energy source (electric, air, heat), put my own lock and tag on, then prove it is dead by trying to start it and checking the air gauge reads zero. Only then do I reach in. A jam is never too quick for that.' },
+  { q:'Tell me about a time you followed a procedure you thought could be better.', a:'Use a real example (STAR): follow it first, note the step that costs time or causes errors, bring it to the supervisor with a number (minutes, scrap), and suggest a small trial. Show that you improve things through the system, not around it.' },
+  { q:'Your line is running but scrap has doubled since the start of the shift. What do you do?', a:'Contain first: separate the bad parts and tell the shift lead. Then look at what changed at the time it started: material batch, settings, temperature, a changeover. Check the process sheet against the machine, change one thing, and measure the next parts.' },
+  { q:'How would you handle working night shifts and a 12-hour pattern?', a:'Be honest and practical: fixed sleep times on nights, blackout curtains, meals planned, no long drives tired. Mention that you already run your day on a written plan and track sleep, so you know how to protect your energy.' },
   { q:'Walk me through how a thermoforming cycle actually works.', a:'Heat the sheet, form it, cool it under pressure or vacuum, eject and trim. The engineering is in the cooling: it is most of the cycle and it sets the shrinkage and the wall distribution. Then say what your plant measures to control it.' },
   { q:'Why does a part warp after it has been made?', a:'Residual stress and uneven shrinkage. Fast or uneven cooling locks in differential contraction. Mention mould temperature uniformity, cooling time, and that the part tells you where the stress is.' },
   { q:'What is OEE and what would you do with it?', a:'Availability × performance × quality. Use it to decide where to look first, then stop quoting it and start fixing the biggest loss — usually micro-stops on a packaging line.' },
@@ -4517,7 +4587,16 @@ const PACK_DIAGRAMS = {
   rca:()=>[DG.line('M30,84 L280,84','acc'),DG.box(280,66,48,36,'Effect','acc'),...[['People',70,28],['Machine',170,28],['Method',70,140],['Material',170,140]].map(([l,x,y])=>DG.line(`M${x},${y} L${x+50},84`)+DG.t(x,y<84?y-8:y+16,l,'sm')),DG.t(150,160,'Ask why five times on each bone','sm')],
   ppm:()=>[DG.line('M30,140 L326,140 M30,140 L30,18'),DG.t(36,30,'Condition','sm','start'),DG.t(320,158,'Time','sm','end'),DG.line('M36,40 C170,42 230,62 300,136','acc'),
     DG.circ(206,56,5,'acc'),DG.t(206,46,'P: failure detectable','sm'),DG.circ(294,128,5,'acc'),DG.t(266,118,'F: it fails','sm','end'),DG.line('M206,74 L294,74','dash'),DG.t(250,90,'Inspect inside the P–F gap','sm')],
-  films:()=>[DG.box(30,30,170,24,'PET: stiffness, print'),DG.box(30,58,170,10,''),DG.t(210,67,'Adhesive','sm','start'),DG.box(30,72,170,40,'PE: the seal layer','acc'),DG.t(210,96,'Melts first, seals','sm','start'),DG.t(115,140,'Cross-section of a lidding film','sm')]
+  films:()=>[DG.box(30,30,170,24,'PET: stiffness, print'),DG.box(30,58,170,10,''),DG.t(210,67,'Adhesive','sm','start'),DG.box(30,72,170,40,'PE: the seal layer','acc'),DG.t(210,96,'Melts first, seals','sm','start'),DG.t(115,140,'Cross-section of a lidding film','sm')],
+  trim:()=>[DG.line('M14,40 L326,40','acc'),DG.line('M14,62 L326,62','acc'),DG.t(40,30,'Formed web','sm','start'),...[50,110,170,230].map(x=>DG.line(`M${x},40 L${x+22},62 L${x+44},40`)),
+    DG.box(130,84,84,20,'Steel-rule die','acc'),DG.arrow(172,104,172,124),DG.box(110,126,124,14,''),DG.t(172,160,'Cutting plate','sm'),
+    DG.t(250,92,'Index length','sm','start'),DG.t(250,108,'Die height','sm','start'),DG.t(250,124,'Web temperature','sm','start'),DG.t(20,100,'Same cavity','sm','start'),DG.t(20,114,'every time = tool','sm','start')],
+  spc:()=>[DG.line('M30,140 L326,140 M30,140 L30,18'),DG.line('M30,34 L326,34','dash'),DG.line('M30,124 L326,124','dash'),DG.line('M30,79 L326,79'),
+    DG.t(322,28,'Upper limit','sm','end'),DG.t(322,120,'Lower limit','sm','end'),DG.t(322,74,'Centre line','sm','end'),
+    ...[[50,84],[75,70],[100,90],[125,76],[150,82],[175,88],[200,92],[225,96],[250,98],[275,104],[300,110]].map(([x,y],i)=>DG.circ(x,y,3.5,i>4?'acc':'')),
+    DG.line('M50,84 L75,70 L100,90 L125,76 L150,82 L175,88 L200,92 L225,96 L250,98 L275,104 L300,110'),DG.t(236,154,'6 points falling: act','acc')],
+  loto:()=>[DG.box(14,40,62,30,'Stop'),DG.arrow(76,55,88,55),DG.box(88,40,62,30,'Isolate','acc'),DG.arrow(150,55,162,55),DG.box(162,40,62,30,'Lock'),DG.arrow(224,55,236,55),DG.box(236,40,90,30,'Prove dead','acc'),
+    DG.t(170,100,'Electrical · air · hydraulic · gravity · heat','sm'),DG.circ(120,132,10,'acc'),DG.line('M114,124 L114,114 Q120,106 126,114 L126,124'),DG.t(140,136,'Your lock, your key','sm','start')]
 };
 function packDiagram(id){
   const f = PACK_DIAGRAMS[id]; if (!f) return '';
@@ -6107,7 +6186,8 @@ const KM_DOMAINS = [
     { n:'Tray sealing and lidding', pack:'lidding', kw:'seal lidding tray' },
     { n:'Vacuum and modified atmosphere', pack:'micvac', kw:'vacuum map gas micvac' },
     { n:'Bagging lines (VFFS)', pack:'vffs', kw:'bagging vffs jaws' },
-    { n:'Flow wrap and registration', pack:'flowwrap', kw:'flow wrap photo eye registration' } ] },
+    { n:'Flow wrap and registration', pack:'flowwrap', kw:'flow wrap photo eye registration' },
+    { n:'Trim press faults', pack:'trim', kw:'trim press die cut angel hair hanging' } ] },
   { id:'mfg', name:'Manufacturing', w:16, icon:'gears', topics:[
     { n:'CNC machining and tolerance', pack:'cnc', kw:'cnc machining lathe mill' },
     { n:'Rotational moulding', pack:'rotomould', kw:'roto rotational moulding cooling' },
@@ -6115,11 +6195,11 @@ const KM_DOMAINS = [
   { id:'ops', name:'Quality and operations', w:12, icon:'chart', topics:[
     { n:'OEE that means something', pack:'oee', kw:'oee efficiency availability' },
     { n:'Root-cause analysis', pack:'rca', kw:'root cause rca fishbone why' },
-    { n:'SPC and capability', kw:'spc cpk capability control chart', plan:true } ] },
+    { n:'SPC and capability', pack:'spc', kw:'spc cpk capability control chart' } ] },
   { id:'maint', name:'Maintenance', w:11, icon:'wrench', topics:[
     { n:'PPM and condition monitoring', pack:'ppm', kw:'ppm maintenance condition monitoring' },
     { n:'Engine fault diagnosis', lab:'v12', kw:'fault diagnosis misfire bearing knock twin' },
-    { n:'Safe isolation (LOTO)', kw:'loto isolation lock safety', plan:true } ] },
+    { n:'Safe isolation (LOTO)', pack:'loto', kw:'loto isolation lock safety' } ] },
   { id:'cad', name:'CAD and drawings', w:13, icon:'pen', topics:[
     { n:'3D CAD practice', lab:'cad', kw:'cad 3d model solidworks' },
     { n:'Reading technical drawings', lab:'dwg', kw:'drawing read views projection first angle' },
@@ -7310,6 +7390,7 @@ function renderToday(){
 
   return `
   ${kmLauncherHTML()}
+  ${typeof examCountHTML==='function' ? examCountHTML('today') : ''}
   ${typeof waveHTML==='function' ? waveHTML() : ''}
   ${daySystemHTML()}
   <div class="tcol a">
@@ -9762,6 +9843,7 @@ function apTips(){
   if (now.getHours() >= 18 && countDone(k) < STREAK_TARGET) tips.push({ id:'risk', icon:'flame', t:`${STREAK_TARGET - countDone(k)} more task${STREAK_TARGET - countDone(k) > 1 ? 's' : ''} keeps the streak alive tonight. Vocabulary and logging spends take 15 minutes.`, go:'today', b:'Show tasks' });
   // focus time
   if (s14.days >= 5){ const h = s14.focus / s14.days / 60; tips.push({ id:'focus', icon:'clock', t:`Focused time: ${num(h)} hours a day over the last two weeks${h < 2 ? '. Aim for two: finish the morning blocks first.' : '. Keep it there.'}`, go:'today', b:'' }); }
+  { const ct = apSpendTip(); if (ct) tips.push(ct); }
   if (s28.essays === 0) tips.push({ id:'essay0', icon:'pen', t:'No IELTS essays logged in 4 weeks. One essay a week moves the band more than reading.', go:'learn', b:'Write one' });
   return tips;
 }
@@ -9919,6 +10001,53 @@ function waveSVG(vals, labels, id, prev){
   </svg>`;
 }
 
+/* ---------- IELTS exam countdown (Today and Review) ---------- */
+function examCountHTML(where){
+  const ex = state.settings.examDate, k = dkey();
+  if (!ex) return where === 'review' ? `<button class="glass ex-cd ex-none" data-ex="set">${ic('calendar', 16)}<span><b>Set your IELTS exam date</b><small>A countdown and a study plan for the last 60 days appear here.</small></span>${ic('arrowRight', 15)}</button>` : '';
+  const dl = daysBetween(k, ex); if (dl < 0) return where === 'review' ? `<button class="glass ex-cd ex-none" data-ex="set">${ic('calendar', 16)}<span><b>Exam day has passed (${shortDate(parseKey(ex))})</b><small>Set the next date or your result.</small></span>${ic('arrowRight', 15)}</button>` : '';
+  const created = state.createdAt && state.createdAt < k ? state.createdAt : dkey(addDays(new Date(), -30)), span = Math.max(1, daysBetween(created, ex)), pct = clamp(1 - dl / span, 0, 1);
+  const s28 = periodStats(dkey(addDays(new Date(), -27)), k), essays = s28.essays, speak = s28.speaking, wk = Math.max(0, Math.floor(dl / 7));
+  const plan = dl === 0 ? 'Today: sleep, breakfast, arrive 30 minutes early. No new material.' : dl <= 7 ? 'Final week: one full timed mock, then light review. Sleep matters more than one more essay.' : dl <= 30 ? 'One full timed mock a week, an essay every other day, speaking every day.' : dl <= 60 ? 'Build up: 3 essays and 4 speaking cards a week, timed.' : 'Steady: 3 essays and 3 speaking cards a week.';
+  return `<div class="glass ex-cd ${dl <= 7 ? 'close' : ''}" role="group" aria-label="IELTS countdown">
+    <div class="ex-ring" style="--p:${pct.toFixed(3)}"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" pathLength="1"/><circle class="v" cx="32" cy="32" r="27" pathLength="1"/></svg><b class="num">${dl}</b><small>${dl === 1 ? 'day' : 'days'}</small></div>
+    <div class="ex-tx"><b>IELTS in ${dl === 0 ? 'today' : dl === 1 ? '1 day' : `${dl} days`}${wk >= 2 ? ` · ${wk} weeks` : ''}</b><small>${prettyDate(parseKey(ex))} · target band ${num(+state.settings.ieltsTarget || 7)}</small><p>${plan}</p>
+      <span class="ex-chips"><span>${ic('pen', 13)} ${essays} essay${essays === 1 ? '' : 's'} in 4 weeks</span><span>${ic('mic', 13)} ${speak} speaking</span></span></div>
+    <button class="ex-go" data-ex="go" aria-label="Open IELTS practice">${ic('arrowRight', 16)}</button>
+  </div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-ex]'); if (!b) return; e.stopPropagation();
+  if (b.dataset.ex === 'set'){ if (typeof setOpen === 'function') setOpen('goals'); setTimeout(() => document.querySelector('#setOv [data-set="settings.examDate"]')?.focus(), 380); }
+  else { learnTab = 'essay'; setTab('learn', { force:true }); }
+}, true);
+
+/* ---------- spending by category against the budget lines ---------- */
+const CAT_BUDGET = { food:['food'], transport:['trans'], home:['rent'], fun:['fun'], gear:['learn'], life:['shop','misc','phone'] };
+function spendByCat(from, to){
+  const out = {}; CATS.forEach(c => out[c.id] = 0);
+  (state.expenses || []).forEach(e => { if ((e.date || '') >= from && (e.date || '') <= to){ const id = catOf(e.cat).id; out[id] += +e.amount || 0; } });
+  return out;
+}
+function catBudget(id){ return (CAT_BUDGET[id] || []).reduce((a, fid) => a + (+((state.settings.fixed || []).find(f => f.id === fid) || {}).amount || 0), 0); }
+function apSpendTip(){
+  const now = new Date(), from = dkey(new Date(now.getFullYear(), now.getMonth(), 1)), dim = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate(), frac = now.getDate() / dim;
+  const sp = spendByCat(from, dkey()); let worst = null;
+  CATS.forEach(c => { const b = catBudget(c.id); if (!b || c.id === 'home') return; const over = sp[c.id] - b * frac; if (over > 10 && (!worst || over > worst.over)) worst = { c, over, spent: sp[c.id], b }; });
+  if (!worst) return null;
+  return { id:'cat', icon:'cart', t:`${worst.c.name}: ${money0(worst.spent)} spent so far this month against a ${money0(worst.b)} budget. That is ${money0(worst.over)} ahead of pace with ${dim - now.getDate()} days to go.`, go:'money', b:'See spending' };
+}
+
+/* ---------- performance: blur only the glass that is on screen ----------
+   backdrop-filter costs a re-blur per panel per frame while anything
+   animates; panels scrolled out of view get .gl-off (no blur), which
+   looks identical because they cannot be seen. */
+const GLASS_SEL = '.glass,.lg,.lg-chip';
+const glassIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('gl-off', !e.isIntersecting)), { rootMargin:'160px 0px' }) : null;
+function glassWatch(root = document){ if (!glassIO) return; root.querySelectorAll(GLASS_SEL).forEach(el => { if (!el.dataset.gw){ el.dataset.gw = '1'; glassIO.observe(el); } }); }
+renderView = (orig => function(tab){ const r = orig.apply(this, arguments); try { glassWatch(document.getElementById('view-' + tab) || document); } catch(_){} return r; })(renderView);
+new MutationObserver(() => { clearTimeout(glassWatch.t); glassWatch.t = setTimeout(() => glassWatch(document.getElementById('main') || document), 120); }).observe(document.getElementById('main') || document.body, { childList:true, subtree:true });
+
 </script>
 <script data-src="src/js/62-render-review.js">
 /* ============================================================
@@ -9972,9 +10101,10 @@ function ciFormHTML(type, to){
   const tile = (l, v, sub) => `<div class="ci-n"><small>${l}</small><b class="num">${v}</b>${sub ? `<i>${sub}</i>` : ''}</div>`;
   const delta = (a, b, unit = '') => b === null || b === undefined ? '' : `${a - b >= 0 ? '▲' : '▼'} ${num(Math.abs(a - b))}${unit}`;
   return `<div class="ci-form" data-ci-key="${key}" data-done="${done ? done.id : ''}">
-    <p class="tiny">${shortDate(parseKey(from))} to ${shortDate(parseKey(to))} · ${s.days} day${s.days === 1 ? '' : 's'} logged so far. The numbers fill themselves in.</p>
+    <p class="tiny">${shortDate(parseKey(from))} to ${shortDate(parseKey(to))} · ${s.days} day${s.days === 1 ? '' : 's'}${to >= dkey() ? ' so far' : ''}. The numbers fill themselves in.</p>
     <div class="ci-nums">${tile('Tasks done', s.pct + '%', delta(s.pct, pv.days ? pv.pct : null, ' pts'))}${tile('Streak days', s.streakDays, '')}${tile('Training', s.train, delta(s.train, pv.days ? pv.train : null))}${tile('Essays · speaking', `${s.essays} · ${s.speaking}`, '')}${tile('Packs read', s.packs, '')}${tile('Focused time', `${num(s.focus / 60)}h`, '')}${tile('Saved', money0(s.saved), '')}${tile('Spent', money0(s.spent), `budget ${money0(s.budget)}`)}${tile('Sleep', s.sleepAvg ? `${Math.floor(s.sleepAvg / 60)}h ${Math.round(s.sleepAvg % 60)}m` : '—', '')}${tile('Weight', s.weightChange === null ? '—' : `${s.weightChange > 0 ? '+' : ''}${num(s.weightChange)} kg`, '')}</div>
     <div class="ci-read"><span class="ds-it">${ic('sparkle', 15)}</span><p>${esc(read.text)}</p></div>
+    ${type === '1m' ? moneyMonthHTML(from, to, s) : ''}
     <div class="h3" style="margin-top:14px">How did each area go?</div><p class="tiny">1 = badly, 5 = very well. The dot shows what your numbers say.</p>
     <div class="ci-rates">${AREAS.map(([id, name, icon]) => `<div class="ci-rate"><span>${ic(icon, 15)} ${name}</span><div class="ci-dots" role="radiogroup" aria-label="${name}">${[1,2,3,4,5].map(n => `<button role="radio" aria-checked="${d.ratings[id] === n}" class="${d.ratings[id] >= n ? 'on' : ''}${Math.round(sc[id]) === n ? ' auto' : ''}" data-ci="rate" data-id="${id}" data-v="${n}">${n}</button>`).join('')}</div></div>`).join('')}</div>
     <label class="ci-q"><b>What went well?</b><textarea data-ci-f="well" rows="2" placeholder="One or two things you are proud of">${esc(d.well)}</textarea></label>
@@ -9982,7 +10112,7 @@ function ciFormHTML(type, to){
     <label class="ci-q"><b>One change for the next ${type === '1m' ? 'month' : 'two weeks'}</b><textarea data-ci-f="change" rows="2" placeholder="Small enough to start tomorrow">${esc(d.change)}</textarea></label>
     <div class="h3" style="margin-top:12px">Focus area</div><p class="tiny">The autopilot adds one daily item for it. Suggested: ${esc(AREAS.find(a => a[0] === read.focus)[1])}.</p>
     <div class="ci-focus">${AREAS.map(([id, name, icon]) => `<button class="${(d.focus || read.focus) === id ? 'on' : ''}" data-ci="focus" data-id="${id}">${ic(icon, 14)} ${name}</button>`).join('')}</div>
-    <div class="ci-acts">${done ? `<button class="btn btn-soft" data-ci="delete" data-id="${done.id}">${ic('trash', 15)} Delete</button>` : ''}<button class="btn btn-primary" data-ci="save">${ic('check', 15)} ${done ? 'Save changes' : 'Finish check-in'}</button></div>
+    <div class="ci-acts">${done ? `<button class="btn btn-soft" data-ci="delete" data-id="${done.id}">${ic('trash', 15)} Delete</button><button class="btn btn-soft" data-ci="copy" data-id="${done.id}">${ic('edit', 15)} Copy as text</button>` : ''}<button class="btn btn-primary" data-ci="save">${ic('check', 15)} ${done ? 'Save changes' : 'Finish check-in'}</button></div>
   </div>`;
 }
 function ciDraftOf(form){ const key = form.dataset.ciKey, id = form.dataset.done; return id ? state.reviews.find(r => r.id === id) : state.reviewDraft[key]; }
@@ -10000,6 +10130,9 @@ document.addEventListener('click', e => {
     state.focusArea = rec.focus; apLog(`${CI_NAME[rec.type]} saved. Focus: ${areaLow(AREAS.find(x => x[0] === rec.focus)[1])}.`);
     if (state.coachPlan) state.coachPlan.date = ''; save(); closeSheet(); toast('Check-in saved. Your plan now follows the new focus.', 'ok', 2200); renderView(activeTab); reviewBadge();
   }
+  else if (a === 'copy'){ const r = state.reviews.find(x => x.id === b.dataset.id); if (!r) return; const txt = ciText(r);
+    const ok = () => toast('Copied. Paste it into your notes.', 'ok', 1800);
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, () => ciCopyFallback(txt, ok)); else ciCopyFallback(txt, ok); }
   else if (a === 'delete'){ state.reviews = state.reviews.filter(r => r.id !== b.dataset.id); save(); closeSheet(); renderView(activeTab); toast('Check-in deleted.', 'ok', 1400); }
 }, true);
 document.addEventListener('input', e => { const f = e.target.closest('[data-ci-f]'); if (!f) return; const d = ciDraftOf(f.closest('.ci-form')); if (!d) return; d[f.dataset.ciF] = f.value.slice(0, 600); clearTimeout(CAL.t); CAL.t = setTimeout(save, 400); });
@@ -10027,7 +10160,8 @@ function calHTML(){
 function calDayHTML(k){
   const r = dayRec(k), d = parseKey(k), list = tasksForDay(k), sl = sleepMins(r), sp = (state.expenses || []).filter(e => e.date === k).reduce((a, e) => a + (+e.amount || 0), 0), sv = (state.savings || []).filter(s => s.date === k).reduce((a, s) => a + (+s.amount || 0), 0);
   return `<div class="cal-dh"><b>${prettyDate(d)}</b><span class="chip">${countDone(k)}/${list.length} tasks</span></div>
-    <div class="cal-tasks">${list.map(t => `<span class="${taskDone(k, t.id) ? 'on' : ''}">${ic(taskDone(k, t.id) ? 'check' : t.icon, 13)} ${esc(t.name)}</span>`).join('') || '<span>No tasks scheduled</span>'}</div>
+    <div class="cal-tasks">${list.map(t => k > dkey() ? `<span>${ic(t.icon, 13)} ${esc(t.name)}</span>` : `<button class="${taskDone(k, t.id) ? 'on' : ''}" data-cal="task" data-k="${k}" data-id="${t.id}" aria-pressed="${taskDone(k, t.id)}">${ic(taskDone(k, t.id) ? 'check' : t.icon, 13)} ${esc(t.name)}</button>`).join('') || '<span>No tasks scheduled</span>'}</div>
+    ${k <= dkey() && list.length ? '<p class="tiny cal-hint">Tap a task to fix a missed log for this day.</p>' : ''}
     <div class="cal-facts"><span>${ic('clock', 13)} ${num(focusOf(k) / 60)}h focused</span><span>${ic('moon', 13)} ${sl ? `${Math.floor(sl / 60)}h ${sl % 60}m sleep` : 'no sleep logged'}</span><span>${ic('steps', 13)} ${(+r.steps || 0).toLocaleString('en-GB')} steps</span><span>${ic('cart', 13)} ${money(sp)} spent</span>${sv ? `<span>${ic('piggy', 13)} ${money(sv)} saved</span>` : ''}${+r.weight > 0 ? `<span>${ic('scale', 13)} ${num(r.weight)} kg</span>` : ''}</div>
     <label class="cal-note"><small>Note for this day</small><textarea data-cal-note="${k}" rows="2" placeholder="What happened, what you learned">${esc(r.note || '')}</textarea></label>`;
 }
@@ -10035,6 +10169,10 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-cal]'); if (!b) return; e.stopPropagation();
   const a = b.dataset.cal;
   if (a === 'pick'){ CAL.sel = b.dataset.k; document.querySelectorAll('.cal-d.sel').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); const box = document.getElementById('calDay'); if (box){ box.innerHTML = calDayHTML(CAL.sel); box.classList.remove('in'); void box.offsetWidth; box.classList.add('in'); } return; }
+  if (a === 'task'){ const k = b.dataset.k, id = b.dataset.id, on = !taskDone(k, id); setTask(k, id, on); save();
+    const t = TASK_DEFS.find(x => x.id === id); toast(`${t ? t.name : 'Task'} ${on ? 'ticked' : 'unticked'} for ${shortDate(parseKey(k))}.`, 'ok', 1600);
+    const sec = b.closest('.lay-sec'); if (sec){ const tools = sec.querySelector('.lay-tools'); sec.innerHTML = (tools ? tools.outerHTML : '') + calHTML(); }
+    updateChrome(); return; }
   CAL.m = new Date(CAL.m.getFullYear(), CAL.m.getMonth() + (a === 'next' ? 1 : -1), 1);
   const sec = b.closest('.lay-sec'); if (sec){ const tools = sec.querySelector('.lay-tools'); sec.innerHTML = (tools ? tools.outerHTML : '') + calHTML(); }
 }, true);
@@ -10091,6 +10229,7 @@ function renderReview(){
   setTimeout(reviewBadge, 0);
   return `<div class="rv">` + sectionsHTML('review', [
     ['due', 'Check-ins', () => `<div class="ci-row">${ciCardHTML('2w')}${ciCardHTML('1m')}</div>`],
+    ['exam', 'IELTS countdown', () => examCountHTML('review')],
     ['pulse', 'This fortnight', pulseHTML],
     ['cal', 'Calendar', calHTML],
     ['wheel', 'Balance wheel', wheelHTML],
@@ -10099,6 +10238,27 @@ function renderReview(){
     ['quote', 'Quote', quoteHTML]
   ]) + `</div>`;
 }
+
+/* ---------- money month (monthly check-in) ---------- */
+function moneyMonthHTML(from, to, s){
+  const sp = spendByCat(from, to), top = CATS.map(c => ({ c, v: sp[c.id], b: catBudget(c.id) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v).slice(0, 3);
+  const total = savedTotal(), goal = +state.settings.goal || 25000, left = Math.max(0, goal - total), need = needPerMonth(), pace = s.saved;
+  const months = pace > 0 ? Math.ceil(left / pace) : null, mx = Math.max(1, ...top.map(x => Math.max(x.v, x.b)));
+  return `<div class="mm"><div class="h3">Money month</div>
+    <div class="mm-row"><div class="ci-n"><small>Saved this month</small><b class="num">${money0(s.saved)}</b><i>${pace >= need ? 'on plan' : `${money0(need - pace)} under the plan`}</i></div>
+      <div class="ci-n"><small>Spent this month</small><b class="num">${money0(s.spent)}</b><i>budget ${money0(fixedTotal())}</i></div>
+      <div class="ci-n"><small>Towards ${money0(goal)}</small><b class="num">${money0(total)}</b><i>${months ? `about ${months} month${months === 1 ? '' : 's'} at this pace` : 'start saving to see a date'}</i></div></div>
+    ${top.length ? `<div class="mm-bars">${top.map(x => `<div class="mm-b"><span>${esc(x.c.name)}</span><i><b style="--w:${(x.v / mx).toFixed(3)}"></b>${x.b ? `<u style="--w:${(x.b / mx).toFixed(3)}"></u>` : ''}</i><em class="num">${money0(x.v)}${x.b ? ` / ${money0(x.b)}` : ''}</em></div>`).join('')}</div><p class="tiny">Top 3 categories · the line marks the budget</p>` : '<p class="tiny">No spending logged this month.</p>'}
+  </div>`;
+}
+function ciText(r){
+  const n = r.nums || {}, rate = AREAS.map(([id, name]) => `${name} ${r.ratings && r.ratings[id] ? r.ratings[id] : '–'}/5`).join(', ');
+  return [`${CI_NAME[r.type]}: ${shortDate(parseKey(r.from))} – ${shortDate(parseKey(r.to))}`,
+    `Tasks ${n.pct}% · training ${n.train} · essays ${n.essays} · speaking ${n.speaking} · packs ${n.packs} · saved ${money0(n.saved || 0)} · spent ${money0(n.spent || 0)}`,
+    `Ratings: ${rate}`, r.well ? `Went well: ${r.well}` : '', r.block ? `Got in the way: ${r.block}` : '', r.change ? `One change: ${r.change}` : '',
+    `Focus next: ${(AREAS.find(a => a[0] === r.focus) || [, '–'])[1]}`, r.coach ? `Coach: ${r.coach}` : ''].filter(Boolean).join('\n');
+}
+function ciCopyFallback(txt, ok){ const t = document.createElement('textarea'); t.value = txt; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); ok(); } catch(_){ toast('Could not copy here. Select the text and copy it by hand.', 'warn', 2600); } t.remove(); }
 
 </script>
 <script data-src="src/js/63-skins.js">

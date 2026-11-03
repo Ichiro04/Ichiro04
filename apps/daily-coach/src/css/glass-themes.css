@@ -20,8 +20,8 @@ html[data-skin]{
               calc(-8px * var(--gt-depth)) calc(-8px * var(--gt-depth)) calc(22px * var(--gt-depth)) rgba(255,255,255,calc(.75 * var(--gt-depth)));
   --gt-rim:inset 1px 1px 0 rgba(255,255,255,.8),inset -1px -1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(255,255,255,.35);
 }
-html[data-skin="neuglass"]{ --pw-ink:#4A433D; --pw-ink-2:#6A625A; --pw-ink-3:#8F867C; --pw-line:rgba(74,67,61,.08); --pw-line-2:rgba(74,67,61,.15) }
-html[data-skin="frost"]{ --pw-ink:#3C4651; --pw-ink-2:#5A6673; --pw-ink-3:#8793A0; --pw-line:rgba(60,70,81,.08); --pw-line-2:rgba(60,70,81,.14);
+html[data-skin="neuglass"]{ --pw-ink:#423B35; --pw-ink-2:#584F47; --pw-ink-3:#665D54; /* contrast ≥ 4.5:1 on the palest panel */ --pw-line:rgba(74,67,61,.08); --pw-line-2:rgba(74,67,61,.15) }
+html[data-skin="frost"]{ --pw-ink:#35404B; --pw-ink-2:#4C5763; --pw-ink-3:#5E6A77; /* contrast ≥ 4.5:1 on the palest panel */ --pw-line:rgba(60,70,81,.08); --pw-line-2:rgba(60,70,81,.14);
   --neu-lo:rgba(70,100,130,calc(.06 + .18 * var(--gt-depth)));
   --gt-shadow:0 calc(18px * var(--gt-depth)) calc(44px * var(--gt-depth)) rgba(70,100,130,calc(.2 * var(--gt-depth))),0 2px 6px rgba(70,100,130,.06);
   --gt-rim:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.55);
@@ -98,7 +98,7 @@ html[data-skin] .hero h1,html[data-skin][data-theme="dark"] .hero h1{font-family
 html[data-skin="neuglass"] .hero h1{color:rgba(255,255,255,.92)!important;font-weight:750!important;letter-spacing:.005em!important;
   text-shadow:-1px -1px 0 rgba(255,255,255,.7),1px 1px 1px rgba(90,80,70,.18),4px 6px 14px rgba(90,80,70,.28)}
 html[data-skin="frost"] .hero h1{color:#56606B!important;font-weight:300!important;letter-spacing:-.02em!important}
-html[data-skin="frost"] .hero .sub{color:var(--gt-accent)}
+html[data-skin="frost"] .hero .sub{color:var(--cr-crimson)}
 html[data-skin][data-theme="dark"] .hero h1{color:#F4F1EC!important;text-shadow:0 2px 18px rgba(var(--gt-accent-rgb),.45)}
 html[data-skin] .hero h1::after,html[data-skin] .h2::before{background:var(--cr-sand)!important}
 

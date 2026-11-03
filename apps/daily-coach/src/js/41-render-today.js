@@ -42,6 +42,7 @@ function renderToday(){
 
   return `
   ${kmLauncherHTML()}
+  ${typeof examCountHTML==='function' ? examCountHTML('today') : ''}
   ${typeof waveHTML==='function' ? waveHTML() : ''}
   ${daySystemHTML()}
   <div class="tcol a">

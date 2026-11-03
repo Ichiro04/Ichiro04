@@ -163,7 +163,7 @@ his weight or his money — state the number and the next action.
       added. `load()` swaps in the new list once, only if a saved list is still the old £1,050
       placeholder. `feasiblePerMonth()` no longer takes 10% off (the budget already has a £50 buffer),
       so the Money tab shows £1,303 realistic and £780 short, matching the plan. The weight target stays 72 kg and the IELTS target 7.0.
-- [ ] `state.settings.examDate` is stored but nothing counts down to it yet (the coach plan adds IELTS practice inside 60 days; a visible countdown is in `AUTOPILOT.md`).
+- [x] IELTS countdown: `examCountHTML(where)` on Today (only when a date is set) and in Review (asks for a date when none is set).
 - [ ] The Coach is deterministic (`generateReply`). If it is ever wired to a real model, keep the
       grounded-data-first behaviour and never send the JSON store to a server without asking.
 - [ ] No service worker / install prompt. A trivial one would make it work offline on his phone.
@@ -380,3 +380,4 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
 - `waveSVG(vals, labels, id, prev)` is a shared smooth wave chart with a drifting swell (fixed-number keyframes).
 - Cloud builder: a scheduled Claude run works through `AUTOPILOT.md` one item per night and pushes to this branch.
 - Removed dead code: `weighIns`, `setKeyDone`, `tideArt` (+ `TIDE_COLORS`, `.tide-wave`), `markTaskAuto`, `kmPos`, `kmBands`, `kmToWorld`, `kmOverall`.
+- **3 Nov 2026 additions:** IELTS countdown (`examCountHTML`), "Copy as text" on finished check-ins (`ciText`), a spending-by-category tip (`apSpendTip`; expense categories map to budget lines through `CAT_BUDGET`), "Money month" panel in monthly check-ins (`moneyMonthHTML`), tappable task chips on past calendar days (fix a missed log), packs `trim`, `spc`, `loto` with diagrams and Orbit links, 5 more interview questions, darker `--pw-ink-2/-3` in both glass skins (≥ 4.5:1 on the palest panel), and `glassWatch` (`.gl-off` drops the blur on panels that are off screen).

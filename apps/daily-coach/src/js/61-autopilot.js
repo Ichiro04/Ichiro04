@@ -165,6 +165,7 @@ function apTips(){
   if (now.getHours() >= 18 && countDone(k) < STREAK_TARGET) tips.push({ id:'risk', icon:'flame', t:`${STREAK_TARGET - countDone(k)} more task${STREAK_TARGET - countDone(k) > 1 ? 's' : ''} keeps the streak alive tonight. Vocabulary and logging spends take 15 minutes.`, go:'today', b:'Show tasks' });
   // focus time
   if (s14.days >= 5){ const h = s14.focus / s14.days / 60; tips.push({ id:'focus', icon:'clock', t:`Focused time: ${num(h)} hours a day over the last two weeks${h < 2 ? '. Aim for two: finish the morning blocks first.' : '. Keep it there.'}`, go:'today', b:'' }); }
+  { const ct = apSpendTip(); if (ct) tips.push(ct); }
   if (s28.essays === 0) tips.push({ id:'essay0', icon:'pen', t:'No IELTS essays logged in 4 weeks. One essay a week moves the band more than reading.', go:'learn', b:'Write one' });
   return tips;
 }
@@ -321,3 +322,50 @@ function waveSVG(vals, labels, id, prev){
     ${labels ? labels.map((l, i) => (n <= 8 || i % Math.ceil(n/7) === 0 || i === n-1) ? `<text x="${X(i).toFixed(1)}" y="${H-2}" text-anchor="middle" class="wv-lbl">${esc(l)}</text>` : '').join('') : ''}
   </svg>`;
 }
+
+/* ---------- IELTS exam countdown (Today and Review) ---------- */
+function examCountHTML(where){
+  const ex = state.settings.examDate, k = dkey();
+  if (!ex) return where === 'review' ? `<button class="glass ex-cd ex-none" data-ex="set">${ic('calendar', 16)}<span><b>Set your IELTS exam date</b><small>A countdown and a study plan for the last 60 days appear here.</small></span>${ic('arrowRight', 15)}</button>` : '';
+  const dl = daysBetween(k, ex); if (dl < 0) return where === 'review' ? `<button class="glass ex-cd ex-none" data-ex="set">${ic('calendar', 16)}<span><b>Exam day has passed (${shortDate(parseKey(ex))})</b><small>Set the next date or your result.</small></span>${ic('arrowRight', 15)}</button>` : '';
+  const created = state.createdAt && state.createdAt < k ? state.createdAt : dkey(addDays(new Date(), -30)), span = Math.max(1, daysBetween(created, ex)), pct = clamp(1 - dl / span, 0, 1);
+  const s28 = periodStats(dkey(addDays(new Date(), -27)), k), essays = s28.essays, speak = s28.speaking, wk = Math.max(0, Math.floor(dl / 7));
+  const plan = dl === 0 ? 'Today: sleep, breakfast, arrive 30 minutes early. No new material.' : dl <= 7 ? 'Final week: one full timed mock, then light review. Sleep matters more than one more essay.' : dl <= 30 ? 'One full timed mock a week, an essay every other day, speaking every day.' : dl <= 60 ? 'Build up: 3 essays and 4 speaking cards a week, timed.' : 'Steady: 3 essays and 3 speaking cards a week.';
+  return `<div class="glass ex-cd ${dl <= 7 ? 'close' : ''}" role="group" aria-label="IELTS countdown">
+    <div class="ex-ring" style="--p:${pct.toFixed(3)}"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" pathLength="1"/><circle class="v" cx="32" cy="32" r="27" pathLength="1"/></svg><b class="num">${dl}</b><small>${dl === 1 ? 'day' : 'days'}</small></div>
+    <div class="ex-tx"><b>IELTS in ${dl === 0 ? 'today' : dl === 1 ? '1 day' : `${dl} days`}${wk >= 2 ? ` · ${wk} weeks` : ''}</b><small>${prettyDate(parseKey(ex))} · target band ${num(+state.settings.ieltsTarget || 7)}</small><p>${plan}</p>
+      <span class="ex-chips"><span>${ic('pen', 13)} ${essays} essay${essays === 1 ? '' : 's'} in 4 weeks</span><span>${ic('mic', 13)} ${speak} speaking</span></span></div>
+    <button class="ex-go" data-ex="go" aria-label="Open IELTS practice">${ic('arrowRight', 16)}</button>
+  </div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-ex]'); if (!b) return; e.stopPropagation();
+  if (b.dataset.ex === 'set'){ if (typeof setOpen === 'function') setOpen('goals'); setTimeout(() => document.querySelector('#setOv [data-set="settings.examDate"]')?.focus(), 380); }
+  else { learnTab = 'essay'; setTab('learn', { force:true }); }
+}, true);
+
+/* ---------- spending by category against the budget lines ---------- */
+const CAT_BUDGET = { food:['food'], transport:['trans'], home:['rent'], fun:['fun'], gear:['learn'], life:['shop','misc','phone'] };
+function spendByCat(from, to){
+  const out = {}; CATS.forEach(c => out[c.id] = 0);
+  (state.expenses || []).forEach(e => { if ((e.date || '') >= from && (e.date || '') <= to){ const id = catOf(e.cat).id; out[id] += +e.amount || 0; } });
+  return out;
+}
+function catBudget(id){ return (CAT_BUDGET[id] || []).reduce((a, fid) => a + (+((state.settings.fixed || []).find(f => f.id === fid) || {}).amount || 0), 0); }
+function apSpendTip(){
+  const now = new Date(), from = dkey(new Date(now.getFullYear(), now.getMonth(), 1)), dim = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate(), frac = now.getDate() / dim;
+  const sp = spendByCat(from, dkey()); let worst = null;
+  CATS.forEach(c => { const b = catBudget(c.id); if (!b || c.id === 'home') return; const over = sp[c.id] - b * frac; if (over > 10 && (!worst || over > worst.over)) worst = { c, over, spent: sp[c.id], b }; });
+  if (!worst) return null;
+  return { id:'cat', icon:'cart', t:`${worst.c.name}: ${money0(worst.spent)} spent so far this month against a ${money0(worst.b)} budget. That is ${money0(worst.over)} ahead of pace with ${dim - now.getDate()} days to go.`, go:'money', b:'See spending' };
+}
+
+/* ---------- performance: blur only the glass that is on screen ----------
+   backdrop-filter costs a re-blur per panel per frame while anything
+   animates; panels scrolled out of view get .gl-off (no blur), which
+   looks identical because they cannot be seen. */
+const GLASS_SEL = '.glass,.lg,.lg-chip';
+const glassIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('gl-off', !e.isIntersecting)), { rootMargin:'160px 0px' }) : null;
+function glassWatch(root = document){ if (!glassIO) return; root.querySelectorAll(GLASS_SEL).forEach(el => { if (!el.dataset.gw){ el.dataset.gw = '1'; glassIO.observe(el); } }); }
+renderView = (orig => function(tab){ const r = orig.apply(this, arguments); try { glassWatch(document.getElementById('view-' + tab) || document); } catch(_){} return r; })(renderView);
+new MutationObserver(() => { clearTimeout(glassWatch.t); glassWatch.t = setTimeout(() => glassWatch(document.getElementById('main') || document), 120); }).observe(document.getElementById('main') || document.body, { childList:true, subtree:true });

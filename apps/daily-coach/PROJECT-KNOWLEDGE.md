@@ -41,6 +41,8 @@ The map's controls:
 - Check-ins every 2 weeks and every month. Each one fills in the numbers itself, gives the coach's read, asks for 1–5 ratings in six areas and three short questions, and sets a focus area for the next period.
 - Calendar with each day coloured by tasks done and dots for training, English, savings and weight; tap a day to see it and write a note.
 - Charts: this fortnight against the last (wave), daily focused time, balance wheel, fortnight trend and past check-ins.
+- IELTS countdown (also on Today once an exam date is set), a Money month panel in the monthly check-in, and "Copy as text" on finished check-ins.
+- Past days in the calendar: tap a task to fix a missed log.
 - "Edit layout" moves or hides sections.
 
 **Lab.**
@@ -60,7 +62,7 @@ The map's controls:
 
 **Money / Progress / Train / Learn.**
 - Train: sessions with animated exercise figures.
-- Learn: IELTS essays, speaking cue cards, 12 engineering knowledge packs, words and career prep (Huhtamaki stages, stories, portfolio).
+- Learn: IELTS essays, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
 - Money: the £25k savings plan and spending log.
 - Progress: streaks and charts.
 

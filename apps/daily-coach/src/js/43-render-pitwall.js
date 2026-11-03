@@ -166,7 +166,16 @@ const PACK_DIAGRAMS = {
   rca:()=>[DG.line('M30,84 L280,84','acc'),DG.box(280,66,48,36,'Effect','acc'),...[['People',70,28],['Machine',170,28],['Method',70,140],['Material',170,140]].map(([l,x,y])=>DG.line(`M${x},${y} L${x+50},84`)+DG.t(x,y<84?y-8:y+16,l,'sm')),DG.t(150,160,'Ask why five times on each bone','sm')],
   ppm:()=>[DG.line('M30,140 L326,140 M30,140 L30,18'),DG.t(36,30,'Condition','sm','start'),DG.t(320,158,'Time','sm','end'),DG.line('M36,40 C170,42 230,62 300,136','acc'),
     DG.circ(206,56,5,'acc'),DG.t(206,46,'P: failure detectable','sm'),DG.circ(294,128,5,'acc'),DG.t(266,118,'F: it fails','sm','end'),DG.line('M206,74 L294,74','dash'),DG.t(250,90,'Inspect inside the P–F gap','sm')],
-  films:()=>[DG.box(30,30,170,24,'PET: stiffness, print'),DG.box(30,58,170,10,''),DG.t(210,67,'Adhesive','sm','start'),DG.box(30,72,170,40,'PE: the seal layer','acc'),DG.t(210,96,'Melts first, seals','sm','start'),DG.t(115,140,'Cross-section of a lidding film','sm')]
+  films:()=>[DG.box(30,30,170,24,'PET: stiffness, print'),DG.box(30,58,170,10,''),DG.t(210,67,'Adhesive','sm','start'),DG.box(30,72,170,40,'PE: the seal layer','acc'),DG.t(210,96,'Melts first, seals','sm','start'),DG.t(115,140,'Cross-section of a lidding film','sm')],
+  trim:()=>[DG.line('M14,40 L326,40','acc'),DG.line('M14,62 L326,62','acc'),DG.t(40,30,'Formed web','sm','start'),...[50,110,170,230].map(x=>DG.line(`M${x},40 L${x+22},62 L${x+44},40`)),
+    DG.box(130,84,84,20,'Steel-rule die','acc'),DG.arrow(172,104,172,124),DG.box(110,126,124,14,''),DG.t(172,160,'Cutting plate','sm'),
+    DG.t(250,92,'Index length','sm','start'),DG.t(250,108,'Die height','sm','start'),DG.t(250,124,'Web temperature','sm','start'),DG.t(20,100,'Same cavity','sm','start'),DG.t(20,114,'every time = tool','sm','start')],
+  spc:()=>[DG.line('M30,140 L326,140 M30,140 L30,18'),DG.line('M30,34 L326,34','dash'),DG.line('M30,124 L326,124','dash'),DG.line('M30,79 L326,79'),
+    DG.t(322,28,'Upper limit','sm','end'),DG.t(322,120,'Lower limit','sm','end'),DG.t(322,74,'Centre line','sm','end'),
+    ...[[50,84],[75,70],[100,90],[125,76],[150,82],[175,88],[200,92],[225,96],[250,98],[275,104],[300,110]].map(([x,y],i)=>DG.circ(x,y,3.5,i>4?'acc':'')),
+    DG.line('M50,84 L75,70 L100,90 L125,76 L150,82 L175,88 L200,92 L225,96 L250,98 L275,104 L300,110'),DG.t(236,154,'6 points falling: act','acc')],
+  loto:()=>[DG.box(14,40,62,30,'Stop'),DG.arrow(76,55,88,55),DG.box(88,40,62,30,'Isolate','acc'),DG.arrow(150,55,162,55),DG.box(162,40,62,30,'Lock'),DG.arrow(224,55,236,55),DG.box(236,40,90,30,'Prove dead','acc'),
+    DG.t(170,100,'Electrical · air · hydraulic · gravity · heat','sm'),DG.circ(120,132,10,'acc'),DG.line('M114,124 L114,114 Q120,106 126,114 L126,124'),DG.t(140,136,'Your lock, your key','sm','start')]
 };
 function packDiagram(id){
   const f = PACK_DIAGRAMS[id]; if (!f) return '';
