@@ -11,7 +11,7 @@
      history, ranking, pipeline and log pick it up by themselves.
    ============================================================ */
 const AG_W = { english:.22, career:.22, money:.2, engineering:.16, training:.1, routine:.1 }; // how much each area matters to his goals
-const AG_COLORS = { chief:'#35D0FF', fit:'#FF6B81', ielts:'#B79BFF', eng:'#2EE6C5', career:'#FFC24D', money:'#7DDB6A', health:'#6FA8FF', review:'#FF9A5C' };
+const AG_COLORS = { chief:'var(--ag-cy)', fit:'#FF6B81', ielts:'#B79BFF', eng:'#2EE6C5', career:'#FFC24D', money:'#7DDB6A', health:'#6FA8FF', review:'#FF9A5C' };
 
 function agCtx(){
   if (AG.ctx && AG.ctx.at > Date.now() - 4000) return AG.ctx;
@@ -142,17 +142,17 @@ function agRanking(){
 /* ---------- small drawing helpers ---------- */
 function agRing(v, size, col, label){
   const r = size / 2 - 6, c = 2 * Math.PI * r;
-  return `<svg class="ag-ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="tr"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="fg" stroke="${col}" stroke-dasharray="${(v / 100 * c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>
+  return `<svg class="ag-ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="tr"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="fg" style="stroke:${col}" stroke-dasharray="${(v / 100 * c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>
     <circle cx="${size / 2}" cy="${size / 2}" r="${r - 9}" class="in"/></svg><div class="ag-ring-t"><b class="num">${v}</b>${label ? `<small>${label}</small>` : ''}</div>`;
 }
 function agSpark(vals, col, w = 240, h = 60, base){
   if (!vals.length) return `<div class="ag-empty">The trend fills in day by day.</div>`;
   const mx = 100, x = i => vals.length === 1 ? w / 2 : i / (vals.length - 1) * w, y = v => h - 4 - v / mx * (h - 10);
   const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' '), id = 'g' + Math.random().toString(36).slice(2, 7);
-  return `<svg class="ag-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".45"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+  return `<svg class="ag-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${col};stop-opacity:.45"/><stop offset="1" style="stop-color:${col};stop-opacity:0"/></linearGradient></defs>
     ${[25, 50, 75].map(g => `<line x1="0" x2="${w}" y1="${y(g)}" y2="${y(g)}" class="gl"/>`).join('')}
     ${base && base.length > 1 ? `<polyline points="${base.map((v, i) => `${(i / (base.length - 1) * w).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" class="base"/>` : ''}
-    <polygon points="0,${h} ${pts} ${w},${h}" fill="url(#${id})"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2"/>${vals.length ? `<circle cx="${x(vals.length - 1)}" cy="${y(vals[vals.length - 1])}" r="3.5" fill="${col}"/>` : ''}</svg>`;
+    <polygon points="0,${h} ${pts} ${w},${h}" fill="url(#${id})"/><polyline points="${pts}" fill="none" style="stroke:${col}" stroke-width="2"/>${vals.length ? `<circle cx="${x(vals.length - 1)}" cy="${y(vals[vals.length - 1])}" r="3.5" style="fill:${col}"/>` : ''}</svg>`;
 }
 function agHist(id, days = 14){ const h = agRec(id).hist, out = []; for (let i = days - 1; i >= 0; i--){ const d = dkey(addDays(new Date(), -i)), e = h.find(x => x.d === d); if (e) out.push(e.s); } return out; }
 const agPanel = (title, side, body, cls = '') => `<section class="ag-p ${cls}"><header class="ag-ph"><b>${title}</b>${side ? `<span>${side}</span>` : ''}</header>${body}</section>`;
@@ -164,7 +164,7 @@ function agHubHTML(){
     return { a, x, y, r, st, on }; });
   const chief = agResult('chief');
   return `<div class="ag-hub"><svg viewBox="0 0 ${W} ${H}" class="ag-hub-svg" role="img" aria-label="Your agent team around you">
-    <defs><radialGradient id="agCore"><stop offset="0" stop-color="#7FE6FF"/><stop offset=".45" stop-color="#1E7FD6"/><stop offset="1" stop-color="#0A2F66" stop-opacity="0"/></radialGradient></defs>
+    <defs><radialGradient id="agCore"><stop offset="0" style="stop-color:var(--ag-core1)"/><stop offset=".45" style="stop-color:var(--ag-core2)"/><stop offset="1" style="stop-color:var(--ag-core3);stop-opacity:0"/></radialGradient></defs>
     <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" class="orb"/><ellipse cx="${cx}" cy="${cy}" rx="${rx * .62}" ry="${ry * .62}" class="orb in"/><ellipse cx="${cx}" cy="${cy}" rx="${rx * 1.18}" ry="${ry * 1.18}" class="orb out"/>
     ${nodes.map(n => `<line x1="${cx}" y1="${cy}" x2="${n.x.toFixed(1)}" y2="${n.y.toFixed(1)}" class="link ${n.on ? n.st : 'off'}"/>`).join('')}
     <circle cx="${cx}" cy="${cy}" r="70" fill="url(#agCore)" opacity=".55"/>
@@ -193,8 +193,8 @@ function agDetailHTML(){
     <div class="ag-acts"><button class="ag-btn big" data-ag-run>${ic('rotate', 14)} Run all agents now</button>${a.id !== 'chief' ? `<button class="ag-btn big ${on ? '' : 'on'}" data-ag-toggle="${a.id}">${on ? 'Pause this agent' : 'Switch it on'}</button>` : ''}</div>`, 'ag-detail');
 }
 
-function renderAgents(){
-  agentsRun(); const chief = agResult('chief'), rank = agRanking(), all = AGENTS.filter(a => agOn(a.id)), now = new Date();
+function agTeamHTML(){
+  const chief = agResult('chief'), rank = agRanking(), all = AGENTS.filter(a => agOn(a.id)), now = new Date();
   const needs = AGENTS.filter(a => a.id !== 'chief' && agOn(a.id) && agStatus(agResult(a.id))[0] === 'needs').length;
   const open = AGENTS.filter(a => a.id !== 'chief' && agOn(a.id)).reduce((s, a) => s + agResult(a.id).findings.filter(f => !f.done).length, 0);
   const doneToday = AGENTS.reduce((s, a) => s + ((agRec(a.id).done[dkey()] || []).length), 0);
@@ -202,25 +202,22 @@ function renderAgents(){
   const watched = AGENTS.filter(a => a.id !== 'chief' && agOn(a.id)).length, found = open + doneToday;
   const pipe = [['Watch', watched, 'agents reading your data'], ['Find', found, 'things found today'], ['Act', open, 'waiting for you'], ['Done', doneToday, 'done today'], ['Review', AGENTS.reduce((s, a) => s + agRec(a.id).hist.length, 0), 'daily snapshots kept']];
   const log = (state.agentLog || []).slice(0, 8);
-  return `<div class="ag" id="agRoot">
-    <div class="ag-top">
-      <div class="ag-title"><span class="ag-logo">${ic('robot', 20)}</span><div><b>Agent control centre</b><small>Your team, working from your own data · nothing leaves this browser</small></div></div>
+  return `<div class="ag-top ag-top2">
       <div class="ag-stats">
         <div><b class="num">${all.length}<small>/${AGENTS.length}</small></b><span>agents on</span></div>
         <div class="${needs ? 'warn' : ''}"><b class="num">${needs}</b><span>need you</span></div>
         <div><b class="num">${open}</b><span>open tasks</span></div>
         <div><b class="num">${doneToday}</b><span>done today</span></div>
-        <div class="ag-clock"><b class="num" id="agClock">${pad2(now.getHours())}:${pad2(now.getMinutes())}</b><span>${esc(now.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }))}</span></div>
       </div>
     </div>
     <div class="ag-grid">
       <div class="ag-col l">
-        ${agPanel('Team health', 'weighted by your goals', `<div class="ag-health"><div class="ag-ringw">${agRing(chief.score, 128, '#35D0FF', 'team score')}</div>
+        ${agPanel('Team health', 'weighted by your goals', `<div class="ag-health"><div class="ag-ringw">${agRing(chief.score, 128, 'var(--ag-cy)', 'team score')}</div>
           <div class="ag-bars">${AGENTS.filter(a => a.id !== 'chief').map(a => { const r = agResult(a.id); return `<button class="ag-bar" data-ag-sel="${a.id}" style="--c:${AG_COLORS[a.id]}"><span>${esc(a.area)}</span><i><em style="width:${agOn(a.id) ? r.score : 0}%"></em></i><b class="num">${agOn(a.id) ? r.score : '–'}</b></button>`; }).join('')}</div></div>
-          <div class="ag-sub">Last 14 days</div>${agSpark(teamHist, '#35D0FF', 260, 56)}`)}
+          <div class="ag-sub">Last 14 days</div>${agSpark(teamHist, 'var(--ag-cy)', 260, 56)}`)}
         ${agPanel('Best for you right now', 'goal weight × gap', `<ol class="ag-rank">${rank.slice(0, 5).map((x, i) => `<li data-ag-sel="${x.a.id}" style="--c:${AG_COLORS[x.a.id]}"><span class="n num">${i + 1}</span><span class="t"><b>${esc(x.a.name)}</b><small>${esc(x.why)}</small></span><span class="fit num">${x.fit}%</span></li>`).join('')}</ol>
           <p class="ag-note">The higher the fit, the more this agent can move your goals this week. Your goals weigh English and career highest, then money.</p>`)}
-        ${agPanel('Activity', 'latest first', `<ul class="ag-log">${log.map(l => { const d = new Date(l.ts), a = AGENTS.find(x => x.id === l.id); return `<li><span class="num">${pad2(d.getHours())}:${pad2(d.getMinutes())}</span><span>${esc(l.msg)}</span><em style="color:${AG_COLORS[l.id] || '#35D0FF'}">${esc(a ? a.area : '')}</em></li>`; }).join('') || '<li class="none">The log fills in as agents run.</li>'}</ul>`)}
+        ${agPanel('Activity', 'latest first', `<ul class="ag-log">${log.map(l => { const d = new Date(l.ts), a = AGENTS.find(x => x.id === l.id); return `<li><span class="num">${pad2(d.getHours())}:${pad2(d.getMinutes())}</span><span>${esc(l.msg)}</span><em style="color:${AG_COLORS[l.id] || 'var(--ag-cy)'}">${esc(a ? a.area : '')}</em></li>`; }).join('') || '<li class="none">The log fills in as agents run.</li>'}</ul>`)}
       </div>
       <div class="ag-col c">
         ${agPanel('Your team', 'tap an agent', agHubHTML(), 'ag-hubp')}
@@ -232,11 +229,10 @@ function renderAgents(){
       </div>
       <div class="ag-col r">
         ${agDetailHTML()}
-        ${agPanel('Score trend', esc((AGENTS.find(a => a.id === AG.sel) || {}).name || ''), `${agSpark(agHist(AG.sel), AG_COLORS[AG.sel] || '#35D0FF', 300, 80, AG.sel !== 'chief' ? teamHist : null)}<div class="ag-legend"><span><i style="background:${AG_COLORS[AG.sel]}"></i>this agent</span>${AG.sel !== 'chief' ? '<span><i class="dash"></i>team</span>' : ''}</div>`)}
+        ${agPanel('Score trend', esc((AGENTS.find(a => a.id === AG.sel) || {}).name || ''), `${agSpark(agHist(AG.sel), AG_COLORS[AG.sel] || 'var(--ag-cy)', 300, 80, AG.sel !== 'chief' ? teamHist : null)}<div class="ag-legend"><span><i style="background:${AG_COLORS[AG.sel]}"></i>this agent</span>${AG.sel !== 'chief' ? '<span><i class="dash"></i>team</span>' : ''}</div>`)}
 
       </div>
-    </div>
-  </div>`;
+    </div>`;
 }
 function agRedraw(){ const el = document.getElementById('view-agents'); if (!el || activeTab !== 'agents') return; const y = window.scrollY; el.innerHTML = renderAgents(); window.scrollTo(0, y); }
 

@@ -4037,13 +4037,14 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
    references (navy panels, cyan glow, framed screen). Like Orbit, it
    keeps its own dark look in both light and dark mode.
    ============================================================ */
-.ag{--ag-bg:#050D1A;--ag-p1:rgba(13,38,72,.62);--ag-p2:rgba(6,20,40,.72);--ag-line:rgba(53,208,255,.22);--ag-line2:rgba(53,208,255,.45);
-  --ag-ink:#E3F2FF;--ag-ink2:#9FBEDB;--ag-ink3:#6E8FAF;--ag-cy:#35D0FF;--ag-ok:#2EE6A6;--ag-warn:#FFC24D;--ag-bad:#FF5C7A;
+.ag{--ag-rgb:53,208,255;--ag-bg:#050D1A;--ag-p1:rgba(13,38,72,.62);--ag-p2:rgba(6,20,40,.72);--ag-line:rgba(var(--ag-rgb),.22);--ag-line2:rgba(var(--ag-rgb),.45);
+  --ag-ink:#E3F2FF;--ag-ink2:#9FBEDB;--ag-ink3:#6E8FAF;--ag-cy:#35D0FF;--ag-ok:#2EE6A6;--ag-warn:#FFC24D;--ag-bad:#FF5C7A;--ag-gold:#FFD36B;
+  --ag-glow1:rgba(30,110,200,.35);--ag-glow2:rgba(20,180,200,.14);--ag-logo1:#1E9BFF;--ag-logo2:#0B4FA8;--ag-title2:#8FD8FF;--ag-core1:#7FE6FF;--ag-core2:#1E7FD6;--ag-core3:#0A2F66;
   position:relative;color:var(--ag-ink);border-radius:26px;padding:16px;overflow:hidden;isolation:isolate;
-  background:radial-gradient(120% 70% at 50% -10%,rgba(30,110,200,.35),transparent 60%),radial-gradient(60% 50% at 100% 100%,rgba(20,180,200,.14),transparent 70%),var(--ag-bg);
-  box-shadow:0 0 0 1px rgba(53,208,255,.25),0 0 0 6px rgba(53,208,255,.05),0 30px 70px -30px rgba(0,20,60,.9)}
+  background:radial-gradient(120% 70% at 50% -10%,var(--ag-glow1),transparent 60%),radial-gradient(60% 50% at 100% 100%,var(--ag-glow2),transparent 70%),var(--ag-bg);
+  box-shadow:0 0 0 1px rgba(var(--ag-rgb),.25),0 0 0 6px rgba(var(--ag-rgb),.05),0 30px 70px -30px rgba(0,20,60,.9)}
 .ag::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;
-  background-image:linear-gradient(rgba(53,208,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(53,208,255,.06) 1px,transparent 1px);background-size:32px 32px;
+  background-image:linear-gradient(rgba(var(--ag-rgb),.06) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ag-rgb),.06) 1px,transparent 1px);background-size:32px 32px;
   -webkit-mask-image:radial-gradient(80% 70% at 50% 40%,#000,transparent);mask-image:radial-gradient(80% 70% at 50% 40%,#000,transparent)}
 .ag *{box-sizing:border-box}
 .ag .num{font-variant-numeric:tabular-nums}
@@ -4051,28 +4052,28 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 
 /* top bar */
 .ag-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:6px 6px 14px;margin-bottom:14px;border-bottom:1px solid var(--ag-line);
-  background:linear-gradient(90deg,transparent,rgba(53,208,255,.12) 50%,transparent) bottom/100% 1px no-repeat}
+  background:linear-gradient(90deg,transparent,rgba(var(--ag-rgb),.12) 50%,transparent) bottom/100% 1px no-repeat}
 .ag-title{display:flex;align-items:center;gap:12px;min-width:0}
-.ag-logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(150deg,#1E9BFF,#0B4FA8);box-shadow:0 0 18px rgba(53,208,255,.55),inset 0 1px 0 rgba(255,255,255,.35)}
-.ag-title b{display:block;font-size:20px;font-weight:800;letter-spacing:.01em;background:linear-gradient(180deg,#FFFFFF,#8FD8FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ag-logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(150deg,var(--ag-logo1),var(--ag-logo2));box-shadow:0 0 18px rgba(var(--ag-rgb),.55),inset 0 1px 0 rgba(255,255,255,.35)}
+.ag-title b{display:block;font-size:20px;font-weight:800;letter-spacing:.01em;background:linear-gradient(180deg,#FFFFFF,var(--ag-title2));-webkit-background-clip:text;background-clip:text;color:transparent}
 .ag-title small{display:block;font-size:12px;color:var(--ag-ink3)}
 .ag-stats{display:flex;gap:8px;flex-wrap:wrap}
 .ag-stats > div{min-width:84px;padding:8px 12px;border-radius:12px;background:linear-gradient(180deg,var(--ag-p1),var(--ag-p2));box-shadow:inset 0 0 0 1px var(--ag-line)}
 .ag-stats b{display:block;font-size:20px;font-weight:750;color:#fff;line-height:1.1}
 .ag-stats b small{font-size:12px;color:var(--ag-ink3);font-weight:600}
 .ag-stats span{font-size:11px;color:var(--ag-ink2)}
-.ag-stats .warn b{color:var(--ag-warn);text-shadow:0 0 12px rgba(255,194,77,.5)}
-.ag-clock b{color:var(--ag-cy)!important;text-shadow:0 0 12px rgba(53,208,255,.6)}
+.ag-stats .warn b{color:var(--ag-warn);text-shadow:0 0 12px color-mix(in srgb,var(--ag-warn) 50%,transparent)}
+.ag-clock b{color:var(--ag-cy)!important;text-shadow:0 0 12px rgba(var(--ag-rgb),.6)}
 
 /* grid */
 .ag-grid{display:grid;grid-template-columns:300px minmax(0,1fr) 340px;gap:14px;align-items:stretch}
 .ag-col{display:flex;flex-direction:column;gap:14px;min-width:0}
 .ag-col > .ag-p:last-child{flex:1 1 auto}
-.ag-p{position:relative;padding:12px 14px 14px;border-radius:14px;background:linear-gradient(180deg,var(--ag-p1),var(--ag-p2));box-shadow:inset 0 0 0 1px var(--ag-line),inset 0 0 30px rgba(53,208,255,.05);min-width:0}
+.ag-p{position:relative;padding:12px 14px 14px;border-radius:14px;background:linear-gradient(180deg,var(--ag-p1),var(--ag-p2));box-shadow:inset 0 0 0 1px var(--ag-line),inset 0 0 30px rgba(var(--ag-rgb),.05);min-width:0}
 .ag-p::before,.ag-p::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--ag-cy);opacity:.7;pointer-events:none}
 .ag-p::before{top:-1px;left:-1px;border-right:0;border-bottom:0;border-radius:14px 0 0 0}
 .ag-p::after{bottom:-1px;right:-1px;border-left:0;border-top:0;border-radius:0 0 14px 0}
-.ag-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-2px 0 12px;padding:0 0 8px 10px;border-bottom:1px solid rgba(53,208,255,.14);position:relative}
+.ag-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-2px 0 12px;padding:0 0 8px 10px;border-bottom:1px solid rgba(var(--ag-rgb),.14);position:relative}
 .ag-ph::before{content:"";position:absolute;left:0;top:3px;bottom:11px;width:3px;border-radius:3px;background:var(--ag-cy);box-shadow:0 0 8px var(--ag-cy)}
 .ag-ph b{display:flex;align-items:center;gap:7px;font-size:14.5px;font-weight:750;color:#fff}
 .ag-ph > span{font-size:11px;color:var(--ag-ink3);text-align:right}
@@ -4083,14 +4084,14 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 
 /* rings and sparks */
 .ag-ringw{position:relative;display:grid;place-items:center;flex:0 0 auto}
-.ag-ring .tr{fill:none;stroke:rgba(53,208,255,.12);stroke-width:8}
+.ag-ring .tr{fill:none;stroke:rgba(var(--ag-rgb),.12);stroke-width:8}
 .ag-ring .fg{fill:none;stroke-width:8;stroke-linecap:round;filter:drop-shadow(0 0 6px currentColor);transition:stroke-dasharray .8s ease}
-.ag-ring .in{fill:rgba(5,20,40,.8);stroke:rgba(53,208,255,.2);stroke-dasharray:2 4}
+.ag-ring .in{fill:color-mix(in srgb,var(--ag-bg) 80%,transparent);stroke:rgba(var(--ag-rgb),.2);stroke-dasharray:2 4}
 .ag-ring-t{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
 .ag-ring-t b{font-size:30px;font-weight:800;color:#fff;line-height:1}
 .ag-ring-t small{font-size:10.5px;color:var(--ag-ink2);margin-top:3px}
 .ag-spark{width:100%;height:auto;overflow:visible}
-.ag-spark .gl{stroke:rgba(53,208,255,.1);stroke-dasharray:3 4}
+.ag-spark .gl{stroke:rgba(var(--ag-rgb),.1);stroke-dasharray:3 4}
 .ag-spark .base{fill:none;stroke:rgba(227,242,255,.45);stroke-width:1.5;stroke-dasharray:4 4}
 .ag-legend{display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--ag-ink2)}
 .ag-legend span{display:inline-flex;align-items:center;gap:6px}
@@ -4102,7 +4103,7 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 .ag-bars{display:grid;gap:6px;min-width:0;width:100%}
 .ag-bar{display:grid;grid-template-columns:72px 1fr 26px;align-items:center;gap:8px;padding:2px 0;text-align:left;color:inherit;font:inherit;background:none;border:0;cursor:pointer}
 .ag-bar span{font-size:11px;color:var(--ag-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ag-bar i{height:6px;border-radius:6px;background:rgba(53,208,255,.1);overflow:hidden}
+.ag-bar i{height:6px;border-radius:6px;background:rgba(var(--ag-rgb),.1);overflow:hidden}
 .ag-bar em{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 50%,transparent),var(--c));box-shadow:0 0 8px var(--c)}
 .ag-bar b{font-size:11.5px;color:#fff;text-align:right}
 
@@ -4111,7 +4112,7 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 .ag-rank li{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;cursor:pointer;
   background:linear-gradient(90deg,color-mix(in srgb,var(--c) 14%,transparent),transparent 70%);box-shadow:inset 2px 0 0 var(--c)}
 .ag-rank li:hover{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 24%,transparent),transparent 80%)}
-.ag-rank .n{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#041020;background:var(--c)}
+.ag-rank .n{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--ag-bg);background:var(--c)}
 .ag-rank .t{display:grid;min-width:0}
 .ag-rank .t b{font-size:13px;color:#fff}
 .ag-rank .t small{font-size:11px;color:var(--ag-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -4121,21 +4122,21 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 .ag-hubp{padding-bottom:6px}
 .ag-hub{position:relative}
 .ag-hub-svg{width:100%;height:auto;max-height:400px;overflow:visible}
-.ag-hub .orb{fill:none;stroke:rgba(53,208,255,.28);stroke-width:1.2}
-.ag-hub .orb.in{stroke-dasharray:3 6;stroke:rgba(53,208,255,.22)}
-.ag-hub .orb.out{stroke:rgba(53,208,255,.1);stroke-width:8}
-.ag-hub .link{stroke:rgba(53,208,255,.35);stroke-width:1.4;stroke-dasharray:4 6;animation:agFlow 1.6s linear infinite}
-.ag-hub .link.needs{stroke:rgba(255,92,122,.6)}.ag-hub .link.watch{stroke:rgba(255,194,77,.5)}.ag-hub .link.ok{stroke:rgba(46,230,166,.5)}.ag-hub .link.off{stroke:rgba(110,143,175,.2);animation:none}
+.ag-hub .orb{fill:none;stroke:rgba(var(--ag-rgb),.28);stroke-width:1.2}
+.ag-hub .orb.in{stroke-dasharray:3 6;stroke:rgba(var(--ag-rgb),.22)}
+.ag-hub .orb.out{stroke:rgba(var(--ag-rgb),.1);stroke-width:8}
+.ag-hub .link{stroke:rgba(var(--ag-rgb),.35);stroke-width:1.4;stroke-dasharray:4 6;animation:agFlow 1.6s linear infinite}
+.ag-hub .link.needs{stroke:rgba(255,92,122,.6)}.ag-hub .link.watch{stroke:color-mix(in srgb,var(--ag-warn) 50%,transparent)}.ag-hub .link.ok{stroke:rgba(46,230,166,.5)}.ag-hub .link.off{stroke:rgba(110,143,175,.2);animation:none}
 @keyframes agFlow{to{stroke-dashoffset:-20}}
 .ag-hub .core{cursor:pointer}
-.ag-hub .core-c{fill:rgba(8,40,80,.95);stroke:var(--ag-cy);stroke-width:2;filter:drop-shadow(0 0 14px rgba(53,208,255,.7))}
+.ag-hub .core-c{fill:var(--ag-p1);stroke:var(--ag-cy);stroke-width:2;filter:drop-shadow(0 0 14px rgba(var(--ag-rgb),.7))}
 .ag-hub .core-c.sel{stroke-width:3.5}
-.ag-hub .core-r{fill:none;stroke:rgba(53,208,255,.4);stroke-dasharray:2 5;transform-origin:center;transform-box:fill-box;animation:agSpin 18s linear infinite}
+.ag-hub .core-r{fill:none;stroke:rgba(var(--ag-rgb),.4);stroke-dasharray:2 5;transform-origin:center;transform-box:fill-box;animation:agSpin 18s linear infinite}
 @keyframes agSpin{to{transform:rotate(360deg)}}
 .ag-hub .core-t{fill:#fff;font-size:17px;font-weight:800;text-anchor:middle}
 .ag-hub .core-s{fill:var(--ag-cy);font-size:11px;font-weight:700;text-anchor:middle}
 .ag-hub .node{cursor:pointer}
-.ag-hub .node .nb{fill:rgba(6,22,44,.95);stroke:var(--c);stroke-opacity:.3;stroke-width:5;transition:stroke-opacity .2s}
+.ag-hub .node .nb{fill:color-mix(in srgb,var(--ag-bg) 95%,#000);stroke:var(--c);stroke-opacity:.3;stroke-width:5;transition:stroke-opacity .2s}
 .ag-hub .node .nr{fill:none;stroke:var(--c);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 0 5px var(--c))}
 .ag-hub .node .nv{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle}
 .ag-hub .node .nl{fill:var(--ag-ink2);font-size:11.5px;font-weight:700;text-anchor:middle}
@@ -4148,8 +4149,8 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 
 /* pipeline */
 .ag-pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-.ag-stage{position:relative;padding:10px;border-radius:10px;text-align:center;background:rgba(53,208,255,.06);box-shadow:inset 0 0 0 1px rgba(53,208,255,.18)}
-.ag-stage b{display:block;font-size:22px;font-weight:800;color:#fff;text-shadow:0 0 12px rgba(53,208,255,.5)}
+.ag-stage{position:relative;padding:10px;border-radius:10px;text-align:center;background:rgba(var(--ag-rgb),.06);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.18)}
+.ag-stage b{display:block;font-size:22px;font-weight:800;color:#fff;text-shadow:0 0 12px rgba(var(--ag-rgb),.5)}
 .ag-stage span{display:block;font-size:12px;font-weight:750;color:var(--ag-cy)}
 .ag-stage small{display:block;font-size:10.5px;color:var(--ag-ink3);margin-top:2px;line-height:1.3}
 .ag-stage i{position:absolute;right:-9px;top:50%;width:8px;height:8px;border-top:2px solid var(--ag-cy);border-right:2px solid var(--ag-cy);transform:translateY(-50%) rotate(45deg);opacity:.7}
@@ -4157,7 +4158,7 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 /* roster */
 .ag-roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
 .ag-card{display:grid;grid-template-columns:36px minmax(0,1fr) auto;grid-template-rows:auto auto;gap:6px 10px;align-items:center;padding:10px 12px;border-radius:12px;text-align:left;color:inherit;font:inherit;cursor:pointer;border:0;
-  background:linear-gradient(180deg,rgba(14,40,74,.7),rgba(8,24,46,.7));box-shadow:inset 0 0 0 1px rgba(53,208,255,.16);transition:box-shadow .2s,transform .2s}
+  background:linear-gradient(180deg,var(--ag-p1),var(--ag-p2));box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.16);transition:box-shadow .2s,transform .2s}
 .ag-card:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px var(--c,var(--ag-line2))}
 .ag-card.sel{box-shadow:inset 0 0 0 1.5px var(--c),0 0 18px -6px var(--c)}
 .ag-card.off{opacity:.55}
@@ -4166,10 +4167,10 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 .ag-card .t b{font-size:13px;color:#fff}
 .ag-card .t small{font-size:11px;color:var(--ag-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ag-card .sc{grid-column:2 / -1;display:grid;grid-template-columns:1fr 26px;gap:8px;align-items:center}
-.ag-card .sc i{height:5px;border-radius:5px;background:rgba(53,208,255,.1);overflow:hidden}
+.ag-card .sc i{height:5px;border-radius:5px;background:rgba(var(--ag-rgb),.1);overflow:hidden}
 .ag-card .sc em{display:block;height:100%;border-radius:5px;background:var(--c);box-shadow:0 0 6px var(--c)}
 .ag-card .sc b{font-size:12px;color:#fff;text-align:right}
-.ag-card.later{cursor:default;opacity:.75;background:repeating-linear-gradient(135deg,rgba(53,208,255,.04) 0 8px,transparent 8px 16px),rgba(6,20,40,.6);box-shadow:inset 0 0 0 1px rgba(53,208,255,.12)}
+.ag-card.later{cursor:default;opacity:.75;background:repeating-linear-gradient(135deg,rgba(var(--ag-rgb),.04) 0 8px,transparent 8px 16px),var(--ag-p2);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.12)}
 .ag-card.later .t small{white-space:normal}
 .ag-card .need{grid-column:2 / -1;font-size:10.5px;color:var(--ag-warn)}
 .ag-st{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:999px;font-size:10.5px;font-weight:750;white-space:nowrap;color:var(--sc);background:color-mix(in srgb,var(--sc) 14%,transparent);--sc:var(--ag-ink3)}
@@ -4184,12 +4185,12 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 .ag-d-t p.ag-head{font-size:13.5px;font-weight:650;color:#fff}
 .ag-d-t small{font-size:11px;color:var(--ag-ink3)}
 .ag-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
-.ag-kpis > div{padding:9px 10px;border-radius:10px;background:rgba(53,208,255,.06);box-shadow:inset 0 0 0 1px rgba(53,208,255,.14);min-width:0}
+.ag-kpis > div{padding:9px 10px;border-radius:10px;background:rgba(var(--ag-rgb),.06);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.14);min-width:0}
 .ag-kpis small{display:block;font-size:10.5px;color:var(--ag-ink3)}
 .ag-kpis b{display:block;font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ag-kpis span{display:block;font-size:10.5px;color:var(--ag-ink2)}
 .ag-find{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.ag-find li{display:grid;grid-template-columns:8px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:rgba(5,18,36,.7);box-shadow:inset 0 0 0 1px rgba(53,208,255,.12)}
+.ag-find li{display:grid;grid-template-columns:8px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--ag-bg) 70%,transparent);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.12)}
 .ag-find li > i{width:8px;height:8px;border-radius:50%;background:var(--ag-cy)}
 .ag-find li.sev3 > i{background:var(--ag-bad);box-shadow:0 0 8px var(--ag-bad)}.ag-find li.sev2 > i{background:var(--ag-warn)}.ag-find li.sev1 > i{background:var(--ag-ok)}
 .ag-find li span{display:grid;min-width:0}
@@ -4197,16 +4198,16 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 .ag-find li small{font-size:11px;color:var(--ag-ink3)}
 .ag-find li.done b{text-decoration:line-through;color:var(--ag-ink3)}
 .ag-find li.none{display:block;text-align:center;font-size:12px;color:var(--ag-ink3)}
-.ag-btn{height:28px;padding:0 10px;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:750;color:var(--ag-cy);cursor:pointer;background:rgba(53,208,255,.1);border:1px solid rgba(53,208,255,.3);white-space:nowrap}
-.ag-btn:hover{background:rgba(53,208,255,.2)}
-.ag-btn.on{color:#041020;background:var(--ag-ok);border-color:transparent}
+.ag-btn{height:28px;padding:0 10px;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:750;color:var(--ag-cy);cursor:pointer;background:rgba(var(--ag-rgb),.1);border:1px solid rgba(var(--ag-rgb),.3);white-space:nowrap}
+.ag-btn:hover{background:rgba(var(--ag-rgb),.2)}
+.ag-btn.on{color:var(--ag-bg);background:var(--ag-ok);border-color:transparent}
 .ag-btn.big{height:34px;padding:0 14px;display:inline-flex;align-items:center;gap:6px}
 .ag-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .ag-btn:focus-visible,.ag-card:focus-visible,.ag-bar:focus-visible{outline:2px solid var(--ag-cy)!important;outline-offset:2px}
 
 /* log */
 .ag-log{list-style:none;margin:0;padding:0;display:grid;gap:4px}
-.ag-log li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:7px 4px;border-bottom:1px dashed rgba(53,208,255,.12);font-size:12px;color:var(--ag-ink2)}
+.ag-log li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:7px 4px;border-bottom:1px dashed rgba(var(--ag-rgb),.12);font-size:12px;color:var(--ag-ink2)}
 .ag-log li:last-child{border-bottom:0}
 .ag-log li > span:first-child{color:var(--ag-cy);font-weight:700}
 .ag-log em{font-style:normal;font-size:10.5px;font-weight:700}
@@ -4239,6 +4240,251 @@ html.reduce .ag *{animation:none!important}
   .tabbar::-webkit-scrollbar{display:none}
   .tabbar .tab{flex:0 0 auto!important;min-width:54px}
 }
+
+/* themes: crimson (default, the app's palette), teal (the reference), blue (the first version) */
+.ag[data-agtheme="crimson"]{--ag-rgb:230,185,128;--ag-bg:#0F0607;--ag-p1:rgba(78,16,26,.55);--ag-p2:rgba(30,9,12,.78);--ag-ink:#F7ECE3;--ag-ink2:#D5BBA9;--ag-ink3:#9C8172;
+  --ag-cy:#E6B980;--ag-ok:#A6D67E;--ag-warn:#F2B14C;--ag-bad:#FF4F6A;--ag-gold:#F6C76D;--ag-glow1:rgba(150,20,40,.45);--ag-glow2:rgba(200,140,80,.14);--ag-logo1:#C21D3A;--ag-logo2:#5E0A16;--ag-title2:#EBCB9F;
+  --ag-core1:#FFD9A8;--ag-core2:#B8243E;--ag-core3:#3D0710}
+.ag[data-agtheme="teal"]{--ag-rgb:34,226,207;--ag-bg:#03131A;--ag-p1:rgba(10,52,62,.6);--ag-p2:rgba(4,24,30,.78);--ag-ink:#E2FBF8;--ag-ink2:#95C9C4;--ag-ink3:#5F918C;
+  --ag-cy:#22E2CF;--ag-ok:#5BF0A0;--ag-warn:#FFC24D;--ag-bad:#FF5C7A;--ag-gold:#FFC94D;--ag-glow1:rgba(20,150,160,.35);--ag-glow2:rgba(30,90,200,.18);--ag-logo1:#1FD1C1;--ag-logo2:#0A6B73;--ag-title2:#9AF5EC;
+  --ag-core1:#A6FFF6;--ag-core2:#16A8A0;--ag-core3:#063A40}
+
+/* ============================================================
+   AGENTS · pages in the reference's control-platform style
+   ============================================================ */
+.agx{padding:0 16px 16px;container-type:inline-size;container-name:agx}
+.agx-top{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;margin:0 -16px 0;padding:0 16px 0 0;height:64px;
+  background:linear-gradient(180deg,rgba(var(--ag-rgb),.14),transparent);border-bottom:1px solid rgba(var(--ag-rgb),.3)}
+.agx-top::after{content:"";position:absolute;left:30%;right:30%;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,var(--ag-cy),transparent);box-shadow:0 0 12px var(--ag-cy)}
+.agx-plate{position:relative;display:flex;align-items:center;gap:12px;height:100%;padding:0 46px 0 18px;
+  background:linear-gradient(90deg,rgba(var(--ag-rgb),.28),rgba(var(--ag-rgb),.06));clip-path:polygon(0 0,100% 0,calc(100% - 34px) 100%,0 100%)}
+.agx-plate .ag-logo{width:34px;height:34px;border-radius:9px}
+.agx-plate b{font-size:20px;font-weight:800;letter-spacing:.04em;white-space:nowrap;background:linear-gradient(180deg,#fff,var(--ag-title2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.agx-plate i{position:absolute;right:20px;bottom:10px;width:40px;height:3px;background:repeating-linear-gradient(90deg,var(--ag-cy) 0 6px,transparent 6px 9px);transform:skewX(-35deg);opacity:.8}
+.agx-nav{display:flex;gap:4px;justify-content:center;align-self:end;margin-bottom:8px}
+.agx-nav button{position:relative;height:34px;padding:0 26px;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ag-ink2);cursor:pointer;border:0;
+  background:linear-gradient(180deg,rgba(var(--ag-rgb),.08),rgba(var(--ag-rgb),.02));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.agx-nav button:hover{color:#fff}
+.agx-nav button.on{color:#fff;background:linear-gradient(180deg,rgba(var(--ag-rgb),.55),rgba(var(--ag-rgb),.18));text-shadow:0 0 10px rgba(var(--ag-rgb),.8)}
+.agx-nav button.on::after{content:"";position:absolute;left:18px;right:18px;bottom:0;height:2px;background:var(--ag-cy);box-shadow:0 0 8px var(--ag-cy)}
+.agx-right{display:flex;align-items:center;gap:14px}
+.agx-theme{display:flex;gap:6px;padding:4px;border-radius:999px;background:rgba(var(--ag-rgb),.08);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.2)}
+.agx-theme button{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;padding:0}
+.agx-theme .t-crimson{background:linear-gradient(135deg,#C21D3A,#E6B980)}.agx-theme .t-teal{background:linear-gradient(135deg,#0A6B73,#22E2CF)}.agx-theme .t-blue{background:linear-gradient(135deg,#0B4FA8,#35D0FF)}
+.agx-theme button.on{border-color:#fff;box-shadow:0 0 8px rgba(255,255,255,.5)}
+.agx-clock{display:flex;align-items:center;gap:10px}
+.agx-clock b{font-size:22px;font-weight:600;color:#fff;letter-spacing:.02em}
+.agx-clock span{font-size:10.5px;line-height:1.35;color:var(--ag-ink3)}
+.agx-crumb{display:flex;align-items:center;gap:12px;margin:12px 0 14px;font-size:12.5px;color:var(--ag-ink3);flex-wrap:wrap}
+.agx-crumb button{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:12px;color:var(--ag-ink2);background:none;border:0;cursor:pointer}
+.agx-crumb button svg{transform:rotate(180deg)}
+.agx-crumb span{position:relative;padding:4px 40px 4px 12px;font-size:14px;font-weight:800;color:#fff;background:linear-gradient(90deg,rgba(var(--ag-rgb),.3),transparent);clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.agx-crumb em{font-style:normal}
+
+/* section: slanted heading like the reference */
+.agx-p{position:relative;padding:10px 12px 12px;min-width:0;border-radius:4px;background:linear-gradient(180deg,rgba(var(--ag-rgb),.06),rgba(var(--ag-rgb),.015));box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.1)}
+.agx-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-10px -12px 10px;padding:6px 12px 6px 22px;
+  background:linear-gradient(90deg,rgba(var(--ag-rgb),.22),rgba(var(--ag-rgb),.04) 60%,transparent);border-bottom:1px solid rgba(var(--ag-rgb),.25);position:relative}
+.agx-h::before{content:"";position:absolute;left:8px;top:7px;bottom:7px;width:6px;background:var(--ag-gold);transform:skewX(-20deg);box-shadow:0 0 8px var(--ag-gold)}
+.agx-h b{font-size:14px;font-weight:800;color:#fff;font-style:italic;letter-spacing:.02em}
+.agx-h span{font-size:10.5px;color:var(--ag-ink3);text-align:right}
+.agx-sub{display:flex;align-items:center;gap:6px;margin:12px 0 8px;font-size:11.5px;font-weight:700;color:var(--ag-ink2)}
+.agx-sub::before{content:"";width:7px;height:7px;border-radius:50%;border:2px solid var(--ag-cy)}
+
+/* overview layout */
+.agx-ov{display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,1.9fr) minmax(260px,.9fr);grid-template-areas:"col mid rk" "bot bot bot";gap:14px}
+.agx-ov > .agx-rcol{grid-area:rk;display:flex;flex-direction:column;gap:14px;min-width:0}
+.agx-ov > .agx-rcol > .agx-p{flex:1 1 auto}
+.agx-ov > .agx-col{grid-area:col}.agx-ov > .agx-mid{grid-area:mid}.agx-ov > .agx-bottom{grid-area:bot}
+.agx-col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.agx-col > .agx-p:last-child{flex:1 1 auto}
+.agx-mid{display:flex;flex-direction:column;min-width:0}
+.agx-bottom{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px}
+.agx-kpi2{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.agx-kpi2 small,.agx-kpi1 small,.agx-figs small{display:block;font-size:11px;color:var(--ag-ink3)}
+.agx-kpi2 b{font-size:28px;font-weight:700;color:var(--ag-gold);line-height:1.15;letter-spacing:.02em;text-shadow:0 0 14px color-mix(in srgb,var(--ag-gold) 40%,transparent)}
+.agx-kpi2 b.dim{color:var(--ag-ink2);text-shadow:none;font-size:22px}
+.agx-kpi2 span{font-size:11px;color:var(--ag-ink3);margin-left:6px}
+.agx-kpi2 em,.agx-kpi1 em{font-style:normal;font-size:11px;font-weight:700;margin-left:6px;color:var(--ag-ink3)}
+.agx-kpi2 em.up{color:var(--ag-ok)}.agx-kpi2 em.down{color:var(--ag-bad)}
+.agx-stripe{display:flex;height:12px;gap:2px;border-radius:2px;overflow:hidden;background:rgba(var(--ag-rgb),.08)}
+.agx-stripe i{display:block;background:repeating-linear-gradient(90deg,var(--c) 0 3px,transparent 3px 5px)}
+.agx-stripe i.none{flex:1;background:none}
+.agx-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px;font-size:11px;color:var(--ag-ink2)}
+.agx-legend span{display:inline-flex;align-items:center;gap:5px}
+.agx-legend i{width:8px;height:8px;border-radius:2px}
+.agx-dwrap{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.agx-donut{position:relative}
+.agx-donut .tr{fill:none;stroke:rgba(var(--ag-rgb),.1);stroke-width:16}
+.agx-donut .seg{fill:none;stroke-width:16}
+.agx-donut .in{fill:none;stroke:rgba(var(--ag-rgb),.3);stroke-width:1;stroke-dasharray:2 3}
+.agx-donut .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.agx-donut .c b{font-size:20px;font-weight:800;color:#fff}
+.agx-donut .c small{font-size:10.5px;color:var(--ag-ink2)}
+.agx-dl{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:11.5px;color:var(--ag-ink2)}
+.agx-dl li{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center}
+.agx-dl i{width:8px;height:8px;border-radius:2px}
+.agx-dl b{color:#fff;font-size:12px}
+.agx-dl li.none{display:block;font-size:11.5px;color:var(--ag-ink3)}
+.agx-rank{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.agx-rank li{display:grid;grid-template-columns:44px 82px 1fr 28px;gap:8px;align-items:center;font-size:12px;cursor:pointer}
+.agx-rank .no{font-weight:800;font-style:italic;color:var(--ag-gold)}
+.agx-rank li:nth-child(n+4) .no{color:var(--ag-ink3)}
+.agx-rank .nm{color:var(--ag-ink)}
+.agx-rank .bar{height:6px;background:rgba(var(--ag-rgb),.1)}
+.agx-rank .bar i{display:block;height:100%;background:linear-gradient(90deg,rgba(var(--ag-rgb),.3),var(--ag-cy));box-shadow:0 0 6px rgba(var(--ag-rgb),.7);position:relative}
+.agx-rank .bar i::after{content:"";position:absolute;right:-1px;top:-2px;width:3px;height:10px;background:#fff}
+.agx-rank b{text-align:right;color:#fff}
+.agx-rank li:hover .nm{color:#fff}
+.agx-figs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.agx-figs > div{position:relative;padding:10px 14px;text-align:center;background:linear-gradient(180deg,rgba(var(--ag-rgb),.12),transparent);border-top:2px solid rgba(var(--ag-rgb),.5)}
+.agx-figs b{display:block;font-size:26px;font-weight:700;color:var(--ag-gold);line-height:1.2;text-shadow:0 0 14px color-mix(in srgb,var(--ag-gold) 40%,transparent)}
+.agx-figs span{font-size:11px;color:var(--ag-ink2)}
+
+/* tower */
+.agx-tower{flex:1 1 auto;display:grid;place-items:center}
+.agx-tower svg{width:100%;max-width:820px;height:auto;display:block;overflow:visible}
+.agx-floor{fill:none;stroke:rgba(var(--ag-rgb),.3);stroke-width:1}
+.agx-floor.o2{stroke-dasharray:4 6}.agx-floor.o3{stroke:rgba(var(--ag-rgb),.14);stroke-width:10}
+.agx-spoke{stroke:rgba(var(--ag-rgb),.25);stroke-dasharray:3 5}
+.agx-base{fill:rgba(var(--ag-rgb),.08);stroke:rgba(var(--ag-rgb),.5);stroke-width:1}
+.agx-base.top{fill:rgba(var(--ag-rgb),.14)}
+
+.agx-tower .agx-body{fill:rgba(var(--ag-rgb),.16);stroke:rgba(var(--ag-rgb),.75);stroke-width:1.2}
+.agx-tower .agx-body.top{fill:rgba(var(--ag-rgb),.3)}
+.agx-tower .s3,.agx-tower .s4{fill-opacity:.6}
+.agx-crown{fill:color-mix(in srgb,var(--ag-gold) 22%,transparent);stroke:var(--ag-gold);stroke-width:1.4;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--ag-gold) 60%,transparent))}
+.agx-crown.top{fill:color-mix(in srgb,var(--ag-gold) 45%,transparent)}
+.agx-scanring{fill:none;stroke:var(--ag-cy);stroke-width:2;opacity:.8;filter:drop-shadow(0 0 6px var(--ag-cy))}
+.agx-scan{animation:agxScan 3.2s ease-in-out infinite}
+@keyframes agxScan{0%{transform:translateY(46px);opacity:0}30%{opacity:1}100%{transform:translateY(-36px);opacity:0}}
+.agx-beam{animation:agxBeam 2.4s ease-in-out infinite}
+@keyframes agxBeam{50%{opacity:.4}}
+.agx-core-t{fill:#fff;font-size:22px;font-weight:800;text-anchor:middle;letter-spacing:.04em;paint-order:stroke;stroke:rgba(0,0,0,.5);stroke-width:3}
+.agx-core-s{fill:var(--ag-gold);font-size:12px;font-weight:700;text-anchor:middle}
+.agx-cap{fill:var(--ag-ink3);font-size:11px;font-style:italic;text-anchor:middle}
+.agx-tag{cursor:pointer}
+.agx-tag .lead{fill:none;stroke:rgba(var(--ag-rgb),.55);stroke-width:1}
+.agx-tag .pin{fill:var(--c)}
+.agx-tag .box{fill:color-mix(in srgb,var(--ag-bg) 85%,transparent);stroke:rgba(var(--ag-rgb),.45)}
+.agx-tag .bar{fill:var(--c)}
+.agx-tag .n{fill:#fff;font-size:12px;font-weight:700}
+.agx-tag .s{fill:var(--ag-ink3);font-size:9.5px}
+.agx-tag.needs .s{fill:var(--ag-bad)}.agx-tag.watch .s{fill:var(--ag-warn)}.agx-tag.ok .s{fill:var(--ag-ok)}
+.agx-tag .v{fill:var(--c);font-size:17px;font-weight:800;text-anchor:end}
+.agx-tag:hover .box,.agx-tag:focus-visible .box{stroke:var(--c);stroke-width:1.5}
+.agx-tag:focus-visible{outline:none}
+.agx-tag.off{opacity:.45}
+
+/* charts */
+.agx-chips{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 6px;justify-content:flex-end}
+.agx-chips button{height:22px;padding:0 8px;font-family:inherit;font-size:10.5px;font-weight:700;color:var(--ag-ink3);background:rgba(var(--ag-rgb),.06);border:0;cursor:pointer}
+.agx-chips button.on{color:#fff;background:rgba(var(--ag-rgb),.45)}
+.agx-area,.agx-bars,.agx-peaks{width:100%;height:auto;display:block}
+.agx-area .g,.agx-bars .g,.agx-peaks .g{stroke:rgba(var(--ag-rgb),.12);stroke-dasharray:3 4}
+.agx-area .yl,.agx-bars .yl{fill:var(--ag-ink3);font-size:9px;text-anchor:end}
+.agx-area .xl,.agx-bars .xl,.agx-peaks .xl{fill:var(--ag-ink3);font-size:9.5px;text-anchor:middle}
+.agx-area .xl.now{fill:var(--ag-gold);font-weight:700}
+.agx-area .ln{fill:none;stroke:var(--ag-gold);stroke-width:2}
+.agx-area .ln.dash{stroke-dasharray:4 4;opacity:.8}
+.agx-area .dot{fill:var(--ag-gold);stroke:#fff;stroke-width:1.5}
+.agx-area .fut-bg{fill:rgba(var(--ag-rgb),.06)}
+.agx-area .budget{stroke:var(--ag-bad);stroke-dasharray:6 4}
+.agx-area .bl{fill:var(--ag-bad);font-size:9.5px;text-anchor:end}
+.agx-bars .bar{fill:rgba(var(--ag-rgb),.55)}
+.agx-bars .bar.cur{fill:var(--ag-cy)}
+.agx-bars .cap{fill:#fff;opacity:.85}
+.agx-bars .bv{fill:#fff;font-size:10px;font-weight:700;text-anchor:middle}
+.agx-kpi1{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+.agx-kpi1 b{font-size:22px;font-weight:700;color:var(--ag-gold)}
+.agx-kpi1 b.bad{color:var(--ag-bad)}
+
+/* alerts */
+.agx-al{display:grid;grid-template-columns:minmax(280px,1fr) minmax(0,1.7fr) minmax(300px,1fr);grid-template-areas:"sev sev sev" "l m r" "list list list";gap:14px}
+.agx-al > .agx-sev{grid-area:sev}.agx-al > .agx-col:nth-of-type(2){grid-area:l}.agx-al > .agx-mid{grid-area:m}.agx-al > .agx-col:nth-of-type(4){grid-area:r}.agx-al > .agx-p.full{grid-area:list}
+.agx-sev{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.agx-sev > div{display:flex;align-items:center;gap:12px;padding:6px 18px}
+.agx-sev .ico{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;background:radial-gradient(circle at 50% 35%,var(--sc),color-mix(in srgb,var(--sc) 30%,#000));box-shadow:0 0 16px var(--sc),inset 0 -6px 10px rgba(0,0,0,.35)}
+.agx-sev small{display:block;font-size:11.5px;color:var(--ag-ink2)}
+.agx-sev b{font-size:26px;font-weight:800;color:var(--sc);text-shadow:0 0 12px var(--sc)}
+.agx-sev .red{--sc:var(--ag-bad)}.agx-sev .yel{--sc:var(--ag-warn)}.agx-sev .blu{--sc:#4EA3FF}
+.agx-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+.agx-stat{display:flex;align-items:center;gap:10px;color:var(--ag-cy)}
+.agx-stat > svg{flex:0 0 auto;width:34px;height:34px;padding:8px;border-radius:50%;background:rgba(var(--ag-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.4)}
+.agx-stat small{display:block;font-size:10.5px;color:var(--ag-ink3)}
+.agx-stat b{font-size:18px;font-weight:800;color:#fff}
+.agx-beacon{width:100%;height:auto;display:block;overflow:visible}
+.agx-beacon .o1,.agx-beacon .o2,.agx-beacon .o3{fill:none;stroke:rgba(var(--ag-rgb),.25)}
+.agx-beacon .o2{stroke-dasharray:4 6}.agx-beacon .o1{stroke-width:6;stroke:rgba(var(--ag-rgb),.1)}
+.agx-beacon .d0{fill:rgba(var(--ag-rgb),.18);stroke:rgba(var(--ag-rgb),.7)}.agx-beacon .d1{fill:rgba(var(--ag-rgb),.24);stroke:rgba(var(--ag-rgb),.8)}.agx-beacon .d2{fill:rgba(var(--ag-rgb),.32);stroke:var(--ag-cy);filter:drop-shadow(0 0 8px var(--ag-cy))}
+.agx-beacon .bell{fill:color-mix(in srgb,var(--ag-cy) 35%,transparent);stroke:#fff;stroke-width:1.5;filter:drop-shadow(0 0 10px var(--ag-cy))}
+.agx-beacon .bolt{fill:#fff}
+.agx-beacon .cap{fill:var(--ag-gold);font-size:12px;font-weight:700;text-anchor:middle}
+.agx-beacon .flow{fill:none;stroke:var(--ag-gold);stroke-width:1.5;stroke-dasharray:3 6;animation:agFlow 1.2s linear infinite}
+.agx-an{cursor:pointer}
+.agx-an .ln{stroke:rgba(var(--ag-rgb),.35);stroke-dasharray:2 5}
+.agx-an .nb{fill:color-mix(in srgb,var(--ag-bg) 85%,transparent);stroke:var(--c);stroke-width:2}
+.agx-an.hi .nb{stroke-width:3;filter:drop-shadow(0 0 6px var(--c))}
+.agx-an .nv{fill:#fff;font-size:14px;font-weight:800;text-anchor:middle}
+.agx-an .lb{fill:color-mix(in srgb,var(--ag-bg) 70%,transparent);stroke:rgba(var(--ag-rgb),.4)}
+.agx-an .lt{fill:var(--ag-ink);font-size:11px;font-weight:700;text-anchor:middle}
+.agx-an:hover .nb{stroke-width:3}
+.agx-ped .t{fill:rgba(var(--ag-rgb),.35);stroke:var(--ag-cy)}.agx-ped .l{fill:rgba(var(--ag-rgb),.18)}.agx-ped .r{fill:rgba(var(--ag-rgb),.1)}
+.agx-pi{width:28px;height:28px;display:grid;place-items:center;color:#fff}
+.agx-ped .pl{fill:#fff;font-size:13px;font-weight:800;text-anchor:middle;font-style:italic}
+.agx-ped .ps{fill:var(--ag-ink3);font-size:10.5px;text-anchor:middle}
+.agx-proc{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}
+.agx-pr svg{width:118px;height:118px}
+.agx-pr{position:relative}
+.agx-pr .tr{fill:none;stroke:rgba(var(--ag-rgb),.1);stroke-width:12}
+.agx-pr .seg{fill:none;stroke-width:12}
+.agx-pr .in{fill:none;stroke:rgba(var(--ag-rgb),.35);stroke-dasharray:2 3}
+.agx-pr .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.agx-pr .c small{font-size:10.5px;color:var(--ag-ink2)}.agx-pr .c b{font-size:24px;font-weight:800;color:#fff}
+.agx-proc ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:12px;color:var(--ag-ink2)}
+.agx-proc li{display:grid;grid-template-columns:10px minmax(0,1fr) auto 34px;gap:6px;align-items:center;white-space:nowrap}
+.agx-proc li i{width:9px;height:9px}
+.agx-proc li b{color:#fff}.agx-proc li em{font-style:normal;color:var(--ag-gold);font-weight:700;text-align:right}
+.agx-peaks .pk{fill:color-mix(in srgb,var(--c) 45%,transparent);stroke:var(--c);stroke-width:1.2}
+.agx-tbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
+.agx-tbl th{font-weight:700;font-size:11px;color:var(--ag-ink3);text-align:left;padding:6px 6px;background:rgba(var(--ag-rgb),.1)}
+.agx-tbl td{padding:6px;color:var(--ag-ink);border-bottom:1px solid rgba(var(--ag-rgb),.1)}
+.agx-tbl td i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+.agx-tbl tr[data-ag-sel]{cursor:pointer}.agx-tbl tr[data-ag-sel]:hover td{background:rgba(var(--ag-rgb),.06)}
+.agx-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:8px}
+.agx-list li{display:grid;grid-template-columns:8px auto minmax(0,1fr) auto auto;grid-template-rows:auto auto;gap:2px 10px;align-items:center;padding:8px 10px;background:rgba(var(--ag-rgb),.05);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.12)}
+.agx-list li > i{grid-row:1 / span 2;width:8px;height:8px;border-radius:50%;background:var(--ag-ok)}
+.agx-list li.sev3 > i{background:var(--ag-bad);box-shadow:0 0 8px var(--ag-bad)}.agx-list li.sev2 > i{background:var(--ag-warn)}
+.agx-list .ag{grid-row:1 / span 2;font-size:10.5px;font-weight:700;color:var(--ag-gold);padding:2px 6px;background:rgba(var(--ag-rgb),.1)}
+.agx-list b{grid-column:3;grid-row:1;font-size:12.5px;color:#fff}
+.agx-list [data-ag-go]{grid-column:4;grid-row:1 / span 2}.agx-list [data-ag-done]{grid-column:5;grid-row:1 / span 2}
+.agx-list small{grid-column:3;grid-row:2;font-size:11px;color:var(--ag-ink3)}
+
+.agx-list li.none{display:block;text-align:center;color:var(--ag-ink3);font-size:12px}
+
+/* team page reuses the first version under the new header */
+.ag-top2{margin-top:0;border-bottom:0;padding-top:0;justify-content:flex-end}
+
+/* sizes */
+@container agx (max-width:1300px){ .agx-ov{grid-template-columns:minmax(300px,1fr) minmax(0,1.7fr);grid-template-areas:"col mid" "col rk" "bot bot"} }
+@container agx (max-width:1060px){ .agx-ov{grid-template-columns:1fr;grid-template-areas:"mid" "col" "rk" "bot"} .agx-ov > .agx-col{display:grid;grid-template-columns:1fr 1fr} .agx-bottom{grid-template-columns:1fr 1fr} .agx-bottom > .wide{grid-column:1 / -1}
+  .agx-al{grid-template-columns:1fr 1fr;grid-template-areas:"sev sev" "m m" "l r" "list list"} .agx-top{grid-template-columns:auto 1fr;height:auto;padding-bottom:6px} .agx-right{grid-column:1 / -1;justify-content:flex-end;padding-bottom:6px} .agx-nav{justify-content:flex-start;align-self:center;margin:8px 0} }
+@media (max-width:760px){ .agx{padding:0 10px 12px} }
+@container agx (max-width:700px){
+  .agx-top{margin:0 -10px;grid-template-columns:1fr;padding:0 10px 6px}.agx-plate{height:52px;margin-left:-10px;padding-left:14px}.agx-plate b{font-size:16px}
+  .agx-nav{overflow-x:auto;justify-content:flex-start;scrollbar-width:none}.agx-nav button{padding:0 18px;flex:0 0 auto}
+  .agx-right{justify-content:space-between}.agx-clock b{font-size:18px}
+  .agx-ov > .agx-col,.agx-bottom{grid-template-columns:1fr}
+  .agx-al{grid-template-columns:1fr;grid-template-areas:"sev" "m" "l" "r" "list"}
+  .agx-sev{gap:6px;justify-content:space-between}.agx-sev > div{padding:4px 0;gap:8px}.agx-sev .ico{width:32px;height:32px}.agx-sev b{font-size:20px}.agx-sev small{font-size:10px}
+  .agx-figs b{font-size:20px}.agx-figs > div{padding:8px 6px}
+  .agx-kpi2 b{font-size:22px}
+  .agx-list{grid-template-columns:1fr}
+  .agx-list li{grid-template-columns:8px minmax(0,1fr) auto;}.agx-list .ag{display:none}.agx-list small{grid-column:2}.agx-list .ag-btn[data-ag-go]{display:none}
+  .agx-proc{grid-template-columns:1fr;justify-items:center}.agx-proc ul{width:100%}
+  .agx-crumb em{display:none}
+}
+html.reduce .agx *{animation:none!important}
 
 </style>
 <style data-src="src/css/glass-themes.css">
@@ -12279,7 +12525,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setT
      history, ranking, pipeline and log pick it up by themselves.
    ============================================================ */
 const AG_W = { english:.22, career:.22, money:.2, engineering:.16, training:.1, routine:.1 }; // how much each area matters to his goals
-const AG_COLORS = { chief:'#35D0FF', fit:'#FF6B81', ielts:'#B79BFF', eng:'#2EE6C5', career:'#FFC24D', money:'#7DDB6A', health:'#6FA8FF', review:'#FF9A5C' };
+const AG_COLORS = { chief:'var(--ag-cy)', fit:'#FF6B81', ielts:'#B79BFF', eng:'#2EE6C5', career:'#FFC24D', money:'#7DDB6A', health:'#6FA8FF', review:'#FF9A5C' };
 
 function agCtx(){
   if (AG.ctx && AG.ctx.at > Date.now() - 4000) return AG.ctx;
@@ -12410,17 +12656,17 @@ function agRanking(){
 /* ---------- small drawing helpers ---------- */
 function agRing(v, size, col, label){
   const r = size / 2 - 6, c = 2 * Math.PI * r;
-  return `<svg class="ag-ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="tr"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="fg" stroke="${col}" stroke-dasharray="${(v / 100 * c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>
+  return `<svg class="ag-ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="tr"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="fg" style="stroke:${col}" stroke-dasharray="${(v / 100 * c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>
     <circle cx="${size / 2}" cy="${size / 2}" r="${r - 9}" class="in"/></svg><div class="ag-ring-t"><b class="num">${v}</b>${label ? `<small>${label}</small>` : ''}</div>`;
 }
 function agSpark(vals, col, w = 240, h = 60, base){
   if (!vals.length) return `<div class="ag-empty">The trend fills in day by day.</div>`;
   const mx = 100, x = i => vals.length === 1 ? w / 2 : i / (vals.length - 1) * w, y = v => h - 4 - v / mx * (h - 10);
   const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' '), id = 'g' + Math.random().toString(36).slice(2, 7);
-  return `<svg class="ag-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".45"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+  return `<svg class="ag-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${col};stop-opacity:.45"/><stop offset="1" style="stop-color:${col};stop-opacity:0"/></linearGradient></defs>
     ${[25, 50, 75].map(g => `<line x1="0" x2="${w}" y1="${y(g)}" y2="${y(g)}" class="gl"/>`).join('')}
     ${base && base.length > 1 ? `<polyline points="${base.map((v, i) => `${(i / (base.length - 1) * w).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" class="base"/>` : ''}
-    <polygon points="0,${h} ${pts} ${w},${h}" fill="url(#${id})"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2"/>${vals.length ? `<circle cx="${x(vals.length - 1)}" cy="${y(vals[vals.length - 1])}" r="3.5" fill="${col}"/>` : ''}</svg>`;
+    <polygon points="0,${h} ${pts} ${w},${h}" fill="url(#${id})"/><polyline points="${pts}" fill="none" style="stroke:${col}" stroke-width="2"/>${vals.length ? `<circle cx="${x(vals.length - 1)}" cy="${y(vals[vals.length - 1])}" r="3.5" style="fill:${col}"/>` : ''}</svg>`;
 }
 function agHist(id, days = 14){ const h = agRec(id).hist, out = []; for (let i = days - 1; i >= 0; i--){ const d = dkey(addDays(new Date(), -i)), e = h.find(x => x.d === d); if (e) out.push(e.s); } return out; }
 const agPanel = (title, side, body, cls = '') => `<section class="ag-p ${cls}"><header class="ag-ph"><b>${title}</b>${side ? `<span>${side}</span>` : ''}</header>${body}</section>`;
@@ -12432,7 +12678,7 @@ function agHubHTML(){
     return { a, x, y, r, st, on }; });
   const chief = agResult('chief');
   return `<div class="ag-hub"><svg viewBox="0 0 ${W} ${H}" class="ag-hub-svg" role="img" aria-label="Your agent team around you">
-    <defs><radialGradient id="agCore"><stop offset="0" stop-color="#7FE6FF"/><stop offset=".45" stop-color="#1E7FD6"/><stop offset="1" stop-color="#0A2F66" stop-opacity="0"/></radialGradient></defs>
+    <defs><radialGradient id="agCore"><stop offset="0" style="stop-color:var(--ag-core1)"/><stop offset=".45" style="stop-color:var(--ag-core2)"/><stop offset="1" style="stop-color:var(--ag-core3);stop-opacity:0"/></radialGradient></defs>
     <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" class="orb"/><ellipse cx="${cx}" cy="${cy}" rx="${rx * .62}" ry="${ry * .62}" class="orb in"/><ellipse cx="${cx}" cy="${cy}" rx="${rx * 1.18}" ry="${ry * 1.18}" class="orb out"/>
     ${nodes.map(n => `<line x1="${cx}" y1="${cy}" x2="${n.x.toFixed(1)}" y2="${n.y.toFixed(1)}" class="link ${n.on ? n.st : 'off'}"/>`).join('')}
     <circle cx="${cx}" cy="${cy}" r="70" fill="url(#agCore)" opacity=".55"/>
@@ -12461,8 +12707,8 @@ function agDetailHTML(){
     <div class="ag-acts"><button class="ag-btn big" data-ag-run>${ic('rotate', 14)} Run all agents now</button>${a.id !== 'chief' ? `<button class="ag-btn big ${on ? '' : 'on'}" data-ag-toggle="${a.id}">${on ? 'Pause this agent' : 'Switch it on'}</button>` : ''}</div>`, 'ag-detail');
 }
 
-function renderAgents(){
-  agentsRun(); const chief = agResult('chief'), rank = agRanking(), all = AGENTS.filter(a => agOn(a.id)), now = new Date();
+function agTeamHTML(){
+  const chief = agResult('chief'), rank = agRanking(), all = AGENTS.filter(a => agOn(a.id)), now = new Date();
   const needs = AGENTS.filter(a => a.id !== 'chief' && agOn(a.id) && agStatus(agResult(a.id))[0] === 'needs').length;
   const open = AGENTS.filter(a => a.id !== 'chief' && agOn(a.id)).reduce((s, a) => s + agResult(a.id).findings.filter(f => !f.done).length, 0);
   const doneToday = AGENTS.reduce((s, a) => s + ((agRec(a.id).done[dkey()] || []).length), 0);
@@ -12470,25 +12716,22 @@ function renderAgents(){
   const watched = AGENTS.filter(a => a.id !== 'chief' && agOn(a.id)).length, found = open + doneToday;
   const pipe = [['Watch', watched, 'agents reading your data'], ['Find', found, 'things found today'], ['Act', open, 'waiting for you'], ['Done', doneToday, 'done today'], ['Review', AGENTS.reduce((s, a) => s + agRec(a.id).hist.length, 0), 'daily snapshots kept']];
   const log = (state.agentLog || []).slice(0, 8);
-  return `<div class="ag" id="agRoot">
-    <div class="ag-top">
-      <div class="ag-title"><span class="ag-logo">${ic('robot', 20)}</span><div><b>Agent control centre</b><small>Your team, working from your own data · nothing leaves this browser</small></div></div>
+  return `<div class="ag-top ag-top2">
       <div class="ag-stats">
         <div><b class="num">${all.length}<small>/${AGENTS.length}</small></b><span>agents on</span></div>
         <div class="${needs ? 'warn' : ''}"><b class="num">${needs}</b><span>need you</span></div>
         <div><b class="num">${open}</b><span>open tasks</span></div>
         <div><b class="num">${doneToday}</b><span>done today</span></div>
-        <div class="ag-clock"><b class="num" id="agClock">${pad2(now.getHours())}:${pad2(now.getMinutes())}</b><span>${esc(now.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }))}</span></div>
       </div>
     </div>
     <div class="ag-grid">
       <div class="ag-col l">
-        ${agPanel('Team health', 'weighted by your goals', `<div class="ag-health"><div class="ag-ringw">${agRing(chief.score, 128, '#35D0FF', 'team score')}</div>
+        ${agPanel('Team health', 'weighted by your goals', `<div class="ag-health"><div class="ag-ringw">${agRing(chief.score, 128, 'var(--ag-cy)', 'team score')}</div>
           <div class="ag-bars">${AGENTS.filter(a => a.id !== 'chief').map(a => { const r = agResult(a.id); return `<button class="ag-bar" data-ag-sel="${a.id}" style="--c:${AG_COLORS[a.id]}"><span>${esc(a.area)}</span><i><em style="width:${agOn(a.id) ? r.score : 0}%"></em></i><b class="num">${agOn(a.id) ? r.score : '–'}</b></button>`; }).join('')}</div></div>
-          <div class="ag-sub">Last 14 days</div>${agSpark(teamHist, '#35D0FF', 260, 56)}`)}
+          <div class="ag-sub">Last 14 days</div>${agSpark(teamHist, 'var(--ag-cy)', 260, 56)}`)}
         ${agPanel('Best for you right now', 'goal weight × gap', `<ol class="ag-rank">${rank.slice(0, 5).map((x, i) => `<li data-ag-sel="${x.a.id}" style="--c:${AG_COLORS[x.a.id]}"><span class="n num">${i + 1}</span><span class="t"><b>${esc(x.a.name)}</b><small>${esc(x.why)}</small></span><span class="fit num">${x.fit}%</span></li>`).join('')}</ol>
           <p class="ag-note">The higher the fit, the more this agent can move your goals this week. Your goals weigh English and career highest, then money.</p>`)}
-        ${agPanel('Activity', 'latest first', `<ul class="ag-log">${log.map(l => { const d = new Date(l.ts), a = AGENTS.find(x => x.id === l.id); return `<li><span class="num">${pad2(d.getHours())}:${pad2(d.getMinutes())}</span><span>${esc(l.msg)}</span><em style="color:${AG_COLORS[l.id] || '#35D0FF'}">${esc(a ? a.area : '')}</em></li>`; }).join('') || '<li class="none">The log fills in as agents run.</li>'}</ul>`)}
+        ${agPanel('Activity', 'latest first', `<ul class="ag-log">${log.map(l => { const d = new Date(l.ts), a = AGENTS.find(x => x.id === l.id); return `<li><span class="num">${pad2(d.getHours())}:${pad2(d.getMinutes())}</span><span>${esc(l.msg)}</span><em style="color:${AG_COLORS[l.id] || 'var(--ag-cy)'}">${esc(a ? a.area : '')}</em></li>`; }).join('') || '<li class="none">The log fills in as agents run.</li>'}</ul>`)}
       </div>
       <div class="ag-col c">
         ${agPanel('Your team', 'tap an agent', agHubHTML(), 'ag-hubp')}
@@ -12500,11 +12743,10 @@ function renderAgents(){
       </div>
       <div class="ag-col r">
         ${agDetailHTML()}
-        ${agPanel('Score trend', esc((AGENTS.find(a => a.id === AG.sel) || {}).name || ''), `${agSpark(agHist(AG.sel), AG_COLORS[AG.sel] || '#35D0FF', 300, 80, AG.sel !== 'chief' ? teamHist : null)}<div class="ag-legend"><span><i style="background:${AG_COLORS[AG.sel]}"></i>this agent</span>${AG.sel !== 'chief' ? '<span><i class="dash"></i>team</span>' : ''}</div>`)}
+        ${agPanel('Score trend', esc((AGENTS.find(a => a.id === AG.sel) || {}).name || ''), `${agSpark(agHist(AG.sel), AG_COLORS[AG.sel] || 'var(--ag-cy)', 300, 80, AG.sel !== 'chief' ? teamHist : null)}<div class="ag-legend"><span><i style="background:${AG_COLORS[AG.sel]}"></i>this agent</span>${AG.sel !== 'chief' ? '<span><i class="dash"></i>team</span>' : ''}</div>`)}
 
       </div>
-    </div>
-  </div>`;
+    </div>`;
 }
 function agRedraw(){ const el = document.getElementById('view-agents'); if (!el || activeTab !== 'agents') return; const y = window.scrollY; el.innerHTML = renderAgents(); window.scrollTo(0, y); }
 
@@ -12526,6 +12768,223 @@ renderView = (orig => function(tab){
   const el = document.getElementById('view-agents'); if (el){ el.innerHTML = renderAgents(); try { if (typeof glassWatch === 'function') glassWatch(el); } catch(_){} }
 })(renderView);
 setInterval(() => { const c = document.getElementById('agClock'); if (!c || document.hidden) return; const d = new Date(); c.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }, 15000);
+
+</script>
+<script data-src="src/js/69d-agents-pages.js">
+/* ============================================================
+   AGENTS · pages (3 Nov 2026, user: "build like this but change theme",
+   reference: a two-screen control platform with an angled title plate,
+   page tabs, gold figures, ranked bars, a 3D centre piece, trend charts
+   with a dashed forecast, and an alert screen with a beacon).
+   Pages: Overview · Alerts · Team (the first version). Themes:
+   Crimson (default, the app's palette), Teal (the reference), Blue.
+   ============================================================ */
+const AG_PAGES = [['overview', 'Overview'], ['alerts', 'Alerts'], ['team', 'Team']];
+const AG_THEMES = [['crimson', 'Crimson'], ['teal', 'Teal'], ['blue', 'Blue']];
+const AG_AREAS = [['all', 'All', null], ['English', 'English', ['English']], ['Engineering', 'Engineering', ['Engineering']], ['Career', 'Career', ['Career']], ['Training', 'Training', ['Training', 'Walking']], ['Routine', 'Routine', ['Routine']]];
+const AGP = { trend: 'all', weeks: 'all' };
+const agPage = () => state.agPage || 'overview';
+const agTheme = () => state.agTheme || 'crimson';
+
+/* ---------- numbers from the day plan (works for past days too) ---------- */
+function agDay(k, cats){ const B = dayBlocks(k).filter(b => !b.skip && (!cats || cats.includes(b.cat))); let n = 0, min = 0; B.forEach(b => { if (blockStatus(k, b) === 'done'){ n++; min += b.dur; } }); return { n, of: B.length, min }; }
+function agSum(from, days, cats){ let n = 0, of = 0, min = 0; for (let i = 0; i < days; i++){ const d = agDay(dkey(addDays(from, i)), cats); n += d.n; of += d.of; min += d.min; } return { n, of, min }; }
+const agCats = id => (AG_AREAS.find(a => a[0] === id) || AG_AREAS[0])[2];
+const agFmt = n => Math.round(n).toLocaleString('en-GB');
+function agCmp(now, before){ const d = now - before; return `<em class="${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${agFmt(Math.abs(d))}</em>`; }
+
+/* ---------- shared pieces ---------- */
+const agSec = (title, side, body, cls = '') => `<section class="agx-p ${cls}"><header class="agx-h"><b>${title}</b>${side ? `<span>${side}</span>` : ''}</header>${body}</section>`;
+function agChips(key, cur){ return `<div class="agx-chips" role="tablist">${AG_AREAS.map(([id, l]) => `<button role="tab" aria-selected="${cur === id}" class="${cur === id ? 'on' : ''}" data-agf="${key}:${id}">${l}</button>`).join('')}</div>`; }
+function agArea(vals, opts = {}){
+  const W = opts.w || 520, H = opts.h || 150, n = vals.length, mx = Math.max(opts.max || 0, ...vals.map(v => v == null ? 0 : v), 1), cut = opts.cut == null ? n : opts.cut;
+  const x = i => n <= 1 ? W / 2 : i / (n - 1) * (W - 34) + 30, y = v => H - 22 - v / mx * (H - 34), id = 'ag' + Math.random().toString(36).slice(2, 7);
+  const sm = pts => pts.map((p, i) => i ? ` C ${(pts[i - 1][0] + p[0]) / 2} ${pts[i - 1][1]}, ${(pts[i - 1][0] + p[0]) / 2} ${p[1]}, ${p[0]} ${p[1]}` : `M ${p[0]} ${p[1]}`).join('');
+  const past = vals.slice(0, cut).map((v, i) => [x(i), y(v || 0)]), fut = vals.slice(cut - 1).map((v, i) => [x(i + cut - 1), y(v || 0)]);
+  const grid = [0, .25, .5, .75, 1].map(f => `<line x1="30" x2="${W - 4}" y1="${y(mx * f)}" y2="${y(mx * f)}" class="g"/><text x="24" y="${y(mx * f) + 3}" class="yl">${Math.round(mx * f)}${opts.unit || ''}</text>`).join('');
+  const labs = (opts.labels || []).map((l, i) => l ? `<text x="${x(i)}" y="${H - 6}" class="xl${i === cut - 1 ? ' now' : ''}">${l}</text>` : '').join('');
+  const base = opts.base != null ? `<line x1="30" x2="${W - 4}" y1="${y(opts.base)}" y2="${y(opts.base)}" class="budget"/><text x="${W - 6}" y="${y(opts.base) - 5}" class="bl">${esc(opts.baseLabel || '')}</text>` : '';
+  return `<svg class="agx-area" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc(opts.label || 'trend')}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ag-gold);stop-opacity:.42"/><stop offset="1" style="stop-color:var(--ag-gold);stop-opacity:0"/></linearGradient></defs>
+    ${grid}${base}${cut < n ? `<rect x="${x(cut - 1)}" y="8" width="${W - 4 - x(cut - 1)}" height="${H - 30}" class="fut-bg"/>` : ''}
+    ${past.length > 1 ? `<path d="${sm(past)} L ${past[past.length - 1][0]} ${H - 22} L ${past[0][0]} ${H - 22} Z" fill="url(#${id})"/><path d="${sm(past)}" class="ln"/>` : ''}
+    ${fut.length > 1 ? `<path d="${sm(fut)}" class="ln dash"/>` : ''}${past.length ? `<circle cx="${past[past.length - 1][0]}" cy="${past[past.length - 1][1]}" r="4" class="dot"/>` : ''}${labs}</svg>`;
+}
+function agBars(vals, labels, opts = {}){
+  const W = opts.w || 420, H = opts.h || 150, n = vals.length, mx = Math.max(1, ...vals), bw = Math.min(26, (W - 40) / n * .45), y = v => H - 22 - v / mx * (H - 36);
+  return `<svg class="agx-bars" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc(opts.label || 'bars')}">
+    ${[0, .5, 1].map(f => `<line x1="30" x2="${W - 4}" y1="${y(mx * f)}" y2="${y(mx * f)}" class="g"/><text x="24" y="${y(mx * f) + 3}" class="yl">${Math.round(mx * f)}</text>`).join('')}
+    ${vals.map((v, i) => { const cx = 30 + (i + .5) * (W - 34) / n; return `<rect x="${cx - bw / 2}" y="${y(v)}" width="${bw}" height="${H - 22 - y(v)}" class="bar${i === n - 1 ? ' cur' : ''}" rx="2"/><rect x="${cx - bw / 2}" y="${y(v) - 3}" width="${bw}" height="3" class="cap"/><text x="${cx}" y="${y(v) - 7}" class="bv">${v}</text><text x="${cx}" y="${H - 6}" class="xl">${esc(labels[i])}</text>`; }).join('')}</svg>`;
+}
+function agDonut(parts, size = 132){
+  const tot = parts.reduce((s, p) => s + p[1], 0) || 1, r = size / 2 - 14, c = 2 * Math.PI * r; let off = 0;
+  const top = parts.slice().sort((a, b) => b[1] - a[1])[0] || ['–', 0];
+  return `<div class="agx-donut"><svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="tr"/>
+    ${parts.map(([l, v, col]) => { const len = v / tot * c, s = `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="seg" style="stroke:${col}" stroke-dasharray="${Math.max(0, len - 2).toFixed(1)} ${c.toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>`; off += len; return s; }).join('')}
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r - 16}" class="in"/></svg><div class="c"><b class="num">${Math.round(top[1] / tot * 1000) / 10}%</b><small>${esc(top[0])}</small></div></div>`;
+}
+const AREA_COL = { English:'#B79BFF', Engineering:'#2EE6C5', Career:'#FFC24D', Training:'#FF6B81', Walking:'#FF9AA8', Routine:'#6FA8FF' };
+
+/* ---------- header: angled title plate, page tabs, theme, clock ---------- */
+function agHeadHTML(){
+  const now = new Date(), p = agPage();
+  return `<header class="agx-top">
+    <div class="agx-plate"><span class="ag-logo">${ic('robot', 18)}</span><b>Agent control centre</b><i></i></div>
+    <nav class="agx-nav" role="tablist" aria-label="Agent pages">${AG_PAGES.map(([id, l]) => `<button role="tab" aria-selected="${p === id}" class="${p === id ? 'on' : ''}" data-agp="${id}">${l}</button>`).join('')}</nav>
+    <div class="agx-right"><div class="agx-theme" role="radiogroup" aria-label="Theme">${AG_THEMES.map(([id, l]) => `<button role="radio" aria-checked="${agTheme() === id}" class="t-${id}${agTheme() === id ? ' on' : ''}" data-agt="${id}" title="${l} theme" aria-label="${l} theme"></button>`).join('')}</div>
+      <div class="agx-clock"><b class="num" id="agClock">${pad2(now.getHours())}:${pad2(now.getMinutes())}</b><span>${esc(now.toLocaleDateString('en-GB', { weekday: 'long' }))}<br>${esc(now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }))}</span></div></div>
+  </header>
+  <div class="agx-crumb"><button data-agp="overview">${ic('arrowRight', 13)} Home</button><span>${esc((AG_PAGES.find(x => x[0] === p) || [])[1] || '')}</span><em>${p === 'alerts' ? 'what your agents flagged today' : p === 'team' ? 'every agent, its score and what it found' : 'your progress across every area, from your own data'}</em></div>`;
+}
+
+/* ---------- the 3D centre piece: an isometric tower with the team around it ---------- */
+function agTowerHTML(){
+  const W = 640, H = 430, cx = W / 2, cy = 252, S = Math.sin(Math.PI / 6), C = Math.cos(Math.PI / 6);
+  const iso = (x, y, z) => [cx + (x - y) * C, cy + (x + y) * S - z];
+  const hex = (r, z) => Array.from({ length: 6 }, (_, i) => { const t = Math.PI / 6 + i * Math.PI / 3; return iso(Math.cos(t) * r, Math.sin(t) * r, z); });
+  const pts = a => a.map(p => p.map(v => v.toFixed(1)).join(',')).join(' ');
+  const prism = (r, z0, z1, cls) => { const b = hex(r, z0), t = hex(r, z1); let s = ''; for (let i = 0; i < 6; i++){ const j = (i + 1) % 6; s += `<polygon points="${pts([b[i], b[j], t[j], t[i]])}" class="${cls} side s${i}"/>`; } return s + `<polygon points="${pts(t)}" class="${cls} top"/>`; };
+  const chief = agResult('chief'), list = AGENTS.filter(a => a.id !== 'chief');
+  const tags = list.map((a, i) => { const t = -Math.PI / 2 + (i + .5) / list.length * Math.PI * 2, r = agResult(a.id), on = agOn(a.id);
+    const ax = Math.cos(t) * 150, ay = Math.sin(t) * 150, [px, py] = iso(ax, ay, 40), lx = cx + Math.cos(t) * 285, ly = cy - 70 + Math.sin(t) * 150;
+    return `<g class="agx-tag ${on ? agStatus(r)[0] : 'off'}" data-ag-sel="${a.id}" data-agp="team" role="button" tabindex="0" aria-label="${esc(a.name)} ${r.score}" style="--c:${AG_COLORS[a.id]}">
+      <polyline points="${px.toFixed(1)},${py.toFixed(1)} ${(px + lx) / 2},${ly.toFixed(1)} ${lx.toFixed(1)},${ly.toFixed(1)}" class="lead"/><circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3.5" class="pin"/>
+      <rect x="${(lx - 58).toFixed(1)}" y="${(ly - 17).toFixed(1)}" width="116" height="34" rx="4" class="box"/><rect x="${(lx - 58).toFixed(1)}" y="${(ly - 17).toFixed(1)}" width="4" height="34" class="bar"/>
+      <text x="${(lx - 46).toFixed(1)}" y="${(ly - 2).toFixed(1)}" class="n">${esc(a.area)}</text><text x="${(lx - 46).toFixed(1)}" y="${(ly + 11).toFixed(1)}" class="s">${on ? esc(agStatus(r)[1]) : 'Paused'}</text><text x="${(lx + 50).toFixed(1)}" y="${(ly + 6).toFixed(1)}" class="v">${on ? r.score : '–'}</text></g>`; }).join('');
+  const ring = (r, z, cls) => { const h = hex(r, z); return `<polygon points="${pts(h)}" class="${cls}"/>`; };
+  return `<div class="agx-tower"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Your team around you, team score ${chief.score}">
+    <defs><radialGradient id="agxGlow"><stop offset="0" style="stop-color:var(--ag-core1);stop-opacity:.9"/><stop offset=".5" style="stop-color:var(--ag-core2);stop-opacity:.35"/><stop offset="1" style="stop-color:var(--ag-core3);stop-opacity:0"/></radialGradient>
+      <linearGradient id="agxBeam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--ag-cy);stop-opacity:.55"/><stop offset="1" style="stop-color:var(--ag-cy);stop-opacity:0"/></linearGradient></defs>
+    ${ring(230, 0, 'agx-floor o3')}${ring(190, 0, 'agx-floor o2')}${ring(150, 0, 'agx-floor o1')}
+    ${Array.from({ length: 6 }, (_, i) => { const t = Math.PI / 6 + i * Math.PI / 3, a = iso(Math.cos(t) * 150, Math.sin(t) * 150, 0), b = iso(Math.cos(t) * 230, Math.sin(t) * 230, 0); return `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" class="agx-spoke"/>`; }).join('')}
+    <ellipse cx="${cx}" cy="${cy - 40}" rx="200" ry="110" fill="url(#agxGlow)" opacity=".45"/>
+    ${prism(150, 0, 14, 'agx-base')}${prism(112, 14, 66, 'agx-body')}${prism(74, 66, 96, 'agx-crown')}
+    <g class="agx-scan">${ring(118, 40, 'agx-scanring')}</g>
+    <polygon points="${(() => { const t = hex(30, 96), b2 = hex(30, 170); return pts([t[1], t[2], b2[2], b2[1]]); })()}" fill="url(#agxBeam)" class="agx-beam"/>
+    <text x="${cx}" y="${cy - 168}" class="agx-core-t">${esc(displayName())}</text><text x="${cx}" y="${cy - 150}" class="agx-core-s">team score ${chief.score}</text>
+    ${tags}
+    <text x="${cx}" y="${H - 10}" class="agx-cap">Agent overview · tap a tag to open that agent</text></svg></div>`;
+}
+
+/* ---------- Overview page ---------- */
+function agOverviewHTML(){
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const w0 = addDays(t, -6), w1 = addDays(t, -13), wk = agSum(w0, 7), wkPrev = agSum(w1, 7);
+  const mStart = new Date(t.getFullYear(), t.getMonth(), 1), mDays = t.getDate(), mo = agSum(mStart, mDays), lmStart = new Date(t.getFullYear(), t.getMonth() - 1, 1), moPrev = agSum(lmStart, Math.min(mDays, new Date(t.getFullYear(), t.getMonth(), 0).getDate()));
+  const cats = ['English', 'Engineering', 'Career', 'Training', 'Walking', 'Routine'], byCat = cats.map(c => [c, agSum(mStart, mDays, [c])]);
+  const totN = byCat.reduce((s, x) => s + x[1].n, 0) || 1;
+  const rank = AGENTS.filter(a => a.id !== 'chief').map(a => ({ a, r: agResult(a.id) })).sort((x, y) => y.r.score - x.r.score);
+  // month trend: % of blocks done per day, dashed forecast at the 7-day average
+  const dim = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate(), tc = agCats(AGP.trend), vals = [], labels = [];
+  for (let d = 1; d <= dim; d++){ const day = new Date(t.getFullYear(), t.getMonth(), d); if (d <= mDays){ const x = agDay(dkey(day), tc); vals.push(x.of ? Math.round(x.n / x.of * 100) : 0); } else vals.push(null); labels.push(d === 1 || d % 5 === 0 || d === mDays ? String(d) : ''); }
+  const last7 = vals.slice(Math.max(0, mDays - 7), mDays), avg = last7.length ? Math.round(last7.reduce((a, b) => a + b, 0) / last7.length) : 0;
+  for (let d = mDays; d < dim; d++) vals[d] = avg;
+  // last 6 weeks
+  const wc = agCats(AGP.weeks), ws = startOfWeek(), wv = [], wl = [];
+  for (let i = 5; i >= 0; i--){ const s0 = addDays(ws, -7 * i); wv.push(agSum(s0, i === 0 ? isoWeekday(t) + 1 : 7, wc).n); wl.push(i === 0 ? 'This wk' : `${s0.getDate()} ${MONTHS[s0.getMonth()].slice(0, 3)}`); }
+  // money: cumulative spend this month against the flexible budget
+  const budget = Math.round(fixedTotal() * dim / 30.4), spend = [], sl = []; let cum = 0;
+  for (let d = 1; d <= dim; d++){ const k = dkey(new Date(t.getFullYear(), t.getMonth(), d)); if (d <= mDays){ cum += (state.expenses || []).filter(e => e.date === k).reduce((a, e) => a + (+e.amount || 0), 0); spend.push(Math.round(cum)); } else spend.push(null); sl.push(d === 1 || d % 5 === 0 ? String(d) : ''); }
+  const pace = mDays ? cum / mDays : 0; for (let d = mDays; d < dim; d++) spend[d] = Math.round(cum + pace * (d - mDays + 1));
+  const saved = savedTotal(), goal = +state.settings.goal || 25000;
+  return `<div class="agx-ov">
+    <div class="agx-col">
+      ${agSec('Plan blocks done', '', `<div class="agx-kpi2">
+          <div><small>This week</small><b class="num">${agFmt(wk.n)}</b><span>of ${wk.of}</span></div><div><small>vs last week</small><b class="num dim">${agFmt(wkPrev.n)}</b>${agCmp(wk.n, wkPrev.n)}</div>
+          <div><small>This month</small><b class="num">${agFmt(mo.n)}</b><span>of ${mo.of}</span></div><div><small>vs same days last month</small><b class="num dim">${agFmt(moPrev.n)}</b>${agCmp(mo.n, moPrev.n)}</div></div>
+        <div class="agx-sub">Where it went this month</div>
+        <div class="agx-stripe">${byCat.filter(x => x[1].n).map(([c, x]) => `<i style="flex:${x.n};--c:${AREA_COL[c]}" title="${c} ${x.n}"></i>`).join('') || '<i class="none"></i>'}</div>
+        <div class="agx-legend">${byCat.filter(x => x[1].n).map(([c, x]) => `<span><i style="background:${AREA_COL[c]}"></i>${c} ${Math.round(x.n / totN * 100)}%</span>`).join('') || '<span>Nothing done yet this month.</span>'}</div>
+        <div class="agx-sub">Focused time by area</div>
+        <div class="agx-dwrap">${agDonut(byCat.filter(x => x[1].min).map(([c, x]) => [c, x.min, AREA_COL[c]]))}<ul class="agx-dl">${byCat.filter(x => x[1].min).map(([c, x]) => `<li><i style="background:${AREA_COL[c]}"></i>${c}<b class="num">${Math.round(x.min / 60 * 10) / 10} h</b></li>`).join('') || '<li class="none">Mark plan blocks as done to see where your time goes.</li>'}</ul></div>`)}
+    </div>
+    <div class="agx-mid">
+      <div class="agx-figs">
+        <div><small>Team score</small><b class="num">${agResult('chief').score}</b><span>weighted by your goals</span></div>
+        <div><small>Saved</small><b class="num">${money0(saved)}</b><span>${Math.round(saved / goal * 100)}% of ${money0(goal)}</span></div>
+        <div><small>Streak</small><b class="num">${currentStreak()}</b><span>best ${bestStreak()}</span></div>
+      </div>
+      ${agTowerHTML()}
+    </div>
+    <div class="agx-rcol">
+      ${agSec('Agent ranking', 'by score', `<ol class="agx-rank">${rank.map(({ a, r }, i) => `<li data-ag-sel="${a.id}" data-agp="team" role="button" tabindex="0"><span class="no">No.${i + 1}</span><span class="nm">${esc(a.area)}</span><span class="bar"><i style="width:${agOn(a.id) ? r.score : 0}%"></i></span><b class="num">${agOn(a.id) ? r.score : '–'}</b></li>`).join('')}</ol>`)}
+    </div>
+    <div class="agx-bottom">
+      ${agSec('This month, day by day', '% of plan blocks done · dashed = forecast at your 7-day average', agChips('trend', AGP.trend) + agArea(vals, { labels, cut: mDays, max: 100, unit: '%', label: 'Plan done per day this month' }), 'wide')}
+      ${agSec('Last 6 weeks', 'plan blocks done', agChips('weeks', AGP.weeks) + agBars(wv, wl, { label: 'Blocks done per week' }))}
+      ${agSec('Spending this month', `budget ${money0(budget)}`, `<div class="agx-kpi1"><div><small>Spent so far</small><b class="num">${money0(cum)}</b></div><div><small>At this pace</small><b class="num ${cum + pace * (dim - mDays) > budget ? 'bad' : ''}">${money0(cum + pace * (dim - mDays))}</b></div></div>${agArea(spend, { labels: sl, cut: mDays, max: Math.max(budget * 1.1, 10), unit: '', base: budget, baseLabel: 'budget', label: 'Spending this month' })}`)}
+    </div>
+  </div>`;
+}
+
+/* ---------- Alerts page ---------- */
+function agAlertsHTML(){
+  const res = AGENTS.filter(a => a.id !== 'chief' && agOn(a.id)).map(a => ({ a, r: agResult(a.id) }));
+  const all = res.flatMap(x => x.r.findings.map(f => ({ ...f, a: x.a })));
+  const open = all.filter(f => !f.done), red = open.filter(f => f.sev >= 3).length, yel = open.filter(f => f.sev === 2).length, blu = open.filter(f => f.sev <= 1).length, done = all.filter(f => f.done).length, tot = all.length || 1;
+  const k = dkey(), m = nowMin(), late = dayBlocks(k).filter(b => !b.skip && !blockStatus(k, b) && b.start + b.dur < m).length;
+  let missed7 = 0; for (let i = 1; i <= 7; i++){ const kk = dkey(addDays(new Date(), -i)); dayBlocks(kk).forEach(b => { if (!b.skip && blockStatus(kk, b) !== 'done') missed7++; }); }
+  const s30 = periodStats(dkey(addDays(new Date(), -29)), k), over = Math.max(0, s30.spent - s30.budget), ci = ['2w', '1m'].map(ciStatus).filter(s => s.state === 'late' || s.state === 'due').length;
+  const weeks = [], wl = []; const ws = startOfWeek(); for (let i = 11; i >= 0; i--){ const s0 = addDays(ws, -7 * i); const x = agSum(s0, i === 0 ? isoWeekday(new Date()) + 1 : 7); weeks.push(x.of - x.n); wl.push(i % 3 === 0 ? `${s0.getDate()}/${s0.getMonth() + 1}` : ''); }
+  const stat = (icon, v, l) => `<div class="agx-stat">${ic(icon, 16)}<span><small>${l}</small><b class="num">${v}</b></span></div>`;
+  // beacon scene
+  const W = 640, H = 420, cx = W / 2, cy = 200, nodes = res.filter(x => x.r.findings.some(f => !f.done)).slice(0, 7);
+  const ring = nodes.map((x, i) => { const t = Math.PI * .88 + (i + .5) / nodes.length * Math.PI * 1.24, nx = cx + Math.cos(t) * 262, ny = cy - 10 + Math.sin(t) * 150, o = x.r.findings.filter(f => !f.done), hi = o.some(f => f.sev >= 3);
+    return `<g class="agx-an ${hi ? 'hi' : ''}" data-ag-sel="${x.a.id}" data-agp="team" role="button" tabindex="0" aria-label="${esc(x.a.name)}: ${o.length} open" style="--c:${AG_COLORS[x.a.id]}">
+      <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" class="ln"/><circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="20" class="nb"/>
+      <text x="${nx.toFixed(1)}" y="${(ny + 5).toFixed(1)}" class="nv">${o.length}</text>
+      <rect x="${(nx - 52).toFixed(1)}" y="${(ny + 26).toFixed(1)}" width="104" height="22" rx="3" class="lb"/><text x="${nx.toFixed(1)}" y="${(ny + 41).toFixed(1)}" class="lt">${esc(x.a.area)}</text></g>`; }).join('');
+  const ped = (x, y, label, sub, icon) => `<g class="agx-ped" transform="translate(${x},${y})"><polygon points="0,-18 54,8 0,34 -54,8" class="t"/><polygon points="-54,8 0,34 0,46 -54,20" class="l"/><polygon points="54,8 0,34 0,46 54,20" class="r"/>
+    <foreignObject x="-14" y="-16" width="28" height="28"><div xmlns="http://www.w3.org/1999/xhtml" class="agx-pi">${ic(icon, 18)}</div></foreignObject>
+    <text x="0" y="66" class="pl">${label}</text><text x="0" y="80" class="ps">${sub}</text></g>`;
+  const scene = `<svg viewBox="0 0 ${W} ${H}" class="agx-beacon" role="img" aria-label="${open.length} open findings">
+    <defs><radialGradient id="agxB"><stop offset="0" style="stop-color:var(--ag-core1);stop-opacity:.95"/><stop offset=".6" style="stop-color:var(--ag-core2);stop-opacity:.35"/><stop offset="1" style="stop-color:var(--ag-core3);stop-opacity:0"/></radialGradient></defs>
+    <ellipse cx="${cx}" cy="${cy + 20}" rx="270" ry="120" class="o1"/><ellipse cx="${cx}" cy="${cy + 20}" rx="190" ry="84" class="o2"/><ellipse cx="${cx}" cy="${cy + 20}" rx="110" ry="48" class="o3"/>
+    ${ring}
+    <ellipse cx="${cx}" cy="${cy + 20}" rx="120" ry="60" fill="url(#agxB)" opacity=".7"/>
+    <g class="agx-disc">${[0, 1, 2].map(i => `<ellipse cx="${cx}" cy="${cy + 26 - i * 14}" rx="${62 - i * 6}" ry="${20 - i * 2}" class="d${i}"/>`).join('')}</g>
+    <path d="M ${cx - 24} ${cy - 2} a 24 24 0 0 1 48 0 v 10 h -48 z" class="bell"/><path d="M ${cx + 3} ${cy - 22} l -9 16 h 8 l -4 13 l 12 -18 h -8 z" class="bolt"/>
+    <text x="${cx}" y="${cy + 64}" class="cap">${open.length} open · ${done} done today</text>
+    <path d="M ${cx - 190} ${H - 92} Q ${cx - 110} ${cy + 70} ${cx - 30} ${cy + 40}" class="flow"/><path d="M ${cx + 190} ${H - 92} Q ${cx + 110} ${cy + 70} ${cx + 30} ${cy + 40}" class="flow"/><path d="M ${cx} ${H - 92} L ${cx} ${cy + 62}" class="flow"/>
+    ${ped(cx - 200, H - 104, 'Day plan', `${late} late today`, 'checklist')}${ped(cx, H - 104, 'Agents', `${res.length} watching`, 'robot')}${ped(cx + 200, H - 104, 'Money', over ? `${money0(over)} over` : 'on budget', 'pound')}
+  </svg>`;
+  // processing ring and peaks
+  const pr = [[red, 'Needs you now', 'var(--ag-bad)'], [yel + blu, 'To watch', 'var(--ag-warn)'], [done, 'Done today', 'var(--ag-ok)']], rr = 52, rc = 2 * Math.PI * rr; let off = 0;
+  const ringSvg = `<svg viewBox="0 0 140 140" width="140" height="140" aria-hidden="true"><circle cx="70" cy="70" r="${rr}" class="tr"/>${pr.map(([v, , col]) => { const len = v / tot * rc, s = `<circle cx="70" cy="70" r="${rr}" class="seg" style="stroke:${col}" stroke-dasharray="${Math.max(0, len - 3).toFixed(1)} ${rc.toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" transform="rotate(-90 70 70)"/>`; off += len; return s; }).join('')}<circle cx="70" cy="70" r="38" class="in"/></svg>`;
+  const PW = 360, PH = 120, mx = Math.max(1, ...res.map(x => x.r.findings.filter(f => !f.done).length));
+  const peaks = `<svg viewBox="0 0 ${PW} ${PH}" class="agx-peaks" preserveAspectRatio="none" role="img" aria-label="Open findings by agent">${[0, .5, 1].map(f => `<line x1="20" x2="${PW}" y1="${PH - 20 - f * (PH - 34)}" y2="${PH - 20 - f * (PH - 34)}" class="g"/>`).join('')}
+    ${res.map((x, i) => { const v = x.r.findings.filter(f => !f.done).length, px = 30 + (i + .5) * (PW - 40) / res.length, h = v / mx * (PH - 34), w = (PW - 40) / res.length * .9; return `<path d="M ${px - w / 2} ${PH - 20} Q ${px - w / 6} ${PH - 22} ${px} ${PH - 20 - h} Q ${px + w / 6} ${PH - 22} ${px + w / 2} ${PH - 20} Z" class="pk" style="--c:${AG_COLORS[x.a.id]}"/><text x="${px}" y="${PH - 6}" class="xl">${esc(x.a.area.slice(0, 5))}</text>`; }).join('')}</svg>`;
+  return `<div class="agx-al">
+    <div class="agx-sev">
+      <div class="red"><span class="ico">${ic('bell', 18)}</span><span><small>Needs you now</small><b class="num">${red}</b></span></div>
+      <div class="yel"><span class="ico">${ic('bell', 18)}</span><span><small>To watch</small><b class="num">${yel}</b></span></div>
+      <div class="blu"><span class="ico">${ic('bell', 18)}</span><span><small>Good to know</small><b class="num">${blu}</b></span></div>
+    </div>
+    <div class="agx-col">
+      ${agSec('Today', 'from your plan and money', `<div class="agx-stats">${stat('flag', open.length, 'Open findings')}${stat('check', done, 'Done today')}${stat('clock', late, 'Late blocks today')}${stat('calendar', missed7, 'Missed blocks, 7 days')}${stat('bell', ci, 'Check-ins due')}${stat('pound', money0(over), 'Over budget, 30 days')}</div>`)}
+      ${agSec('Missed blocks', 'per week, last 12 weeks', agArea(weeks, { labels: wl, w: 360, h: 140, label: 'Missed blocks per week' }))}
+    </div>
+    <div class="agx-mid">${scene}</div>
+    <div class="agx-col">
+      ${agSec('Handling', 'today', `<div class="agx-proc"><div class="agx-pr">${ringSvg}<div class="c"><small>Findings</small><b class="num">${all.length}</b></div></div>
+        <ul>${pr.map(([v, l, col]) => `<li><i style="background:${col}"></i>${l}<b class="num">${v}</b><em>${Math.round(v / tot * 100)}%</em></li>`).join('')}</ul></div>`)}
+      ${agSec('By agent', 'open findings', `${peaks}<table class="agx-tbl"><thead><tr><th>Agent</th><th>Open</th><th>Done</th><th>Rate</th></tr></thead><tbody>${res.map(x => { const o = x.r.findings.filter(f => !f.done).length, d = x.r.findings.length - o; return `<tr data-ag-sel="${x.a.id}" data-agp="team" role="button" tabindex="0"><td><i style="background:${AG_COLORS[x.a.id]}"></i>${esc(x.a.area)}</td><td class="num">${o}</td><td class="num">${d}</td><td class="num">${x.r.findings.length ? Math.round(d / x.r.findings.length * 100) : 100}%</td></tr>`; }).join('')}</tbody></table>`)}
+    </div>
+    ${agSec('Open list', 'highest first', `<ul class="agx-list">${open.sort((a, b) => b.sev - a.sev).map(f => `<li class="sev${f.sev}"><i></i><span class="ag">${esc(f.a.area)}</span><b>${esc(f.t)}</b><small>${esc(f.why || '')}</small>${f.go ? `<button class="ag-btn" data-ag-go="${f.go}">Open</button>` : ''}<button class="ag-btn" data-ag-done="${f.a.id}:${f.id}">Done</button></li>`).join('') || '<li class="none">Nothing open. Every agent is happy.</li>'}</ul>`, 'full')}
+  </div>`;
+}
+
+/* ---------- the tab ---------- */
+renderAgents = function(){
+  agentsRun(); const p = agPage();
+  return `<div class="ag agx" id="agRoot" data-agtheme="${agTheme()}">${agHeadHTML()}${p === 'alerts' ? agAlertsHTML() : p === 'team' ? agTeamHTML() : agOverviewHTML()}</div>`;
+};
+document.addEventListener('click', e => {
+  const b = e.target.closest('#agRoot [data-agp], #agRoot [data-agt], #agRoot [data-agf]'); if (!b) return;
+  if (b.dataset.agt){ e.stopPropagation(); state.agTheme = b.dataset.agt; save(); const r = document.getElementById('agRoot'); if (r) r.dataset.agtheme = state.agTheme; document.querySelectorAll('#agRoot [data-agt]').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-checked', String(on)); }); return; }
+  if (b.dataset.agf){ e.stopPropagation(); const [key, id] = b.dataset.agf.split(':'); AGP[key] = id; agRedraw(); return; }
+  if (b.dataset.agp){ if (b.dataset.agSel) AG.sel = b.dataset.agSel; e.stopPropagation(); state.agPage = b.dataset.agp; save(); agRedraw(); window.scrollTo({ top: Math.min(window.scrollY, (document.getElementById('agRoot')?.getBoundingClientRect().top || 0) + window.scrollY - 70), behavior: 'auto' }); }
+}, true);
+document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('#agRoot [data-agp][role="button"]')){ e.preventDefault(); e.target.closest('[data-agp]').click(); } });
 
 </script>
 <script data-src="src/js/70-boot.js">

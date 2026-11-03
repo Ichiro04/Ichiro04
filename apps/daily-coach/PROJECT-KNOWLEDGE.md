@@ -73,7 +73,12 @@ The map's controls:
 - Run all and pause switches.
 - Slots for future agents (job board scout, calendar, nutrition, interview coach, builder).
 
-They run inside the app with the autopilot; nothing is sent anywhere. New agents are one entry in the code.
+The control centre has three pages:
+- **Overview:** blocks done against last week and last month, a 3D tower with your team around you, a ranking, a month chart with a dashed forecast, the last 6 weeks, and spending against your budget.
+- **Alerts:** red, yellow and blue counts, today's numbers, a beacon scene, a handling ring, and a table by agent.
+- **Team:** the hub, roster and agent details.
+
+Three themes: Crimson (default), Teal and Blue. They run inside the app with the autopilot; nothing is sent anywhere. New agents are one entry in the code.
 
 **Money / Progress / Train / Learn.**
 - Train: sessions with animated exercise figures.
