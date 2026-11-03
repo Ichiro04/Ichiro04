@@ -87,3 +87,17 @@ body.ai-open .tabbar,body.ai-open .topbar{visibility:hidden}
 .ai-stop{width:22px;height:22px;border-radius:6px;background:#E6CDB0}
 @media(prefers-reduced-motion:reduce){.ai-chat,.ai-chat *{animation:none!important}}
 html.reduce .ai-chat,html.reduce .ai-chat *{animation:none!important}
+
+/* chat language and translate-into switch (3 Nov 2026) */
+.ai-lang{display:inline-flex;align-items:center;gap:3px;padding:3px;margin:8px auto 0;border-radius:999px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line);width:max-content;max-width:100%}
+.ai-hello .ai-lang{margin:8px 0 0}
+.ai-chat .ai-lang{display:flex;margin:6px auto 0;position:relative;z-index:2}
+.ai-lang > span{padding:0 6px 0 8px;font-size:11.5px;font-weight:700;color:var(--pw-ink-3)}
+.ai-lang button{height:28px;padding:0 12px;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;line-height:1;color:var(--pw-ink-2);background:none;border:0;cursor:pointer;transition:background .2s,color .2s}
+.ai-lang button.on{color:#fff;background:linear-gradient(180deg,#A3142C,#710014)}
+html[data-theme="dark"] .ai-lang button.on{color:#161616;background:linear-gradient(180deg,#E6CDB0,#B38F6F)}
+.ai-lang button:focus-visible{outline:2px solid #B38F6F;outline-offset:2px}
+/* Burmese and Japanese text: the device's own fonts, more room for Myanmar script */
+[lang="my"]{font-family:"Myanmar Text","Noto Sans Myanmar","Myanmar Sangam MN","Padauk",system-ui,sans-serif;line-height:1.95!important}
+[lang="ja"]{font-family:"Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans JP",system-ui,sans-serif;line-height:1.75}
+.ai-q[lang="my"],.ai-a[lang="my"],.ai-b[lang="my"]{word-break:normal;overflow-wrap:anywhere}

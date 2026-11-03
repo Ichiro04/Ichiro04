@@ -435,3 +435,11 @@ The user asked for his own agents and a dashboard to check and track them, which
   - Numbers come from the day plan (`agDay` / `agSum`), so past days count.
   - Themes (`state.agTheme`): **crimson** (default, the app's crimson and sand), **teal** (the reference), **blue** (the first version). All colours come from `--ag-*` variables with `--ag-rgb` for tints. The page is `state.agPage`.
   - Layout follows the panel's own width (`container-type:inline-size`, `@container agx`): three columns from 1300px wide, two from 1060px, one below 700px.
+
+## Chat languages: Burmese and Japanese (3 Nov 2026)
+
+- **Chat language** (`state.aiLang`: `en` | `my` | `ja`; `AI_LANGS` in `46a-render-assistant.js`): a switch (English · မြန်မာ · 日本語) on the Coach home, in the chat overlay and in Settings → Coach and voice. Choosing one also sets the mic language (`voiceLang` en-GB / my-MM / ja-JP) and changes the chat hint, placeholder and empty text.
+- **Answers:** for Burmese or Japanese, `aiTurns` adds a "reply in Burmese / polite Japanese, keep numbers, £ and technical terms in English" line, and `aiRoute` sends the question to Claude even in Saver mode, because the built-in coach only speaks English. The daily limit and "Off" still apply. When Claude can't answer, the built-in English answer comes with a note saying why. The answer cache is keyed by language.
+- **Translate** now works between English, Burmese and Japanese: "into" buttons (`state.aiTrTo`) and `aiTranslatePrompt()` (Japanese answers include a rōmaji line). Text already in the target language comes back in English.
+- **Voice:** `textLang(text)` detects Myanmar script or Japanese kana/kanji. `voiceSay(u)` then picks a voice for that language, female first (Kyoko, O-ren, Haruka, Ayumi, Nanami, Nilar…), never known male ones (Ichiro, Keita, Otoya, Thiha…). Burmese voices exist only on some devices (e.g. Microsoft Nilar on Windows); otherwise the browser falls back.
+- **Fonts:** bubbles get a `lang` attribute; `[lang="my"]` uses the device's Myanmar font with extra line height, and `[lang="ja"]` uses the device's Japanese font. No web fonts.

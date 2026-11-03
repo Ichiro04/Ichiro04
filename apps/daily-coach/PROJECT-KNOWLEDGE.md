@@ -61,7 +61,8 @@ The map's controls:
   - The text box.
   - A mic. Voice works in the Chrome app; the claude.ai viewer blocks the microphone, so device dictation is the fallback.
   - Read-aloud answers.
-  - English ⇄ Burmese translation.
+  - Chat language: English, မြန်မာ (Burmese) or 日本語 (Japanese). Answers come in that language (through Claude), the mic listens for it, and read-aloud uses a female voice for it where the device has one.
+  - Translation between English, Burmese and Japanese (Japanese includes rōmaji).
 - **Token saver:** Saver (the default) gives built-in answers and calls Claude only on "Ask Claude"; Smart sends only open questions to Claude; Off never calls it. There's a daily limit (default 20), a same-day answer cache and a usage meter in Settings.
 
 **Agents.** A dark control centre for your team of agents: Chief of staff, Fitness, IELTS, Engineering, Career, Money, Sleep and routine, and Review. Each one watches its part of your data, gives a score out of 100, lists what needs doing (Open goes there, Done ticks it off) and keeps a daily score history. You'll see:

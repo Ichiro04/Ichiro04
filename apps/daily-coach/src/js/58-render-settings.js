@@ -51,7 +51,8 @@ function setBody(sec){
     ${setToggle('Read answers aloud','voiceOut', state.voiceOut, 'Uses your device’s voice')}
     ${voicePickHTML()}
     ${setSeg('Voice speed','voiceRate', String(state.voiceRate || 1), [['0.85','Slow'],['1','Normal'],['1.15','Fast']])}
-    ${setSeg('Voice input language','voiceLang', state.voiceLang || 'en-GB', [['en-GB','English'],['my-MM','Burmese']])}
+    ${setSeg('Chat language','aiLang', state.aiLang || 'en', [['en','English'],['my','မြန်မာ'],['ja','日本語']])}
+    ${setSeg('Voice input language','voiceLang', state.voiceLang || 'en-GB', [['en-GB','English'],['my-MM','Burmese'],['ja-JP','Japanese']])}
     <button class="set-btn" data-set-act="voicetest">${ic('volume',16)} Test the voice</button>`; }
   if (sec==='auto'){ const a = apState(), s2 = ciStatus('2w'), s1 = ciStatus('1m'); return `<h3>Autopilot and check-ins</h3><p class="set-note">The autopilot runs inside this app: when you open it, when you come back to it and every 15 minutes while it is open. It builds today’s plan, works out tips from your numbers and prepares your check-ins. Nothing is sent anywhere.</p>
     ${setToggle('Autopilot','ap.on', a.on, 'Switch everything below on or off')}
@@ -104,6 +105,7 @@ document.addEventListener('click', e=>{
   const sg = e.target.closest('[data-set-seg]'); if (sg){ e.stopPropagation(); const k = sg.dataset.setSeg, v = sg.dataset.v; sg.parentNode.querySelectorAll('button').forEach(b=>{ const on = b===sg; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     if (k==='theme'){ state.theme = v; save(); applyTheme(); if (typeof mountRail==='function') mountRail(); }
     else if (k==='voiceRate'){ state.voiceRate = +v; save(); }
+    else if (k==='aiLang'){ if (typeof aiSetLang === 'function') aiSetLang(v); document.getElementById('setBody').innerHTML = setBody('coach'); }
     else if (k==='aiCap'){ state.aiCap = +v; save(); document.getElementById('setBody').innerHTML = setBody('coach'); }
     else if (k==='aiMode'){ state.aiMode = v; save(); document.getElementById('setBody').innerHTML = setBody('coach'); toast({ saver:'Saver on: Claude only when you ask for it.', smart:'Smart: simple questions answered for free.', off:'Claude is off.' }[v], 'ok', 1800); }
     else { state[k] = v; save(); }
@@ -130,11 +132,15 @@ document.addEventListener('keydown', e=>{ if (e.key==='Escape' && SET.open){ e.s
    The user asked for a woman's voice (like Siri, Gemini or Claude), never a man's.
    Browsers do not say a voice's gender, so known names are used: female names first,
    known male names never picked automatically. Settings → Coach and voice can pin one. */
-const VOICE_F = /female|woman|samantha|serena|karen|moira|tessa|fiona|victoria|allison|\bava\b|susan|zoe|kate|stephanie|martha|catherine|emily|libby|sonia|hazel|zira|aria|jenny|emma|michelle|natasha|clara|sara|maisie|abbi|bella|hollie|olivia|amy|joanna|kendra|kimberly|salli|ivy|nicole|heather|siri|en-gb-x-gba|en-gb-x-gbc|en-gb-x-gbg|en-us-x-sfg|en-us-x-tpc|en-us-x-iob/i;
-const VOICE_M = /\bmale\b|daniel|arthur|oliver|george|ryan|thomas|\balex\b|fred|aaron|gordon|rishi|david|\bmark\b|\bguy\b|christopher|eric|roger|brian|elliot|noah|ethan|alfie|\blee\b|james|william|ralph|albert|bruce|junior|en-gb-x-gbb|en-gb-x-gbd|en-gb-x-rjs|en-us-x-iol|en-us-x-iom|en-us-x-tpd/i;
-function voiceList(){ try { return ('speechSynthesis' in window) ? speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang)) : []; } catch(_){ return []; } }
+const VOICE_F = /female|woman|kyoko|o-ren|haruka|ayumi|nanami|mayu|aoi|shiori|sayaka|nilar|日本語|samantha|serena|karen|moira|tessa|fiona|victoria|allison|\bava\b|susan|zoe|kate|stephanie|martha|catherine|emily|libby|sonia|hazel|zira|aria|jenny|emma|michelle|natasha|clara|sara|maisie|abbi|bella|hollie|olivia|amy|joanna|kendra|kimberly|salli|ivy|nicole|heather|siri|en-gb-x-gba|en-gb-x-gbc|en-gb-x-gbg|en-us-x-sfg|en-us-x-tpc|en-us-x-iob/i;
+const VOICE_M = /\bmale\b|ichiro|keita|otoya|hattori|daichi|naoki|thiha|daniel|arthur|oliver|george|ryan|thomas|\balex\b|fred|aaron|gordon|rishi|david|\bmark\b|\bguy\b|christopher|eric|roger|brian|elliot|noah|ethan|alfie|\blee\b|james|william|ralph|albert|bruce|junior|en-gb-x-gbb|en-gb-x-gbd|en-gb-x-rjs|en-us-x-iol|en-us-x-iom|en-us-x-tpd/i;
+function voiceList(pre = 'en'){ try { return ('speechSynthesis' in window) ? speechSynthesis.getVoices().filter(v => new RegExp('^' + pre, 'i').test(v.lang)) : []; } catch(_){ return []; } }
+/* which language a piece of text is in: Myanmar script, Japanese kana or kanji, otherwise English */
+function textLang(t){ t = String(t || ''); const my = (t.match(/[\u1000-\u109F]/g) || []).length, ja = (t.match(/[\u3040-\u30FF\u4E00-\u9FFF]/g) || []).length; return my > 3 && my >= ja ? 'my' : ja > 3 ? 'ja' : 'en'; }
 function voiceIsFemale(v){ return VOICE_F.test(v.name + ' ' + (v.voiceURI || '')) && !/\bmale\b/i.test(v.name.replace(/female/i, '')); }
-function pickVoice(){
+function pickVoice(lang = 'en'){
+  if (lang !== 'en'){ const vs = voiceList(lang), notM = v => !VOICE_M.test(v.name + ' ' + (v.voiceURI || ''));
+    return vs.find(v => voiceIsFemale(v) && /natural|neural|online|enhanced|premium/i.test(v.name)) || vs.find(voiceIsFemale) || vs.find(notM) || vs[0] || null; }
   const vs = voiceList(); if (!vs.length) return null;
   if (state.voiceName){ const v = vs.find(x => x.name === state.voiceName); if (v) return v; }
   const gb = v => /en[-_]GB/i.test(v.lang), notM = v => !VOICE_M.test(v.name + ' ' + (v.voiceURI || ''));
@@ -142,7 +148,7 @@ function pickVoice(){
       || vs.find(v => gb(v) && voiceIsFemale(v)) || vs.find(v => voiceIsFemale(v))
       || vs.find(v => gb(v) && notM(v)) || vs.find(notM) || null;
 }
-function voiceSay(u){ const v = pickVoice(); if (v){ u.voice = v; u.lang = v.lang; } u.pitch = v && voiceIsFemale(v) ? 1 : 1.12; return u; }
+function voiceSay(u, text){ const lang = textLang(text != null ? text : u.text), v = pickVoice(lang); if (v){ u.voice = v; u.lang = v.lang; } else u.lang = { my:'my-MM', ja:'ja-JP', en:'en-GB' }[lang]; u.pitch = !v || voiceIsFemale(v) || lang !== 'en' ? 1 : 1.12; return u; }
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', () => { if (SET.open && SET.sec === 'coach'){ const b = document.getElementById('setBody'); if (b) b.innerHTML = setBody('coach'); } }); } catch(_){} }
 function aiSpeak(text, force){
   if (!('speechSynthesis' in window)){ if (force) toast('This browser cannot read text aloud.','warn',2400); return; }
