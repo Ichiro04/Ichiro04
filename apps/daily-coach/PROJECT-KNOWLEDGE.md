@@ -52,7 +52,7 @@ The map's controls:
 - The older 3D CAD quiz, the drawings explorer and 8-question test, the V12 engine digital twin with a fault simulator, and the test bench.
 
 **Coach AI.**
-- Top of the Coach tab: today's plan, a Schedule calendar (week strip and the day's timeline), quick actions, a status card, (a to-do list the autopilot builds each morning, plus your own items), tips from your numbers, this week's wave and the autopilot card. "Edit layout" moves or hides these.
+- Top of the Coach tab: today's plan (a to-do list the autopilot builds each morning, plus your own items), a Schedule calendar (week strip and the day's timeline), quick actions, a status card, tips from your numbers, this week's wave and the autopilot card. "Edit layout" moves or hides these.
 - **Autopilot** runs inside the app (on opening, on coming back and every 15 minutes): plan, tips and check-in drafts. Switches in Settings → Autopilot. A cloud builder also works through `AUTOPILOT.md` at night and pushes code changes to GitHub.
 - A floating "Ask coach" button sits on every tab, with a mic.
 - In the chat:
