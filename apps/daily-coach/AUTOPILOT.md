@@ -12,12 +12,14 @@ A scheduled Claude run works through this list at night: **one item per run**. T
 7. If every item is ticked, do a bug hunt instead (console errors, layout at 390×844, dead code) and log what you found. Add 3 new ideas to the list for the user to approve (marked "idea, needs OK") and do not build those.
 
 ## Backlog
-- [ ] IELTS exam countdown on Today and in the Review tab, from `state.settings.examDate` (known TODO in CLAUDE.md).
-- [ ] Review: "Copy as text" button on a finished check-in so it can be pasted into notes.
-- [ ] Coach tips: spending by category this month against the budget lines in `state.settings.fixed`.
-- [ ] Two more knowledge packs written around his plant work (thermoforming trim press faults; changeover SMED steps), with diagrams in `PACK_DIAGRAMS`.
-- [ ] Five more interview questions with answers in `QUESTION_BANK` for a thermo machine operator role.
-- [ ] Glass skins: contrast pass at 390×844 for every tab (text at least 4.5:1 on panels); fix any that fail.
-- [ ] Calendar: tap a past day's task chip to tick or untick it (with a toast), so missed logs can be fixed.
-- [ ] Monthly check-in: a "Money month" panel (saved, spent, top 3 categories, pace to £25k).
-- [ ] Performance: measure frame time on Today and Review at 1440×900 and trim anything over 8 ms.
+Items marked `[~]` are being built in the Project chat right now: skip them. Treat them like ticked items.
+
+- [~] (chat, 3 Nov) IELTS exam countdown on Today and in the Review tab, from `state.settings.examDate` (known TODO in CLAUDE.md).
+- [~] (chat, 3 Nov) Review: "Copy as text" button on a finished check-in so it can be pasted into notes.
+- [~] (chat, 3 Nov) Coach tips: spending by category this month against the budget lines in `state.settings.fixed`.
+- [~] (chat, 3 Nov) Two more knowledge packs written around his plant work (thermoforming trim press faults; changeover SMED steps), with diagrams in `PACK_DIAGRAMS`.
+- [~] (chat, 3 Nov) Five more interview questions with answers in `QUESTION_BANK` for a thermo machine operator role.
+- [~] (chat, 3 Nov) Glass skins: contrast pass at 390×844 for every tab (text at least 4.5:1 on panels); fix any that fail.
+- [~] (chat, 3 Nov) Calendar: tap a past day's task chip to tick or untick it (with a toast), so missed logs can be fixed.
+- [~] (chat, 3 Nov) Monthly check-in: a "Money month" panel (saved, spent, top 3 categories, pace to £25k).
+- [~] (chat, 3 Nov) Performance: measure frame time on Today and Review at 1440×900 and trim anything over 8 ms.
