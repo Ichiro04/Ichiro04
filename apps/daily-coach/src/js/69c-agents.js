@@ -172,46 +172,57 @@ function agMesh(cx, cy, R){
 }
 function agHubHTML(){
   const list = AGENTS.filter(a => a.id !== 'chief'), tall = innerWidth < 700, f = n => n.toFixed(1);
-  const W = tall ? 400 : 560, H = tall ? 560 : 400, cx = W / 2, cy = tall ? 262 : 192, rx = tall ? 112 : 200, ry = tall ? 196 : 140, CR = tall ? 58 : 66, AR = CR + 15;
+  const W = tall ? 400 : 600, H = tall ? 560 : 420, cx = W / 2, cy = tall ? 262 : 200, rx = tall ? 112 : 210, ry = tall ? 196 : 148, CR = tall ? 58 : 68, AR = CR + 16;
   const still = motionOff(), chief = agResult('chief');
   const nodes = list.map((a, i) => { const t = -Math.PI / 2 + i / list.length * Math.PI * 2, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry, r = agResult(a.id), [st, stl] = agStatus(r), on = agOn(a.id);
     return { a, t, x, y, r, st, stl, on, open: r.findings.filter(q => !q.done).length }; });
   const seg = Math.PI * 2 / list.length;
-  const arcs = nodes.map(n => { const len = Math.max(.1, (seg - .16) * (n.on ? n.r.score : 0) / 100), a0 = n.t - len / 2, a1 = n.t + len / 2;
+  const arcs = nodes.map(n => { const len = Math.max(.1, (seg - .2) * (n.on ? n.r.score : 0) / 100), a0 = n.t - len / 2, a1 = n.t + len / 2;
     return `<path d="M${f(cx + Math.cos(a0) * AR)} ${f(cy + Math.sin(a0) * AR)} A${AR} ${AR} 0 0 1 ${f(cx + Math.cos(a1) * AR)} ${f(cy + Math.sin(a1) * AR)}" class="agn-arc${n.on ? '' : ' off'}"/>`; }).join('');
-  const links = nodes.map((n, i) => { const sx = cx + Math.cos(n.t) * (AR + 6), sy = cy + Math.sin(n.t) * (AR + 6), ex = n.x - Math.cos(n.t) * 24, ey = n.y - Math.sin(n.t) * 24;
-    const mx = (sx + ex) / 2, my = (sy + ey) / 2, dx = ex - sx, dy = ey - sy, L = Math.hypot(dx, dy) || 1, k = (i % 2 ? 1 : -1) * L * .16, qx = mx - dy / L * k, qy = my + dx / L * k;
+  const links = nodes.map((n, i) => { const sx = cx + Math.cos(n.t) * (AR + 4), sy = cy + Math.sin(n.t) * (AR + 4), ex = n.x - Math.cos(n.t) * 26, ey = n.y - Math.sin(n.t) * 26;
+    const mx = (sx + ex) / 2, my = (sy + ey) / 2, dx = ex - sx, dy = ey - sy, L = Math.hypot(dx, dy) || 1, k = (i % 2 ? 1 : -1) * L * .14, qx = mx - dy / L * k, qy = my + dx / L * k;
     const d = `M${f(sx)} ${f(sy)} Q${f(qx)} ${f(qy)} ${f(ex)} ${f(ey)}`, id = 'agl' + i;
-    const u = .58, px = (1 - u) ** 2 * sx + 2 * (1 - u) * u * qx + u * u * ex, py = (1 - u) ** 2 * sy + 2 * (1 - u) * u * qy + u * u * ey, ang = Math.atan2(2 * (1 - u) * (qy - sy) + 2 * u * (ey - qy), 2 * (1 - u) * (qx - sx) + 2 * u * (ex - qx)) * 180 / Math.PI;
-    const pill = !n.on ? '' : still ? `<ellipse cx="${f(px)}" cy="${f(py)}" rx="9" ry="3.4" transform="rotate(${f(ang)} ${f(px)} ${f(py)})" class="agn-pill ${n.st}"/>`
-      : `<ellipse rx="9" ry="3.4" class="agn-pill ${n.st}"><animateMotion dur="${(3.4 + i * .37).toFixed(2)}s" repeatCount="indefinite" rotate="auto" begin="${(-i * .8).toFixed(1)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#${id}"/></animateMotion></ellipse>`;
-    return `<path id="${id}" d="${d}" class="agn-link${n.on ? '' : ' off'}"/><path d="${d}" class="agn-link2${n.on ? '' : ' off'}"/>${pill}`; }).join('');
-  const card = n => { const top = Math.abs(n.y - (cy - ry)) < 2, w = tall ? 114 : 118, h = 48, o = tall ? 34 : 16, x = top ? n.x + 28 : n.x > cx + 2 ? n.x - o : n.x < cx - 2 ? n.x - w + o : n.x - w / 2, y = top ? n.y - h / 2 : n.y + 18;
-    return `<g class="agn-card" transform="translate(${f(x)} ${f(y)})"><rect width="${w}" height="${h}" rx="11" class="agn-cb"/>
-      <rect x="9" y="9" width="17" height="17" rx="5" class="agn-chip"/><g transform="translate(12.5 12.5)" class="agn-ci">${ic(n.a.icon, 10)}</g>
-      <text x="32" y="23" class="agn-cv">${n.on ? n.r.score : 'off'}</text><circle cx="${w - 12}" cy="17" r="3.2" class="agn-cd ${n.on ? n.st : 'off'}"/>
-      <text x="9" y="40" class="agn-cl">${esc(n.a.area)}<tspan class="agn-cs"> · ${n.on ? (n.open ? n.open + ' open' : 'clear') : 'paused'}</tspan></text></g>`; };
-  return `<div class="ag-hub agn"><svg viewBox="0 0 ${W} ${H}" class="ag-hub-svg${tall ? ' tall' : ''}" role="img" aria-label="Your agent team around you">
+    const u = .55, px = (1 - u) ** 2 * sx + 2 * (1 - u) * u * qx + u * u * ex, py = (1 - u) ** 2 * sy + 2 * (1 - u) * u * qy + u * u * ey, ang = Math.atan2(2 * (1 - u) * (qy - sy) + 2 * u * (ey - qy), 2 * (1 - u) * (qx - sx) + 2 * u * (ex - qx)) * 180 / Math.PI;
+    const pill = !n.on ? '' : still ? `<ellipse cx="${f(px)}" cy="${f(py)}" rx="11" ry="4" transform="rotate(${f(ang)} ${f(px)} ${f(py)})" class="agn-pill ${n.st}"/>`
+      : `<ellipse rx="11" ry="4" class="agn-pill ${n.st}"><animateMotion dur="${(3.6 + i * .37).toFixed(2)}s" repeatCount="indefinite" rotate="auto" begin="${(-i * .8).toFixed(1)}s"><mpath href="#${id}"/></animateMotion></ellipse>`;
+    return `<path id="${id}" d="${d}" class="agn-tube${n.on ? '' : ' off'}"/><path d="${d}" class="agn-tube2${n.on ? '' : ' off'}"/>${pill}`; }).join('');
+  const card = n => { const top = Math.abs(n.y - (cy - ry)) < 2, w = tall ? 114 : 122, h = 56, o = tall ? 34 : 18, x = top ? n.x + 30 : n.x > cx + 2 ? n.x - o : n.x < cx - 2 ? n.x - w + o : n.x - w / 2, y = top ? n.y - h / 2 : n.y + 20;
+    return `<g class="agn-card" transform="translate(${f(x)} ${f(y)})"><rect width="${w}" height="${h}" rx="8" class="agn-cb"/>
+      <rect x="9" y="9" width="16" height="16" rx="4" class="agn-chip"/><g transform="translate(12 12)" class="agn-ci">${ic(n.a.icon, 10)}</g>
+      <text x="31" y="23" class="agn-cv">${n.on ? n.r.score : '–'}</text><circle cx="${w - 12}" cy="17" r="3" class="agn-cd ${n.on ? n.st : 'off'}"/>
+      <text x="9" y="39" class="agn-cl">${esc(n.a.area)}<tspan class="agn-ce"> agent</tspan></text>
+      <text x="9" y="50" class="agn-cs">${n.on ? `${n.open ? n.open + ' open' : 'all clear'} · ${n.stl.toLowerCase()}` : 'paused'}</text></g>`; };
+  const on = list.filter(a => agOn(a.id)), open = on.reduce((s, a) => s + agResult(a.id).findings.filter(q => !q.done).length, 0), done = AGENTS.reduce((s, a) => s + ((agRec(a.id).done[dkey()] || []).length), 0);
+  const asks = ['Which agent needs me most?', 'What should I do next?', 'How is my week going?'];
+  return `<div class="ag-hub agn"><div class="agn-stage">
+    <div class="agn-intro"><small><i></i>KsHan · neural team</small><b>Every agent<br>reads your day.</b><span>${on.length} agents · ${open} open · ${done} done today</span></div>
+    <div class="agn-legend"><small>Legend</small>${list.map(a => `<button data-ag-sel="${a.id}"><i style="background:${AG_COLORS[a.id]}"></i>${esc(a.area)}<b>${agOn(a.id) ? agResult(a.id).score : '–'}</b></button>`).join('')}
+      <div class="agn-key"><span><i class="needs"></i>needs you</span><span><i class="watch"></i>watching</span><span><i class="ok"></i>on track</span></div></div>
+    <svg viewBox="0 0 ${W} ${H}" class="ag-hub-svg${tall ? ' tall' : ''}" role="img" aria-label="Your agent team around you">
     <defs>
-      <radialGradient id="agnCore" cx=".38" cy=".32" r=".75"><stop offset="0" style="stop-color:#F3EFEA"/><stop offset=".45" style="stop-color:#9A9592"/><stop offset=".8" style="stop-color:#3B3634"/><stop offset="1" style="stop-color:#1A1615"/></radialGradient>
-      <radialGradient id="agnHeat" cx=".5" cy=".55" r=".5"><stop offset="0" style="stop-color:var(--agn-hot);stop-opacity:.95"/><stop offset=".55" style="stop-color:var(--agn-hot);stop-opacity:.35"/><stop offset="1" style="stop-color:var(--agn-hot);stop-opacity:0"/></radialGradient>
-      <radialGradient id="agnMetal" cx=".35" cy=".3" r=".8"><stop offset="0" style="stop-color:#E9E5E1"/><stop offset=".35" style="stop-color:#8E8986"/><stop offset=".75" style="stop-color:#2E2A29"/><stop offset="1" style="stop-color:#141110"/></radialGradient>
-      <filter id="agnBlur" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="3.2"/></filter>
-      <filter id="agnNeu" x="-.3" y="-.3" width="1.6" height="1.6"><feDropShadow dx="4" dy="5" stdDeviation="5" style="flood-color:#000;flood-opacity:.55"/><feDropShadow dx="-3" dy="-3" stdDeviation="4" style="flood-color:var(--agn-lit);flood-opacity:.10"/></filter>
+      <radialGradient id="agnCore" cx=".4" cy=".35" r=".75"><stop offset="0" style="stop-color:#D9D6D4"/><stop offset=".5" style="stop-color:#A9A4A2"/><stop offset=".85" style="stop-color:#6E6866"/><stop offset="1" style="stop-color:#4A4544"/></radialGradient>
+      <radialGradient id="agnHeat" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:#FF3B30;stop-opacity:.95"/><stop offset=".5" style="stop-color:#E0282A;stop-opacity:.55"/><stop offset="1" style="stop-color:#C01E24;stop-opacity:0"/></radialGradient>
+      <radialGradient id="agnMetal" cx=".4" cy=".32" r=".8"><stop offset="0" style="stop-color:#CFCBC8"/><stop offset=".35" style="stop-color:#76716F"/><stop offset=".8" style="stop-color:#2F2B2A"/><stop offset="1" style="stop-color:#1D1A19"/></radialGradient>
+      <radialGradient id="agnFire" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:#FFF2C8"/><stop offset=".25" style="stop-color:#FFB347"/><stop offset=".6" style="stop-color:#F0472E;stop-opacity:.7"/><stop offset="1" style="stop-color:#B0201A;stop-opacity:0"/></radialGradient>
+      <filter id="agnNeu" x="-.4" y="-.4" width="1.8" height="1.8"><feDropShadow dx="5" dy="6" stdDeviation="6" style="flood-color:#A7ACB8;flood-opacity:.6"/><feDropShadow dx="-4" dy="-4" stdDeviation="5" style="flood-color:#fff;flood-opacity:1"/></filter>
+      <filter id="agnTube" x="-.2" y="-.2" width="1.4" height="1.4"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" style="flood-color:#9EA3AE;flood-opacity:.55"/></filter>
       <clipPath id="agnClip"><circle cx="${cx}" cy="${cy}" r="${CR}"/></clipPath>
     </defs>
     ${links}
     <circle cx="${cx}" cy="${cy}" r="${AR}" class="agn-track"/>${arcs}
     <g class="core" data-ag-sel="chief" tabindex="0" role="button" aria-label="${esc(displayName())}, team score ${chief.score}">
-      <circle cx="${cx}" cy="${cy}" r="${CR + 5}" class="agn-well"/>
+      <circle cx="${cx}" cy="${cy}" r="${CR + 7}" class="agn-well"/>
       <circle cx="${cx}" cy="${cy}" r="${CR}" fill="url(#agnCore)" class="agn-ball${AG.sel === 'chief' ? ' sel' : ''}"/>
-      <g clip-path="url(#agnClip)"><circle cx="${cx}" cy="${cy + 6}" r="${CR * .95}" fill="url(#agnHeat)" class="agn-heat"/>${agMesh(cx, cy, CR * .82)}</g>
-      <g class="agn-name" transform="translate(${cx} ${cy + CR + 30})"><rect x="-54" y="-15" width="108" height="34" rx="17" class="agn-cb"/><text y="1" class="agn-nt">${esc(displayName())}</text><text y="14" class="agn-ns">team ${chief.score}</text></g></g>
-    ${nodes.map(n => `<g class="node ${n.on ? n.st : 'off'}${AG.sel === n.a.id ? ' sel' : ''}" data-ag-sel="${n.a.id}" tabindex="0" role="button" aria-label="${esc(n.a.name)}, score ${n.r.score}, ${n.on ? n.stl : 'paused'}" style="--c:${AG_COLORS[n.a.id]}">
-      <circle cx="${f(n.x)}" cy="${f(n.y)}" r="25" class="agn-ring"/><circle cx="${f(n.x)}" cy="${f(n.y)}" r="21" fill="url(#agnMetal)" class="agn-orb"/>
-      <circle cx="${f(n.x + 5)}" cy="${f(n.y + 6)}" r="${(8 + (n.on ? n.r.score : 0) / 100 * 8).toFixed(1)}" class="agn-ember" filter="url(#agnBlur)"/>
-      <circle cx="${f(n.x + 5)}" cy="${f(n.y + 6)}" r="2.4" class="agn-sp"/>${card(n)}</g>`).join('')}
-  </svg></div>`;
+      <g clip-path="url(#agnClip)"><circle cx="${cx}" cy="${cy + 4}" r="${CR * .8}" fill="url(#agnHeat)" class="agn-heat"/>${agMesh(cx, cy, CR * .8)}<ellipse cx="${cx - CR * .3}" cy="${cy - CR * .42}" rx="${CR * .45}" ry="${CR * .2}" class="agn-gloss"/></g>
+      <g class="agn-name" transform="translate(${cx} ${cy + CR + 32})"><rect x="-56" y="-16" width="112" height="36" rx="18" class="agn-cb"/><text y="1" class="agn-nt">${esc(displayName())}</text><text y="14" class="agn-ns">team ${chief.score}</text></g></g>
+    ${nodes.map(n => `<g class="node ${n.on ? n.st : 'off'}${AG.sel === n.a.id ? ' sel' : ''}" data-ag-sel="${n.a.id}" tabindex="0" role="button" aria-label="${esc(n.a.name)}, score ${n.r.score}, ${n.on ? n.stl : 'paused'}">
+      <circle cx="${f(n.x)}" cy="${f(n.y)}" r="27" class="agn-ring"/><circle cx="${f(n.x)}" cy="${f(n.y)}" r="23" fill="url(#agnMetal)" class="agn-orb"/>
+      <circle cx="${f(n.x + 4)}" cy="${f(n.y + 5)}" r="${(6 + (n.on ? n.r.score : 0) / 100 * 8).toFixed(1)}" fill="url(#agnFire)" class="agn-ember"/>
+      <ellipse cx="${f(n.x - 7)}" cy="${f(n.y - 10)}" rx="9" ry="4.5" class="agn-gloss"/>${card(n)}</g>`).join('')}
+  </svg></div>
+  <div class="agn-bar"><div class="agn-nums"><div><small>Agents on</small><b>${on.length}</b></div><div><small>Open tasks</small><b>${open}</b></div><div><small>Team score</small><b class="hot">${chief.score}</b></div><div><small>Done today</small><b>${done}</b></div></div>
+    <button class="agn-ask" data-ag-ask="${esc(asks[0])}"><span>Ask about your team…</span><i>${ic('sparkles', 13)}</i></button>
+    <div class="agn-chips">${asks.map(q => `<button data-ag-ask="${esc(q)}">${esc(q)}</button>`).join('')}</div></div></div>`;
 }
 
 /* ---------- the selected agent ---------- */
@@ -256,7 +267,7 @@ function agTeamHTML(){
         ${agPanel('Activity', 'latest first', `<ul class="ag-log">${log.map(l => { const d = new Date(l.ts), a = AGENTS.find(x => x.id === l.id); return `<li><span class="num">${pad2(d.getHours())}:${pad2(d.getMinutes())}</span><span>${esc(l.msg)}</span><em style="color:${AG_COLORS[l.id] || 'var(--ag-cy)'}">${esc(a ? a.area : '')}</em></li>`; }).join('') || '<li class="none">The log fills in as agents run.</li>'}</ul>`)}
       </div>
       <div class="ag-col c">
-        ${agPanel('Your team', 'tap an agent', agHubHTML(), 'ag-hubp')}
+        ${agPanel('Your team', 'tap an agent', agHubHTML(), 'ag-hubp agn-p')}
         ${agPanel('Process', 'watch → find → act → done → review', `<div class="ag-pipe">${pipe.map(([l, v, s], i) => `<div class="ag-stage"><b class="num">${v}</b><span>${l}</span><small>${s}</small>${i < pipe.length - 1 ? '<i></i>' : ''}</div>`).join('')}</div>`)}
         ${agPanel('Roster', `${AGENTS.length} agents · ${AGENTS_LATER.length} slots for later`, `<div class="ag-roster">${AGENTS.map(a => { const r = agResult(a.id), [st, stl] = agStatus(r), on = agOn(a.id);
           return `<button class="ag-card${AG.sel === a.id ? ' sel' : ''}${on ? '' : ' off'}" data-ag-sel="${a.id}" style="--c:${AG_COLORS[a.id]}"><span class="ic">${ic(a.icon, 18)}</span><span class="t"><b>${esc(a.name)}</b><small>${esc(a.area)}</small></span><span class="ag-st ${on ? st : 'off'}"><i></i>${on ? stl : 'Paused'}</span>
@@ -273,7 +284,8 @@ function agTeamHTML(){
 function agRedraw(){ const el = document.getElementById('view-agents'); if (!el || activeTab !== 'agents') return; const y = window.scrollY; el.innerHTML = renderAgents(); window.scrollTo(0, y); }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('#agRoot [data-ag-sel], #agRoot [data-ag-go], #agRoot [data-ag-done], #agRoot [data-ag-run], #agRoot [data-ag-toggle]'); if (!t) return; e.stopPropagation();
+  const t = e.target.closest('#agRoot [data-ag-ask], #agRoot [data-ag-sel], #agRoot [data-ag-go], #agRoot [data-ag-done], #agRoot [data-ag-run], #agRoot [data-ag-toggle]'); if (!t) return; e.stopPropagation();
+  if (t.dataset.agAsk){ aiOpen('chat'); aiSend(t.dataset.agAsk); return; }
   if (t.dataset.agGo){ setTab(t.dataset.agGo, { force: true }); window.scrollTo(0, 0); return; }
   if (t.dataset.agDone){ const [id, f] = t.dataset.agDone.split(':'), rec = agRec(id), k = dkey(), d = rec.done[k] = rec.done[k] || [], i = d.indexOf(f);
     if (i >= 0) d.splice(i, 1); else { d.push(f); agLog(id, `You finished: ${(agResult(id).findings.find(x => x.id === f) || {}).t || f}.`); } AG.res = {}; save(); agRedraw(); return; }

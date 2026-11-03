@@ -4174,47 +4174,78 @@ html[data-theme="dark"] .gx-chip i{color:#E6CDB0}
 .ag-hubp{padding-bottom:6px}
 .ag-hub{position:relative}
 .ag-hub-svg{width:100%;height:auto;max-height:400px;overflow:visible}
-.ag-hub{--agn-hot:var(--ag-cy);--agn-lit:#fff}
-.ag[data-agtheme="crimson"] .ag-hub{--agn-hot:#FF4458}
-.agn .agn-link{fill:none;stroke:rgba(255,255,255,.07);stroke-width:5;stroke-linecap:round}
-.agn .agn-link2{fill:none;stroke:rgba(var(--ag-rgb),.38);stroke-width:1.3;stroke-linecap:round}
-.agn .agn-link.off,.agn .agn-link2.off{stroke-dasharray:3 6;opacity:.45}
-.agn .agn-pill{fill:var(--agn-hot);filter:drop-shadow(0 0 5px var(--agn-hot))}
-.agn .agn-pill.watch{fill:var(--ag-warn);filter:drop-shadow(0 0 5px var(--ag-warn))}
-.agn .agn-pill.ok{fill:#FFD9C8;filter:drop-shadow(0 0 4px var(--agn-hot))}
-.agn .agn-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:7}
-.agn .agn-arc{fill:none;stroke:var(--agn-hot);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 0 4px var(--agn-hot))}
-.agn .agn-arc.off{stroke:rgba(255,255,255,.18);filter:none}
+/* hub: light neumorphism, copied from the user's "creative neural dashboard" reference (same in every agents theme) */
+.ag-p.agn-p{background:#E9EAEE;box-shadow:inset 0 1px 0 #fff,0 10px 30px rgba(0,0,0,.35);color:#2B2D33}
+.ag-p.agn-p .ag-ph{border-bottom-color:rgba(40,44,56,.08)}
+.ag-p.agn-p .ag-ph::before{background:#EF4136;box-shadow:0 0 0 3px rgba(239,65,54,.12)}
+.ag-p.agn-p .ag-ph b{color:#2B2D33}.ag-p.agn-p .ag-ph>span{color:#8A8E99}
+.agn{--hot:#EF4136;container-type:inline-size;color:#2B2D33}
+.agn-stage{position:relative}
+.agn-intro{position:absolute;left:4px;top:2px;max-width:200px;display:none}
+.agn-intro small{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--hot);letter-spacing:.02em}
+.agn-intro small i{width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF8A80,#E0281E);box-shadow:0 2px 4px rgba(224,40,30,.4)}
+.agn-intro b{display:block;margin:6px 0 4px;font-size:21px;line-height:1.2;font-weight:800;color:#26282E}
+.agn-intro span{font-size:11px;color:#8A8E99}
+.agn-legend{position:absolute;right:2px;top:2px;width:150px;padding:10px 10px 8px;border-radius:10px;background:#ECEDF1;box-shadow:5px 6px 12px #C5C8D0,-5px -5px 10px #fff;display:none}
+.agn-legend small{display:block;font-size:10.5px;font-weight:700;color:#8A8E99;margin:0 0 4px}
+.agn-legend button{all:unset;display:flex;align-items:center;gap:7px;width:100%;padding:2px 0;font-size:11px;color:#4A4E58;cursor:pointer}
+.agn-legend button i{width:7px;height:7px;border-radius:50%}.agn-legend button b{margin-left:auto;font-weight:700;color:#2B2D33;font-variant-numeric:tabular-nums}
+.agn-legend button:hover{color:var(--hot)}
+.agn-key{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:7px;padding-top:6px;border-top:1px solid rgba(40,44,56,.08)}
+.agn-key span{display:flex;align-items:center;gap:4px;font-size:10px;color:#8A8E99}.agn-key i{width:6px;height:6px;border-radius:50%}
+.agn-key .needs,.agn .agn-cd.needs{background:var(--hot);fill:var(--hot)}.agn-key .watch,.agn .agn-cd.watch{background:#F2A33A;fill:#F2A33A}.agn-key .ok,.agn .agn-cd.ok{background:#3FB37F;fill:#3FB37F}.agn .agn-cd.off{fill:#B5B8C0}
+@container (min-width:860px){.agn-intro,.agn-legend{display:block}}
+.agn .agn-tube{fill:none;stroke:#F6F7F9;stroke-width:5;stroke-linecap:round;filter:url(#agnTube)}
+.agn .agn-tube2{fill:none;stroke:#fff;stroke-width:1.4;stroke-linecap:round;opacity:.9}
+.agn .agn-tube.off{stroke-dasharray:4 7}.agn .agn-tube2.off{opacity:0}
+.agn .agn-pill{fill:#F4473C;filter:drop-shadow(0 2px 3px rgba(239,65,54,.55)) drop-shadow(0 0 5px rgba(255,90,80,.6))}
+.agn .agn-pill.watch{fill:#F2A33A;filter:drop-shadow(0 2px 3px rgba(242,163,58,.55))}
+.agn .agn-pill.ok{fill:#F58A80}
+.agn .agn-track{fill:none;stroke:#F2F3F6;stroke-width:12;filter:url(#agnNeu)}
+.agn .agn-arc{fill:none;stroke:var(--hot);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 1px 3px rgba(239,65,54,.5))}
+.agn .agn-arc.off{stroke:#C9CCD3;filter:none}
 .agn .core{cursor:pointer}
-.agn .agn-well{fill:rgba(0,0,0,.35);stroke:rgba(255,255,255,.06);stroke-width:1.5;filter:url(#agnNeu)}
-.agn .agn-ball.sel{stroke:var(--agn-hot);stroke-width:2.5}
+.agn .agn-well{fill:#EEEFF2;filter:url(#agnNeu)}
+.agn .agn-ball.sel{stroke:var(--hot);stroke-width:2}
 .agn .agn-heat{animation:agnHeat 4s ease-in-out infinite}
-@keyframes agnHeat{50%{opacity:.7}}
+@keyframes agnHeat{50%{opacity:.65}}
+.agn .agn-gloss{fill:#fff;opacity:.35}
 .agn .agn-mesh{transform-box:fill-box;transform-origin:center;animation:agSpin 70s linear infinite}
-.agn .agn-mesh line.fr{stroke:rgba(20,8,8,.75);stroke-width:.8}
-.agn .agn-mesh line.bk{stroke:rgba(40,16,16,.3);stroke-width:.6}
-.agn .agn-mesh circle.fr{fill:#FFB3A8}.agn .agn-mesh circle.bk{fill:rgba(255,140,130,.35)}
-.agn .agn-mesh circle.hot{fill:#fff;filter:drop-shadow(0 0 3px var(--agn-hot)) drop-shadow(0 0 6px var(--agn-hot));animation:agnTw 3.2s ease-in-out infinite}
+.agn .agn-mesh line.fr{stroke:rgba(40,20,22,.8);stroke-width:.8}
+.agn .agn-mesh line.bk{stroke:rgba(80,30,30,.28);stroke-width:.6}
+.agn .agn-mesh circle.fr{fill:#FF6B5E}.agn .agn-mesh circle.bk{fill:rgba(200,60,50,.35)}
+.agn .agn-mesh circle.hot{fill:#fff;filter:drop-shadow(0 0 3px #FF3B30) drop-shadow(0 0 7px #FF3B30);animation:agnTw 3.2s ease-in-out infinite}
 @keyframes agnTw{50%{opacity:.35}}
-.agn .agn-cb{fill:color-mix(in srgb,var(--ag-bg) 80%,#3A2224);stroke:rgba(255,255,255,.07);stroke-width:1;filter:url(#agnNeu)}
-.agn .agn-name .agn-nt{fill:#fff;font-size:14px;font-weight:800;text-anchor:middle}
-.agn .agn-name .agn-ns{fill:var(--ag-cy);font-size:9.5px;font-weight:700;text-anchor:middle}
+.agn .agn-cb{fill:#F1F2F5;filter:url(#agnNeu)}
+.agn .agn-nt{fill:#26282E;font-size:14px;font-weight:800;text-anchor:middle}
+.agn .agn-ns{fill:var(--hot);font-size:9.5px;font-weight:700;text-anchor:middle}
 .agn .node{cursor:pointer}
-.agn .node .agn-ring{fill:rgba(0,0,0,.3);stroke:rgba(255,255,255,.07);stroke-width:1.5;filter:url(#agnNeu);transition:stroke .2s}
-.agn .node .agn-ember{fill:var(--c);opacity:.9}
-.agn .node .agn-sp{fill:#fff;opacity:.85}
-.agn .node.needs .agn-ember{animation:agnHeat 1.8s ease-in-out infinite}
-.agn .node:hover .agn-ring{stroke:rgba(255,255,255,.25)}
-.agn .node.sel .agn-ring{stroke:var(--agn-hot);stroke-width:2.5}
-.agn .node.sel .agn-cb{stroke:var(--agn-hot);stroke-opacity:.7}
-.agn .node.off{opacity:.45}
-.agn .agn-chip{fill:rgba(0,0,0,.25);stroke:var(--c);stroke-width:1.2}
-.agn .agn-ci{color:var(--c)}
-.agn .agn-cv{fill:#fff;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
-.agn .agn-cd.needs{fill:var(--ag-bad)}.agn .agn-cd.watch{fill:var(--ag-warn)}.agn .agn-cd.ok{fill:var(--ag-ok)}.agn .agn-cd.off{fill:var(--ag-ink3)}
-.agn .agn-cl{fill:var(--ag-ink);font-size:10.5px;font-weight:750}
-.agn .agn-cs{fill:var(--ag-ink3);font-weight:600}
+.agn .agn-ring{fill:#EDEEF1;filter:url(#agnNeu);stroke:transparent;stroke-width:2;transition:stroke .2s}
+.agn .agn-ember{animation:agnHeat 3s ease-in-out infinite}
+.agn .node.needs .agn-ember{animation-duration:1.6s}
+.agn .node:hover .agn-ring{stroke:rgba(239,65,54,.35)}
+.agn .node.sel .agn-ring{stroke:var(--hot)}
+.agn .node.sel .agn-cb{stroke:var(--hot);stroke-width:1.2}
+.agn .node.off{opacity:.5}
+.agn .agn-chip{fill:#FCE3E1;stroke:rgba(239,65,54,.25);stroke-width:.8}
+.agn .agn-ci{color:var(--hot)}
+.agn .agn-cv{fill:#26282E;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.agn .agn-cl{fill:#2E3138;font-size:10.5px;font-weight:750}
+.agn .agn-ce{fill:#9A9EA8;font-weight:500;font-size:9px}
+.agn .agn-cs{fill:#8A8E99;font-size:9px}
+.ag-hub-svg{width:100%;height:auto;max-height:460px;overflow:visible;display:block;margin:0 auto}
 .ag-hub-svg.tall{max-height:none}
+.ag-hub g:focus-visible{outline:none}.ag-hub g:focus-visible .agn-ring,.ag-hub g:focus-visible .agn-ball{stroke:#2B2D33;stroke-width:2}
+.agn-bar{max-width:560px;margin:8px auto 4px;padding:12px;border-radius:12px;background:#ECEDF1;box-shadow:6px 7px 14px #C5C8D0,-6px -6px 12px #fff}
+.agn-nums{display:grid;grid-template-columns:repeat(4,1fr)}
+.agn-nums div{padding:0 10px;border-left:1px solid rgba(40,44,56,.08)}.agn-nums div:first-child{border-left:0;padding-left:2px}
+.agn-nums small{display:block;font-size:10px;color:#9A9EA8}.agn-nums b{font-size:18px;font-weight:800;color:#26282E;font-variant-numeric:tabular-nums}.agn-nums b.hot{color:var(--hot)}
+.agn-ask{all:unset;box-sizing:border-box;display:flex;align-items:center;width:100%;margin-top:10px;padding:7px 7px 7px 12px;border-radius:999px;background:#E6E7EB;box-shadow:inset 3px 3px 6px #C9CCD3,inset -3px -3px 6px #fff;font-size:12px;color:#8A8E99;cursor:pointer}
+.agn-ask span{flex:1}.agn-ask i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF7A6E,#E0281E);color:#fff;box-shadow:0 3px 6px rgba(224,40,30,.4)}
+.agn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.agn-chips button{all:unset;padding:4px 10px;border-radius:999px;font-size:10.5px;color:#5A5E68;background:#ECEDF1;box-shadow:2px 2px 5px #C9CCD3,-2px -2px 5px #fff;cursor:pointer}
+.agn-chips button:hover{color:var(--hot)}
+.ag-p.agn-p :is(button,[tabindex]):focus-visible{outline:2px solid var(--hot);outline-offset:2px}
 @keyframes agFlow{to{stroke-dashoffset:-20}}
 @keyframes agSpin{to{transform:rotate(360deg)}}
 .ag-hub g:focus-visible{outline:none}.ag-hub g:focus-visible .agn-ring,.ag-hub g:focus-visible .agn-ball{stroke:#fff;stroke-width:2.5}
@@ -4562,6 +4593,7 @@ html.reduce .agx *{animation:none!important}
 .ag,.ag *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .ag svg text{pointer-events:none}
 .ag g[data-ag-sel] text,.ag g[data-agp] text{pointer-events:none}
+@container (max-width:460px){.agn-nums{grid-template-columns:repeat(2,1fr);row-gap:10px}.agn-nums div:nth-child(3){border-left:0;padding-left:2px}.agn-nums small{white-space:nowrap}}
 
 </style>
 <style data-src="src/css/glass-themes.css">
@@ -12788,46 +12820,57 @@ function agMesh(cx, cy, R){
 }
 function agHubHTML(){
   const list = AGENTS.filter(a => a.id !== 'chief'), tall = innerWidth < 700, f = n => n.toFixed(1);
-  const W = tall ? 400 : 560, H = tall ? 560 : 400, cx = W / 2, cy = tall ? 262 : 192, rx = tall ? 112 : 200, ry = tall ? 196 : 140, CR = tall ? 58 : 66, AR = CR + 15;
+  const W = tall ? 400 : 600, H = tall ? 560 : 420, cx = W / 2, cy = tall ? 262 : 200, rx = tall ? 112 : 210, ry = tall ? 196 : 148, CR = tall ? 58 : 68, AR = CR + 16;
   const still = motionOff(), chief = agResult('chief');
   const nodes = list.map((a, i) => { const t = -Math.PI / 2 + i / list.length * Math.PI * 2, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry, r = agResult(a.id), [st, stl] = agStatus(r), on = agOn(a.id);
     return { a, t, x, y, r, st, stl, on, open: r.findings.filter(q => !q.done).length }; });
   const seg = Math.PI * 2 / list.length;
-  const arcs = nodes.map(n => { const len = Math.max(.1, (seg - .16) * (n.on ? n.r.score : 0) / 100), a0 = n.t - len / 2, a1 = n.t + len / 2;
+  const arcs = nodes.map(n => { const len = Math.max(.1, (seg - .2) * (n.on ? n.r.score : 0) / 100), a0 = n.t - len / 2, a1 = n.t + len / 2;
     return `<path d="M${f(cx + Math.cos(a0) * AR)} ${f(cy + Math.sin(a0) * AR)} A${AR} ${AR} 0 0 1 ${f(cx + Math.cos(a1) * AR)} ${f(cy + Math.sin(a1) * AR)}" class="agn-arc${n.on ? '' : ' off'}"/>`; }).join('');
-  const links = nodes.map((n, i) => { const sx = cx + Math.cos(n.t) * (AR + 6), sy = cy + Math.sin(n.t) * (AR + 6), ex = n.x - Math.cos(n.t) * 24, ey = n.y - Math.sin(n.t) * 24;
-    const mx = (sx + ex) / 2, my = (sy + ey) / 2, dx = ex - sx, dy = ey - sy, L = Math.hypot(dx, dy) || 1, k = (i % 2 ? 1 : -1) * L * .16, qx = mx - dy / L * k, qy = my + dx / L * k;
+  const links = nodes.map((n, i) => { const sx = cx + Math.cos(n.t) * (AR + 4), sy = cy + Math.sin(n.t) * (AR + 4), ex = n.x - Math.cos(n.t) * 26, ey = n.y - Math.sin(n.t) * 26;
+    const mx = (sx + ex) / 2, my = (sy + ey) / 2, dx = ex - sx, dy = ey - sy, L = Math.hypot(dx, dy) || 1, k = (i % 2 ? 1 : -1) * L * .14, qx = mx - dy / L * k, qy = my + dx / L * k;
     const d = `M${f(sx)} ${f(sy)} Q${f(qx)} ${f(qy)} ${f(ex)} ${f(ey)}`, id = 'agl' + i;
-    const u = .58, px = (1 - u) ** 2 * sx + 2 * (1 - u) * u * qx + u * u * ex, py = (1 - u) ** 2 * sy + 2 * (1 - u) * u * qy + u * u * ey, ang = Math.atan2(2 * (1 - u) * (qy - sy) + 2 * u * (ey - qy), 2 * (1 - u) * (qx - sx) + 2 * u * (ex - qx)) * 180 / Math.PI;
-    const pill = !n.on ? '' : still ? `<ellipse cx="${f(px)}" cy="${f(py)}" rx="9" ry="3.4" transform="rotate(${f(ang)} ${f(px)} ${f(py)})" class="agn-pill ${n.st}"/>`
-      : `<ellipse rx="9" ry="3.4" class="agn-pill ${n.st}"><animateMotion dur="${(3.4 + i * .37).toFixed(2)}s" repeatCount="indefinite" rotate="auto" begin="${(-i * .8).toFixed(1)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#${id}"/></animateMotion></ellipse>`;
-    return `<path id="${id}" d="${d}" class="agn-link${n.on ? '' : ' off'}"/><path d="${d}" class="agn-link2${n.on ? '' : ' off'}"/>${pill}`; }).join('');
-  const card = n => { const top = Math.abs(n.y - (cy - ry)) < 2, w = tall ? 114 : 118, h = 48, o = tall ? 34 : 16, x = top ? n.x + 28 : n.x > cx + 2 ? n.x - o : n.x < cx - 2 ? n.x - w + o : n.x - w / 2, y = top ? n.y - h / 2 : n.y + 18;
-    return `<g class="agn-card" transform="translate(${f(x)} ${f(y)})"><rect width="${w}" height="${h}" rx="11" class="agn-cb"/>
-      <rect x="9" y="9" width="17" height="17" rx="5" class="agn-chip"/><g transform="translate(12.5 12.5)" class="agn-ci">${ic(n.a.icon, 10)}</g>
-      <text x="32" y="23" class="agn-cv">${n.on ? n.r.score : 'off'}</text><circle cx="${w - 12}" cy="17" r="3.2" class="agn-cd ${n.on ? n.st : 'off'}"/>
-      <text x="9" y="40" class="agn-cl">${esc(n.a.area)}<tspan class="agn-cs"> · ${n.on ? (n.open ? n.open + ' open' : 'clear') : 'paused'}</tspan></text></g>`; };
-  return `<div class="ag-hub agn"><svg viewBox="0 0 ${W} ${H}" class="ag-hub-svg${tall ? ' tall' : ''}" role="img" aria-label="Your agent team around you">
+    const u = .55, px = (1 - u) ** 2 * sx + 2 * (1 - u) * u * qx + u * u * ex, py = (1 - u) ** 2 * sy + 2 * (1 - u) * u * qy + u * u * ey, ang = Math.atan2(2 * (1 - u) * (qy - sy) + 2 * u * (ey - qy), 2 * (1 - u) * (qx - sx) + 2 * u * (ex - qx)) * 180 / Math.PI;
+    const pill = !n.on ? '' : still ? `<ellipse cx="${f(px)}" cy="${f(py)}" rx="11" ry="4" transform="rotate(${f(ang)} ${f(px)} ${f(py)})" class="agn-pill ${n.st}"/>`
+      : `<ellipse rx="11" ry="4" class="agn-pill ${n.st}"><animateMotion dur="${(3.6 + i * .37).toFixed(2)}s" repeatCount="indefinite" rotate="auto" begin="${(-i * .8).toFixed(1)}s"><mpath href="#${id}"/></animateMotion></ellipse>`;
+    return `<path id="${id}" d="${d}" class="agn-tube${n.on ? '' : ' off'}"/><path d="${d}" class="agn-tube2${n.on ? '' : ' off'}"/>${pill}`; }).join('');
+  const card = n => { const top = Math.abs(n.y - (cy - ry)) < 2, w = tall ? 114 : 122, h = 56, o = tall ? 34 : 18, x = top ? n.x + 30 : n.x > cx + 2 ? n.x - o : n.x < cx - 2 ? n.x - w + o : n.x - w / 2, y = top ? n.y - h / 2 : n.y + 20;
+    return `<g class="agn-card" transform="translate(${f(x)} ${f(y)})"><rect width="${w}" height="${h}" rx="8" class="agn-cb"/>
+      <rect x="9" y="9" width="16" height="16" rx="4" class="agn-chip"/><g transform="translate(12 12)" class="agn-ci">${ic(n.a.icon, 10)}</g>
+      <text x="31" y="23" class="agn-cv">${n.on ? n.r.score : '–'}</text><circle cx="${w - 12}" cy="17" r="3" class="agn-cd ${n.on ? n.st : 'off'}"/>
+      <text x="9" y="39" class="agn-cl">${esc(n.a.area)}<tspan class="agn-ce"> agent</tspan></text>
+      <text x="9" y="50" class="agn-cs">${n.on ? `${n.open ? n.open + ' open' : 'all clear'} · ${n.stl.toLowerCase()}` : 'paused'}</text></g>`; };
+  const on = list.filter(a => agOn(a.id)), open = on.reduce((s, a) => s + agResult(a.id).findings.filter(q => !q.done).length, 0), done = AGENTS.reduce((s, a) => s + ((agRec(a.id).done[dkey()] || []).length), 0);
+  const asks = ['Which agent needs me most?', 'What should I do next?', 'How is my week going?'];
+  return `<div class="ag-hub agn"><div class="agn-stage">
+    <div class="agn-intro"><small><i></i>KsHan · neural team</small><b>Every agent<br>reads your day.</b><span>${on.length} agents · ${open} open · ${done} done today</span></div>
+    <div class="agn-legend"><small>Legend</small>${list.map(a => `<button data-ag-sel="${a.id}"><i style="background:${AG_COLORS[a.id]}"></i>${esc(a.area)}<b>${agOn(a.id) ? agResult(a.id).score : '–'}</b></button>`).join('')}
+      <div class="agn-key"><span><i class="needs"></i>needs you</span><span><i class="watch"></i>watching</span><span><i class="ok"></i>on track</span></div></div>
+    <svg viewBox="0 0 ${W} ${H}" class="ag-hub-svg${tall ? ' tall' : ''}" role="img" aria-label="Your agent team around you">
     <defs>
-      <radialGradient id="agnCore" cx=".38" cy=".32" r=".75"><stop offset="0" style="stop-color:#F3EFEA"/><stop offset=".45" style="stop-color:#9A9592"/><stop offset=".8" style="stop-color:#3B3634"/><stop offset="1" style="stop-color:#1A1615"/></radialGradient>
-      <radialGradient id="agnHeat" cx=".5" cy=".55" r=".5"><stop offset="0" style="stop-color:var(--agn-hot);stop-opacity:.95"/><stop offset=".55" style="stop-color:var(--agn-hot);stop-opacity:.35"/><stop offset="1" style="stop-color:var(--agn-hot);stop-opacity:0"/></radialGradient>
-      <radialGradient id="agnMetal" cx=".35" cy=".3" r=".8"><stop offset="0" style="stop-color:#E9E5E1"/><stop offset=".35" style="stop-color:#8E8986"/><stop offset=".75" style="stop-color:#2E2A29"/><stop offset="1" style="stop-color:#141110"/></radialGradient>
-      <filter id="agnBlur" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="3.2"/></filter>
-      <filter id="agnNeu" x="-.3" y="-.3" width="1.6" height="1.6"><feDropShadow dx="4" dy="5" stdDeviation="5" style="flood-color:#000;flood-opacity:.55"/><feDropShadow dx="-3" dy="-3" stdDeviation="4" style="flood-color:var(--agn-lit);flood-opacity:.10"/></filter>
+      <radialGradient id="agnCore" cx=".4" cy=".35" r=".75"><stop offset="0" style="stop-color:#D9D6D4"/><stop offset=".5" style="stop-color:#A9A4A2"/><stop offset=".85" style="stop-color:#6E6866"/><stop offset="1" style="stop-color:#4A4544"/></radialGradient>
+      <radialGradient id="agnHeat" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:#FF3B30;stop-opacity:.95"/><stop offset=".5" style="stop-color:#E0282A;stop-opacity:.55"/><stop offset="1" style="stop-color:#C01E24;stop-opacity:0"/></radialGradient>
+      <radialGradient id="agnMetal" cx=".4" cy=".32" r=".8"><stop offset="0" style="stop-color:#CFCBC8"/><stop offset=".35" style="stop-color:#76716F"/><stop offset=".8" style="stop-color:#2F2B2A"/><stop offset="1" style="stop-color:#1D1A19"/></radialGradient>
+      <radialGradient id="agnFire" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:#FFF2C8"/><stop offset=".25" style="stop-color:#FFB347"/><stop offset=".6" style="stop-color:#F0472E;stop-opacity:.7"/><stop offset="1" style="stop-color:#B0201A;stop-opacity:0"/></radialGradient>
+      <filter id="agnNeu" x="-.4" y="-.4" width="1.8" height="1.8"><feDropShadow dx="5" dy="6" stdDeviation="6" style="flood-color:#A7ACB8;flood-opacity:.6"/><feDropShadow dx="-4" dy="-4" stdDeviation="5" style="flood-color:#fff;flood-opacity:1"/></filter>
+      <filter id="agnTube" x="-.2" y="-.2" width="1.4" height="1.4"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" style="flood-color:#9EA3AE;flood-opacity:.55"/></filter>
       <clipPath id="agnClip"><circle cx="${cx}" cy="${cy}" r="${CR}"/></clipPath>
     </defs>
     ${links}
     <circle cx="${cx}" cy="${cy}" r="${AR}" class="agn-track"/>${arcs}
     <g class="core" data-ag-sel="chief" tabindex="0" role="button" aria-label="${esc(displayName())}, team score ${chief.score}">
-      <circle cx="${cx}" cy="${cy}" r="${CR + 5}" class="agn-well"/>
+      <circle cx="${cx}" cy="${cy}" r="${CR + 7}" class="agn-well"/>
       <circle cx="${cx}" cy="${cy}" r="${CR}" fill="url(#agnCore)" class="agn-ball${AG.sel === 'chief' ? ' sel' : ''}"/>
-      <g clip-path="url(#agnClip)"><circle cx="${cx}" cy="${cy + 6}" r="${CR * .95}" fill="url(#agnHeat)" class="agn-heat"/>${agMesh(cx, cy, CR * .82)}</g>
-      <g class="agn-name" transform="translate(${cx} ${cy + CR + 30})"><rect x="-54" y="-15" width="108" height="34" rx="17" class="agn-cb"/><text y="1" class="agn-nt">${esc(displayName())}</text><text y="14" class="agn-ns">team ${chief.score}</text></g></g>
-    ${nodes.map(n => `<g class="node ${n.on ? n.st : 'off'}${AG.sel === n.a.id ? ' sel' : ''}" data-ag-sel="${n.a.id}" tabindex="0" role="button" aria-label="${esc(n.a.name)}, score ${n.r.score}, ${n.on ? n.stl : 'paused'}" style="--c:${AG_COLORS[n.a.id]}">
-      <circle cx="${f(n.x)}" cy="${f(n.y)}" r="25" class="agn-ring"/><circle cx="${f(n.x)}" cy="${f(n.y)}" r="21" fill="url(#agnMetal)" class="agn-orb"/>
-      <circle cx="${f(n.x + 5)}" cy="${f(n.y + 6)}" r="${(8 + (n.on ? n.r.score : 0) / 100 * 8).toFixed(1)}" class="agn-ember" filter="url(#agnBlur)"/>
-      <circle cx="${f(n.x + 5)}" cy="${f(n.y + 6)}" r="2.4" class="agn-sp"/>${card(n)}</g>`).join('')}
-  </svg></div>`;
+      <g clip-path="url(#agnClip)"><circle cx="${cx}" cy="${cy + 4}" r="${CR * .8}" fill="url(#agnHeat)" class="agn-heat"/>${agMesh(cx, cy, CR * .8)}<ellipse cx="${cx - CR * .3}" cy="${cy - CR * .42}" rx="${CR * .45}" ry="${CR * .2}" class="agn-gloss"/></g>
+      <g class="agn-name" transform="translate(${cx} ${cy + CR + 32})"><rect x="-56" y="-16" width="112" height="36" rx="18" class="agn-cb"/><text y="1" class="agn-nt">${esc(displayName())}</text><text y="14" class="agn-ns">team ${chief.score}</text></g></g>
+    ${nodes.map(n => `<g class="node ${n.on ? n.st : 'off'}${AG.sel === n.a.id ? ' sel' : ''}" data-ag-sel="${n.a.id}" tabindex="0" role="button" aria-label="${esc(n.a.name)}, score ${n.r.score}, ${n.on ? n.stl : 'paused'}">
+      <circle cx="${f(n.x)}" cy="${f(n.y)}" r="27" class="agn-ring"/><circle cx="${f(n.x)}" cy="${f(n.y)}" r="23" fill="url(#agnMetal)" class="agn-orb"/>
+      <circle cx="${f(n.x + 4)}" cy="${f(n.y + 5)}" r="${(6 + (n.on ? n.r.score : 0) / 100 * 8).toFixed(1)}" fill="url(#agnFire)" class="agn-ember"/>
+      <ellipse cx="${f(n.x - 7)}" cy="${f(n.y - 10)}" rx="9" ry="4.5" class="agn-gloss"/>${card(n)}</g>`).join('')}
+  </svg></div>
+  <div class="agn-bar"><div class="agn-nums"><div><small>Agents on</small><b>${on.length}</b></div><div><small>Open tasks</small><b>${open}</b></div><div><small>Team score</small><b class="hot">${chief.score}</b></div><div><small>Done today</small><b>${done}</b></div></div>
+    <button class="agn-ask" data-ag-ask="${esc(asks[0])}"><span>Ask about your team…</span><i>${ic('sparkles', 13)}</i></button>
+    <div class="agn-chips">${asks.map(q => `<button data-ag-ask="${esc(q)}">${esc(q)}</button>`).join('')}</div></div></div>`;
 }
 
 /* ---------- the selected agent ---------- */
@@ -12872,7 +12915,7 @@ function agTeamHTML(){
         ${agPanel('Activity', 'latest first', `<ul class="ag-log">${log.map(l => { const d = new Date(l.ts), a = AGENTS.find(x => x.id === l.id); return `<li><span class="num">${pad2(d.getHours())}:${pad2(d.getMinutes())}</span><span>${esc(l.msg)}</span><em style="color:${AG_COLORS[l.id] || 'var(--ag-cy)'}">${esc(a ? a.area : '')}</em></li>`; }).join('') || '<li class="none">The log fills in as agents run.</li>'}</ul>`)}
       </div>
       <div class="ag-col c">
-        ${agPanel('Your team', 'tap an agent', agHubHTML(), 'ag-hubp')}
+        ${agPanel('Your team', 'tap an agent', agHubHTML(), 'ag-hubp agn-p')}
         ${agPanel('Process', 'watch → find → act → done → review', `<div class="ag-pipe">${pipe.map(([l, v, s], i) => `<div class="ag-stage"><b class="num">${v}</b><span>${l}</span><small>${s}</small>${i < pipe.length - 1 ? '<i></i>' : ''}</div>`).join('')}</div>`)}
         ${agPanel('Roster', `${AGENTS.length} agents · ${AGENTS_LATER.length} slots for later`, `<div class="ag-roster">${AGENTS.map(a => { const r = agResult(a.id), [st, stl] = agStatus(r), on = agOn(a.id);
           return `<button class="ag-card${AG.sel === a.id ? ' sel' : ''}${on ? '' : ' off'}" data-ag-sel="${a.id}" style="--c:${AG_COLORS[a.id]}"><span class="ic">${ic(a.icon, 18)}</span><span class="t"><b>${esc(a.name)}</b><small>${esc(a.area)}</small></span><span class="ag-st ${on ? st : 'off'}"><i></i>${on ? stl : 'Paused'}</span>
@@ -12889,7 +12932,8 @@ function agTeamHTML(){
 function agRedraw(){ const el = document.getElementById('view-agents'); if (!el || activeTab !== 'agents') return; const y = window.scrollY; el.innerHTML = renderAgents(); window.scrollTo(0, y); }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('#agRoot [data-ag-sel], #agRoot [data-ag-go], #agRoot [data-ag-done], #agRoot [data-ag-run], #agRoot [data-ag-toggle]'); if (!t) return; e.stopPropagation();
+  const t = e.target.closest('#agRoot [data-ag-ask], #agRoot [data-ag-sel], #agRoot [data-ag-go], #agRoot [data-ag-done], #agRoot [data-ag-run], #agRoot [data-ag-toggle]'); if (!t) return; e.stopPropagation();
+  if (t.dataset.agAsk){ aiOpen('chat'); aiSend(t.dataset.agAsk); return; }
   if (t.dataset.agGo){ setTab(t.dataset.agGo, { force: true }); window.scrollTo(0, 0); return; }
   if (t.dataset.agDone){ const [id, f] = t.dataset.agDone.split(':'), rec = agRec(id), k = dkey(), d = rec.done[k] = rec.done[k] || [], i = d.indexOf(f);
     if (i >= 0) d.splice(i, 1); else { d.push(f); agLog(id, `You finished: ${(agResult(id).findings.find(x => x.id === f) || {}).t || f}.`); } AG.res = {}; save(); agRedraw(); return; }
