@@ -83,7 +83,7 @@ Three themes: Crimson (default), Teal and Blue. They run inside the app with the
 
 **Money / Progress / Train / Learn.**
 - Train: sessions with animated exercise figures.
-- Learn: IELTS essays (write in the app with a timer, word count and linking words, then score yourself on the four criteria to get a band and a trend), an IELTS plan counting down to the exam date, a Study plan with Day / Week / Month / Finished views and separate English, Engineering and Career columns, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words and career prep (Huhtamaki stages, stories, portfolio).
+- Learn: IELTS essays (write in the app with a timer, word count and linking words, then score yourself on the four criteria to get a band and a trend), an IELTS plan counting down to the exam date, a Study plan with Day / Week / Month / Finished views and separate English, Engineering and Career columns, speaking cue cards, 15 engineering knowledge packs (new: trim press faults, SPC, safe isolation), words (with a 74-word English–Burmese engineering glossary: search, hear both languages, mark known, ask Claude to explain in Burmese) and career prep (Huhtamaki stages, stories, portfolio). Each knowledge pack shows its key words in Burmese and has an "Explain in Burmese" button.
 - Money: the £25k savings plan and spending log. The savings year starts on the date set in Settings → Goals.
 - Progress: streaks and charts, and a week schedule grid (areas × days, every block marked Done, Partly, Missed, Not logged or Planned).
 

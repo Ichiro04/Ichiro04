@@ -309,3 +309,40 @@ html[data-theme="dark"] .sb-tick{color:#1b1310}
 .sb-ft{display:grid;min-width:0}.sb-ft b{font-size:13px;font-weight:750;color:var(--pw-ink)}.sb-ft small{font-size:11.5px;color:var(--pw-ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sb-fd{font-size:11.5px;font-weight:700;color:var(--pw-ink-2)}
 @media (max-width:899px){ .sb .pb-board.sb-board{display:grid;grid-template-columns:1fr;overflow:visible} .sb .pb-col{flex:none} }
+
+/* ---------- English ⇄ Burmese engineering glossary ---------- */
+.gx{margin-bottom:14px}
+.gx-prog{flex:0 0 140px;height:6px;border-radius:6px;background:rgba(127,127,127,.15);overflow:hidden}
+.gx-prog i{display:block;height:100%;background:linear-gradient(90deg,#710014,#B38F6F)}
+.gx-tools{display:grid;gap:8px;margin:12px 0 10px}
+.gx-tools input{height:38px;padding:0 14px;border-radius:12px;border:1px solid var(--pw-line-2);background:rgba(255,255,255,.6);color:var(--pw-ink);font-family:inherit;font-size:14px}
+html[data-theme="dark"] .gx-tools input{background:rgba(0,0,0,.25)}
+.gx-tools input:focus{outline:none;border-color:#B38F6F;box-shadow:0 0 0 4px rgba(179,143,111,.2)}
+.gx-chips{display:flex;gap:6px;flex-wrap:wrap}
+.gx-chips button{height:28px;padding:0 11px;border-radius:999px;font-family:inherit;font-size:12px;font-weight:700;color:var(--pw-ink-2);background:rgba(127,127,127,.09);border:0;cursor:pointer}
+.gx-chips button.on{color:#fff;background:#710014}
+html[data-theme="dark"] .gx-chips button.on{color:#161616;background:#E6CDB0}
+.gx-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:520px;overflow-y:auto;overscroll-behavior:contain}
+.gx-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--pw-panel,rgba(255,255,255,.7));box-shadow:inset 0 0 0 1px var(--pw-line)}
+html[data-theme="dark"] .gx-row{background:rgba(255,255,255,.04)}
+.gx-row.known{opacity:.7}
+.gx-t{display:grid;gap:1px;min-width:0}
+.gx-t b{font-size:14.5px;color:var(--pw-ink)}
+.gx-t span{font-size:15px;color:#8A0A1E}
+html[data-theme="dark"] .gx-t span{color:#E6CDB0}
+.gx-t small{font-size:12px;color:var(--pw-ink-3)}
+.gx-b{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:260px}
+.gx-ib{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 9px;border-radius:9px;font-family:inherit;font-size:11.5px;font-weight:700;color:var(--pw-ink-2);background:rgba(127,127,127,.1);border:0;cursor:pointer}
+.gx-ib:hover{color:var(--pw-ink);background:rgba(127,127,127,.18)}
+.gx-ib.k.on{color:#fff;background:#5E7A3A}
+.gx-none{padding:14px;text-align:center;font-size:12.5px;color:var(--pw-ink-3)}
+.gx-note{margin:10px 2px 0}
+.gx-kw{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}
+.gx-kw > .tiny{margin-right:2px}
+.gx-chip{display:inline-flex;align-items:baseline;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(138,10,30,.07);box-shadow:inset 0 0 0 1px rgba(138,10,30,.15)}
+.gx-chip b{font-size:12px;color:var(--pw-ink)}
+.gx-chip i{font-style:normal;font-size:12.5px;color:#8A0A1E}
+html[data-theme="dark"] .gx-chip{background:rgba(230,205,176,.08);box-shadow:inset 0 0 0 1px rgba(230,205,176,.18)}
+html[data-theme="dark"] .gx-chip i{color:#E6CDB0}
+.kp .row{flex-wrap:wrap}
+@media (max-width:640px){ .gx-row{grid-template-columns:1fr} .gx-b{justify-content:flex-start;max-width:none} .gx-prog{flex-basis:100%} }
