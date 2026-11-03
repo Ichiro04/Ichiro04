@@ -232,7 +232,7 @@ gold = done/best.
   gradient with a low sun glow), warm glass panels, gold edge glow and stacked glass plates on
   the highlight cards (from the weather-card and glass-component references), holographic halo
   on the now ring, neon-edged buttons and tabs, the desktop side notch (≥1180px, ring gauges with
-  pop-out cards: today, this week, savings), and the V12 digital-twin panel.
+  pop-out cards; removed 3 Nov 2026 at the user's request: no side bars), and the V12 digital-twin panel.
 - V12 digital twin: fault simulator (misfire on 5, worn big-end on 3, cam timing one tooth out)
   with health ring, alert, causes, suggestion, urgency and a live vibration trace. The model now
   has camshafts, valves that open on the right strokes, a flywheel and a belt drive.
@@ -383,3 +383,15 @@ view (zoom, edit, extrude) like their SolidWorks screenshot and engine-block dra
 - Money's "days left" in the £25k year is `366 - planDay()` (counts from `createdAt`, same as "Day N of 365").
 - Known: the embedded Lab (`lab/lab.html`) still loads three.js r128 from cdnjs and jsDelivr; offline the 3D bench has no library. It is the only network reference in the build.
 - **3 Nov 2026 additions:** IELTS countdown (`examCountHTML`), "Copy as text" on finished check-ins (`ciText`), a spending-by-category tip (`apSpendTip`; expense categories map to budget lines through `CAT_BUDGET`), "Money month" panel in monthly check-ins (`moneyMonthHTML`), tappable task chips on past calendar days (fix a missed log), packs `trim`, `spc`, `loto` with diagrams and Orbit links, 5 more interview questions, darker `--pw-ink-2/-3` in both glass skins (≥ 4.5:1 on the palest panel), and `glassWatch` (`.gl-off` drops the blur on panels that are off screen).
+
+## Wide screens and dashboards (3 Nov 2026)
+
+- **No empty landscape beside the content.** From 1400px the page uses the full width beside the rail (`wide.css`, up to 1760px). The desktop ring "notch" on the right edge is deleted (`notchHTML`, `mountNotch`, `.notch/.nring/.npop`): the user asked twice for no side bars.
+- **Insight column** (`64-render-wide.js`): `renderView` is wrapped so Train, Learn, Money and Progress move their content into `.xl-main` (`.xl-flex` keeps the two-column `tcol` layout of wide views) and add an `.xl-side` column (beside the content from 1400px, a card grid under it below that):
+  - Train: this week's sessions, tomorrow's session, last 8 weeks heat, bodyweight wave.
+  - Learn: IELTS countdown, English last 30 days (+ heat), all knowledge packs as tiles (tap opens one), today's pack.
+  - Money: spending this month against the flexible budget, where it went (donut), last 6 months, savings over time.
+  - Progress: habit strength per task, week by week, focus and sleep.
+- **Progress dashboard** (from the user's dark dashboard reference): 4 KPI tiles and a 30-day statistics area chart with Tasks / Focus / Money / Steps tabs and a hover tooltip (`progressDashHTML`, `stxChartHTML`, `stxMount`).
+- **Coach extras** (from the schedule and player-panel references): `schedHTML` (calendar: month, week strip with prev/next/today, the chosen day's blocks on a timeline with status and the current block's steps), `quickHTML` (8 quick actions) and `statusHTML` (energy, sleep, steps, tasks, focus bars). Coach lays out in 2 columns from 1180px and 3 from 1600px; Review in 3 from 1600px.
+- The Epic Pro font from a reference was not used: native fonts only, no web fonts.

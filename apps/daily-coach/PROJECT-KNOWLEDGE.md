@@ -37,6 +37,8 @@ The map's controls:
 - The KsHan title moves with the galaxy, and labels never hide under the panels.
 - "Ask AI" opens the chat over the map with suggested questions.
 
+**Wide screens.** Every tab uses the full width. Train, Learn, Money and Progress have an extra column of charts and trackers, Progress starts with number tiles and a statistics chart, and Coach and Review are laid out in columns. There are no side bars.
+
 **Review.**
 - Check-ins every 2 weeks and every month. Each one fills in the numbers itself, gives the coach's read, asks for 1–5 ratings in six areas and three short questions, and sets a focus area for the next period.
 - Calendar with each day coloured by tasks done and dots for training, English, savings and weight; tap a day to see it and write a note.
@@ -50,7 +52,7 @@ The map's controls:
 - The older 3D CAD quiz, the drawings explorer and 8-question test, the V12 engine digital twin with a fault simulator, and the test bench.
 
 **Coach AI.**
-- Top of the Coach tab: today's plan (a to-do list the autopilot builds each morning, plus your own items), tips from your numbers, this week's wave and the autopilot card. "Edit layout" moves or hides these.
+- Top of the Coach tab: today's plan, a Schedule calendar (week strip and the day's timeline), quick actions, a status card, (a to-do list the autopilot builds each morning, plus your own items), tips from your numbers, this week's wave and the autopilot card. "Edit layout" moves or hides these.
 - **Autopilot** runs inside the app (on opening, on coming back and every 15 minutes): plan, tips and check-in drafts. Switches in Settings → Autopilot. A cloud builder also works through `AUTOPILOT.md` at night and pushes code changes to GitHub.
 - A floating "Ask coach" button sits on every tab, with a mic.
 - In the chat:

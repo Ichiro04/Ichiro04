@@ -289,13 +289,16 @@ document.addEventListener('submit', e => {
 /* the Coach tab keeps its chat, with the new parts above it (order and visibility are editable) */
 const renderCoachChat = renderCoach;
 renderCoach = function(){
-  return sectionsHTML('coach', [
+  return '<div class="cv">' + sectionsHTML('coach', [
     ['plan', 'Today’s plan', apPlanHTML],
+    ['sched', 'Schedule', () => typeof schedHTML === 'function' ? schedHTML() : ''],
+    ['quick', 'Quick actions', () => typeof quickHTML === 'function' ? quickHTML() : ''],
+    ['status', 'Status', () => typeof statusHTML === 'function' ? statusHTML() : ''],
     ['tips', 'Tips from your numbers', () => apState().tips ? apTipsHTML() : ''],
     ['week', 'This week’s wave', apWeekHTML],
     ['auto', 'Autopilot', apAutoHTML],
     ['chat', 'Chat with your coach', renderCoachChat]
-  ]);
+  ]) + '</div>';
 };
 
 /* ---------- shared SVG wave chart (smooth curve, gradient fill, drifting swell) ---------- */

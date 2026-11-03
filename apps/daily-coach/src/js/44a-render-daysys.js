@@ -175,21 +175,3 @@ function dsAction(a, el){
 document.addEventListener('change', e=>{ const t = e.target; if (!t.dataset || !t.dataset.sleep) return; const r = dayRec(dkey(), true); r.sleep = r.sleep || {}; r.sleep[t.dataset.sleep] = t.value; save(); if (activeTab==='today') renderView('today'); });
 setInterval(()=>{ if (document.hidden || typeof activeTab === 'undefined' || activeTab !== 'today') return; const n = document.getElementById('nowCard'); if (n) n.outerHTML = nowCardHTML(); const u = document.getElementById('upStrip'); if (u) u.outerHTML = upNextStrip(); }, 30000);
 
-/* ---------- desktop side notch: ring gauges with pop-out cards ---------- */
-function notchHTML(){
-  const k = dkey(), tot = tasksForDay(k).length || 1, dn = countDone(k);
-  const ws = startOfWeek(), since = state.createdAt || dkey(); let bt = 0, bd = 0;
-  for (let i=0;i<7;i++){ const kk = dkey(addDays(ws,i)); if (addDays(ws,i) > new Date()) break; if (kk < since) continue; const B = dayBlocks(kk).filter(b=>!b.skip); bt += B.length; bd += B.filter(b=>blockStatus(kk,b)==='done').length; }
-  const saved = typeof savedTotal==='function' ? savedTotal() : 0, goal = Number(state.settings.goal) || 25000;
-  const ring = (pct,col,icon,label,pop) => { const r = 18, C = 2*Math.PI*r; return `<div class="nring" tabindex="0" aria-label="${label}">
-    <svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="${r}" class="t"/><circle cx="23" cy="23" r="${r}" class="f" style="stroke:${col};stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${(C*(1-clamp(pct,0,1))).toFixed(1)};filter:drop-shadow(0 0 4px ${col})"/></svg>
-    <span class="ic">${ic(icon,18)}</span><span>${Math.round(pct*100)}%</span><div class="npop" role="tooltip">${pop}</div></div>`; };
-  const bar = (p,col) => `<div class="nb"><i style="width:${Math.round(clamp(p,0,1)*100)}%;background:${col}"></i></div>`;
-  const midnight = (()=>{ const n = new Date(), m = 1440 - (n.getHours()*60+n.getMinutes()); return fmtHM(m); })();
-  return `<aside class="notch" id="notch" aria-label="Progress gauges">
-    ${ring(dn/tot,'#B3203A','flag','Today',`<b>Today</b><div class="nl"><span>Tasks</span><span>Resets in ${midnight}</span></div>${bar(dn/tot,'#B3203A')}<div class="nl"><span>${dn} of ${tot} done</span><span>${dn>=4?'streak day ✓':(4-dn)+' to streak'}</span></div>`)}
-    ${ring(bt?bd/bt:0,'#E6CDB0','target','This week',`<b>This week</b><div class="nl"><span>Day-plan blocks</span><span>Resets Monday</span></div>${bar(bt?bd/bt:0,'#E6CDB0')}<div class="nl"><span>${bd} of ${bt} blocks</span><span>${fmtHM(focusOf(k))} focus today</span></div>`)}
-    ${ring(saved/goal,'#B38F6F','pound','Savings',`<b>Savings goal</b><div class="nl"><span>${money0(saved)} of ${money0(goal)}</span><span>${Math.round(saved/goal*100)}%</span></div>${bar(saved/goal,'#B38F6F')}<div class="nl"><span>Plan year</span><span>${money0(Math.max(0,goal-saved))} to go</span></div>`)}
-  </aside>`;
-}
-function mountNotch(){ const old = document.getElementById('notch'); const html = notchHTML(); if (old) old.outerHTML = html; else document.body.insertAdjacentHTML('beforeend', html); }

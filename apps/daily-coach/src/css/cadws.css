@@ -100,7 +100,7 @@ html[data-theme="dark"] .cws-hud button.on{color:#161616;background:#D9B992}
 
 /* full screen, like a desktop CAD window */
 body.cws-open{overflow:hidden}
-body.cws-open .tabbar,body.cws-open .notch,body.cws-open .topbar{visibility:hidden}
+body.cws-open .tabbar,body.cws-open .topbar{visibility:hidden}
 .cws.full{position:fixed;inset:0;z-index:290;margin:0;border-radius:0;grid-template-rows:auto auto minmax(0,1fr);padding:calc(10px + env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))!important;
   background:var(--pw-bg,#F2F1ED);overflow:hidden}
 html[data-theme="dark"] .cws.full{background:#111}

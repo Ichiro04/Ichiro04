@@ -24,7 +24,7 @@ A scheduled Claude run works through this list at night: **one item per run**. T
 - [x] (3 Nov, cloud) Bug hunt (backlog was empty). No page errors or console errors on any tab or Orbit at 390×844 and 1440×900, including a click-through of every button. Fixed: Orbit's toolbar was 424 px wide on a 390 px phone, so the hand and fit buttons were cut off (now fits); Money said "365 days left" every day because it counted a year from today, not from the plan start (now matches "Day N of 365"); the 16 px energy dots on Today got a bigger invisible tap area; removed 4 unused declarations. Found, not fixed: the Lab test bench loads three.js from two CDNs (breaks offline and goes against the no-CDN rule); Orbit's canvas labels can run off the screen edge at 390 px; the Train form-cue (i) button is 18×24 px.
 
 ## Ideas (need the user's OK before building)
-- idea, needs OK: Today's right-edge ring panel (desktop "notch") looks like the side bar he removed from Orbit. Remove it or move its rings into the date strip?
+- [x] (3 Nov, chat) Today's right-edge ring panel removed (the user confirmed: no side bars).
 - idea, needs OK: install as a phone app (service worker + manifest) so it works offline from the home screen.
 - idea, needs OK: weekly "export my check-ins" as a Google Doc through the connected Google Drive.
 - idea, needs OK: Lab test bench works offline: bundle the 3D library into the file (adds about 600 KB) or redraw the bench with the app's own WebGL renderer, so it no longer loads three.js from a CDN.

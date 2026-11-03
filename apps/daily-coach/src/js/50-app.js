@@ -130,7 +130,6 @@ function updateChrome(){
   $('#miniTitle').textContent = (TABS.find(t=>t.id===activeTab)||{title:''}).title;
   $('#miniSince').innerHTML = `${esc(since)}${since?' · ':''}<span data-clock="Europe/London">${(()=>{ const t = tzParts('Europe/London'); return t.t + ' ' + t.abbr; })()}</span>`;
   { const sb = document.querySelector('#hero .statusbar'); if (sb) sb.outerHTML = statusBar(); }
-  if (typeof mountNotch === 'function') mountNotch();
   $('#miniMark').innerHTML = ic((TABS.find(t=>t.id===activeTab)||{icon:'today'}).icon, 19);
   $('#miniDot').style.display = activeTab==='today' && upNext() ? '' : 'none';
 }

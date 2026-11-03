@@ -13,7 +13,7 @@
 @keyframes kmIn{from{opacity:0}}
 @keyframes kmOut{to{opacity:0;transform:scale(1.02)}}
 body.km-open{overflow:hidden}
-body.km-open .tabbar,body.km-open .notch,body.km-open .topbar{visibility:hidden}
+body.km-open .tabbar,body.km-open .topbar{visibility:hidden}
 #kmCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;transition:opacity .5s,filter .6s}
 .km-vign{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
 .km.focus #kmCanvas{opacity:0;pointer-events:none}

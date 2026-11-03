@@ -4,7 +4,7 @@
    Demonic Presence #710014 · Red Prayer Flag #8A0A1E · Gold Sand #E6CDB0
    Effects from the references: gold edge glow (weather card),
    stacked glass plates and neon edges (glass components),
-   holographic sheen (soap bubble, liquid glass), side notch with
+   holographic sheen (soap bubble, liquid glass),
    ring gauges (usage panel), digital-twin panels (process monitor).
    ============================================================ */
 :root{
@@ -94,31 +94,6 @@ html[data-theme="dark"] .statusbar{background:rgba(22,22,22,.86)!important;box-s
 html[data-theme="dark"] .ds-ring.good .rf{stroke:var(--s-gold)!important;filter:drop-shadow(0 0 8px var(--s-glow))!important}
 .g-fill{stroke:url(#none);stroke:var(--pw-red)!important}
 .purple-dot{box-shadow:0 0 12px var(--s-glow)!important}
-
-/* ---------- desktop side notch with ring gauges ---------- */
-.notch{display:none}
-@media(min-width:1180px){
-  .notch{display:flex;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:55;flex-direction:column;gap:14px;align-items:center;
-    padding:22px 12px calc(22px);border-radius:26px 0 0 26px;background:#0C0C0C;box-shadow:-10px 0 40px -14px rgba(0,0,0,.7),inset 1px 0 0 rgba(230,205,176,.12)}
-  .notch::before,.notch::after{content:"";position:absolute;right:0;width:26px;height:26px;background:radial-gradient(circle at 0 0,transparent 25px,#0C0C0C 26px)}
-  .notch::before{top:-26px;background:radial-gradient(circle at 0 0,transparent 25.5px,#0C0C0C 26px)}
-  .notch::after{bottom:-26px;background:radial-gradient(circle at 0 100%,transparent 25.5px,#0C0C0C 26px)}
-  .nring{position:relative;display:grid;justify-items:center;gap:4px;cursor:default;color:#F2F1ED;font:700 12.5px var(--sans,system-ui);font-variant-numeric:tabular-nums}
-  .nring > svg{width:46px;height:46px;transform:rotate(-90deg)}
-  .nring .ic svg{width:16px!important;height:16px!important;transform:none!important}
-  .nring .t{fill:none;stroke:rgba(230,205,176,.14);stroke-width:5}
-  .nring .f{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .8s}
-  .nring .ic{position:absolute;top:15px;left:50%;transform:translateX(-50%);color:#E6CDB0;line-height:0}
-  .npop{position:absolute;right:66px;top:50%;transform:translateY(-50%) translateX(8px);width:250px;padding:12px 14px;border-radius:16px;background:#0C0C0C;color:#F2F1ED;
-    box-shadow:0 18px 40px -16px rgba(0,0,0,.8),inset 0 0 0 1px rgba(230,205,176,.12);opacity:0;pointer-events:none;transition:opacity .2s,transform .25s;text-align:left;font-weight:500}
-  .npop::after{content:"";position:absolute;right:-8px;top:50%;transform:translateY(-50%);border:8px solid transparent;border-left-color:#0C0C0C;border-right:0}
-  .nring:hover .npop,.nring:focus-within .npop,.nring:focus .npop{opacity:1;transform:translateY(-50%)}
-  .npop b{display:block;font-size:13.5px;margin-bottom:8px}
-  .npop .nl{display:flex;justify-content:space-between;font-size:11.5px;color:#B8AA9A;margin-top:8px}
-  .npop .nb{height:6px;border-radius:3px;background:rgba(230,205,176,.12);margin-top:4px;overflow:hidden}
-  .npop .nb i{display:block;height:100%;border-radius:3px}
-  .wrap{padding-right:96px!important}
-}
 
 /* ---------- digital twin panel (V12) ---------- */
 .v12-twin{margin-top:12px;padding:12px;border-radius:14px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}
