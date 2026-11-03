@@ -11,7 +11,8 @@
      history, ranking, pipeline and log pick it up by themselves.
    ============================================================ */
 const AG_W = { english:.22, career:.22, money:.2, engineering:.16, training:.1, routine:.1 }; // how much each area matters to his goals
-const AG_COLORS = { chief:'var(--ag-cy)', fit:'#FF6B81', ielts:'#B79BFF', eng:'#2EE6C5', career:'#FFC24D', money:'#7DDB6A', health:'#6FA8FF', review:'#FF9A5C' };
+// colours go through CSS variables so a theme can deepen them (the pearl theme does)
+const AG_COLORS = { chief:'var(--ag-cy)', fit:'var(--agc-fit,#FF6B81)', ielts:'var(--agc-ielts,#B79BFF)', eng:'var(--agc-eng,#2EE6C5)', career:'var(--agc-career,#FFC24D)', money:'var(--agc-money,#7DDB6A)', health:'var(--agc-health,#6FA8FF)', review:'var(--agc-review,#FF9A5C)' };
 
 function agCtx(){
   if (AG.ctx && AG.ctx.at > Date.now() - 4000) return AG.ctx;
@@ -204,8 +205,8 @@ function agHubHTML(){
       <radialGradient id="agnHeat" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:#FF3B30;stop-opacity:.95"/><stop offset=".5" style="stop-color:#E0282A;stop-opacity:.55"/><stop offset="1" style="stop-color:#C01E24;stop-opacity:0"/></radialGradient>
       <radialGradient id="agnMetal" cx=".4" cy=".32" r=".8"><stop offset="0" style="stop-color:#CFCBC8"/><stop offset=".35" style="stop-color:#76716F"/><stop offset=".8" style="stop-color:#2F2B2A"/><stop offset="1" style="stop-color:#1D1A19"/></radialGradient>
       <radialGradient id="agnFire" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:#FFF2C8"/><stop offset=".25" style="stop-color:#FFB347"/><stop offset=".6" style="stop-color:#F0472E;stop-opacity:.7"/><stop offset="1" style="stop-color:#B0201A;stop-opacity:0"/></radialGradient>
-      <filter id="agnNeu" x="-.4" y="-.4" width="1.8" height="1.8"><feDropShadow dx="5" dy="6" stdDeviation="6" style="flood-color:#A7ACB8;flood-opacity:.6"/><feDropShadow dx="-4" dy="-4" stdDeviation="5" style="flood-color:#fff;flood-opacity:1"/></filter>
-      <filter id="agnTube" x="-.2" y="-.2" width="1.4" height="1.4"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" style="flood-color:#9EA3AE;flood-opacity:.55"/></filter>
+      <filter id="agnNeu" x="-.4" y="-.4" width="1.8" height="1.8"><feDropShadow dx="5" dy="6" stdDeviation="6" style="flood-color:var(--agn-sh);flood-opacity:.85"/><feDropShadow dx="-4" dy="-4" stdDeviation="5" style="flood-color:#fff;flood-opacity:1"/></filter>
+      <filter id="agnTube" x="-.2" y="-.2" width="1.4" height="1.4"><feDropShadow dx="1.5" dy="2.5" stdDeviation="2" style="flood-color:var(--agn-sh);flood-opacity:.8"/></filter>
       <clipPath id="agnClip"><circle cx="${cx}" cy="${cy}" r="${CR}"/></clipPath>
     </defs>
     ${links}

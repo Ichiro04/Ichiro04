@@ -7,11 +7,12 @@
    Crimson (default, the app's palette), Teal (the reference), Blue.
    ============================================================ */
 const AG_PAGES = [['overview', 'Overview'], ['alerts', 'Alerts'], ['team', 'Team']];
-const AG_THEMES = [['crimson', 'Crimson'], ['teal', 'Teal'], ['blue', 'Blue']];
+const AG_THEMES = [['pearl', 'Pearl'], ['crimson', 'Crimson'], ['teal', 'Teal'], ['blue', 'Blue']];
 const AG_AREAS = [['all', 'All', null], ['English', 'English', ['English']], ['Engineering', 'Engineering', ['Engineering']], ['Career', 'Career', ['Career']], ['Training', 'Training', ['Training', 'Walking']], ['Routine', 'Routine', ['Routine']]];
 const AGP = { trend: 'all', weeks: 'all' };
 const agPage = () => state.agPage || 'overview';
-const agTheme = () => state.agTheme || 'crimson';
+// pearl became the default on 3 Nov 2026 (the user asked for it); switch existing saves once
+const agTheme = () => { if (!state.agThemeV2){ state.agThemeV2 = 1; state.agTheme = 'pearl'; } return state.agTheme || 'pearl'; };
 
 /* ---------- numbers from the day plan (works for past days too) ---------- */
 function agDay(k, cats){ const B = dayBlocks(k).filter(b => !b.skip && (!cats || cats.includes(b.cat))); let n = 0, min = 0; B.forEach(b => { if (blockStatus(k, b) === 'done'){ n++; min += b.dur; } }); return { n, of: B.length, min }; }
@@ -49,7 +50,7 @@ function agDonut(parts, size = 132){
     ${parts.map(([l, v, col]) => { const len = v / tot * c, s = `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" class="seg" style="stroke:${col}" stroke-dasharray="${Math.max(0, len - 2).toFixed(1)} ${c.toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>`; off += len; return s; }).join('')}
     <circle cx="${size / 2}" cy="${size / 2}" r="${r - 16}" class="in"/></svg><div class="c"><b class="num">${Math.round(top[1] / tot * 1000) / 10}%</b><small>${esc(top[0])}</small></div></div>`;
 }
-const AREA_COL = { English:'#B79BFF', Engineering:'#2EE6C5', Career:'#FFC24D', Training:'#FF6B81', Walking:'#FF9AA8', Routine:'#6FA8FF' };
+const AREA_COL = { English:'var(--agc-ielts,#B79BFF)', Engineering:'var(--agc-eng,#2EE6C5)', Career:'var(--agc-career,#FFC24D)', Training:'var(--agc-fit,#FF6B81)', Walking:'var(--agc-walk,#FF9AA8)', Routine:'var(--agc-health,#6FA8FF)' };
 
 /* ---------- header: angled title plate, page tabs, theme, clock ---------- */
 function agHeadHTML(){
