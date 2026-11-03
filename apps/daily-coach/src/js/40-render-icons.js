@@ -86,7 +86,7 @@ function sparkline(points, opts={}){
   const area = `${line} L${X(vals.length-1).toFixed(1)},${h} L${X(0).toFixed(1)},${h} Z`;
   const target = opts.target;
   const gid = 'sg'+(++gradSeq);
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+  return `<svg class="spkl" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
     <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#8C8278" stop-opacity=".32"/><stop offset="100%" stop-color="#8C8278" stop-opacity="0"/>
     </linearGradient></defs>

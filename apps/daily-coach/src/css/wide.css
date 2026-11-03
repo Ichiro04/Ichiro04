@@ -217,3 +217,14 @@ html.reduce .fill-card{animation:none}
 .fl-ex,.fl-q{margin:6px 0 0;font-size:13px;line-height:1.5;color:var(--pw-ink)}
 .fl-ex{font-style:italic;color:var(--pw-ink-2)}
 .fl-d summary{cursor:pointer;margin-top:8px;font-size:12.5px;font-weight:650;color:var(--cr-crimson)}
+
+/* Coach and Review in real stacked columns (65-fill.js columnize) */
+.cv.columnized,.rv.columnized{display:block!important}
+.gcols{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:0 22px;align-items:start}
+.gcol{display:flex;flex-direction:column;min-width:0}
+.gcol > .lay-sec{margin-bottom:16px}
+.gcol > .fill-card{margin-top:0;margin-bottom:16px}
+.gcol > .lay-sec > .glass,.gcol > .lay-sec > section{margin-bottom:0}
+.stx{overflow:hidden}
+.stx-x span:first-child{transform:none}
+.stx-x span:last-child{transform:translateX(-100%)}

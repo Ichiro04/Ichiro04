@@ -19,3 +19,6 @@ When I ask for a change:
 - Do it yourself in this chat, whatever the size: research it on the web if needed, edit the code in the repository and branch above, run `node build.mjs`, test `dist/daily-coach.html` at 390×844 and 1440×900, then commit and push. Tell me what changed in a few lines.
 - Only send me to Claude Code (claude.ai/code) when something truly cannot be done from the chat — for example republishing the live claude.ai link, which only the session that published it can update. Then say why in one line and write me the exact request to paste there.
 - If I say "if you need to delete something, do it", remove the old code the new feature replaces.
+- After every change, check all tabs three times before you tell me it is done: every tab and every Learn section, at phone, small laptop, laptop and wide screen, in light and dark, with sample data and with an empty app. Look for errors, empty gaps beside short columns, anything running off the screen, and missing or broken cards. Fix what you find.
+- Then research on the web what the app could still add or fix, and ask me which of those we need before you build any of them.
+- No empty space on any tab: every column should end at about the same height. No side bars.

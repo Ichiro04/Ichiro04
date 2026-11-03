@@ -10,7 +10,7 @@
    Runs again on resize. Phones (one column) are left alone.
    ============================================================ */
 const FILL = { t:0, busy:false };
-const FILL_MIN = 140;               // gaps smaller than this are fine
+const FILL_MIN = 100;               // gaps smaller than this are fine
 const fillOn = () => window.innerWidth >= 900;
 
 function fillUnits(cols){ // [[el,...], ...] groups in reading order; a .h2 starts a new group
@@ -60,8 +60,8 @@ function fillPool(tab){
     learn:   [exam, plan, sched, tips.bind(null, 0), quick, orbit, status, quote, cal, wheel],
     money:   [quick, tips.bind(null, 0), plan, status, due, cal, quote, sched],
     progress:[wheel, due, status, cal, quick, tips.bind(null, 0), quote, sched],
-    review:  [status, quick, plan, tips.bind(null, 0), sched],
-    coach:   [cal, wheel, due, exam, quote, orbit]
+    review:  [status, quick, plan, tips.bind(null, 0), week, orbit, tips.bind(null, 3), sched],
+    coach:   [cal, wheel, due, exam, quote, orbit, tips.bind(null, 4)]
   };
   return [...(pools[tab] || [status, quick, quote]), ...smalls];
 }
@@ -86,12 +86,28 @@ function fillPairs(v){ // side-by-side column pairs inside a view, innermost fir
   return pairs;
 }
 const sideBySide = (a, b) => { const r1 = a.getBoundingClientRect(), r2 = b.getBoundingClientRect(); return r1.width > 0 && r2.width > 0 && (r1.right <= r2.left + 6 || r2.right <= r1.left + 6); };
+/* Coach and Review: sections become real stacked columns (each goes to the shortest column, in order), then the columns are topped up */
+const GRID_TABS = { coach: { box:'.cv', top:[], bottom:['chat'] }, review: { box:'.rv', top:['due','exam','pulse'], bottom:[] } };
+function columnize(tab, v, pool, used){
+  const g = GRID_TABS[tab], box = g && v.querySelector(g.box); if (!box || LAYOUT_EDIT[tab]) return false;
+  const w = box.clientWidth, n = w >= 1180 ? 3 : w >= 720 ? 2 : 1; if (n < 2) return false;
+  const secs = [...box.querySelectorAll(':scope > .lay-sec')], mid = secs.filter(s => !g.top.includes(s.dataset.sec) && !g.bottom.includes(s.dataset.sec) && s.offsetHeight > 0);
+  if (mid.length < 2) return false;
+  const wrap = document.createElement('div'); wrap.className = 'gcols'; wrap.style.setProperty('--n', n);
+  const cols = Array.from({ length:n }, () => { const c = document.createElement('div'); c.className = 'gcol'; wrap.appendChild(c); return c; });
+  mid[0].before(wrap); box.classList.add('columnized');
+  mid.forEach(s => cols.reduce((m, c) => c.offsetHeight < m.offsetHeight ? c : m).appendChild(s));
+  const bottoms = secs.filter(s => g.bottom.includes(s.dataset.sec)); bottoms.forEach(s => wrap.after(s));
+  for (let pass = 0; pass < 2; pass++) cols.forEach(c => { const tall = () => Math.max(...cols.map(x => x.offsetHeight)); fillGap(() => c, () => tall() - c.offsetHeight, pool, used); });
+  return true;
+}
 function fillView(tab){
   const v = document.getElementById('view-' + tab); if (!v || v.hidden || FILL.busy) return;
   FILL.busy = true;
   try {
     v.querySelectorAll('.fill-card').forEach(x => x.remove());
     if (!fillOn()) return;
+    if (GRID_TABS[tab]){ if (!v.querySelector('.gcols')) columnize(tab, v, fillPool(tab), new Set()); return; }
     const used = new Set(), pool = fillPool(tab), pairs = fillPairs(v);
     for (let pass = 0; pass < 3; pass++) for (const [a, b, balance] of pairs){   // adding to one pair can open a gap in another, so go round again
       if (!a || !b || !sideBySide(a, b)) continue;
@@ -116,4 +132,4 @@ renderView = (orig => function(tab){
   cancelAnimationFrame(FILL.raf); FILL.raf = requestAnimationFrame(() => setTimeout(() => fillView(tab), 40));
   return r;
 })(renderView);
-window.addEventListener('resize', () => { clearTimeout(FILL.t); FILL.t = setTimeout(() => { try { fillView(activeTab); } catch(_){} }, 260); });
+window.addEventListener('resize', () => { clearTimeout(FILL.t); FILL.t = setTimeout(() => { try { if (GRID_TABS[activeTab] && !document.activeElement?.matches('input,textarea')) renderView(activeTab); else fillView(activeTab); } catch(_){} }, 260); });
