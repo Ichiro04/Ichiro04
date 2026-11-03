@@ -14,7 +14,7 @@ A one-page overview for chats in the Claude Project. The full technical notes ar
 
 ## What the app does
 
-**Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names (the small arrow at the bottom switches). Its menu scrolls up and down, so more tabs can be added. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress, Review and Coach. Settings opens from the gear in the date strip or from the rail.
+**Navigation.** On laptops and desktops a side rail on the left works in two states: slim with icons only, or wide with names (the small arrow at the bottom switches). Its menu scrolls up and down, so more tabs can be added. Phones use a bottom tab bar. The tabs are Today, Train, Learn, Lab, Money, Progress, Review, Coach and Agents (the phone tab bar scrolls sideways). Settings opens from the gear in the date strip or from the rail.
 
 **Today.**
 - The daily system: the now card with a ring timer and Done / Partly / Missed, an up-next countdown, the 3 that matter and a feel strip.
@@ -63,6 +63,17 @@ The map's controls:
   - Read-aloud answers.
   - English ⇄ Burmese translation.
 - **Token saver:** Saver (the default) gives built-in answers and calls Claude only on "Ask Claude"; Smart sends only open questions to Claude; Off never calls it. There's a daily limit (default 20), a same-day answer cache and a usage meter in Settings.
+
+**Agents.** A dark control centre for your team of agents: Chief of staff, Fitness, IELTS, Engineering, Career, Money, Sleep and routine, and Review. Each one watches its part of your data, gives a score out of 100, lists what needs doing (Open goes there, Done ticks it off) and keeps a daily score history. You'll see:
+- Team health, with a score per area.
+- "Best for you right now": the agents that can move your goals most this week (your goals weigh English and career highest, then money).
+- A hub with you in the middle.
+- The process: watch → find → act → done → review.
+- An activity log.
+- Run all and pause switches.
+- Slots for future agents (job board scout, calendar, nutrition, interview coach, builder).
+
+They run inside the app with the autopilot; nothing is sent anywhere. New agents are one entry in the code.
 
 **Money / Progress / Train / Learn.**
 - Train: sessions with animated exercise figures.
