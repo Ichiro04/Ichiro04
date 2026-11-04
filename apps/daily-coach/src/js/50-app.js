@@ -730,7 +730,7 @@ function ensureLabFrame(){
   mount.innerHTML = '<div class="glass labwrap"><iframe class="labframe" title="Mechanical engineering lab" loading="eager"></iframe></div>';
   const f = labFrame();
   f.addEventListener('load', ()=>{ syncLabTheme(); if (labPending){ try { f.contentWindow.go(labPending); } catch(e){} labPending = null; } });
-  f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';<' + '/script>');
+  f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';try{if(parent.claude)window.claude=parent.claude}catch(e){}<' + '/script>');
 }
 function showLabPane(k){
   labPane = k;

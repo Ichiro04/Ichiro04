@@ -10649,7 +10649,7 @@ function ensureLabFrame(){
   mount.innerHTML = '<div class="glass labwrap"><iframe class="labframe" title="Mechanical engineering lab" loading="eager"></iframe></div>';
   const f = labFrame();
   f.addEventListener('load', ()=>{ syncLabTheme(); if (labPending){ try { f.contentWindow.go(labPending); } catch(e){} labPending = null; } });
-  f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';<' + '/script>');
+  f.srcdoc = window.LAB_HTML.replace('<head>', '<head><script>window.LAB_START=' + JSON.stringify(labPending || 'trends') + ';try{if(parent.claude)window.claude=parent.claude}catch(e){}<' + '/script>');
 }
 function showLabPane(k){
   labPane = k;
@@ -12304,12 +12304,31 @@ async function bkAuto(){ // on open: write silently if the folder is still allow
   const h = await bkGet(); if (!h) return; BK.handle = h;
   try { if (await h.queryPermission({ mode:'readwrite' }) === 'granted') await bkWrite(h, true); } catch(_){}
 }
-function bkDownload(){ const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' }), a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `daily-coach-backup-${dkey()}.json`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); state.backup = { ...(state.backup || {}), last: dkey() }; save(); toast('Backup downloaded. Keep it in your Google Drive or email it to yourself.', 'ok', 3200); renderSetData(); }
+/* Save a file the app made. On the claude.ai link the viewer only allows this through the `downloads`
+   capability (it asks "Save file?" first); in the offline Chrome file a normal download link works. */
+let DC_DL;
+const dcDownloads = () => DC_DL || (DC_DL = (async () => { try { return window.claude && typeof window.claude.use === 'function' ? await window.claude.use('downloads') : null; } catch(_){ return null; } })());
+async function dcSave(filename, data, what = 'File'){
+  const dl = await dcDownloads();
+  if (dl){
+    try { await dl.save({ filename, data }); toast(`${what} saved.`, 'ok', 2000); return true; }
+    catch(e){ const c = e && e.code;
+      if (c === 'declined'){ toast('Save cancelled.', 'warn', 1800); return false; }
+      if (c === 'rate_limited'){ toast('A save is already waiting for you to confirm.', 'warn', 2200); return false; }
+      if (c !== 'unavailable' && c !== 'not_granted' && c !== 'capability_disabled' && c !== 'capability_removed'){ toast('That file could not be saved here. Use "Export backup" to copy it instead.', 'warn', 3000); return false; }
+      /* unavailable here: fall through to a plain download */ }
+  }
+  try { const blob = data instanceof Blob ? data : new Blob([data], { type: /\.json$/.test(filename) ? 'application/json' : 'text/plain' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); return true; }
+  catch(_){ toast('Saving files is blocked here. Use "Export backup" to copy your data instead.', 'warn', 3000); return false; }
+}
+async function bkDownload(){ const ok = await dcSave(`daily-coach-backup-${dkey()}.json`, JSON.stringify(state, null, 2), 'Backup');
+  if (ok){ state.backup = { ...(state.backup || {}), last: dkey() }; save(); renderSetData(); } }
 function backupHTML(){
   const b = state.backup || {}, last = b.last ? `${shortDate(parseKey(b.last))} (${daysBetween(b.last, dkey())} days ago)` : 'never';
   return `<div class="set-sub">Weekly backup</div>
     <div class="set-meter"><div><b>${esc(last)}</b><small>last backup</small></div><div><b>${esc(b.folder || (bkCanFolder() ? 'not chosen' : 'download'))}</b><small>${bkCanFolder() ? 'backup folder' : 'how it saves here'}</small></div></div>
-    <p class="set-note">${bkCanFolder() ? 'Choose a folder once, for example your Google Drive folder on this computer. The app then saves a dated backup there each week when you open it.' : 'This page cannot save to a folder (the claude.ai viewer and some browsers block it), so the app reminds you each week and the button downloads a backup file. Put it in your Google Drive.'}</p>
+    <p class="set-note">${bkCanFolder() ? 'Choose a folder once, for example your Google Drive folder on this computer. The app then saves a dated backup there each week when you open it.' : 'This page cannot save to a folder (the claude.ai viewer and some browsers block it), so the app reminds you each week and the button saves a dated backup file (on the claude.ai link you confirm it first). Put it in your Google Drive.'}</p>
     <div class="set-acts">${bkCanFolder() ? `<button class="set-btn" data-bk="choose">${ic('upload', 16)} ${b.folder ? 'Change folder' : 'Choose a folder'}</button><button class="set-btn" data-bk="now">${ic('check', 16)} Back up now</button>` : ''}<button class="set-btn" data-bk="download">${ic('download', 16)} Download a backup</button></div>
     ${setToggle('Weekly reminder and auto backup', 'backupAuto', state.backupAuto !== false, 'On Sundays and whenever a week has passed')}`;
 }
