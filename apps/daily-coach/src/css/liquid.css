@@ -1,0 +1,86 @@
+/* ============================================================
+   LIQUID GLASS — shared surface + motion language for the new
+   pieces: frosted glass with a light rim and a specular arc,
+   spring ("jelly") motion, squash-and-fade exits.
+   ============================================================ */
+:root{--lq-spring:cubic-bezier(.34,1.56,.64,1);--lq-ease:cubic-bezier(.2,.8,.2,1)}
+.lg{position:relative;overflow:hidden;border-radius:26px;padding:16px 16px 14px;margin:0 0 16px;
+  background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.22) 55%,rgba(255,255,255,.34));
+  -webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.4),0 1px 0 rgba(22,22,22,.04),0 24px 50px -30px rgba(70,20,20,.5)}
+.lg::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(120% 60% at 12% -10%,rgba(255,255,255,.75),transparent 46%),radial-gradient(80% 40% at 100% 120%,rgba(179,143,111,.18),transparent 60%)}
+.lg::after{content:"";position:absolute;top:-40%;left:-60%;width:40%;height:180%;pointer-events:none;transform:rotate(18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:lqSheen 9s var(--lq-ease) infinite}
+@keyframes lqSheen{0%,70%{left:-60%}100%{left:140%}}
+html[data-theme="dark"] .lg{background:linear-gradient(135deg,rgba(60,56,54,.55),rgba(26,24,24,.42) 55%,rgba(40,36,35,.5));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px rgba(242,241,237,.08),0 24px 50px -26px #000}
+html[data-theme="dark"] .lg::before{background:radial-gradient(120% 60% at 12% -10%,rgba(255,255,255,.12),transparent 46%),radial-gradient(80% 40% at 100% 120%,rgba(194,48,74,.16),transparent 60%)}
+html[data-theme="dark"] .lg::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent)}
+.lg > *{position:relative;z-index:1}
+.view.wide > .wv{flex:1 1 100%;min-width:0}
+
+/* today's wave */
+.wv-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.wv-leg{display:flex;gap:12px;font-size:11.5px;font-weight:650;color:var(--pw-ink-3);white-space:nowrap}
+.wv-leg span{display:inline-flex;align-items:center;gap:5px}
+.wv-leg i{width:12px;height:8px;border-radius:4px}
+.wv-leg i.a{background:linear-gradient(180deg,#D9BC9C,rgba(179,143,111,.25))}
+.wv-leg i.b{background:linear-gradient(180deg,#8A0A1E,rgba(138,10,30,.25))}
+.wv-stage{position:relative;height:150px;margin:0 -4px;border-radius:18px;overflow:hidden}
+#wvCanvas{display:block;width:100%;height:100%;cursor:pointer;touch-action:pan-y}
+.wv-axis{position:relative;height:16px;margin-top:2px;font-size:10.5px;font-weight:650;color:var(--pw-ink-3);font-variant-numeric:tabular-nums}
+.wv-axis span{position:absolute;transform:translateX(-50%)}
+.wv-pick{min-height:18px;margin:4px 0 2px;color:var(--pw-ink-2)!important}
+.wv-pick b{color:var(--pw-ink)}
+
+/* tips */
+.wv-tips{margin-top:10px;padding-top:12px;border-top:1px solid var(--pw-line);transition:opacity .35s,transform .45s var(--lq-ease),filter .35s}
+.wv-tips.out{opacity:0;transform:scaleY(.6) translateY(-8px);filter:blur(6px)}
+.wv-tiph{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.wv-tiph b{font-size:14px}
+.wv-hideall{margin-left:auto;font-size:12px;font-weight:700;color:var(--pw-ink-3);padding:4px 10px;border-radius:999px;transition:background .2s,color .2s}
+.wv-hideall:hover{color:var(--pw-ink);background:rgba(113,0,20,.07)}
+.wv-tipr{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.lg-chip{position:relative;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.75),rgba(255,255,255,.35));-webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.5),0 12px 26px -18px rgba(70,20,20,.45);
+  animation:lqIn .7s var(--lq-spring) both;animation-delay:calc(var(--i,0)*90ms);transition:transform .35s var(--lq-spring),box-shadow .3s}
+html[data-theme="dark"] .lg-chip{background:linear-gradient(145deg,rgba(70,64,62,.6),rgba(30,28,28,.45));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 1px rgba(242,241,237,.07),0 12px 26px -16px #000}
+.lg-chip:hover{transform:translateY(-3px) scale(1.015)}
+@keyframes lqIn{0%{opacity:0;transform:translateY(14px) scale(.9);filter:blur(8px)}60%{filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+.wv-tip{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;padding:12px}
+.wv-tip.out{animation:lqOut .38s var(--lq-ease) forwards}
+@keyframes lqOut{0%{transform:none}35%{transform:scale(1.04,.92)}100%{opacity:0;transform:scale(.7,.2) translateY(20px);filter:blur(10px)}}
+.wv-ti{width:32px;height:32px;border-radius:12px;display:grid;place-items:center;color:#710014;background:linear-gradient(145deg,#fff,#EDEAE4);box-shadow:3px 3px 8px rgba(120,90,70,.18),-2px -2px 6px rgba(255,255,255,.9)}
+html[data-theme="dark"] .wv-ti{color:#E6CDB0;background:linear-gradient(145deg,#2C2827,#1A1817);box-shadow:3px 3px 8px rgba(0,0,0,.5),-2px -2px 6px rgba(255,255,255,.04)}
+.wv-tip p{margin:0;font-size:13px;line-height:1.45;color:var(--pw-ink-2);align-self:center}
+.wv-ta{grid-column:1/-1;display:flex;align-items:center;gap:6px;margin-top:2px}
+.wv-go{height:30px;padding:0 13px;border-radius:999px;font-size:12.5px;font-weight:700;color:#F6F1EA;background:linear-gradient(180deg,#A3142C,#710014);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 6px 14px -8px rgba(113,0,20,.8);transition:transform .3s var(--lq-spring)}
+.wv-go:hover{transform:scale(1.05)}.wv-go:active{transform:scale(.96)}
+.wv-x{margin-left:auto;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--pw-ink-3);transition:background .2s,color .2s,transform .3s var(--lq-spring)}
+.wv-x:hover{color:var(--pw-ink);background:rgba(22,22,22,.06);transform:rotate(90deg)}
+
+/* rail: liquid lens that slides between items and stretches while it travels */
+@media(min-width:900px){
+  .rail-list{position:relative}
+  .rail-lens{position:absolute;left:0;right:0;top:0;height:46px;pointer-events:none;transition:transform .55s var(--lq-spring),height .3s;z-index:0}
+  .rail-lens i{position:absolute;inset:0;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(250,248,244,.72));
+    box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px rgba(179,143,111,.32),0 10px 22px -14px rgba(70,20,20,.5)}
+  html[data-theme="dark"] .rail-lens i{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.05));box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 1px rgba(201,168,130,.25)}
+  .rail-lens i.go{animation:lqStretch .55s var(--lq-ease)}
+  @keyframes lqStretch{0%{transform:scale(1,1)}35%{transform:scale(.92,1.28)}70%{transform:scale(1.04,.94)}100%{transform:scale(1,1)}}
+  .rail-i{z-index:1}
+  .rail.open .rail-i.on{background:none!important;box-shadow:none!important}
+  .rail:not(.open) .rail-lens i{left:5px;right:5px}
+  .rail-i:active .rail-ic{transform:scale(.88)}
+  html.has-refract .rail{-webkit-backdrop-filter:url(#liquidRefract) blur(20px) saturate(190%);backdrop-filter:url(#liquidRefract) blur(20px) saturate(190%)}
+  .rail::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(140% 40% at 0% 0%,rgba(255,255,255,.55),transparent 50%)}
+  html[data-theme="dark"] .rail::after{background:radial-gradient(140% 40% at 0% 0%,rgba(255,255,255,.07),transparent 50%)}
+}
+/* map controls get the same glass + spring */
+.km-dockbtn{background:linear-gradient(145deg,rgba(40,60,80,.55),rgba(8,14,20,.6))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(170,210,255,.2),0 14px 30px -12px #000!important}
+.km .glass-km{background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.01) 50%),var(--k-glass);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 1px rgba(170,210,255,.08),0 20px 50px -24px rgba(0,0,0,.9)}
+.km-side,.km-ask{transition:transform .65s var(--lq-spring),opacity .4s ease!important}
+.km-tip{animation:lqIn .6s var(--lq-spring) both!important}
+
+@media(prefers-reduced-motion:reduce){.lg::after,.lg-chip,.wv-tip.out,.rail-lens i.go{animation:none!important}.rail-lens,.lg-chip{transition:none!important}}
+html.reduce .lg::after,html.reduce .lg-chip,html.reduce .rail-lens i.go{animation:none!important}
+@media(max-width:760px){ .wv-stage{height:130px} .wv-h{flex-direction:column} .lg{border-radius:22px;padding:14px 12px 12px} }
