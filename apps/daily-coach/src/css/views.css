@@ -490,6 +490,8 @@ html.reduce .reveal-w > span{transform:none;opacity:1}
 .hero{will-change:opacity,transform}
 .kp ul li{font-feature-settings:"kern" 1}
 .ex .exhead .tgo{flex:0 0 auto}
+/* bigger invisible tap area on the 18px form-cue (i) button; looks the same */
+.ex .exhead .tgo{position:relative}.ex .exhead .tgo::after{content:"";position:absolute;inset:-8px -5px}
 button.lrow{width:100%}
 .kv button{font:inherit}
 

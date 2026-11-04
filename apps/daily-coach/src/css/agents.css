@@ -288,6 +288,8 @@ html.reduce .ag *{animation:none!important}
 .agx-right{display:flex;align-items:center;gap:14px}
 .agx-theme{display:flex;gap:6px;padding:4px;border-radius:999px;background:rgba(var(--ag-rgb),.08);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.2)}
 .agx-theme button{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;padding:0}
+/* bigger invisible tap area on the 20px theme dots (26px, measured from inside the 2px border); looks the same */
+.agx-theme button{position:relative}.agx-theme button::after{content:"";position:absolute;inset:-5px}
 .agx-theme .t-pearl{background:linear-gradient(135deg,#F2F1ED 45%,#710014 46%)}.agx-theme .t-crimson{background:linear-gradient(135deg,#C21D3A,#E6B980)}.agx-theme .t-teal{background:linear-gradient(135deg,#0A6B73,#22E2CF)}.agx-theme .t-blue{background:linear-gradient(135deg,#0B4FA8,#35D0FF)}
 .agx-theme button.on{border-color:#fff;box-shadow:0 0 8px rgba(255,255,255,.5)}
 .agx-clock{display:flex;align-items:center;gap:10px}

@@ -89,6 +89,8 @@ Rules that must not drift:
 
 0. A canvas `arc`/`ellipse` with a negative radius throws `IndexSizeError`. `00-core.js` clamps negative radii to 0 for the whole app (3 Nov 2026, after the coach orb threw while ~1 px wide); still guard tiny canvases (`orbPaint` skips anything under 8 px).
 
+0b. `body` gets state classes (`km-open`, `ai-open`, `cws-open`, `set-open`). Never style a bare class with the same name: `.km-open{display:inline-flex…}` for the Orbit tip button also matched `<body>` and made the page 668 px wide on a phone (fixed 4 Nov 2026 as `button.km-open`). Scope such rules to the element.
+
 1. **Never put `var()` inside a keyframe that animates `transform`.** CSS won't interpolate it and the
    value snaps to the end state — this is exactly what once made the tap light flare across a whole
    card. Pattern in use: a wrapper holds the final size (`--bs`), inner layers animate with fixed

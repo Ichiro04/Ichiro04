@@ -81,7 +81,7 @@ body.km-open .tabbar,body.km-open .topbar{visibility:hidden}
 .km-tipl button{display:flex;justify-content:space-between;gap:8px;width:100%;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid var(--k-line);color:var(--k-ink);font-size:12.5px;font-weight:600;cursor:pointer;text-align:left}
 .km-tipl button:hover{border-color:rgba(156,139,240,.6)}
 .km-tipl button span{color:var(--k-ink3);font-variant-numeric:tabular-nums}
-.km-open{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:999px;border:0;font-weight:700;font-size:13px;color:#F6F1EA;background:linear-gradient(180deg,#A3142C,#710014);cursor:pointer;box-shadow:0 0 22px -6px rgba(217,185,146,.8)}
+button.km-open{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:999px;border:0;font-weight:700;font-size:13px;color:#F6F1EA;background:linear-gradient(180deg,#A3142C,#710014);cursor:pointer;box-shadow:0 0 22px -6px rgba(217,185,146,.8)}
 @keyframes kmPop{from{opacity:0;transform:translateY(10px) scale(.96)}}
 
 /* ask bar */

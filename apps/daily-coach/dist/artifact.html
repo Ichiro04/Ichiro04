@@ -843,6 +843,8 @@ html.reduce .reveal-w > span{transform:none;opacity:1}
 .hero{will-change:opacity,transform}
 .kp ul li{font-feature-settings:"kern" 1}
 .ex .exhead .tgo{flex:0 0 auto}
+/* bigger invisible tap area on the 18px form-cue (i) button; looks the same */
+.ex .exhead .tgo{position:relative}.ex .exhead .tgo::after{content:"";position:absolute;inset:-8px -5px}
 button.lrow{width:100%}
 .kv button{font:inherit}
 
@@ -2110,7 +2112,7 @@ body.km-open .tabbar,body.km-open .topbar{visibility:hidden}
 .km-tipl button{display:flex;justify-content:space-between;gap:8px;width:100%;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid var(--k-line);color:var(--k-ink);font-size:12.5px;font-weight:600;cursor:pointer;text-align:left}
 .km-tipl button:hover{border-color:rgba(156,139,240,.6)}
 .km-tipl button span{color:var(--k-ink3);font-variant-numeric:tabular-nums}
-.km-open{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:999px;border:0;font-weight:700;font-size:13px;color:#F6F1EA;background:linear-gradient(180deg,#A3142C,#710014);cursor:pointer;box-shadow:0 0 22px -6px rgba(217,185,146,.8)}
+button.km-open{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:999px;border:0;font-weight:700;font-size:13px;color:#F6F1EA;background:linear-gradient(180deg,#A3142C,#710014);cursor:pointer;box-shadow:0 0 22px -6px rgba(217,185,146,.8)}
 @keyframes kmPop{from{opacity:0;transform:translateY(10px) scale(.96)}}
 
 /* ask bar */
@@ -3797,6 +3799,8 @@ html[data-theme="dark"] .pb-card{background:rgba(255,255,255,.05)}
 .pb-dots{display:flex;gap:4px;flex:1;flex-wrap:wrap}
 .pb-dot{width:12px;height:12px;border-radius:50%;padding:0;background:rgba(127,127,127,.2);box-shadow:inset 0 0 0 1px rgba(127,127,127,.15);transition:background .2s,transform .2s}
 button.pb-dot{cursor:pointer}button.pb-dot:hover{transform:scale(1.2)}
+/* bigger invisible tap area on the 12px step dots (24px tall, half the gap each side); looks the same */
+button.pb-dot{position:relative}button.pb-dot::after{content:"";position:absolute;inset:-6px -2px}
 .pb-dot.on{background:var(--st-plan);box-shadow:none}
 .pb-col.done .pb-dot.on,.sb-card .pb-dot.on{background:var(--st-done)}
 .pb-col.doing .pb-dot.on{background:var(--st-mid)}
@@ -4374,6 +4378,8 @@ html.reduce .ag *{animation:none!important}
 .agx-right{display:flex;align-items:center;gap:14px}
 .agx-theme{display:flex;gap:6px;padding:4px;border-radius:999px;background:rgba(var(--ag-rgb),.08);box-shadow:inset 0 0 0 1px rgba(var(--ag-rgb),.2)}
 .agx-theme button{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;padding:0}
+/* bigger invisible tap area on the 20px theme dots (26px, measured from inside the 2px border); looks the same */
+.agx-theme button{position:relative}.agx-theme button::after{content:"";position:absolute;inset:-5px}
 .agx-theme .t-pearl{background:linear-gradient(135deg,#F2F1ED 45%,#710014 46%)}.agx-theme .t-crimson{background:linear-gradient(135deg,#C21D3A,#E6B980)}.agx-theme .t-teal{background:linear-gradient(135deg,#0A6B73,#22E2CF)}.agx-theme .t-blue{background:linear-gradient(135deg,#0B4FA8,#35D0FF)}
 .agx-theme button.on{border-color:#fff;box-shadow:0 0 8px rgba(255,255,255,.5)}
 .agx-clock{display:flex;align-items:center;gap:10px}
