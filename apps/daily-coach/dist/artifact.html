@@ -4086,6 +4086,104 @@ html[data-theme="dark"] .gx-chip i{color:#E6CDB0}
 .kp .row{flex-wrap:wrap}
 @media (max-width:640px){ .gx-row{grid-template-columns:1fr} .gx-b{justify-content:flex-start;max-width:none} .gx-prog{flex-basis:100%} }
 
+/* ---------- sync chip and morning briefing (71-sync.js) ---------- */
+.sync-chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-size:11.5px;font-weight:700;color:var(--pw-ink-2);background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}
+.sync-chip i{width:7px;height:7px;border-radius:50%;background:var(--pw-ink-3)}
+.sync-chip.on i{background:var(--pw-green)}.sync-chip.wait i{background:var(--pw-yellow);animation:agBlink 1s ease-in-out infinite}.sync-chip.err i{background:var(--pw-red)}
+.sync-box{margin-bottom:18px}.sync-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.sync-dev{font-size:11px;color:var(--pw-ink-3)}
+.cb{margin:14px 0 0;padding:16px 18px;border-radius:16px;background:var(--pw-panel);box-shadow:inset 0 0 0 1px var(--pw-line-2);position:relative;overflow:hidden}
+.cb::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--cr-crimson,#710014),var(--cr-sand,#B38F6F))}
+.cb header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cb header b{font-size:15px;font-weight:800;color:var(--pw-ink)}.cb header small{font-size:11.5px;color:var(--pw-ink-3)}
+.cb-dot{width:9px;height:9px;border-radius:50%;background:var(--pw-red);box-shadow:0 0 0 4px color-mix(in srgb,var(--pw-red) 18%,transparent)}
+.cb.old .cb-dot{background:var(--pw-ink-3);box-shadow:none}.cb.old{opacity:.8}
+.cb-head{margin:10px 0 8px;font-size:15px;line-height:1.5;color:var(--pw-ink)}
+.cb-top{margin:0 0 6px;padding-left:22px;display:grid;gap:5px;font-size:14px;line-height:1.45;color:var(--pw-ink)}
+.cb-top li::marker{color:var(--pw-red);font-weight:800}
+.cb-more summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--pw-ink-2);margin-top:6px}
+.cb-v{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.cb-v li{display:grid;grid-template-columns:minmax(110px,auto) 1fr;gap:10px;font-size:13px;line-height:1.45;color:var(--pw-ink-2)}.cb-v b{color:var(--pw-ink)}
+.cb-note{margin:8px 0 0;font-size:12px;color:var(--pw-ink-3)}
+@media (max-width:600px){.cb-v li{grid-template-columns:1fr;gap:2px}}
+.view.wide > .cb{flex:1 1 100%;min-width:0;margin:0 0 18px}
+@media (min-width:900px){.cb{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:28px;align-items:start}.cb header,.cb-note{grid-column:1 / -1}.cb-head{grid-column:1}.cb-top{grid-column:1}.cb-more{grid-column:2;grid-row:2 / span 2}.cb-more summary{display:none}.cb-more .cb-v{margin-top:10px}}
+
+/* ---------- spaced review (69h-srs.js) ---------- */
+.srs-strip{display:flex;align-items:center;gap:14px;margin:14px 0 0;padding:12px 16px;border-radius:16px;background:var(--pw-panel);box-shadow:inset 0 0 0 1px var(--pw-line-2)}
+.view.wide > .srs-strip{flex:1 1 100%;min-width:0;margin:0 0 18px}
+.srs-ic{flex:0 0 auto;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(150deg,var(--cr-crimson,#8A0A1E),#5E0010)}
+.srs-strip.done .srs-ic{background:var(--pw-green)}
+.srs-t{flex:1 1 auto;min-width:0;display:grid}.srs-t b{font-size:14.5px;color:var(--pw-ink)}.srs-t small{font-size:12px;color:var(--pw-ink-3)}
+.srs-go{flex:0 0 auto}
+body.srs-open{overflow:hidden}
+.srs-box{position:fixed;inset:0;z-index:9000;display:grid;place-items:center;padding:16px;background:rgba(20,8,10,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.srs-in{width:min(560px,100%);max-height:100%;overflow:auto;padding:18px;border-radius:22px;background:var(--pw-panel-2,#F7F4EF);color:var(--pw-ink);box-shadow:0 30px 80px -20px rgba(0,0,0,.5);display:grid;gap:14px}
+html[data-theme="dark"] .srs-in{background:#1D1517}
+.srs-top{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--pw-ink-3)}.srs-src{flex:1;font-weight:700}
+.srs-x{all:unset;cursor:pointer;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;color:var(--pw-ink-2)}.srs-x:hover{background:var(--pw-line)}
+.srs-bar{height:4px;border-radius:4px;background:var(--pw-line);overflow:hidden}.srs-bar i{display:block;height:100%;background:var(--pw-red);transition:width .3s}
+.srs-card{position:relative;min-height:200px;padding:26px 20px;border-radius:18px;background:var(--pw-panel);box-shadow:inset 0 0 0 1px var(--pw-line-2);display:grid;align-content:center;gap:14px;text-align:center}
+.srs-f{font-size:28px;font-weight:800;line-height:1.2;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.srs-new{position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px;color:#fff;background:var(--pw-red)}
+.srs-say{all:unset;cursor:pointer;width:30px;height:30px;display:inline-grid;place-items:center;border-radius:50%;color:var(--pw-ink-2);background:var(--pw-line)}
+.srs-b{display:grid;gap:8px;padding-top:14px;border-top:1px dashed var(--pw-line-2)}
+.srs-my{margin:0;font-size:22px;line-height:1.6;display:flex;align-items:center;justify-content:center;gap:8px}
+.srs-m{margin:0;font-size:15px;line-height:1.5;color:var(--pw-ink)}.srs-ex{margin:0;font-size:13.5px;font-style:italic;color:var(--pw-ink-2)}
+.srs-hint{margin:0;font-size:13px;color:var(--pw-ink-3)}
+.srs-show{justify-self:center;min-width:220px}
+.srs-show kbd,.srs-g kbd{font:inherit;font-size:10px;opacity:.6;margin-left:6px}
+.srs-grades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.srs-g{all:unset;box-sizing:border-box;cursor:pointer;display:grid;justify-items:center;gap:2px;padding:10px 4px;border-radius:14px;background:var(--pw-panel);box-shadow:inset 0 0 0 1.5px var(--gc)}
+.srs-g b{font-size:14px;color:var(--gc)}.srs-g small{font-size:11px;color:var(--pw-ink-3)}.srs-g kbd{display:none}
+@media (hover:hover){.srs-g kbd{display:inline}}
+.srs-g:hover{background:color-mix(in srgb,var(--gc) 10%,var(--pw-panel))}
+.srs-g.g1{--gc:#C4102E}.srs-g.g2{--gc:#B9741C}.srs-g.g3{--gc:#3F8A3C}.srs-g.g4{--gc:#3F6FB0}
+.srs-end{display:grid;gap:8px;justify-items:center;text-align:center;padding:30px 10px}.srs-end b{font-size:26px}.srs-end p{margin:0;color:var(--pw-ink-2)}.srs-sub{font-size:13px}
+.srs-deck{margin-bottom:16px}
+.srs-dh{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}.srs-dh h3{margin:0 0 4px}.srs-dh p{margin:0}
+.srs-nums{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0 10px}
+.srs-nums div{padding:8px 10px;border-radius:12px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}.srs-nums b{display:block;font-size:20px;color:var(--pw-ink)}.srs-nums small{font-size:11px;color:var(--pw-ink-3)}
+.srs-np{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--pw-ink-2)}
+.srs-np button{all:unset;cursor:pointer;min-width:34px;height:28px;padding:0 8px;text-align:center;border-radius:999px;font-weight:700;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}.srs-np button.on{color:#fff;background:var(--pw-red)}
+.srs-add{margin-top:12px}.srs-add summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--pw-ink-2)}
+.srs-form{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:10px}
+.srs-form input{min-width:0;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--pw-line-2);background:var(--pw-panel-2);color:var(--pw-ink);font:inherit;font-size:13.5px}
+.srs-mine{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.srs-mine li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto;gap:10px;align-items:center;font-size:13px;padding:6px 8px;border-radius:10px;background:var(--pw-panel-2)}.srs-mine span{color:var(--pw-ink-2)}
+@media (max-width:640px){.srs-nums{grid-template-columns:repeat(3,minmax(0,1fr))}.srs-form{grid-template-columns:1fr}.srs-mine li{grid-template-columns:1fr auto}.srs-mine span{grid-column:1}.srs-f{font-size:24px}.srs-g{padding:9px 2px}}
+html.reduce .srs-bar i{transition:none}
+
+/* ---------- speaking examiner and interview coach (69i-speak.js) ---------- */
+.spk-in{width:min(640px,100%)}
+.spk-q{display:flex;align-items:flex-start;gap:10px}.spk-q p{flex:1;margin:0;font-size:20px;font-weight:750;line-height:1.35}
+.spk-bul{margin:0;padding-left:20px;display:grid;gap:3px;font-size:14px;color:var(--pw-ink-2)}
+.spk-prep{display:flex;align-items:baseline;gap:10px;font-size:13px;color:var(--pw-ink-3)}.spk-prep b{font-size:30px;color:var(--pw-red);font-variant-numeric:tabular-nums}
+.spk-notes,.spk-ans textarea{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:14px;border:1px solid var(--pw-line-2);background:var(--pw-panel);color:var(--pw-ink);font:inherit;font-size:15px;line-height:1.55;resize:vertical}
+.spk-ans{display:grid;gap:10px}
+.spk-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.spk-row .btn:last-child{margin-left:auto}
+.spk-clock{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--pw-ink-2);font-variant-numeric:tabular-nums}.spk-clock i{width:8px;height:8px;border-radius:50%;background:var(--pw-red);animation:agBlink 1.2s ease-in-out infinite}.spk-clock b{font-size:16px;color:var(--pw-ink)}.spk-clock.over b{color:var(--pw-red)}
+.spk-wc{font-size:12px;color:var(--pw-ink-3)}
+.spk-tip{margin:0;font-size:12px;color:var(--pw-ink-3)}
+[data-spk-mic][aria-pressed="true"]{color:#fff;background:var(--pw-red)}
+.spk-score{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.spk-band{display:grid;justify-items:center;padding:14px 18px;border-radius:18px;color:#fff;background:linear-gradient(150deg,#8A0A1E,#5E0010)}.spk-band b{font-size:38px;line-height:1}.spk-band small{font-size:10.5px;opacity:.85;text-align:center;max-width:110px}
+.spk-band.rough{background:var(--pw-panel);color:var(--pw-ink);box-shadow:inset 0 0 0 1px var(--pw-line-2)}.spk-band.rough small{color:var(--pw-ink-3)}
+.spk-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.spk-nums div{padding:7px 9px;border-radius:12px;background:var(--pw-panel);box-shadow:inset 0 0 0 1px var(--pw-line)}.spk-nums b{display:block;font-size:17px}.spk-nums small{font-size:10.5px;color:var(--pw-ink-3)}.spk-nums .warn b{color:var(--pw-red)}
+.spk-crit{display:grid;gap:8px}.spk-crit div{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 12px;border-radius:12px;background:var(--pw-panel)}.spk-crit span{font-weight:700}.spk-crit b{font-size:18px;color:var(--pw-red)}.spk-crit p{grid-column:1 / -1;margin:0;font-size:13px;color:var(--pw-ink-2)}
+.spk-in h4{margin:4px 0 0;font-size:14px}
+.spk-fix{margin:0;padding-left:20px;display:grid;gap:5px;font-size:14px;line-height:1.45}
+.spk-better{list-style:none;margin:0;padding:0;display:grid;gap:8px}.spk-better li{padding:10px 12px;border-radius:12px;background:var(--pw-panel);box-shadow:inset 3px 0 0 var(--pw-green)}.spk-better small{color:var(--pw-ink-3)}.spk-better p{margin:4px 0 0;font-size:14px;line-height:1.5}
+.spk-local{margin:0;padding-left:18px;display:grid;gap:5px;font-size:14px;line-height:1.45}.spk-local .warn{color:var(--pw-red)}
+.spk-ai{justify-self:start}.spk-note{margin:0;font-size:12px;color:var(--pw-ink-3)}
+.spk-tr summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--pw-ink-2)}.spk-tr div{display:grid;gap:2px;padding:8px 0;border-bottom:1px dashed var(--pw-line)}.spk-tr small{color:var(--pw-ink-3);font-size:11px}.spk-tr b{font-size:13.5px}.spk-tr p{margin:0;font-size:13.5px;color:var(--pw-ink-2);white-space:pre-wrap}
+.spk-acts{display:flex;gap:8px;justify-content:flex-end}
+.spk-launch{margin-bottom:16px}.spk-lh{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.spk-lh > div{flex:1 1 260px}.spk-lh h3{margin:0 0 4px}.spk-lh p{margin:0}
+.spk-hist{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.spk-hist li{display:grid;padding:8px 10px;border-radius:12px;background:var(--pw-panel-2);box-shadow:inset 0 0 0 1px var(--pw-line)}.spk-hist span,.spk-hist small{font-size:11px;color:var(--pw-ink-3)}.spk-hist b{font-size:15px}
+@media (max-width:640px){.spk-score{grid-template-columns:1fr}.spk-band{justify-self:start;grid-auto-flow:column;gap:10px;align-items:center}.spk-q p{font-size:18px}}
+.btn.sm{min-height:32px;padding:0 12px;font-size:12.5px;border-radius:10px}
+
 </style>
 <style data-src="src/css/agents.css">
 /* ============================================================
@@ -12875,6 +12973,7 @@ const AGENTS = [
       if (ts && ts.s !== 'done') f.push(fnd('speak', `Speaking cue card at ${ts.b.t}`, '1 minute to plan, 2 to talk', 'learn', 2));
       if (weak) f.push(fnd('weak', `Weakest area: ${({ tr:'task response', cc:'coherence', lr:'vocabulary', gra:'grammar' })[weak[0]]}`, `Average ${weak[1].toFixed(1)} in your last essays`, 'learn', 2));
       if (!ex) f.push(fnd('date', 'Set your IELTS exam date', 'A date turns practice into a plan', 'learn', 1));
+      const due = typeof srsDueCount === 'function' ? srsDueCount() : 0; if (due) f.push(fnd('srs', `${due} review cards due`, `About ${Math.max(1, Math.round(due * .2))} minutes: start it on Today`, 'today', 1));
       return { score, headline: `${es.n} essays and ${sp.n} speaking cards in 14 days${band ? `, essays averaging band ${band.toFixed(1)}` : ''}.`,
         kpis: [['Essays', `${es.n}/${es.of}`, '14 days'], ['Speaking', `${sp.n}/${sp.of}`, '14 days'], ['Band', band ? band.toFixed(1) : '–', `target ${state.settings.ieltsTarget || 7}`], ['Exam', dl == null ? 'no date' : dl + ' days', 'to go']], findings: f }; } },
   { id:'eng', name:'Engineering agent', area:'Engineering', wkey:'engineering', icon:'gears', role:'Picks your next knowledge pack and Lab practice from your weakest Orbit topics.',
@@ -12924,7 +13023,6 @@ const AGENTS_LATER = [
   ['Job board scout', 'target', 'Reads new engineering jobs near Portsmouth every morning', 'needs a job-site connection'],
   ['Calendar agent', 'calendar', 'Moves your plan blocks when your calendar changes', 'needs Google Calendar inside the app'],
   ['Nutrition agent', 'cart', 'Checks protein and spending on food together', 'needs food logging'],
-  ['Interview coach', 'mic', 'Asks interview questions out loud and scores your answers', 'needs voice practice mode'],
   ['Builder agent', 'wrench', 'Improves this app at night and pushes to GitHub', 'runs in the cloud, not in the app']
 ];
 
@@ -13690,6 +13788,359 @@ document.addEventListener('click', e => {
 renderAgents = (orig => function(){ if (AGW.play) agwStop(); return orig.apply(this, arguments); })(renderAgents);
 
 </script>
+<script data-src="src/js/69h-srs.js">
+/* ============================================================
+   SPACED REVIEW (4 Nov 2026, user chose "All four" from the next-level list)
+   - One deck from three sources: the 74 engineering words (English →
+     Burmese + meaning), IELTS band-7 words (WORDS + SRS_IELTS below) and
+     the user's own cards (mistakes, new words).
+   - Each answer is graded Again / Hard / Good / Easy and the card comes
+     back on a schedule (a light SM-2): soon when it was hard, later each
+     time it was easy. Up to state.srs.newPerDay new cards a day.
+   - Today shows a "Review" strip with what is due; the review runs
+     full-screen. Learn → Words shows the deck and takes your own cards.
+   - state.srs = { c:{ id:{ e, i, d, r, l } }, mine:[{ id, f, b, tag }],
+     log:{ 'YYYY-MM-DD':{ n, ok, nw } }, newPerDay }
+   ============================================================ */
+const SRS_IELTS = [
+  ['mitigate', 'To make a problem less severe.', 'Better training could mitigate the risk of accidents.'],
+  ['detrimental', 'Causing harm or damage.', 'Long night shifts can be detrimental to sleep.'],
+  ['substantial', 'Large in size, amount or importance.', 'The company made a substantial investment in automation.'],
+  ['inevitable', 'Certain to happen; impossible to avoid.', 'Some downtime is inevitable when a line is changed over.'],
+  ['proponent', 'A person who supports an idea.', 'Proponents of remote work point to saved travel time.'],
+  ['exacerbate', 'To make a bad situation worse.', 'Skipping maintenance only exacerbates breakdowns.'],
+  ['feasible', 'Possible and practical to do.', 'A four-day week is feasible in some factories.'],
+  ['curtail', 'To reduce or limit something.', 'The council curtailed spending on public transport.'],
+  ['unprecedented', 'Never having happened before.', 'Demand reached unprecedented levels last winter.'],
+  ['alleviate', 'To make pain or a problem easier to bear.', 'New buses could alleviate traffic in the city centre.'],
+  ['a double-edged sword', 'Something with both good and bad effects.', 'Social media is a double-edged sword for young people.'],
+  ['to a large extent', 'Mostly; in most ways.', 'I agree with this view to a large extent.'],
+  ['play a pivotal role', 'Be central to a result.', 'Teachers play a pivotal role in shaping attitudes.'],
+  ['bring about', 'To cause something to happen.', 'Technology has brought about huge changes in manufacturing.'],
+  ['in the long run', 'Over a long period of time.', 'In the long run, recycling saves money.'],
+  ['tackle', 'To deal with a difficult problem.', 'Governments must tackle air pollution in cities.'],
+  ['widen the gap', 'Make the difference between groups bigger.', 'Expensive tuition may widen the gap between rich and poor.'],
+  ['a growing number of', 'More and more people or things.', 'A growing number of people work from home.'],
+  ['it could be argued that', 'A careful way to introduce a view.', 'It could be argued that exams test memory, not skill.'],
+  ['nevertheless', 'In spite of that.', 'The plan is costly; nevertheless, it is worth trying.'],
+  ['consequently', 'As a result.', 'The machine overheated; consequently, the line stopped.'],
+  ['whereas', 'Used to compare two different facts.', 'Cities are noisy, whereas villages are quiet.'],
+  ['albeit', 'Although; even if.', 'The change was positive, albeit slow.'],
+  ['by and large', 'On the whole; generally.', 'By and large, the scheme has been a success.'],
+  ['ubiquitous', 'Found everywhere.', 'Smartphones are now ubiquitous.'],
+  ['compelling', 'Very convincing.', 'There is compelling evidence that exercise improves mood.'],
+  ['sedentary', 'Involving a lot of sitting and little movement.', 'Office work is often sedentary.'],
+  ['affluent', 'Having a lot of money.', 'Affluent countries produce more waste per person.'],
+  ['prioritise', 'To treat something as most important.', 'Schools should prioritise practical skills.'],
+  ['raise awareness', 'Help people know about an issue.', 'Campaigns can raise awareness of road safety.'],
+  ['take into account', 'To consider something when deciding.', 'Planners must take into account the cost of upkeep.'],
+  ['on the other hand', 'Introduces the opposite side.', 'On the other hand, online courses lack face-to-face contact.'],
+  ['a key factor', 'An important cause or part.', 'Price is a key factor when people choose a car.'],
+  ['in terms of', 'Talking about a particular aspect.', 'In terms of cost, trains beat planes on short trips.'],
+  ['drawback', 'A disadvantage.', 'The main drawback of solar power is the weather.'],
+  ['outweigh', 'To be greater or more important than.', 'The benefits outweigh the drawbacks.']
+];
+const SRS_SRC = { gx: 'Engineering words', ie: 'IELTS words', me: 'Your cards' };
+function srsState(){ const s = state.srs = state.srs && typeof state.srs === 'object' ? state.srs : {}; s.c = s.c || {}; s.mine = s.mine || []; s.log = s.log || {}; if (!s.newPerDay) s.newPerDay = 10; return s; }
+const srsSlug = t => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+function srsCards(){
+  const out = [];
+  (typeof GLOSS !== 'undefined' ? GLOSS : []).forEach(([en, my, mean, area]) => out.push({ id: 'gx:' + srsSlug(en), src: 'gx', f: en, b: my, m: mean, tag: area, say: en, sayB: my }));
+  (typeof WORDS !== 'undefined' ? WORDS : []).forEach(w => out.push({ id: 'ie:' + srsSlug(w.w), src: 'ie', f: w.w, m: w.d, ex: w.ex, tag: 'IELTS', say: w.w }));
+  SRS_IELTS.forEach(([w, d, ex]) => out.push({ id: 'ie:' + srsSlug(w), src: 'ie', f: w, m: d, ex, tag: 'IELTS', say: w }));
+  srsState().mine.forEach(c => out.push({ id: 'me:' + c.id, src: 'me', f: c.f, m: c.b, tag: c.tag || 'Your card', say: c.f, mine: c.id }));
+  const seen = new Set(); return out.filter(c => !seen.has(c.id) && seen.add(c.id));
+}
+const srsToday = () => dkey();
+function srsLog(){ const s = srsState(), k = srsToday(); return s.log[k] = s.log[k] || { n: 0, ok: 0, nw: 0 }; }
+function srsQueue(){
+  const s = srsState(), k = srsToday(), cards = srsCards();
+  const due = cards.filter(c => s.c[c.id] && s.c[c.id].d <= k).sort((a, b) => s.c[a.id].d.localeCompare(s.c[b.id].d));
+  const left = Math.max(0, s.newPerDay - srsLog().nw);
+  // your own cards are never held back by the daily limit
+  const fresh = cards.filter(c => !s.c[c.id] && c.src === 'me').concat(cards.filter(c => !s.c[c.id] && c.src !== 'me').slice(0, left));
+  return { due, fresh, all: due.concat(fresh) };
+}
+function srsDueCount(){ const q = srsQueue(); return q.all.length; }
+function srsCounts(){ const s = srsState(), cards = srsCards(); let nw = 0, lr = 0, mt = 0; cards.forEach(c => { const x = s.c[c.id]; if (!x) nw++; else if (x.i >= 21) mt++; else lr++; }); return { total: cards.length, nw, lr, mt }; }
+/* next interval in days for each grade (1 again, 2 hard, 3 good, 4 easy) */
+function srsNext(x, g){
+  const e = x ? x.e : 2.5, i = x ? x.i : 0, r = x ? x.r : 0;
+  if (g === 1) return { e: Math.max(1.3, e - .2), i: 0, r: 0 };
+  if (g === 2) return { e: Math.max(1.3, e - .15), i: Math.max(1, Math.round(i * 1.2) || 1), r: r + 1 };
+  if (g === 3) return { e, i: r === 0 ? 1 : r === 1 ? 3 : Math.max(i + 1, Math.round(i * e)), r: r + 1 };
+  return { e: e + .15, i: r === 0 ? 4 : Math.max(i + 2, Math.round(i * e * 1.3)), r: r + 1 };
+}
+const srsIvl = d => d === 0 ? 'now' : d === 1 ? '1 day' : d < 30 ? `${d} days` : d < 365 ? `${Math.round(d / 30)} mo` : `${(d / 365).toFixed(1)} yr`;
+function srsGrade(id, g){
+  const s = srsState(), x = s.c[id], isNew = !x, n = srsNext(x, g), lg = srsLog();
+  s.c[id] = { e: +n.e.toFixed(2), i: n.i, r: n.r, l: (x ? x.l || 0 : 0) + (g === 1 ? 1 : 0), d: dkey(addDays(new Date(), n.i)) };
+  lg.n++; if (g > 1) lg.ok++; if (isNew) lg.nw++;
+  Object.keys(s.log).forEach(d => { if (daysBetween(d, srsToday()) > 120) delete s.log[d]; });
+  save();
+}
+function srsDaysStreak(){ const s = srsState(); let n = 0; for (let i = 0; i < 365; i++){ const d = dkey(addDays(new Date(), -i)), l = s.log[d]; if (l && l.n) n++; else if (i > 0) break; } return n; }
+
+/* ---------- Today strip ---------- */
+function srsTodayHTML(){
+  const q = srsQueue(), lg = srsLog(), n = q.all.length, mins = Math.max(1, Math.round(n * .2));
+  return `<section class="srs-strip${n ? '' : ' done'}" id="srsStrip" aria-label="Spaced review">
+    <span class="srs-ic">${ic('rotate', 18)}</span>
+    <div class="srs-t"><b>${n ? `Review · ${n} card${n === 1 ? '' : 's'} due` : 'Review done for today'}</b>
+      <small>${n ? `${q.due.length} to repeat, ${q.fresh.length} new · about ${mins} min` : `${lg.n} reviewed today, ${lg.n ? Math.round(lg.ok / lg.n * 100) : 0}% remembered · ${srsDaysStreak()}-day review streak`}</small></div>
+    ${n ? '<button class="btn btn-deep srs-go" data-srs-start>Start review</button>' : '<button class="btn btn-soft srs-go" data-srs-start="extra">Review more</button>'}</section>`;
+}
+
+/* ---------- full-screen review ---------- */
+const SRSR = { q: [], i: 0, show: false, n: 0, ok: 0, again: new Set() };
+function srsOpen(extra){
+  const q = srsQueue(); let list = q.all;
+  if (extra && !list.length){ const s = srsState(); list = srsCards().filter(c => s.c[c.id]).sort((a, b) => s.c[a.id].d.localeCompare(s.c[b.id].d)).slice(0, 15); }
+  if (!list.length){ toast('Nothing to review yet. New cards come tomorrow.', 'ok', 2000); return; }
+  Object.assign(SRSR, { q: list.slice(), i: 0, show: false, n: 0, ok: 0, again: new Set() });
+  document.getElementById('srsBox')?.remove();
+  document.body.insertAdjacentHTML('beforeend', `<div class="srs-box" id="srsBox" role="dialog" aria-modal="true" aria-label="Spaced review"><div class="srs-in" id="srsIn"></div></div>`);
+  document.body.classList.add('srs-open'); srsDraw();
+}
+function srsClose(){ document.getElementById('srsBox')?.remove(); document.body.classList.remove('srs-open'); try { if (activeTab === 'today' || activeTab === 'learn') renderView(activeTab); } catch(_){} }
+function srsDraw(){
+  const box = document.getElementById('srsIn'); if (!box) return;
+  const c = SRSR.q[SRSR.i];
+  if (!c){
+    box.innerHTML = `<div class="srs-end"><b>Done</b><p>${SRSR.n} cards · ${SRSR.n ? Math.round(SRSR.ok / SRSR.n * 100) : 0}% remembered · ${srsDaysStreak()}-day review streak</p>
+      <p class="srs-sub">Cards you found hard come back sooner. See you tomorrow.</p><button class="btn btn-deep" data-srs-close>Close</button></div>`; return;
+  }
+  const x = srsState().c[c.id], pct = Math.round(SRSR.i / SRSR.q.length * 100);
+  box.innerHTML = `<header class="srs-top"><span class="srs-src">${esc(SRS_SRC[c.src])} · ${esc(c.tag || '')}</span><span>${SRSR.i + 1} of ${SRSR.q.length}</span><button class="srs-x" data-srs-close aria-label="Close review">${ic('x', 18)}</button></header>
+    <div class="srs-bar"><i style="width:${pct}%"></i></div>
+    <div class="srs-card${SRSR.show ? ' open' : ''}">
+      <div class="srs-f">${esc(c.f)}<button class="srs-say" data-srs-say="f" aria-label="Hear it">${ic('wave', 16)}</button></div>
+      ${!x ? '<span class="srs-new">New</span>' : ''}
+      ${SRSR.show ? `<div class="srs-b">${c.b ? `<p class="srs-my" lang="my">${esc(c.b)}${c.sayB ? `<button class="srs-say" data-srs-say="b" aria-label="Hear the Burmese">${ic('wave', 14)}</button>` : ''}</p>` : ''}${c.m ? `<p class="srs-m">${esc(c.m)}</p>` : ''}${c.ex ? `<p class="srs-ex">“${esc(c.ex)}”</p>` : ''}</div>` : `<p class="srs-hint">${c.src === 'gx' ? 'Say the Burmese and what it means, then check.' : c.src === 'me' ? 'Recall your answer, then check.' : 'Say what it means and use it in a sentence, then check.'}</p>`}
+    </div>
+    ${SRSR.show ? `<div class="srs-grades">${[[1, 'Again'], [2, 'Hard'], [3, 'Good'], [4, 'Easy']].map(([g, l]) => `<button class="srs-g g${g}" data-srs-g="${g}"><b>${l}</b><small>${srsIvl(srsNext(x, g).i)}</small><kbd>${g}</kbd></button>`).join('')}</div>`
+      : `<button class="btn btn-deep srs-show" data-srs-show>Show answer <kbd>Space</kbd></button>`}`;
+}
+function srsAnswer(g){
+  const c = SRSR.q[SRSR.i]; if (!c) return;
+  srsGrade(c.id, g); SRSR.n++; if (g > 1) SRSR.ok++;
+  if (g === 1 && !SRSR.again.has(c.id)){ SRSR.again.add(c.id); SRSR.q.push(c); }       // once more at the end
+  SRSR.i++; SRSR.show = false; srsDraw();
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-srs-start],[data-srs-close],[data-srs-show],[data-srs-g],[data-srs-say],[data-srs-add],[data-srs-del],[data-srs-np]'); if (!t) return; e.stopPropagation();
+  if (t.hasAttribute('data-srs-start')) return srsOpen(t.dataset.srsStart === 'extra');
+  if (t.hasAttribute('data-srs-close')) return srsClose();
+  if (t.hasAttribute('data-srs-show')){ SRSR.show = true; return srsDraw(); }
+  if (t.dataset.srsG) return srsAnswer(+t.dataset.srsG);
+  if (t.dataset.srsSay){ const c = SRSR.q[SRSR.i]; if (c) aiSpeak(t.dataset.srsSay === 'b' ? c.sayB : c.say, true); return; }
+  if (t.hasAttribute('data-srs-add')){ const f = document.getElementById('srsAddF'), b = document.getElementById('srsAddB'); if (!f || !f.value.trim() || !b.value.trim()){ toast('Write both sides of the card.', 'warn', 1800); return; }
+    srsState().mine.unshift({ id: Date.now().toString(36), f: f.value.trim().slice(0, 160), b: b.value.trim().slice(0, 400), tag: 'Your card', at: dkey() }); save(); toast('Card added. It comes up in your next review.', 'ok', 1800); renderView(activeTab); return; }
+  if (t.dataset.srsDel){ const s = srsState(); if (t.dataset.armed !== '1'){ t.dataset.armed = '1'; t.textContent = 'Tap again to remove'; return; } s.mine = s.mine.filter(c => c.id !== t.dataset.srsDel); delete s.c['me:' + t.dataset.srsDel]; save(); renderView(activeTab); return; }
+  if (t.dataset.srsNp){ srsState().newPerDay = +t.dataset.srsNp; save(); renderView(activeTab); }
+});
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('srsBox')) return;
+  if (e.key === 'Escape') return srsClose();
+  if (e.key === ' ' && !SRSR.show){ e.preventDefault(); SRSR.show = true; return srsDraw(); }
+  if (SRSR.show && /^[1-4]$/.test(e.key)) srsAnswer(+e.key);
+});
+
+/* ---------- Learn → Words: the deck ---------- */
+function srsDeckHTML(){
+  const c = srsCounts(), q = srsQueue(), s = srsState(), lg = srsLog();
+  return `<section class="card srs-deck"><div class="srs-dh"><div><h3>Review deck</h3><p class="muted">Engineering words, IELTS words and your own cards come back just before you would forget them.</p></div>
+      <button class="btn btn-deep" data-srs-start${q.all.length ? '' : '="extra"'}>${q.all.length ? `Review ${q.all.length} now` : 'Review more'}</button></div>
+    <div class="srs-nums"><div><b>${c.total}</b><small>cards</small></div><div><b>${c.nw}</b><small>not seen yet</small></div><div><b>${c.lr}</b><small>learning</small></div><div><b>${c.mt}</b><small>remembered 3 weeks +</small></div><div><b>${lg.n}</b><small>reviewed today</small></div></div>
+    <div class="srs-np"><span>New cards a day</span>${[5, 10, 20].map(n => `<button class="${s.newPerDay === n ? 'on' : ''}" data-srs-np="${n}" aria-pressed="${s.newPerDay === n}">${n}</button>`).join('')}</div>
+    <details class="srs-add"><summary>Add your own card · a mistake or a new word</summary>
+      <div class="srs-form"><input id="srsAddF" maxlength="160" placeholder="Front, e.g. “I am agree” or “tolerance stack-up”" aria-label="Front of the card"><input id="srsAddB" maxlength="400" placeholder="Back, e.g. “I agree” or what it means" aria-label="Back of the card"><button class="btn btn-deep" data-srs-add>Add card</button></div>
+      ${s.mine.length ? `<ul class="srs-mine">${s.mine.slice(0, 30).map(m => `<li><b>${esc(m.f)}</b><span>${esc(m.b)}</span><button class="btn btn-soft sm" data-srs-del="${esc(m.id)}">Remove</button></li>`).join('')}</ul>` : ''}</details></section>`;
+}
+learnWordsHTML = (orig => function(){ return srsDeckHTML() + orig.apply(this, arguments); })(learnWordsHTML);
+// Today: the review strip sits right under the Morning letter
+mvHTML = (orig => function(){ return orig.apply(this, arguments) + srsTodayHTML(); })(mvHTML);
+
+</script>
+<script data-src="src/js/69i-speak.js">
+/* ============================================================
+   SPEAKING EXAMINER + INTERVIEW COACH (4 Nov 2026, from the next-level list)
+   - IELTS Speaking mock: Part 1 (4 short questions), Part 2 (cue card,
+     1 minute to prepare, 2 minutes to talk), Part 3 (3 discussion
+     questions). Interview mode: 5 questions for operator and engineering
+     roles. Answers are typed or dictated (the claude.ai viewer blocks the
+     page's own mic, so the phone keyboard mic or Win+H is used there).
+   - Results on this device, no AI needed: speaking time, words per
+     minute, filler words, word variety, linking words, short answers and
+     a rough band from those numbers (clearly marked as rough).
+   - "Score it with Claude": one Claude answer marks fluency and
+     coherence, vocabulary, grammar (and interview structure) with the
+     examiner's criteria, plus fixes and better versions. Pronunciation
+     cannot be judged from text, and the app says so.
+   - Saved to state.ielts.mocks (last 20) and shown as a history.
+   ============================================================ */
+const SPK_P1 = [
+  'Do you work or are you a student?', 'What do you like most about your job?', 'Where do you live at the moment?', 'What do you like about living in Southsea?',
+  'How do you usually spend your weekends?', 'Do you prefer mornings or evenings? Why?', 'How often do you use your phone each day?', 'What kind of food do you like to cook?',
+  'Do you enjoy walking? Where do you go?', 'Is it easy to learn a new language? Why?', 'What did you study at university?', 'Do you like the weather where you live?',
+  'How do you relax after a long shift?', 'Do you prefer to work alone or in a team?', 'What do you usually do in the evenings?', 'Have you ever learned to fix something yourself?'
+];
+const SPK_P3 = [
+  'Why do some people find it hard to learn new skills as adults?', 'Should companies pay for their workers to keep learning?', 'How will automation change factory jobs in the next twenty years?',
+  'Is practical experience more valuable than a degree? Why?', 'Do people today rely too much on technology?', 'What makes a good place to work?',
+  'Should young people move abroad for work? What are the risks?', 'How can cities be made healthier places to live?', 'Why is it important to save money when you are young?'
+];
+const SPK_INT = [
+  'Tell me about yourself and why you are applying for this role.', 'Describe a time you found a fault on a machine. What did you do?',
+  'How do you make sure the quality is right during a shift?', 'Tell me about a time you worked under pressure to hit a target.',
+  'What would you do if you saw a colleague ignoring a safety rule?', 'Why do you want to work in manufacturing?',
+  'Describe a time you had to learn something technical quickly.', 'How do you handle a stoppage that you cannot fix yourself?',
+  'Tell me about a mistake you made at work and what you learned.', 'Where do you see yourself in three years?'
+];
+const SPK_FILL = ['um', 'uh', 'er', 'erm', 'you know', 'i mean', 'basically', 'actually', 'kind of', 'sort of', 'like i said', 'and so on', 'stuff like that'];
+const SPK_LINK = ['however', 'although', 'whereas', 'on the other hand', 'for example', 'for instance', 'because', 'therefore', 'as a result', 'in addition', 'moreover', 'firstly', 'secondly', 'finally', 'to be honest', 'in my opinion', 'i would say', 'that said', 'which means', 'so that', 'instead', 'while'];
+const SP = { mode: 'ielts', steps: [], i: 0, t0: 0, prep: 0, timer: 0, rec: null, res: null, busy: false };
+const spkPick = (arr, n, seed) => { const a = arr.slice(), out = []; let s = seed; while (out.length < n && a.length){ s = (s * 9301 + 49297) % 233280; out.push(a.splice(Math.floor(s / 233280 * a.length), 1)[0]); } return out; };
+function spkMocks(){ state.ielts = state.ielts || {}; return state.ielts.mocks = state.ielts.mocks || []; }
+
+function spkStart(mode){
+  const seed = Date.now() % 233280, cue = CUE_CARDS[(seed >> 3) % CUE_CARDS.length];
+  SP.mode = mode; SP.i = 0; SP.res = null; SP.busy = false;
+  SP.steps = mode === 'ielts'
+    ? [...spkPick(SPK_P1, 4, seed).map(q => ({ part: 1, q, target: [20, 60] })),
+       { part: 2, q: cue.q, bullets: cue.bullets, prep: 60, talk: 120, target: [150, 260] },
+       ...[cue.follow, ...spkPick(SPK_P3, 2, seed + 7)].map(q => ({ part: 3, q, target: [45, 120] }))]
+    : spkPick(SPK_INT, 5, seed).map(q => ({ part: 'I', q, target: [90, 220] }));
+  SP.steps.forEach(s => { s.a = ''; s.secs = 0; s.notes = ''; });
+  document.getElementById('spkBox')?.remove();
+  document.body.insertAdjacentHTML('beforeend', `<div class="srs-box spk-box" id="spkBox" role="dialog" aria-modal="true" aria-label="${mode === 'ielts' ? 'IELTS speaking test' : 'Interview practice'}"><div class="srs-in spk-in" id="spkIn"></div></div>`);
+  document.body.classList.add('srs-open'); spkStep();
+}
+function spkClose(){ clearInterval(SP.timer); spkMicStop(); document.getElementById('spkBox')?.remove(); document.body.classList.remove('srs-open'); try { if (activeTab === 'learn') renderView('learn'); } catch(_){} }
+const spkLabel = s => s.part === 'I' ? 'Interview' : `Part ${s.part}`;
+function spkStep(){
+  clearInterval(SP.timer); const box = document.getElementById('spkIn'); if (!box) return;
+  const s = SP.steps[SP.i]; if (!s){ spkFinish(); return; }
+  const prepping = s.part === 2 && !s.started, pct = Math.round(SP.i / SP.steps.length * 100);
+  box.innerHTML = `<header class="srs-top"><span class="srs-src">${SP.mode === 'ielts' ? 'IELTS Speaking' : 'Interview practice'} · ${spkLabel(s)}</span><span>${SP.i + 1} of ${SP.steps.length}</span><button class="srs-x" data-spk-close aria-label="Stop the test">${ic('x', 18)}</button></header>
+    <div class="srs-bar"><i style="width:${pct}%"></i></div>
+    <div class="spk-q"><p>${esc(s.q)}</p><button class="srs-say" data-spk-say aria-label="Hear the question">${ic('wave', 16)}</button></div>
+    ${s.bullets ? `<ul class="spk-bul">${s.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+    ${prepping ? `<div class="spk-prep"><b id="spkClock">1:00</b><span>to prepare. Write a few notes; you will not be marked on them.</span></div>
+        <textarea id="spkNotes" class="spk-notes" rows="3" placeholder="Notes: 3 or 4 words for each point">${esc(s.notes)}</textarea>
+        <button class="btn btn-deep" data-spk-talk>Start talking now</button>`
+      : `<div class="spk-ans"><textarea id="spkA" rows="${s.part === 2 ? 8 : 5}" placeholder="Say your answer with your keyboard’s mic, or type it as you would say it.">${esc(s.a)}</textarea>
+        <div class="spk-row"><span class="spk-clock"><i></i><b id="spkClock">0:00</b>${s.talk ? ` of ${Math.floor(s.talk / 60)}:00` : ''}</span><span class="spk-wc" id="spkWc">0 words</span>${spkMicOK() ? `<button class="btn btn-soft sm" data-spk-mic aria-pressed="false">${ic('mic', 14)} Mic</button>` : ''}
+        <button class="btn btn-deep" data-spk-next>${SP.i === SP.steps.length - 1 ? 'Finish' : 'Next question'}</button></div>
+        <p class="spk-tip">${s.part === 1 ? 'Aim for 2 to 4 sentences: answer, reason, example.' : s.part === 2 ? 'Cover every point. Keep going until the 2 minutes are up.' : s.part === 3 ? 'Give a view, explain why, compare two sides, give an example.' : 'Use STAR: situation, task, action, result. About 1 to 2 minutes.'}${spkMicOK() ? '' : ' On claude.ai use your phone keyboard’s mic, Win+H on Windows or Fn twice on a Mac.'}</p></div>`}`;
+  const start = Date.now(), base = prepping ? 0 : s.secs;
+  if (prepping){ let left = s.prep; SP.timer = setInterval(() => { left--; const c = document.getElementById('spkClock'); if (c) c.textContent = `0:${pad2(Math.max(0, left))}`; if (left <= 0){ s.notes = (document.getElementById('spkNotes') || {}).value || s.notes; s.started = true; spkStep(); } }, 1000); }
+  else {
+    const ta = document.getElementById('spkA'), wc = document.getElementById('spkWc'), upd = () => { const n = spkWords(ta.value).length; wc.textContent = `${n} word${n === 1 ? '' : 's'}`; s.a = ta.value; };
+    ta.addEventListener('input', upd); upd(); setTimeout(() => ta.focus(), 50);
+    SP.timer = setInterval(() => { s.secs = base + Math.round((Date.now() - start) / 1000); const c = document.getElementById('spkClock'); if (!c) return; c.textContent = `${Math.floor(s.secs / 60)}:${pad2(s.secs % 60)}`; if (s.talk && s.secs >= s.talk) c.parentElement.classList.add('over'); }, 1000);
+    if (s.part !== 2 && !s.heard){ s.heard = true; aiSpeak(s.q, true); }
+  }
+}
+const spkWords = t => (String(t).toLowerCase().match(/[a-z']+/g) || []);
+function spkStats(steps){
+  const all = steps.map(s => s.a || '').join(' '), w = spkWords(all), secs = steps.reduce((a, s) => a + (s.secs || 0), 0), low = ' ' + all.toLowerCase().replace(/[^a-z' ]+/g, ' ') + ' ';
+  const fillers = {}; SPK_FILL.forEach(f => { const n = low.split(' ' + f + ' ').length - 1; if (n) fillers[f] = n; });
+  const links = SPK_LINK.filter(l => low.includes(' ' + l + ' '));
+  const uniq = new Set(w.filter(x => x.length > 3)).size, long = w.filter(x => x.length > 3).length;
+  const short = steps.filter(s => spkWords(s.a).length < s.target[0]).map(s => spkLabel(s));
+  const wpm = secs > 20 ? Math.round(w.length / (secs / 60)) : null, variety = long ? Math.round(uniq / long * 100) : 0, fN = Object.values(fillers).reduce((a, b) => a + b, 0);
+  // rough band from text only: length, variety, linking, fillers
+  let band = 5; if (w.length > 350) band += .5; if (w.length > 600) band += .5; if (variety > 55) band += .5; if (variety > 68) band += .5; if (links.length >= 5) band += .5; if (links.length >= 9) band += .5; if (fN > 6) band -= .5; if (short.length > 2) band -= .5;
+  return { words: w.length, secs, wpm, variety, links, fillers, fN, short, band: Math.max(4, Math.min(8, band)) };
+}
+function spkFinish(){
+  clearInterval(SP.timer); spkMicStop();
+  const st = spkStats(SP.steps), rec = { id: Date.now().toString(36), date: dkey(), kind: SP.mode, local: st, band: SP.mode === 'ielts' ? st.band : null,
+    qa: SP.steps.map(s => ({ part: s.part, q: s.q, a: String(s.a || '').slice(0, 2000), secs: s.secs })) };
+  const m = spkMocks(); m.push(rec); state.ielts.mocks = m.slice(-20); save(); SP.res = rec; spkResults();
+}
+function spkResults(){
+  const box = document.getElementById('spkIn'), r = SP.res; if (!box || !r) return;
+  const st = r.local, c = r.claude, mmss = s => `${Math.floor(s / 60)}:${pad2(s % 60)}`;
+  box.innerHTML = `<header class="srs-top"><span class="srs-src">${r.kind === 'ielts' ? 'IELTS Speaking' : 'Interview practice'} · results</span><button class="srs-x" data-spk-close aria-label="Close">${ic('x', 18)}</button></header>
+    <div class="spk-score">${c && c.overall != null ? `<div class="spk-band"><b>${esc(String(c.overall))}</b><small>${r.kind === 'ielts' ? 'band, marked by Claude' : 'out of 5, marked by Claude'}</small></div>` : r.kind === 'ielts' ? `<div class="spk-band rough"><b>${st.band.toFixed(1)}</b><small>rough band from the text only</small></div>` : ''}
+      <div class="spk-nums"><div><b>${st.words}</b><small>words</small></div><div><b>${mmss(st.secs)}</b><small>speaking time</small></div><div><b>${st.wpm || '–'}</b><small>words a minute</small></div><div><b>${st.variety}%</b><small>word variety</small></div><div><b>${st.links.length}</b><small>linking phrases</small></div><div class="${st.fN > 6 ? 'warn' : ''}"><b>${st.fN}</b><small>filler words</small></div></div></div>
+    ${c ? `<div class="spk-crit">${(c.criteria || []).map(k => `<div><span>${esc(k.name || '')}</span><b>${esc(String(k.score ?? ''))}</b><p>${esc(k.note || '')}</p></div>`).join('')}</div>
+      ${c.fixes && c.fixes.length ? `<h4>Fix these first</h4><ol class="spk-fix">${c.fixes.map(f => `<li>${esc(f)}</li>`).join('')}</ol>` : ''}
+      ${c.better && c.better.length ? `<h4>Better versions</h4><ul class="spk-better">${c.better.map(b => `<li><small>${esc(b.q || '')}</small><p>${esc(b.answer || '')}</p></li>`).join('')}</ul>` : ''}
+      <p class="spk-note">Pronunciation cannot be marked from text. Record yourself on your phone and listen for word endings and stress.</p>`
+    : `<ul class="spk-local">${st.short.length ? `<li class="warn">Too short: ${esc(Object.entries(st.short.reduce((o, x) => (o[x] = (o[x] || 0) + 1, o), {})).map(([k, n]) => n > 1 ? `${n} answers in ${k}` : `1 answer in ${k}`).join(', '))}. Add a reason and an example.</li>` : '<li>Every answer was long enough.</li>'}
+        ${st.fN ? `<li class="${st.fN > 6 ? 'warn' : ''}">Fillers: ${esc(Object.entries(st.fillers).map(([f, n]) => `“${f}” ×${n}`).join(', '))}. Pause instead.</li>` : '<li>No filler words. Good.</li>'}
+        <li>${st.links.length ? `Linking phrases used: ${esc(st.links.slice(0, 8).join(', '))}.` : 'No linking phrases yet: try “for example”, “however”, “as a result”.'}</li>
+        ${st.wpm ? `<li>${st.wpm < 90 ? 'Slow pace: aim for 110 to 150 words a minute.' : st.wpm > 170 ? 'Fast pace: slow down a little so every word is clear.' : 'Your pace is natural.'}</li>` : ''}</ul>
+      <button class="btn btn-deep spk-ai" data-spk-ai ${SP.busy ? 'disabled' : ''}>${SP.busy ? 'Claude is marking…' : 'Score it with Claude'}</button><p class="spk-note">Uses one Claude answer. Claude marks the criteria, lists fixes and writes better versions of your weakest answers.</p>`}
+    <details class="spk-tr"><summary>Your answers</summary>${r.qa.map(x => `<div><small>${x.part === 'I' ? 'Interview' : 'Part ' + x.part} · ${mmss(x.secs || 0)}</small><b>${esc(x.q)}</b><p>${esc(x.a || '(no answer)')}</p></div>`).join('')}</details>
+    <div class="spk-acts"><button class="btn btn-soft" data-spk-start="${r.kind}">Try another</button><button class="btn btn-deep" data-spk-close>Done</button></div>`;
+}
+async function spkClaude(){
+  const r = SP.res; if (!r || SP.busy) return;
+  if (state.aiMode === 'off'){ toast('Claude is switched off in Settings → Coach and voice.', 'warn', 2400); return; }
+  if (!aiOnline()){ toast('Claude marking works on the live claude.ai link. The numbers above are still yours.', 'warn', 3200); return; }
+  const u = aiUsage(); if (u.calls >= aiCap()) toast(`Over today’s limit of ${aiCap()} Claude answers, but you asked for this one.`, 'warn', 2200);
+  SP.busy = true; spkResults();
+  const ielts = r.kind === 'ielts', tr = r.qa.map(x => `[${x.part === 'I' ? 'Q' : 'Part ' + x.part}] ${x.q}\nA (${x.secs}s): ${x.a || '(no answer)'}`).join('\n\n');
+  const prompt = ielts
+    ? `You are a strict but kind IELTS Speaking examiner. The candidate is a Burmese mechanical engineering graduate working in UK manufacturing, aiming for band 7. Answers were spoken and transcribed (or typed), so ignore spelling and punctuation. Mark only from what is written; do not guess pronunciation.\n\n${tr}\n\nReply with JSON only, no other text, in this shape:\n{"overall": band to the nearest 0.5, "criteria": [{"name":"Fluency and coherence","score":n,"note":"one sentence"},{"name":"Lexical resource","score":n,"note":"..."},{"name":"Grammatical range and accuracy","score":n,"note":"..."}], "fixes": ["3 to 5 specific fixes, quoting his words"], "better": [{"q":"the question","answer":"a band 7 version of HIS answer, same ideas, 60 to 120 words"}] (2 items, his weakest answers)}`
+    : `You are an interviewer for a machine operator / manufacturing engineering role in the UK. The candidate is a mechanical engineering graduate (BEng, Portsmouth) with plant experience. Answers were spoken and transcribed, so ignore spelling. Mark structure (STAR), relevance, evidence and confidence.\n\n${tr}\n\nReply with JSON only, no other text, in this shape:\n{"overall": score out of 5 to one decimal, "criteria": [{"name":"Structure (STAR)","score":n out of 5,"note":"one sentence"},{"name":"Relevance to the role","score":n,"note":"..."},{"name":"Evidence and results","score":n,"note":"..."},{"name":"Clear English","score":n,"note":"..."}], "fixes": ["3 to 5 specific fixes"], "better": [{"q":"the question","answer":"a stronger version of HIS answer using his facts, 80 to 140 words"}] (2 items)}`;
+  try {
+    const res = await AI.sample([{ role: 'user', content: prompt }], { cache: false, modelTier: 'default' });
+    u.calls++; u.tin += Math.round(prompt.length / 4); u.tout += Math.round((res.text || '').length / 4);
+    const j = JSON.parse((res.text.match(/\{[\s\S]*\}/) || ['{}'])[0]);
+    r.claude = { overall: j.overall, criteria: (j.criteria || []).slice(0, 5), fixes: (j.fixes || []).slice(0, 6), better: (j.better || []).slice(0, 3) };
+    if (r.kind === 'ielts' && typeof j.overall === 'number') r.band = j.overall;
+    const m = spkMocks(), k = m.findIndex(x => x.id === r.id); if (k >= 0) m[k] = r; save();
+  } catch(e){ toast(e && e.code === 'rate_limited' ? 'Claude is busy or your usage limit is reached. Try again later.' : 'Claude could not mark this one. Try again in a moment.', 'warn', 2800); }
+  SP.busy = false; spkResults();
+}
+
+/* ---------- mic (only where the page may use it: the offline copy in Chrome or Edge) ---------- */
+function spkMicOK(){ const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return false; try { if (document.featurePolicy && !document.featurePolicy.allowsFeature('microphone')) return false; } catch(_){} return true; }
+function spkMicStop(){ try { SP.rec && SP.rec.stop(); } catch(_){} SP.rec = null; }
+function spkMic(btn){
+  if (SP.rec){ spkMicStop(); btn.setAttribute('aria-pressed', 'false'); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition, rec = new SR(), ta = document.getElementById('spkA'); if (!ta) return;
+  rec.lang = 'en-GB'; rec.continuous = true; rec.interimResults = false;
+  rec.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal){ ta.value = (ta.value ? ta.value.trimEnd() + ' ' : '') + e.results[i][0].transcript.trim(); ta.dispatchEvent(new Event('input')); } };
+  rec.onerror = () => { toast('The mic is not available here. Use your keyboard’s mic instead.', 'warn', 2600); spkMicStop(); btn.setAttribute('aria-pressed', 'false'); };
+  rec.onend = () => { if (SP.rec === rec){ try { rec.start(); } catch(_){} } };
+  try { rec.start(); SP.rec = rec; btn.setAttribute('aria-pressed', 'true'); } catch(_){ toast('The mic is not available here.', 'warn', 2200); }
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-spk-start],[data-spk-close],[data-spk-next],[data-spk-talk],[data-spk-say],[data-spk-ai],[data-spk-mic]'); if (!t) return; e.stopPropagation();
+  if (t.dataset.spkStart) return spkStart(t.dataset.spkStart);
+  if (t.hasAttribute('data-spk-close')){ if (SP.res || !SP.steps.some(s => s.a) || t.dataset.armed === '1') return spkClose(); t.dataset.armed = '1'; toast('Tap ✕ again to stop. Answers so far are not saved.', 'warn', 2200); return; }
+  const s = SP.steps[SP.i];
+  if (t.hasAttribute('data-spk-say')) return aiSpeak(s ? s.q : '', true);
+  if (t.hasAttribute('data-spk-talk')){ s.notes = (document.getElementById('spkNotes') || {}).value || ''; s.started = true; return spkStep(); }
+  if (t.hasAttribute('data-spk-next')){ spkMicStop(); s.a = (document.getElementById('spkA') || {}).value || s.a; SP.i++; return spkStep(); }
+  if (t.hasAttribute('data-spk-ai')) return spkClaude();
+  if (t.hasAttribute('data-spk-mic')) return spkMic(t);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('spkBox')){ const b = document.querySelector('#spkBox [data-spk-close]'); b && b.click(); } });
+
+/* ---------- entry points and history ---------- */
+function spkHistHTML(kind){
+  const m = spkMocks().filter(x => x.kind === kind).slice(-6).reverse();
+  if (!m.length) return '';
+  return `<ul class="spk-hist">${m.map(x => `<li><span>${esc(x.date)}</span><b>${x.claude && x.claude.overall != null ? esc(String(x.claude.overall)) + (kind === 'ielts' ? ' band' : '/5') : kind === 'ielts' ? x.local.band.toFixed(1) + ' rough' : x.local.words + ' words'}</b><small>${x.local.wpm || '–'} wpm · ${x.local.fN} fillers</small></li>`).join('')}</ul>`;
+}
+function spkLaunchHTML(kind){
+  const ielts = kind === 'ielts';
+  return `<section class="card spk-launch"><div class="spk-lh"><span class="srs-ic">${ic(ielts ? 'mic' : 'target', 18)}</span><div><h3>${ielts ? 'Speaking examiner' : 'Interview coach'}</h3>
+      <p class="muted">${ielts ? 'A full IELTS Speaking test: Part 1, a cue card with 1 minute to prepare and 2 to talk, then Part 3. About 12 minutes.' : 'Five questions for operator and engineering roles, answered out loud with STAR. About 10 minutes.'}</p></div>
+      <button class="btn btn-deep" data-spk-start="${kind}">${ielts ? 'Start the test' : 'Start practice'}</button></div>${spkHistHTML(kind)}</section>`;
+}
+learnSpeakHTML = (orig => function(){ return spkLaunchHTML('ielts') + orig.apply(this, arguments); })(learnSpeakHTML);
+learnCareerHTML = (orig => function(){ return spkLaunchHTML('interview') + orig.apply(this, arguments); })(learnCareerHTML);
+
+</script>
 <script data-src="src/js/70-boot.js">
 /* ============================================================
    AMBIENT MOTES — a few slow flakes of light in the field
@@ -13752,5 +14203,207 @@ function boot(){
 }
 boot();
 
+
+</script>
+<script data-src="src/js/71-sync.js">
+/* ============================================================
+   SYNC · your data on every device (4 Nov 2026, user: "All four";
+   "Yes, store it privately").
+   - On the live claude.ai link the app also keeps its data in the
+     artifact's own database, owner-only (declared rules: read and write
+     "owner"), so the phone and the laptop share one set of data. The
+     browser copy stays: the app opens instantly and works offline.
+   - State is stored in parts (collection "s"): one document per top-level
+     key; big keys are split (days by month, long arrays in chunks) to stay
+     under the 256 KiB document limit. Each device has its own note in
+     collection "m" ("m/<device>": time of its last save), so two devices
+     saving at the same moment can never hide each other's save.
+   - Three-way merge per part against the last synced hash, so a device
+     that only ran its automatic jobs never overwrites real changes made
+     on another device. Where both sides changed, objects are merged
+     (the newer side's values win) and lists with ids are joined.
+   - "cloud/digest" is a short summary for the morning agent (no raw data).
+   - The offline copy (a file on disk) has no database and works as before.
+   ============================================================ */
+const SY = { db: null, status: 'off', last: {}, timer: 0, busy: false, again: false, unsub: null, unsubB: null, at: 0, err: '', pullT: 0 };
+const SY_LOCAL = ['aiCache', 'agThemeV2', '_lastEdit'];           // stay on this device only
+SY.dev = (() => { try { let d = localStorage.getItem('dc.dev'); if (!d){ d = 'd' + Math.random().toString(36).slice(2, 10); localStorage.setItem('dc.dev', d); } return d; } catch(e){ return 'd-mem'; } })();
+const syHash = s => { let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + ':' + s.length; };
+const syMeta = () => { if (!state._sy || typeof state._sy !== 'object') state._sy = { ts: 0, h: {} }; if (!state._sy.h) state._sy.h = {}; if (!state._sy.seen) state._sy.seen = {}; return state._sy; };
+/* other devices that saved since we last pulled: [{ dev, ts }] */
+const syFresh = docs => docs.filter(d => d.id !== SY.dev && d.exists && (d.data().ts || 0) > (syMeta().seen[d.id] || 0)).map(d => ({ dev: d.id, ts: d.data().ts }));
+const syNewest = list => list.reduce((a, x) => Math.max(a, x.ts), 0);
+
+/* split state into documents: id -> body */
+function syParts(src){
+  const out = {};
+  Object.keys(src).forEach(k => {
+    if (k === '_sy' || SY_LOCAL.includes(k)) return;
+    const v = src[k], js = JSON.stringify(v === undefined ? null : v);
+    if (js.length < 180000){ out['k.' + k] = { k, v: v === undefined ? null : v }; return; }
+    if (v && typeof v === 'object' && !Array.isArray(v)){
+      const g = {}; Object.keys(v).forEach(kk => { const id = /^\d{4}-\d{2}/.test(kk) ? kk.slice(0, 7) : 'x' + (parseInt(syHash(kk), 36) % 6); (g[id] = g[id] || {})[kk] = v[kk]; });
+      Object.keys(g).forEach(id => { out['k.' + k + '.' + id] = { k, o: g[id] }; });
+    } else if (Array.isArray(v)){
+      const n = Math.ceil(js.length / 150000), per = Math.ceil(v.length / n);
+      for (let i = 0; i < n; i++) out['k.' + k + '.' + i] = { k, a: v.slice(i * per, (i + 1) * per), i };
+    } else out['k.' + k] = { k, v };
+  });
+  return out;
+}
+/* rebuild a state object from documents */
+function syJoin(parts){
+  const s = {}, arr = {};
+  Object.keys(parts).sort().forEach(id => { const p = parts[id]; if (!p || !p.k) return;
+    if ('v' in p) s[p.k] = p.v;
+    else if (p.o) s[p.k] = Object.assign(s[p.k] && typeof s[p.k] === 'object' ? s[p.k] : {}, p.o);
+    else if (p.a) (arr[p.k] = arr[p.k] || []).push([p.i || 0, p.a]); });
+  Object.keys(arr).forEach(k => { s[k] = arr[k].sort((a, b) => a[0] - b[0]).flatMap(x => x[1]); });
+  return s;
+}
+/* both sides changed one part: objects merge (b wins on a clash), lists with ids join */
+function syMergeVal(a, b){
+  if (Array.isArray(a) && Array.isArray(b)){
+    if (a.concat(b).every(x => x && typeof x === 'object' && 'id' in x)){ const m = new Map(); a.forEach(x => m.set(x.id, x)); b.forEach(x => m.set(x.id, x)); return [...m.values()]; }
+    return b.length >= a.length ? b : a;
+  }
+  if (a && b && typeof a === 'object' && typeof b === 'object'){ const o = { ...a }; Object.keys(b).forEach(k => { o[k] = k in a ? syMergeVal(a[k], b[k]) : b[k]; }); return o; }
+  return b === undefined ? a : b;
+}
+function syMergePart(local, remote, localNewer){
+  const [a, b] = localNewer ? [remote, local] : [local, remote], out = { ...b };
+  if ('v' in a && 'v' in b) out.v = syMergeVal(a.v, b.v);
+  if (a.o && b.o) out.o = syMergeVal(a.o, b.o);
+  return out;
+}
+
+function syStatus(s, err){ SY.status = s; SY.err = err || ''; const el = document.getElementById('syncChip'); if (el) el.outerHTML = syChipHTML(); }
+const syWhen = t => { if (!t) return 'never'; const d = new Date(t), m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+function syChipHTML(){
+  const t = { off: ['off', 'This copy is not synced'], wait: ['wait', 'Connecting…'], on: ['on', `Synced ${syWhen(SY.at)}`], push: ['wait', 'Saving…'], err: ['err', 'Sync paused'] }[SY.status] || ['off', ''];
+  return `<span id="syncChip" class="sync-chip ${t[0]}" title="${esc(SY.err || t[1])}"><i></i>${t[1]}</span>`;
+}
+
+/* local save without triggering another push */
+let syQuiet = false;
+save = (orig => function(){ const r = orig.apply(this, arguments); if (!syQuiet && SY.db){ clearTimeout(SY.timer); SY.timer = setTimeout(syPush, 2500); } return r; })(save);
+function sySaveLocal(){ syQuiet = true; try { save(); } finally { syQuiet = false; } }
+
+async function syPush(){
+  if (!SY.db) return; if (SY.busy){ SY.again = true; return; }
+  SY.busy = true; syStatus('push');
+  try {
+    // another device saved since we last looked: take its changes first, so nothing is overwritten or missed
+    const fresh = syFresh((await SY.db.collection('m').get()).docs);
+    if (fresh.length) await syPull(fresh);
+    const parts = syParts(state), m = syMeta(), ids = Object.keys(parts); let wrote = 0;
+    for (const id of ids){ const js = JSON.stringify(parts[id]); if (SY.last[id] === js) continue;
+      await SY.db.doc('s/' + id).set(parts[id]); SY.last[id] = js; m.h[id] = syHash(js); wrote++; }
+    for (const id of Object.keys(SY.last)){ if (!parts[id]){ await SY.db.doc('s/' + id).delete(); delete SY.last[id]; delete m.h[id]; wrote++; } }
+    if (wrote){ m.ts = Date.now(); m.seen[SY.dev] = m.ts; await SY.db.doc('m/' + SY.dev).set({ ts: m.ts, parts: ids.length }); }
+    SY.at = Date.now(); sySaveLocal(); syStatus('on');
+    syDigest();
+  } catch(e){ syStatus('err', (e && e.code === 'quota_exceeded') ? 'Cloud storage is full. Export a backup in Settings → Your data.' : 'Could not reach your cloud copy. Changes stay on this device and sync later.'); }
+  if (SY.pending){ SY.pending = false; try { const fr = syFresh((await SY.db.collection('m').get()).docs); if (fr.length && await syPull(fr)) SY.again = true; SY.at = Date.now(); syStatus('on'); } catch(_){ } }
+  SY.busy = false; if (SY.again){ SY.again = false; syPush(); }
+}
+
+/* pull the cloud copy and merge it with this device's */
+async function syPull(fresh){
+  const snap = await SY.db.collection('s').get(), remote = {}, m = syMeta(), newest = syNewest(fresh || []);
+  snap.docs.forEach(d => { if (d.exists) remote[d.id] = d.data(); });
+  const local = syParts(state), merged = {}, localNewer = (state._lastEdit || 0) > newest;
+  new Set([...Object.keys(local), ...Object.keys(remote)]).forEach(id => {
+    const L = local[id], R = remote[id], lj = L ? JSON.stringify(L) : '', rj = R ? JSON.stringify(R) : '', base = m.h[id];
+    if (!R){ if (L && !(base && syHash(lj) === base)) merged[id] = L; return; }            // removed remotely and unchanged here: drop
+    if (!L){ merged[id] = R; return; }
+    if (lj === rj){ merged[id] = R; return; }
+    const lChanged = !base || syHash(lj) !== base, rChanged = !base || syHash(rj) !== base;
+    merged[id] = !lChanged ? R : !rChanged ? L : syMergePart(L, R, localNewer);
+  });
+  const keep = {}; SY_LOCAL.forEach(k => { if (k in state) keep[k] = state[k]; });
+  const next = deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), syJoin(merged));
+  Object.assign(next, keep); next._sy = { ts: Math.max(m.ts || 0, newest), h: {}, seen: { ...m.seen } }; (fresh || []).forEach(x => { next._sy.seen[x.dev] = x.ts; }); next._lastEdit = state._lastEdit || 0;
+  Object.keys(remote).forEach(id => { const js = JSON.stringify(remote[id]); next._sy.h[id] = syHash(js); SY.last[id] = js; });
+  const changedHere = JSON.stringify(syJoin(local)) !== JSON.stringify(syJoin(merged));
+  state = next; sySaveLocal();
+  if (changedHere){ try { AG.res = {}; AG.ctx = null; } catch(_){} try { renderView(activeTab); updateChrome(); } catch(_){} }
+  return Object.keys(merged).some(id => !remote[id] || JSON.stringify(merged[id]) !== JSON.stringify(remote[id]));
+}
+
+async function syInit(){
+  if (!window.claude || typeof window.claude.use !== 'function') return;     // the offline file: nothing to do
+  syStatus('wait');
+  let db = null; try { db = await window.claude.use('db'); } catch(e){ db = null; }
+  if (!db){ syStatus('off'); return; }
+  SY.db = db;
+  const to = setTimeout(() => { if (SY.status === 'wait') syStatus('err', 'The cloud copy is slow to answer. This device keeps working and syncs when it can.'); }, 10000);
+  try {
+    const devs = (await db.collection('m').get()).docs.filter(d => d.exists); clearTimeout(to);
+    if (!devs.length){ await syPush(); toast('Your data is now saved to your private cloud copy, so it shows on every device.', 'ok', 3600); }
+    else {
+      const needPush = await syPull(devs.filter(d => d.id !== SY.dev).map(d => ({ dev: d.id, ts: d.data().ts || 0 })));
+      SY.at = Date.now(); syStatus('on');
+      if (needPush) syPush(); else syDigest();
+    }
+  } catch(e){ clearTimeout(to); syStatus('err', 'Could not reach your cloud copy. Changes stay on this device and sync later.'); }
+  // live: another device saved
+  SY.unsub = db.collection('m').onSnapshot(q => {
+    if (!syFresh(q.docs).length) return;
+    if (SY.busy){ SY.pending = true; return; }   // pulled as soon as the running push ends
+    clearTimeout(SY.pullT); SY.pullT = setTimeout(async () => { if (SY.busy){ SY.pending = true; return; } SY.busy = true;
+      try { const fr = syFresh((await db.collection('m').get()).docs); if (fr.length){ const need = await syPull(fr); SY.at = Date.now(); syStatus('on'); toast('Updated with changes from your other device.', 'ok', 2200); if (need) SY.again = true; } } catch(_){ }
+      SY.busy = false; if (SY.again || SY.pending){ SY.again = false; syPush(); } }, 600);
+  }, () => {});
+  syBriefingWatch();
+}
+/* remember when the person (not an automatic job) last changed something: used on clashes */
+document.addEventListener('click', e => { if (e.target.closest('button, [data-a], input, select, label')) state._lastEdit = Date.now(); }, true);
+document.addEventListener('change', () => { state._lastEdit = Date.now(); }, true);
+
+/* ---------- digest for the morning agent (a short summary, no raw data) ---------- */
+let syDigestAt = 0;
+function syDigest(){
+  if (!SY.db || Date.now() - syDigestAt < 5 * 60 * 1000) return; syDigestAt = Date.now();
+  try {
+    const k = dkey(), ag = AGENTS.map(a => { const r = agResult(a.id); return r ? { id: a.id, name: a.name, area: a.area, on: agOn(a.id), score: r.score, headline: r.headline, kpis: (r.kpis || []).map(x => x.join(' · ')), open: r.findings.filter(f => !f.done).map(f => ({ t: f.t, why: f.why, sev: f.sev })) } : null; }).filter(Boolean);
+    const plan = (typeof dayBlocks === 'function' ? dayBlocks(k) : []).filter(b => !b.skip).map(b => ({ t: b.t, name: b.name, cat: b.cat, status: blockStatus(k, b) }));
+    const tom = (typeof dayBlocks === 'function' ? dayBlocks(dkey(addDays(new Date(), 1))) : []).filter(b => !b.skip).map(b => ({ t: b.t, name: b.name }));
+    const w = periodStats(dkey(addDays(new Date(), -6)), k);
+    SY.db.doc('cloud/digest').set({ at: Date.now(), date: k, name: displayName(), context: coachContext(), agents: ag, plan, tomorrow: tom,
+      week: { pct: w.pct, focusMin: w.focus, sleepAvgMin: w.sleepAvg || null, stepsAvg: w.stepsAvg || 0, spent: w.spent },
+      srsDue: typeof srsDueCount === 'function' ? srsDueCount() : null, examDate: state.settings.examDate || null,
+      speaking: ((state.ielts || {}).mocks || []).slice(-3).map(x => ({ date: x.date, band: x.band, kind: x.kind })) }).catch(() => {});
+  } catch(_){ }
+}
+
+/* ---------- morning briefing written by the cloud agent ---------- */
+const SYB = { b: null };
+function syBriefingWatch(){
+  if (!SY.db) return;
+  SY.unsubB = SY.db.doc('cloud/briefing').onSnapshot(s => { SYB.b = s.exists ? s.data() : null; const el = document.getElementById('cbBox'); if (el) el.outerHTML = briefingHTML(); else if (typeof activeTab !== 'undefined' && activeTab === 'today' && SYB.b) renderView('today'); }, () => {});
+}
+function briefingHTML(){
+  const b = SYB.b; if (!b || !b.date) return '<div id="cbBox" hidden></div>';
+  const today = b.date === dkey(), list = (x, cls) => (x || []).map(t => `<li class="${cls || ''}">${esc(t)}</li>`).join('');
+  return `<section id="cbBox" class="cb${today ? '' : ' old'}" aria-label="Morning briefing from your agents">
+    <header><span class="cb-dot"></span><b>Morning briefing</b><small>${today ? `written by Claude at ${esc(b.time || '')}` : `from ${esc(b.date)}; today's comes at about 06:00`}</small></header>
+    ${b.headline ? `<p class="cb-head">${esc(b.headline)}</p>` : ''}
+    ${b.top3 && b.top3.length ? `<ol class="cb-top">${list(b.top3)}</ol>` : ''}
+    ${b.verdicts && b.verdicts.length ? `<details class="cb-more" open><summary>What each agent says</summary><ul class="cb-v">${b.verdicts.map(v => `<li><b>${esc(v.agent || '')}</b><span>${esc(v.text || '')}</span></li>`).join('')}</ul></details>` : ''}
+    ${b.note ? `<p class="cb-note">${esc(b.note)}</p>` : ''}</section>`;
+}
+// right under the Morning letter, which stays first on Today
+// (the review strip is added in 69h-srs.js, which loads before the first draw; the briefing goes between the letter and it)
+mvHTML = (orig => function(){ const h = orig.apply(this, arguments), b = SYB.b ? briefingHTML() : ''; if (!b) return h; const i = h.indexOf('<section class="srs-strip'); return i < 0 ? h + b : h.slice(0, i) + b + h.slice(i); })(mvHTML);
+
+/* ---------- Settings → Your data: sync status ---------- */
+setBody = (orig => function(sec){ const h = orig.apply(this, arguments); if (sec !== 'data') return h;
+  return `<div class="sync-box"><h3>Your data on every device</h3>
+    <p class="set-note">${SY.db ? 'On the live link your data is also kept in a private copy in your claude.ai account (only you can open it), so your phone and laptop show the same data. This browser keeps its own copy too, so the app opens instantly and works offline.' : 'This copy is not synced. Open the live link on claude.ai to keep your data on every device.'}</p>
+    <div class="sync-row">${syChipHTML()}<span class="sync-dev">This device: ${esc(SY.dev)}</span>${SY.db ? '<button class="btn btn-soft sm" data-sync-now>Sync now</button>' : ''}</div></div>` + h; })(setBody);
+document.addEventListener('click', e => { const b = e.target.closest('[data-sync-now]'); if (!b) return; e.stopPropagation(); (async () => { syDigestAt = 0; await syPush(); toast('Synced.', 'ok', 1400); })(); }); // a push pulls other devices' changes first });
+
+setTimeout(syInit, 0);
 
 </script>

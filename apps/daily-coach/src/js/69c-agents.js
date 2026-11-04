@@ -53,6 +53,7 @@ const AGENTS = [
       if (ts && ts.s !== 'done') f.push(fnd('speak', `Speaking cue card at ${ts.b.t}`, '1 minute to plan, 2 to talk', 'learn', 2));
       if (weak) f.push(fnd('weak', `Weakest area: ${({ tr:'task response', cc:'coherence', lr:'vocabulary', gra:'grammar' })[weak[0]]}`, `Average ${weak[1].toFixed(1)} in your last essays`, 'learn', 2));
       if (!ex) f.push(fnd('date', 'Set your IELTS exam date', 'A date turns practice into a plan', 'learn', 1));
+      const due = typeof srsDueCount === 'function' ? srsDueCount() : 0; if (due) f.push(fnd('srs', `${due} review cards due`, `About ${Math.max(1, Math.round(due * .2))} minutes: start it on Today`, 'today', 1));
       return { score, headline: `${es.n} essays and ${sp.n} speaking cards in 14 days${band ? `, essays averaging band ${band.toFixed(1)}` : ''}.`,
         kpis: [['Essays', `${es.n}/${es.of}`, '14 days'], ['Speaking', `${sp.n}/${sp.of}`, '14 days'], ['Band', band ? band.toFixed(1) : '–', `target ${state.settings.ieltsTarget || 7}`], ['Exam', dl == null ? 'no date' : dl + ' days', 'to go']], findings: f }; } },
   { id:'eng', name:'Engineering agent', area:'Engineering', wkey:'engineering', icon:'gears', role:'Picks your next knowledge pack and Lab practice from your weakest Orbit topics.',
@@ -102,7 +103,6 @@ const AGENTS_LATER = [
   ['Job board scout', 'target', 'Reads new engineering jobs near Portsmouth every morning', 'needs a job-site connection'],
   ['Calendar agent', 'calendar', 'Moves your plan blocks when your calendar changes', 'needs Google Calendar inside the app'],
   ['Nutrition agent', 'cart', 'Checks protein and spending on food together', 'needs food logging'],
-  ['Interview coach', 'mic', 'Asks interview questions out loud and scores your answers', 'needs voice practice mode'],
   ['Builder agent', 'wrench', 'Improves this app at night and pushes to GitHub', 'runs in the cloud, not in the app']
 ];
 
