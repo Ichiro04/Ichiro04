@@ -14282,8 +14282,8 @@ boot();
    - "cloud/digest" is a short summary for the morning agent (no raw data).
    - The offline copy (a file on disk) has no database and works as before.
    ============================================================ */
-const SY = { db: null, status: 'off', last: {}, timer: 0, busy: false, again: false, unsub: null, unsubB: null, at: 0, err: '', pullT: 0 };
-const SY_LOCAL = ['aiCache', 'agThemeV2', '_lastEdit'];           // stay on this device only
+const SY = { db: null, status: 'off', last: {}, timer: 0, busy: false, again: false, unsub: null, unsubB: null, at: 0, err: '', pullT: 0, pushedEdit: 0, toastAt: 0, redrawT: 0 };
+const SY_LOCAL = ['aiCache', 'agThemeV2', 'agTheme', '_lastEdit'];   // stay on this device only
 SY.dev = (() => { try { let d = localStorage.getItem('dc.dev'); if (!d){ d = 'd' + Math.random().toString(36).slice(2, 10); localStorage.setItem('dc.dev', d); } return d; } catch(e){ return 'd-mem'; } })();
 const syHash = s => { let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + ':' + s.length; };
 const syMeta = () => { if (!state._sy || typeof state._sy !== 'object') state._sy = { ts: 0, h: {} }; if (!state._sy.h) state._sy.h = {}; if (!state._sy.seen) state._sy.seen = {}; return state._sy; };
@@ -14291,12 +14291,23 @@ const syMeta = () => { if (!state._sy || typeof state._sy !== 'object') state._s
 const syFresh = docs => docs.filter(d => d.id !== SY.dev && d.exists && (d.data().ts || 0) > (syMeta().seen[d.id] || 0)).map(d => ({ dev: d.id, ts: d.data().ts }));
 const syNewest = list => list.reduce((a, x) => Math.max(a, x.ts), 0);
 
+/* times the app stamps by itself (agent and autopilot "last ran") are not synced: syncing them made
+   two open devices answer each other's saves forever (5 Nov 2026). They stay on each device. */
+function syClean(k, v){
+  if (k === 'agents' && v && typeof v === 'object'){ const o = {}; Object.keys(v).forEach(id => { const r = { ...(v[id] || {}) }; delete r.last; o[id] = r; }); return o; }
+  if (k === 'autopilot' && v && typeof v === 'object'){ const r = { ...v }; delete r.last; return r; }
+  return v;
+}
+function syKeepVolatile(next, prev){
+  try { Object.keys(next.agents || {}).forEach(id => { const l = prev.agents && prev.agents[id] && prev.agents[id].last; if (l) next.agents[id].last = l; }); } catch(_){}
+  try { if (prev.autopilot && prev.autopilot.last && next.autopilot) next.autopilot.last = prev.autopilot.last; } catch(_){}
+}
 /* split state into documents: id -> body */
 function syParts(src){
   const out = {};
   Object.keys(src).forEach(k => {
     if (k === '_sy' || SY_LOCAL.includes(k)) return;
-    const v = src[k], js = JSON.stringify(v === undefined ? null : v);
+    const v = syClean(k, src[k]), js = JSON.stringify(v === undefined ? null : v);
     if (js.length < 180000){ out['k.' + k] = { k, v: v === undefined ? null : v }; return; }
     if (v && typeof v === 'object' && !Array.isArray(v)){
       const g = {}; Object.keys(v).forEach(kk => { const id = /^\d{4}-\d{2}/.test(kk) ? kk.slice(0, 7) : 'x' + (parseInt(syHash(kk), 36) % 6); (g[id] = g[id] || {})[kk] = v[kk]; });
@@ -14343,12 +14354,15 @@ function syChipHTML(){
 
 /* local save without triggering another push */
 let syQuiet = false;
-save = (orig => function(){ const r = orig.apply(this, arguments); if (!syQuiet && SY.db){ clearTimeout(SY.timer); SY.timer = setTimeout(syPush, 2500); } return r; })(save);
+/* only a change the person made (a tap or an edit since the last push) is pushed; the app's own
+   background saves stay local until then, so devices never ping-pong */
+const syEdited = () => (state._lastEdit || 0) > SY.pushedEdit;
+save = (orig => function(){ const r = orig.apply(this, arguments); if (!syQuiet && SY.db && syEdited()){ clearTimeout(SY.timer); SY.timer = setTimeout(syPush, 2500); } return r; })(save);
 function sySaveLocal(){ syQuiet = true; try { save(); } finally { syQuiet = false; } }
 
 async function syPush(){
   if (!SY.db) return; if (SY.busy){ SY.again = true; return; }
-  SY.busy = true; syStatus('push');
+  SY.busy = true; syStatus('push'); SY.pushedEdit = Math.max(SY.pushedEdit, state._lastEdit || 0);
   try {
     // another device saved since we last looked: take its changes first, so nothing is overwritten or missed
     const fresh = syFresh((await SY.db.collection('m').get()).docs);
@@ -14361,7 +14375,7 @@ async function syPush(){
     SY.at = Date.now(); sySaveLocal(); syStatus('on');
     syDigest();
   } catch(e){ syStatus('err', (e && e.code === 'quota_exceeded') ? 'Cloud storage is full. Export a backup in Settings → Your data.' : 'Could not reach your cloud copy. Changes stay on this device and sync later.'); }
-  if (SY.pending){ SY.pending = false; try { const fr = syFresh((await SY.db.collection('m').get()).docs); if (fr.length && await syPull(fr)) SY.again = true; SY.at = Date.now(); syStatus('on'); } catch(_){ } }
+  if (SY.pending){ SY.pending = false; try { const fr = syFresh((await SY.db.collection('m').get()).docs); if (fr.length && await syPull(fr) && syEdited()) SY.again = true; SY.at = Date.now(); syStatus('on'); } catch(_){ } }
   SY.busy = false; if (SY.again){ SY.again = false; syPush(); }
 }
 
@@ -14383,17 +14397,26 @@ async function syPull(fresh){
   Object.assign(next, keep); next._sy = { ts: Math.max(m.ts || 0, newest), h: {}, seen: { ...m.seen } }; (fresh || []).forEach(x => { next._sy.seen[x.dev] = x.ts; }); next._lastEdit = state._lastEdit || 0;
   Object.keys(remote).forEach(id => { const js = JSON.stringify(remote[id]); next._sy.h[id] = syHash(js); SY.last[id] = js; });
   const changedHere = JSON.stringify(syJoin(local)) !== JSON.stringify(syJoin(merged));
+  syKeepVolatile(next, state);
   state = next; sySaveLocal();
-  if (changedHere){ try { AG.res = {}; AG.ctx = null; } catch(_){} try { renderView(activeTab); updateChrome(); } catch(_){} }
+  if (changedHere) syRedraw();
   return Object.keys(merged).some(id => !remote[id] || JSON.stringify(merged[id]) !== JSON.stringify(remote[id]));
 }
 
+/* redraw after a pull, but never under the person's fingers: wait while they type or have a card, chat or sheet open */
+function syRedraw(){
+  const a = document.activeElement, busy = (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) || document.getElementById('srsBox') || document.getElementById('spkBox')
+    || document.body.classList.contains('ai-open') || document.body.classList.contains('set-open') || document.querySelector('.sheet.open, .sheet.show');
+  clearTimeout(SY.redrawT);
+  if (busy){ SY.redrawT = setTimeout(syRedraw, 3000); return; }
+  try { AG.res = {}; AG.ctx = null; } catch(_){} try { renderView(activeTab); updateChrome(); } catch(_){}
+}
 async function syInit(){
   if (!window.claude || typeof window.claude.use !== 'function') return;     // the offline file: nothing to do
   syStatus('wait');
   let db = null; try { db = await window.claude.use('db'); } catch(e){ db = null; }
   if (!db){ syStatus('off'); return; }
-  SY.db = db;
+  SY.db = db; SY.pushedEdit = state._lastEdit || 0;
   const to = setTimeout(() => { if (SY.status === 'wait') syStatus('err', 'The cloud copy is slow to answer. This device keeps working and syncs when it can.'); }, 10000);
   try {
     const devs = (await db.collection('m').get()).docs.filter(d => d.exists); clearTimeout(to);
@@ -14409,7 +14432,7 @@ async function syInit(){
     if (!syFresh(q.docs).length) return;
     if (SY.busy){ SY.pending = true; return; }   // pulled as soon as the running push ends
     clearTimeout(SY.pullT); SY.pullT = setTimeout(async () => { if (SY.busy){ SY.pending = true; return; } SY.busy = true;
-      try { const fr = syFresh((await db.collection('m').get()).docs); if (fr.length){ const need = await syPull(fr); SY.at = Date.now(); syStatus('on'); toast('Updated with changes from your other device.', 'ok', 2200); if (need) SY.again = true; } } catch(_){ }
+      try { const fr = syFresh((await db.collection('m').get()).docs); if (fr.length){ const need = await syPull(fr); SY.at = Date.now(); syStatus('on'); if (Date.now() - SY.toastAt > 60000){ SY.toastAt = Date.now(); toast('Updated with changes from your other device.', 'ok', 2200); } if (need && syEdited()) SY.again = true; } } catch(_){ }
       SY.busy = false; if (SY.again || SY.pending){ SY.again = false; syPush(); } }, 600);
   }, () => {});
   syBriefingWatch();
@@ -14459,7 +14482,7 @@ setBody = (orig => function(sec){ const h = orig.apply(this, arguments); if (sec
   return `<div class="sync-box"><h3>Your data on every device</h3>
     <p class="set-note">${SY.db ? 'On the live link your data is also kept in a private copy in your claude.ai account (only you can open it), so your phone and laptop show the same data. This browser keeps its own copy too, so the app opens instantly and works offline.' : 'This copy is not synced. Open the live link on claude.ai to keep your data on every device.'}</p>
     <div class="sync-row">${syChipHTML()}<span class="sync-dev">This device: ${esc(SY.dev)}</span>${SY.db ? '<button class="btn btn-soft sm" data-sync-now>Sync now</button>' : ''}</div></div>` + h; })(setBody);
-document.addEventListener('click', e => { const b = e.target.closest('[data-sync-now]'); if (!b) return; e.stopPropagation(); (async () => { syDigestAt = 0; await syPush(); toast('Synced.', 'ok', 1400); })(); }); // a push pulls other devices' changes first });
+document.addEventListener('click', e => { const b = e.target.closest('[data-sync-now]'); if (!b) return; e.stopPropagation(); (async () => { syDigestAt = 0; state._lastEdit = Date.now(); await syPush(); toast('Synced.', 'ok', 1400); })(); }); // a push pulls other devices' changes first });
 
 setTimeout(syInit, 0);
 
