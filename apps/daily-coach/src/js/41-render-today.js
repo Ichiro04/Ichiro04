@@ -3,6 +3,27 @@
    ============================================================ */
 let lap3d = true;
 function all(d,t){ return t>0 && d>=t; }
+/* steps: exact entry and the day it counts for (5 Nov 2026: the user could only add 1,000 at a time
+   and, just after midnight, steps went to the new day). From midnight to 04:00 it starts on yesterday. */
+const STEPS = { day: null, edit: false };
+function stepsKey(){ const yday = STEPS.day ? STEPS.day === 'yday' : new Date().getHours() < 4; return dkey(yday ? addDays(new Date(), -1) : new Date()); }
+function stepsCardInner(){
+  const sk = stepsKey(), yday = sk !== dkey(), n = dayRec(sk).steps || 0, goal = state.settings.stepsGoal;
+  return `<div class="row between" style="gap:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:140px">
+        <div class="h3">Steps ${yday ? 'yesterday' : 'today'}</div>
+        <div class="tiny">Goal ${goal.toLocaleString('en-GB')} · tap the number to type it</div>
+        <div class="steps-day" role="radiogroup" aria-label="Which day">${[['today', 'Today'], ['yday', 'Yesterday']].map(([v, l]) => `<button role="radio" aria-checked="${(v === 'yday') === yday}" class="${(v === 'yday') === yday ? 'on' : ''}" data-a="steps-day" data-v="${v}">${l}</button>`).join('')}</div>
+      </div>
+      <div class="row" style="gap:8px">
+        <button class="btn btn-soft btn-sm" data-a="steps" data-d="-1000" aria-label="Remove 1000 steps">−1k</button>
+        ${STEPS.edit ? `<input id="stepsIn" class="steps-in mono" type="number" inputmode="numeric" min="0" max="100000" step="1" value="${n || ''}" placeholder="0" aria-label="Steps ${yday ? 'yesterday' : 'today'}"><button class="btn btn-deep btn-sm" data-a="steps-save">Save</button>`
+          : `<button class="steps-n mono" data-a="steps-edit" aria-label="${n.toLocaleString('en-GB')} steps. Tap to type the exact number">${n.toLocaleString('en-GB')}</button>`}
+        <button class="btn btn-soft btn-sm" data-a="steps" data-d="1000" aria-label="Add 1000 steps">+1k</button>
+      </div>
+    </div>
+    <div class="pbar" style="margin-top:12px"><i class="teal" style="width:${clamp(pctOf(n, goal)*100,0,100)}%"></i></div>`;
+}
 function renderToday(){
   const k = dkey();
   const list = tasksForDay(k);
@@ -87,18 +108,7 @@ function renderToday(){
 
   <div class="h2">Quick log</div>
   <div class="glass card">
-    <div class="row between" style="gap:14px">
-      <div style="flex:1">
-        <div class="h3">Steps today</div>
-        <div class="tiny">Goal ${state.settings.stepsGoal.toLocaleString('en-GB')}</div>
-      </div>
-      <div class="row" style="gap:8px">
-        <button class="btn btn-soft btn-sm" data-a="steps" data-d="-1000" aria-label="Remove 1000 steps">−1k</button>
-        <b class="mono" style="font-size:19px;min-width:56px;text-align:center">${(dayRec(k).steps||0).toLocaleString('en-GB')}</b>
-        <button class="btn btn-soft btn-sm" data-a="steps" data-d="1000" aria-label="Add 1000 steps">+1k</button>
-      </div>
-    </div>
-    <div class="pbar" style="margin-top:12px"><i class="teal" style="width:${clamp(pctOf(dayRec(k).steps||0, state.settings.stepsGoal)*100,0,100)}%"></i></div>
+    ${stepsCardInner()}
   </div>
   </div>`;
 }

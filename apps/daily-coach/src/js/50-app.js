@@ -334,10 +334,19 @@ $('#restbar').addEventListener('click', e=>{
 /* ============================================================
    ACTIONS
    ============================================================ */
-function syncAutoTasks(){
-  const k = dkey();
+function stepsSave(){
+  const i = document.getElementById('stepsIn'); if (!i) return;
+  const v = Math.round(Number(String(i.value).replace(/[^0-9]/g, '')));
+  if (!isFinite(v) || v < 0 || v > 100000){ toast('Type a number between 0 and 100,000.', 'warn', 2000); i.focus(); return; }
+  const k = stepsKey(); dayRec(k, true).steps = v; STEPS.edit = false;
+  save(); syncAutoTasks(k); renderView('today'); updateChrome();
+  toast(`${v.toLocaleString('en-GB')} steps saved for ${k === dkey() ? 'today' : 'yesterday'}.`, 'ok', 1600);
+}
+document.addEventListener('keydown', e => { if (e.target && e.target.id === 'stepsIn'){ if (e.key === 'Enter'){ e.preventDefault(); stepsSave(); } else if (e.key === 'Escape'){ STEPS.edit = false; renderView('today'); } } });
+function syncAutoTasks(k = dkey()){
   const steps = dayRec(k).steps || 0;
-  if (steps >= state.settings.stepsGoal && !taskDone(k,'walk')) { setTask(k,'walk',true); toast('8,000 steps logged. Nice.'); }
+  if (steps >= state.settings.stepsGoal && !taskDone(k,'walk')) { setTask(k,'walk',true); toast(`${Number(state.settings.stepsGoal).toLocaleString('en-GB')} steps logged${k !== dkey() ? ' for yesterday' : ''}. Nice.`); }
+  if (k !== dkey()) return;
   if (sessionDonePct(k) >= 100 && !taskDone(k,'train') && todaysSession().blocks.length) { setTask(k,'train',true); }
 }
 
@@ -415,11 +424,14 @@ document.addEventListener('click', e=>{
       break;
     }
     case 'steps': {
-      const k = dkey(), d = dayRec(k, true);
+      const k = stepsKey(), d = dayRec(k, true);
       d.steps = Math.max(0, (d.steps||0) + Number(el.dataset.d));
-      save(); syncAutoTasks(); renderView('today'); updateChrome();
+      save(); syncAutoTasks(k); renderView('today'); updateChrome();
       break;
     }
+    case 'steps-day': { STEPS.day = el.dataset.v; STEPS.edit = false; renderView('today'); break; }
+    case 'steps-edit': { STEPS.edit = true; renderView('today'); const i = document.getElementById('stepsIn'); if (i){ i.focus(); i.select(); } break; }
+    case 'steps-save': { stepsSave(); break; }
     case 'train-day': {
       trainDayKey = el.dataset.key;
       renderView('train');
