@@ -4192,6 +4192,101 @@ html[data-theme="dark"] .steps-day{background:rgba(255,255,255,.06)}html[data-th
 .steps-n:hover,.steps-n:focus-visible{background:rgba(113,0,20,.06)}
 .steps-in{width:96px;height:36px;padding:0 8px;border-radius:10px;border:1px solid rgba(113,0,20,.3);font-size:17px;font-weight:700;text-align:center;background:#fff;color:#161616}
 
+/* ---------- Money leaks (69j-leaks.js, 19 Nov 2026; look from the "money leaks audit" video) ---------- */
+.lk{margin:14px 0 18px;padding:16px;border-radius:18px;background:radial-gradient(120% 90% at 70% 0%,#10172E 0%,#080B16 60%,#05070E 100%);color:#E6ECFF;box-shadow:0 18px 40px -24px rgba(0,0,0,.6),inset 0 0 0 1px rgba(160,180,255,.10);container-type:inline-size}
+.lk-head{display:grid;grid-template-columns:1fr;gap:12px;align-items:center}
+@container (min-width:760px){.lk-head{grid-template-columns:minmax(0,1.4fr) auto auto}}
+.lk-head small{font-size:11px;font-weight:700;color:#8EA2D8;letter-spacing:.02em}
+.lk-head b{display:block;margin:3px 0 4px;font-size:21px;font-weight:800;color:#fff;line-height:1.2}
+.lk-head span{font-size:12px;color:#A9B6DA}
+.lk-kpis{display:grid;grid-template-columns:repeat(4,auto);gap:4px 16px}
+.lk-kpis div{min-width:58px}.lk-kpis small{display:block;font-size:10px;color:#8EA2D8;font-weight:600}
+.lk-kpis b{font-size:18px;margin:0;font-variant-numeric:tabular-nums;color:#fff}.lk-kpis b.hot{color:#FF6B74}.lk-kpis b.ok{color:#7BE3A9}
+.lk .btn-deep{background:linear-gradient(180deg,#FF5A64,#C8102E);border-color:transparent;color:#fff}
+.lk-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+@container (min-width:880px){.lk-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}}
+.lk-mapw{position:relative;min-height:260px;border-radius:14px;background:rgba(10,16,36,.6);box-shadow:inset 0 0 0 1px rgba(160,180,255,.08);overflow:hidden;display:flex;flex-direction:column}
+#lkMap{flex:1;width:100%;min-height:240px;display:block}
+.lk-scan{position:absolute;inset:0;display:grid;place-items:center;background:rgba(5,7,14,.55);font-size:13px;font-weight:700;color:#DDE6FF}
+.lk-scan i{position:absolute;left:0;right:0;height:2px;top:0;background:linear-gradient(90deg,transparent,#FF5A64,transparent);animation:lkSweep 1.2s linear infinite}
+@keyframes lkSweep{to{transform:translateY(300px)}}
+.lk-key{display:flex;gap:12px;flex-wrap:wrap;margin:0;padding:8px 12px;font-size:10.5px;color:#8EA2D8}
+.lk-key span{display:inline-flex;align-items:center;gap:5px}.lk-key i{width:7px;height:7px;border-radius:50%}.lk-key .w{background:#DDE6FF}.lk-key .g{background:#7BE3A9}.lk-key .r{background:#FF5A64;box-shadow:0 0 6px #FF5A64}
+.lk-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:520px;overflow:auto;scrollbar-width:thin}
+.lk-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:4px 10px;padding:11px 12px;border-radius:12px;background:rgba(20,28,56,.7);box-shadow:inset 0 0 0 1px rgba(160,180,255,.10)}
+.lk-row.in{animation:lkIn .45s ease-out both;animation-delay:var(--d)}
+@keyframes lkIn{from{opacity:0;transform:translateY(6px)}}
+.lk-row.plan{box-shadow:inset 3px 0 0 #F2A33A,inset 0 0 0 1px rgba(242,163,58,.25)}
+.lk-row.fixed{opacity:.75;box-shadow:inset 3px 0 0 #7BE3A9,inset 0 0 0 1px rgba(123,227,169,.25)}
+.lk-n{font-size:12px;font-weight:800;color:#FF6B74;font-variant-numeric:tabular-nums;padding-top:2px}
+.lk-row.fixed .lk-n{color:#7BE3A9}
+.lk-b{min-width:0}.lk-b small{display:block;font-size:10.5px;font-weight:700;color:#8EA2D8}.lk-b small b{color:#F2A33A}.lk-row.fixed .lk-b small b{color:#7BE3A9}
+.lk-b>b{display:block;font-size:13.5px;line-height:1.3;color:#fff;margin:2px 0}
+.lk-b span{display:block;font-size:11.5px;color:#A9B6DA}.lk-b em{display:block;font-style:normal;font-size:11.5px;color:#DDE6FF;margin-top:3px}
+.lk-v{text-align:right}.lk-v b{display:block;font-size:16px;color:#FF6B74;font-variant-numeric:tabular-nums}.lk-v small{font-size:10px;color:#8EA2D8}
+.lk-row.fixed .lk-v b{color:#7BE3A9}
+.lk-acts{grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.lk .btn-soft{background:rgba(160,180,255,.10);color:#DDE6FF;border-color:rgba(160,180,255,.18)}
+.lk-empty,.lk-ign{list-style:none;font-size:12.5px;color:#A9B6DA;padding:10px}
+html.reduce .lk-row.in,html.reduce .lk-scan i{animation:none}
+
+/* ---------- Brain (69k-brain.js, 19 Nov 2026; look from the "one map, one endless loop" video) ---------- */
+.br{padding:4px 0 20px;container-type:inline-size;color:#F2E9EA}
+.br-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:18px;border-radius:18px 18px 0 0;background:linear-gradient(135deg,#1A0508,#2A0A10 60%,#14060A)}
+.br-top small{font-size:11px;font-weight:700;color:#FF6B7E}
+.br-top h2{margin:2px 0;font-size:30px;font-weight:900;color:#fff;letter-spacing:-.01em}
+.br-top p{margin:0;font-size:12.5px;color:#D9BFC3}
+.br-ask{display:flex;gap:8px;padding:12px 18px;background:#14060A}
+.br-ask input{flex:1;min-width:0;height:40px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,107,126,.35);background:rgba(255,255,255,.05);color:#fff;font-size:15px}
+.br-ask input:focus{outline:2px solid #FF4D63;outline-offset:1px}
+.br .btn-deep{background:linear-gradient(180deg,#FF4D63,#B0122A);border-color:transparent;color:#fff}
+.br .btn-soft{background:rgba(255,255,255,.07);color:#F2E9EA;border-color:rgba(255,255,255,.14)}
+.br-res{padding:4px 18px 16px;background:#14060A;border-radius:0 0 18px 18px;min-height:44px}
+.br-hint{margin:6px 0 0;font-size:12px;color:#B79AA0}
+.br-steps{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:6px 0 10px}
+.br-steps i{width:14px;height:1px;background:rgba(255,107,126,.35)}
+.br-st{padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:800;color:#8E6F75;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.br-st.on{color:#fff;background:#B0122A;box-shadow:0 0 10px rgba(255,77,99,.45)}.br-st.miss{background:#6B5A00;color:#FFE27A;box-shadow:none}
+.br-ans{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.05);box-shadow:inset 3px 0 0 #FF4D63}
+.br-ans.miss{box-shadow:inset 3px 0 0 #E2B400}.br-ans b{font-size:16px;color:#FFE27A}
+.br-ans p{margin:0 0 8px;font-size:14px;line-height:1.5;color:#fff}
+.br-cite,.br-also{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 8px;font-size:11.5px;color:#B79AA0}
+.br-file{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;font:600 12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#FF9AA8;background:rgba(255,77,99,.12)}
+.br-file.sm{font-size:11px;padding:3px 8px}.br-file:hover{background:rgba(255,77,99,.22)}
+.br-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+@container (min-width:900px){.br-grid{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}}
+.br-mapw,.br-files{border-radius:16px;background:radial-gradient(90% 80% at 50% 40%,#2A0A12,#12040A);box-shadow:inset 0 0 0 1px rgba(255,107,126,.12);padding:12px}
+.br-map{width:100%;height:auto;display:block}
+.br-libring{fill:none;stroke:rgba(255,255,255,.12);stroke-dasharray:2 6}
+.br-lane{fill:none;stroke-width:1.4}.br-lane.notes{stroke:rgba(255,107,126,.55)}.br-lane.people{stroke:rgba(255,190,120,.45)}.br-lane.projects{stroke:rgba(255,255,255,.35)}
+.br-dot{cursor:pointer;stroke:#12040A;stroke-width:1}.br-dot.notes{fill:#FF6B7E}.br-dot.people{fill:#FFBE78}.br-dot.projects{fill:#F2E9EA}
+.br-dot.hit{fill:#fff;stroke:#FF4D63;stroke-width:3;filter:drop-shadow(0 0 6px #FF4D63)}
+.br-ll{fill:#B79AA0;font-size:10px;font-weight:700}.br-ll.lib{text-anchor:middle;fill:#8E6F75}
+.br-core rect{fill:#B0122A;filter:drop-shadow(0 0 10px rgba(255,77,99,.6))}.br-core text{fill:#fff;font:800 12px ui-monospace,Menlo,monospace;text-anchor:middle}
+.br-pin{cursor:pointer}.br-pin rect{fill:rgba(255,255,255,.08);stroke:rgba(255,255,255,.18)}.br-pin text{fill:#D9BFC3;font-size:9.5px;font-weight:700;text-anchor:middle}
+.br-route{fill:none;stroke:#FF4D63;stroke-width:1.6;stroke-dasharray:3 4}.br-pulse{fill:#fff;filter:drop-shadow(0 0 5px #FF4D63)}
+.br-md{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.35);font:11px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#D9BFC3;white-space:pre-wrap}
+.br-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.br-tabs button{all:unset;cursor:pointer;flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700;color:#D9BFC3;background:rgba(255,255,255,.05)}
+.br-tabs button.on{background:#B0122A;color:#fff}.br-tabs em{font-style:normal;font-size:10.5px;opacity:.75}
+.br-ld{margin:8px 2px;font-size:11.5px;color:#B79AA0}
+.br-add{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;width:100%;box-sizing:border-box;padding:9px 12px;margin-bottom:8px;border-radius:10px;border:1px dashed rgba(255,107,126,.45);font-size:12.5px;font-weight:700;color:#FF9AA8}
+.br-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:430px;overflow:auto;scrollbar-width:thin}
+.br-list button{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.04)}
+.br-list button:hover{background:rgba(255,255,255,.08)}
+.br-list b{display:block;font-size:13.5px;color:#fff}.br-list small{display:block;font:11px ui-monospace,Menlo,monospace;color:#FF9AA8;margin:1px 0 3px}
+.br-list span{display:block;font-size:12px;color:#B79AA0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br-empty{font-size:12.5px;color:#B79AA0;padding:8px}
+.br-ed{margin-top:14px;padding:14px;border-radius:16px;background:#1C070C;box-shadow:inset 0 0 0 1px rgba(255,107,126,.25)}
+.br-edh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.br-edh b{font:700 13px ui-monospace,Menlo,monospace;color:#FF9AA8}
+.br-x{all:unset;cursor:pointer;color:#D9BFC3;padding:4px}
+.br-ed label{display:block;font-size:11.5px;font-weight:700;color:#D9BFC3;margin:8px 0 0}
+.br-ed input,.br-ed textarea{display:block;width:100%;box-sizing:border-box;margin-top:4px;padding:9px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#fff;font:inherit;font-size:14px}
+.br-ed h4{margin:4px 0;font-size:17px;color:#fff}.br-ro{font-size:13.5px;line-height:1.55;color:#F2E9EA}
+.br-edf{display:flex;gap:8px;margin-top:12px}
+.br-grid>*{min-width:0}.br-md{overflow-wrap:anywhere}.br-top>div,.br-ask{min-width:0}
+
 </style>
 <style data-src="src/css/agents.css">
 /* ============================================================
@@ -5079,6 +5174,7 @@ html[data-skin][data-theme="dark"] .cfab-main{color:#fff;background:linear-gradi
     <section class="view" id="view-review" role="tabpanel" aria-labelledby="tab-review" hidden></section>
     <section class="view" id="view-coach" role="tabpanel" aria-labelledby="tab-coach" hidden></section>
     <section class="view" id="view-agents" role="tabpanel" aria-labelledby="tab-agents" hidden></section>
+    <section class="view" id="view-brain" role="tabpanel" aria-labelledby="tab-brain" hidden></section>
   </main>
 </div>
 
@@ -14188,6 +14284,321 @@ function spkLaunchHTML(kind){
 }
 learnSpeakHTML = (orig => function(){ return spkLaunchHTML('ielts') + orig.apply(this, arguments); })(learnSpeakHTML);
 learnCareerHTML = (orig => function(){ return spkLaunchHTML('interview') + orig.apply(this, arguments); })(learnCareerHTML);
+
+</script>
+<script data-src="src/js/69j-leaks.js">
+/* ============================================================
+   MONEY LEAKS (19 Nov 2026, from the user's "money leaks audit" video:
+   agents read every transaction, flag where money quietly goes, rank by
+   £ a month, and nothing changes until he approves it).
+   Rule-based, on this device, over his own logged expenses, savings and
+   budget lines. Each leak: what it is, the proof (entries and dates), what
+   it is worth a month, one action, and his decision: Plan it / Not a leak /
+   Fixed. Fixed leaks add up as "recovered", which feeds the £25k gap.
+   ============================================================ */
+const LK = { scanned: 0, anim: 0, raf: 0 };
+const lkNorm = s => String(s || '').toLowerCase().replace(/[^a-z ]+/g, ' ').replace(/\s+/g, ' ').trim().split(' ').slice(0, 3).join(' ');
+const lkCap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const lkMed = a => { const b = a.slice().sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : 0; };
+const lkDays = n => dkey(addDays(new Date(), -(n - 1)));
+function lkState(){ if (!state.leaks || typeof state.leaks !== 'object') state.leaks = {}; return state.leaks; }
+
+function lkScan(){
+  const ex = (state.expenses || []).filter(e => +e.amount > 0 && e.date), k = dkey(), d30 = lkDays(30), d90 = lkDays(90), L = [];
+  const in30 = ex.filter(e => e.date >= d30 && e.date <= k), in90 = ex.filter(e => e.date >= d90 && e.date <= k);
+  const catName = id => (catOf(id) || {}).name || id, fmtD = d => { const x = parseKey(d); return `${x.getDate()} ${MONTHS[x.getMonth()].slice(0, 3)}`; };
+  // 1. the same thing, paid again each month: a subscription or a habit with a price
+  const byNote = {}; in90.forEach(e => { const n = lkNorm(e.note); if (n.length >= 3) (byNote[n] = byNote[n] || []).push(e); });
+  Object.entries(byNote).forEach(([n, es]) => {
+    const months = new Set(es.map(e => e.date.slice(0, 7))), med = lkMed(es.map(e => +e.amount));
+    if (months.size >= 2 && es.every(e => Math.abs(+e.amount - med) <= Math.max(1, med * .2)) && es.length <= months.size * 2)
+      L.push({ id: 'sub:' + n, kind: 'Repeats monthly', cat: es[0].cat, m: med * (es.length / months.size), t: `${lkCap(n)}: ${money(med)} every month`,
+        why: `Paid ${es.length} times in ${months.size} months (${es.slice(-3).map(e => fmtD(e.date)).join(', ')})`, act: 'Still using it? Cancel, pause or move to a cheaper plan.', ids: es.map(e => e.id) });
+  });
+  // 2. little and often: many small spends that add up
+  const small = {}; in30.filter(e => +e.amount <= 8).forEach(e => { const key = lkNorm(e.note) || 'cat:' + e.cat; (small[key] = small[key] || []).push(e); });
+  Object.entries(small).forEach(([key, es]) => { if (es.length < 5) return; const tot = es.reduce((a, e) => a + +e.amount, 0), label = key.startsWith('cat:') ? catName(key.slice(4)) : lkCap(key);
+    L.push({ id: 'small:' + key, kind: 'Little and often', cat: es[0].cat, m: tot / 2, t: `${label}: ${es.length} small spends, ${money(tot)} in 30 days`,
+      why: `Average ${money(tot / es.length)} each. Halving them saves about ${money0(tot / 2)} a month`, act: 'Set a weekly cap, or swap half of them for something from home.', ids: es.map(e => e.id) }); });
+  // 3. over the budget line, and 4. creeping up against the two months before
+  CATS.forEach(c => {
+    const now = in30.filter(e => e.cat === c.id).reduce((a, e) => a + +e.amount, 0), bud = typeof catBudget === 'function' ? catBudget(c.id) : 0;
+    const prev = ex.filter(e => e.cat === c.id && e.date >= lkDays(90) && e.date < d30).reduce((a, e) => a + +e.amount, 0) / 2;
+    if (bud > 0 && now > bud + 5) L.push({ id: 'over:' + c.id, kind: 'Over budget', cat: c.id, m: now - bud, t: `${c.name}: ${money0(now - bud)} over its budget line`,
+      why: `${money0(now)} in 30 days against ${money0(bud)} planned`, act: `Open Money and pick the two biggest ${c.name.toLowerCase()} spends to cut next month.`, ids: in30.filter(e => e.cat === c.id).map(e => e.id) });
+    else if (prev > 20 && now > prev * 1.25 && now - prev > 10) L.push({ id: 'creep:' + c.id, kind: 'Creeping up', cat: c.id, m: now - prev, t: `${c.name}: up ${Math.round((now / prev - 1) * 100)}% on your usual month`,
+      why: `${money0(now)} in the last 30 days; your usual is ${money0(prev)}`, act: 'Check what is new in this category before it becomes normal.', ids: in30.filter(e => e.cat === c.id).map(e => e.id) });
+  });
+  // 5. charged twice: same amount and description within a day
+  const seen = {}; in90.slice().sort((a, b) => a.date < b.date ? -1 : 1).forEach(e => { const key = (lkNorm(e.note) || e.cat) + '|' + (+e.amount).toFixed(2), p = seen[key];
+    if (p && (parseKey(e.date) - parseKey(p.date)) / 864e5 <= 1 && +e.amount >= 3) L.push({ id: 'dup:' + p.id + ':' + e.id, kind: 'Charged twice?', cat: e.cat, m: 0, once: +e.amount,
+      t: `${lkCap(lkNorm(e.note)) || catName(e.cat)}: ${money(+e.amount)} twice`, why: `On ${fmtD(p.date)} and ${fmtD(e.date)}`, act: 'Check your bank app. If it is a double charge, ask for a refund.', ids: [p.id, e.id] });
+    seen[key] = e; });
+  // 6. pay with no job: by day 20, this month's saving is well under what the budget allows
+  const mp = monthProgress(), mk = monthKey(), savedM = (state.savings || []).filter(s => (s.date || '').startsWith(mk)).reduce((a, s) => a + +s.amount, 0), can = feasiblePerMonth();
+  if (mp.day >= 20 && can > 0 && savedM < can * .8) L.push({ id: 'nojob:' + mk, kind: 'Money with no job', cat: 'save', m: can - savedM, t: `${money0(can - savedM)} of this month’s pay has no job yet`,
+    why: `Saved ${money0(savedM)} this month; the budget leaves ${money0(can)} to save`, act: 'Move it to savings now, and set a standing order for payday.', ids: [] });
+  // 7. blind spots: days with nothing logged, where leaks hide
+  const blind = []; for (let i = 1; i <= 14; i++){ const d = lkDays(i + 1); if (!ex.some(e => e.date === d)) blind.push(d); }
+  if (blind.length >= 5) L.push({ id: 'blind:' + k, kind: 'Blind spots', cat: 'data', m: 0, t: `${blind.length} of the last 14 days have no spending logged`,
+    why: 'A day with no entries is either a no-spend day or a leak nobody can see', act: 'Log every spend before bed, or note “no spend” on Today.', ids: [] });
+  // no double counting: a creep in a category that is also over budget is dropped
+  const overCats = new Set(L.filter(x => x.kind === 'Over budget').map(x => x.cat));
+  return L.filter(x => !(x.kind === 'Creeping up' && overCats.has(x.cat))).map(x => ({ ...x, m: Math.round(x.m) })).sort((a, b) => (b.m || b.once || 0) - (a.m || a.once || 0));
+}
+function lkSummary(list = lkScan()){
+  const st = lkState(), open = list.filter(x => !st[x.id] || st[x.id].s === 'plan'), fixedM = Object.values(st).filter(v => v.s === 'fixed').reduce((a, v) => a + (+v.m || 0), 0);
+  const openM = open.reduce((a, x) => a + (x.m || 0), 0), gap = Math.max(0, needPerMonth() - feasiblePerMonth());
+  return { list, open, openM, fixedM, gap, read: (state.expenses || []).length + (state.savings || []).length };
+}
+
+/* ---------- the flow map: pay flows into each category; leaks glow red (canvas) ---------- */
+function lkMount(){
+  const cv = document.getElementById('lkMap'); if (!cv) return; cancelAnimationFrame(LK.raf);
+  const ctx = cv.getContext('2d'), d = Math.min(2, devicePixelRatio || 1), sum = lkSummary(), st = lkState();
+  const spend = {}; (state.expenses || []).filter(e => e.date >= lkDays(30)).forEach(e => { spend[e.cat] = (spend[e.cat] || 0) + +e.amount; });
+  const leakCats = {}; sum.open.forEach(x => { leakCats[x.cat] = (leakCats[x.cat] || 0) + (x.m || x.once || 0); });
+  let W = 0, H = 0, nodes = [], parts = [];
+  const lay = () => { W = cv.clientWidth; H = cv.clientHeight; if (W < 8 || H < 8) return false; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+    const cx = W * .56, cy = H * .5, rx = W * .36, ry = H * .36, cats = CATS.concat([{ id: 'save', name: 'Savings' }]);
+    nodes = [{ id: 'pay', name: 'Pay', x: W * .1, y: cy, v: +state.settings.income || 0 }].concat(cats.map((c, i) => { const a = -Math.PI / 2 + i / cats.length * Math.PI * 2;
+      return { id: c.id, name: c.name, x: cx + Math.cos(a) * rx, y: cy + Math.sin(a) * ry, v: c.id === 'save' ? (state.savings || []).filter(s => (s.date || '') >= lkDays(30)).reduce((x, s) => x + +s.amount, 0) : (spend[c.id] || 0), leak: leakCats[c.id] || 0 }; }));
+    const tot = nodes.slice(1).reduce((a, n) => a + n.v, 0) || 1, N = Math.min(900, Math.round(W * H / 260));
+    parts = Array.from({ length: N }, (_, i) => { const r = Math.random() * tot; let acc = 0, n = nodes[1]; for (const x of nodes.slice(1)){ acc += x.v; if (r <= acc){ n = x; break; } }
+      return { n, t: Math.random(), sp: .0025 + Math.random() * .004, a: Math.random() * Math.PI * 2, r: 6 + Math.random() * 26 * (n.leak ? 1.3 : 1), o: Math.random() * 1.6 - .8 }; });
+    return true; };
+  const draw = (time) => {
+    if (!cv.isConnected){ cancelAnimationFrame(LK.raf); return; }
+    ctx.clearRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter';
+    const pay = nodes[0];
+    parts.forEach(p => { p.t += p.sp * (motionOff() ? 0 : 1); if (p.t > 1.6) p.t = 0;
+      const n = p.n, k = Math.min(1, p.t), mx = (pay.x + n.x) / 2, my = (pay.y + n.y) / 2 + p.o * 60, u = k;
+      let x = (1 - u) * (1 - u) * pay.x + 2 * (1 - u) * u * mx + u * u * n.x, y = (1 - u) * (1 - u) * pay.y + 2 * (1 - u) * u * my + u * u * n.y;
+      if (p.t > 1){ p.a += .02; x = n.x + Math.cos(p.a) * p.r; y = n.y + Math.sin(p.a) * p.r * .7; }
+      const red = n.leak > 0, al = p.t > 1 ? .55 : .3;
+      ctx.fillStyle = red ? `rgba(255,${80 + (p.r | 0)},${90},${al})` : n.id === 'save' ? `rgba(120,230,170,${al})` : `rgba(200,220,255,${al})`;
+      ctx.fillRect(x, y, red ? 1.8 : 1.4, red ? 1.8 : 1.4); });
+    ctx.globalCompositeOperation = 'source-over';
+    nodes.forEach(n => { const big = n.id === 'pay', red = n.leak > 0, pulse = motionOff() ? 0 : (Math.sin(time / 500 + n.x) + 1) / 2;
+      if (red){ ctx.strokeStyle = `rgba(255,90,100,${.35 + pulse * .4})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(n.x, n.y, 16 + pulse * 6, 0, 7); ctx.stroke(); }
+      ctx.fillStyle = red ? '#FF5A64' : big ? '#F2F1ED' : n.id === 'save' ? '#7BE3A9' : '#DDE6FF'; ctx.beginPath(); ctx.arc(n.x, n.y, big ? 6 : 4.5, 0, 7); ctx.fill();
+      ctx.font = '600 11px -apple-system, "Segoe UI", sans-serif'; ctx.fillStyle = 'rgba(242,241,237,.9)'; ctx.textAlign = n.x < W * .3 ? 'left' : 'center';
+      ctx.fillText(n.name + (n.v ? ` · ${money0(n.v)}` : ''), n.x + (big ? 10 : 0), n.y - (big ? 10 : 12));
+      if (red){ ctx.fillStyle = '#FF8A90'; ctx.font = '700 11px -apple-system, "Segoe UI", sans-serif'; ctx.fillText(n.leak ? `${money0(n.leak)} a month` : 'check', n.x, n.y + 24); } });
+    if (!motionOff()) LK.raf = requestAnimationFrame(draw);
+  };
+  if (lay()) draw(0);
+  if (!LK.ro){ LK.ro = new ResizeObserver(() => { const c = document.getElementById('lkMap'); if (c) lkMount(); }); }
+  try { LK.ro.disconnect(); LK.ro.observe(cv); } catch(_){}
+}
+
+function lkHTML(){
+  const s = lkSummary(), st = lkState(), share = s.gap ? Math.min(100, Math.round((s.openM + s.fixedM) / s.gap * 100)) : 0;
+  const row = (x, i) => { const v = st[x.id] || {}, sv = v.s || '';
+    return `<li class="lk-row ${sv}${LK.anim ? ' in' : ''}" style="--d:${i * 90}ms">
+      <div class="lk-n">${String(i + 1).padStart(2, '0')}</div>
+      <div class="lk-b"><small>${esc(x.kind)}${sv === 'plan' ? ' · <b>planned</b>' : sv === 'fixed' ? ' · <b>fixed</b>' : ''}</small><b>${esc(x.t)}</b><span>${esc(x.why)}</span><em>${esc(x.act)}</em></div>
+      <div class="lk-v"><b>${x.m ? money0(x.m) : x.once ? money(x.once) : '–'}</b><small>${x.m ? 'a month' : x.once ? 'one-off' : 'no £ yet'}</small></div>
+      <div class="lk-acts">${sv === 'fixed' ? `<button class="btn btn-soft sm" data-lk="undo" data-id="${esc(x.id)}">Undo</button>`
+        : `${sv !== 'plan' ? `<button class="btn btn-deep sm" data-lk="plan" data-id="${esc(x.id)}">Plan it</button>` : ''}<button class="btn btn-soft sm" data-lk="fixed" data-id="${esc(x.id)}">Fixed</button><button class="btn btn-soft sm" data-lk="ignore" data-id="${esc(x.id)}">Not a leak</button>`}</div></li>`; };
+  const shown = s.list.filter(x => (st[x.id] || {}).s !== 'ignore'), ignored = s.list.length - shown.length;
+  return `<section class="lk" id="lkRoot" aria-label="Money leaks">
+    <div class="lk-head"><div><small>Money leaks · audit of your own entries</small><b>${s.open.length ? `${money0(s.openM)} a month could be yours again` : 'No leaks found right now'}</b>
+      <span>Read ${s.read} entries on this device. Nothing changes until you choose. ${s.gap ? `Your £25k gap is ${money0(s.gap)} a month; these leaks cover ${share}% of it.` : ''}</span></div>
+      <div class="lk-kpis"><div><small>Open</small><b>${s.open.length}</b></div><div><small>Could save</small><b class="hot">${money0(s.openM)}</b></div><div><small>A year</small><b>${money0(s.openM * 12)}</b></div><div><small>Recovered</small><b class="ok">${money0(s.fixedM)}</b></div></div>
+      <button class="btn btn-deep" data-lk="scan">${LK.scanned ? 'Run the audit again' : 'Run the audit'}</button></div>
+    <div class="lk-grid"><div class="lk-mapw"><canvas id="lkMap" aria-label="Where your pay went in the last 30 days. Red rings are leaks."></canvas><div class="lk-scan" id="lkScan" hidden><i></i><span>Reading entries…</span></div>
+      <p class="lk-key"><span><i class="w"></i>spending</span><span><i class="g"></i>savings</span><span><i class="r"></i>leak</span> · last 30 days</p></div>
+      <ol class="lk-list">${shown.length ? shown.map(row).join('') : `<li class="lk-empty">Nothing flagged. Keep logging every spend, and the audit gets sharper each week.</li>`}
+      ${ignored ? `<li class="lk-ign"><button class="btn btn-soft sm" data-lk="unignore">Show ${ignored} marked “not a leak”</button></li>` : ''}</ol></div></section>`;
+}
+renderMoney = (orig => function(){ const h = orig.apply(this, arguments), i = h.indexOf('<div class="h2'); return i < 0 ? lkHTML() + h : h.slice(0, i) + lkHTML() + h.slice(i); })(renderMoney);
+renderView = (orig => function(tab){ const r = orig.apply(this, arguments); if (tab === 'money') requestAnimationFrame(lkMount); return r; })(renderView);
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-lk]'); if (!b) return; e.stopPropagation(); const a = b.dataset.lk, st = lkState();
+  if (a === 'scan'){ const sc = document.getElementById('lkScan'), n = lkSummary().read; if (sc && !motionOff()){ sc.hidden = false; let i = 0; const t = setInterval(() => { i = Math.min(n, i + Math.ceil(n / 12)); sc.querySelector('span').textContent = `Reading ${i} of ${n} entries…`; if (i >= n){ clearInterval(t); setTimeout(() => { LK.scanned = Date.now(); LK.anim = 1; renderView('money'); LK.anim = 0; }, 350); } }, 90); }
+    else { LK.scanned = Date.now(); renderView('money'); } return; }
+  if (a === 'unignore'){ Object.keys(st).forEach(k => { if (st[k].s === 'ignore') delete st[k]; }); save(); renderView('money'); return; }
+  const x = lkScan().find(q => q.id === b.dataset.id); if (!x) return;
+  if (a === 'undo') delete st[x.id];
+  else { st[x.id] = { s: a, at: Date.now(), m: x.m || 0, t: x.t }; if (a === 'fixed') toast(x.m ? `${money0(x.m)} a month back in your plan.` : 'Marked as fixed.', 'ok', 2000); if (a === 'plan') toast('Added to your plan. Do it this week.', 'ok', 1800); }
+  if (a === 'plan' && state.coachPlan && Array.isArray(state.coachPlan.items) && !state.coachPlan.items.some(it => it.lk === x.id)) state.coachPlan.items.push({ id: 'lk' + Date.now().toString(36), t: x.act.split('.')[0], why: x.t, src: 'me', go: 'money', icon: 'piggy', lk: x.id });
+  save(); renderView('money'); updateChrome();
+}, true);
+
+/* the Money agent reports the two biggest open leaks */
+(() => { const ag = typeof AGENTS !== 'undefined' && AGENTS.find(a => a.id === 'money'); if (!ag) return; const run = ag.run;
+  ag.run = function(c){ const r = run.call(this, c); try { const s = lkSummary(); s.open.slice(0, 2).forEach(x => r.findings.push({ id: 'leak-' + x.id, t: x.m ? `Leak: ${x.t} (${money0(x.m)} a month)` : `Leak: ${x.t}`, why: x.act, go: 'money', sev: x.m >= 40 ? 3 : 2 }));
+    r.kpis.push(['Leaks', s.open.length, s.openM ? `${money0(s.openM)} a month` : 'none open']); } catch(_){} return r; }; })();
+
+</script>
+<script data-src="src/js/69k-brain.js">
+/* ============================================================
+   BRAIN (19 Nov 2026, from the user's "second brain" video: one map,
+   three lanes around it, one topic per file, and every answer comes from
+   the file the map points to, named, or an honest "never stored").
+   - Lanes: notes (facts, engineering), people (contacts), projects (what
+     is shipping). Pinned to the map: memory, lessons, decision log.
+   - Library: his knowledge packs and the engineering glossary, read-only,
+     so the brain can answer from day one.
+   - Ask: local search only. The answer quotes the best file and names it
+     (lane/slug.md). Nothing matched: "Never stored." with "Add it".
+     "Ask Claude about this note" sends only that one file (daily limit).
+   - Data: state.brain (synced with everything else). Export = one .md.
+   ============================================================ */
+const BR_LANES = [
+  ['notes', 'Notes', 'facts, how things work, what you learned', 'book'],
+  ['people', 'People', 'contacts: who, where you met, what next', 'target'],
+  ['projects', 'Projects', 'what you are building or chasing, and its next step', 'bolt'],
+  ['memory', 'Memory', 'things about you that should never be forgotten', 'lock'],
+  ['lessons', 'Lessons', 'mistakes and what you do differently now', 'flame'],
+  ['decisions', 'Decisions', 'what you decided, when, and why', 'check'],
+  ['library', 'Library', 'your knowledge packs and engineering words (read-only)', 'gears']
+];
+const BR_FIELDS = { people: [['role', 'Role'], ['org', 'Company'], ['where', 'Where you met'], ['next', 'Next step']], projects: [['status', 'Status'], ['next', 'Next step'], ['due', 'Due']] };
+const BR = { lane: 'notes', edit: null, q: '', res: null, step: -1, del: '' };
+const brSlug = t => String(t || 'untitled').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48) || 'untitled';
+const BR_STOP = new Set('a an the and or of to in on at for with is are was were be been it this that what who when where why how do does did i me my you your we our about from by as can could should would will just any some there their them his her has have had which into than then so if not no yes please tell show give find'.split(' '));
+const brStem = w => w.replace(/(ings?|edly|ed|ly|es|s)$/,'');
+const BR_SYN = { met: 'meet', meeting: 'meet', bought: 'buy', paid: 'pay', spent: 'spend', chose: 'choose', decided: 'decide', learnt: 'learn', learned: 'learn' };
+const brTok = s => String(s || '').toLowerCase().replace(/[^a-z0-9£ ]+/g, ' ').split(/\s+/).filter(w => w.length > 1 && !BR_STOP.has(w)).map(w => BR_SYN[w] || w).map(brStem);
+
+function brState(){ if (!state.brain || typeof state.brain !== 'object') state.brain = {}; BR_LANES.forEach(([id]) => { if (id !== 'library' && !Array.isArray(state.brain[id])) state.brain[id] = []; }); if (!state.brain.seeded){ brSeed(); } return state.brain; }
+function brSeed(){
+  const b = state.brain, now = Date.now(), s = state.settings || {}, p = state.profile || {}, mk = (t, body, extra = {}) => ({ id: 'b' + Math.random().toString(36).slice(2, 9), slug: brSlug(t), title: t, body, at: now, ...extra });
+  b.memory.push(mk('My goals this year', `Save ${money0(+s.goal || 25000)} in a year. IELTS Academic band ${s.ieltsTarget || 7}. Get into a manufacturing or design engineering role and build the practical side of the job.`));
+  if (p.degree) b.memory.push(mk('My degree', String(p.degree)));
+  b.projects.push(mk('Daily Coach app', 'My own app that runs my day: training, English, engineering, money and agents.', { status: 'Building', next: 'Use it every day and log honestly' }));
+  b.projects.push(mk('IELTS band 7', 'Writing, speaking and vocabulary practice in Learn.', { status: 'In progress', next: s.examDate ? `Exam on ${s.examDate}` : 'Book the exam date' }));
+  b.decisions.push(mk('Keep my data private', 'My data stays in my browser and my own private cloud copy. Never put ID documents or my CV PDF in the app.'));
+  b.seeded = 1;
+}
+function brLibrary(){
+  const out = [];
+  try { (KNOWLEDGE_PACKS || []).forEach(k => out.push({ id: 'pk-' + k.id, slug: brSlug(k.title), title: k.title, body: (k.points || []).join(' ') + (k.ask ? ' Ask yourself: ' + k.ask : ''), tags: k.tag, lib: 'pack', ref: k.id })); } catch(_){}
+  try { (GLOSS || []).forEach(g => out.push({ id: 'gx-' + brSlug(g[0]), slug: brSlug(g[0]), title: g[0], body: `${g[2]} In Burmese: ${g[1]}.`, tags: g[3], lib: 'word' })); } catch(_){}
+  return out;
+}
+function brAll(){ const b = brState(), all = []; BR_LANES.forEach(([id]) => { (id === 'library' ? brLibrary() : b[id]).forEach(e => all.push({ ...e, lane: id })); }); return all; }
+const brText = e => [e.title, e.title, e.title, e.tags, e.tags, e.body, ...Object.keys(BR_FIELDS[e.lane] ? Object.fromEntries(BR_FIELDS[e.lane]) : {}).map(f => e[f])].filter(Boolean).join(' ');
+const brPath = e => `${e.lane}/${e.slug}.md`;
+
+function brAsk(q){
+  const qt = [...new Set(brTok(q))]; if (!qt.length) return { q, hits: [], qt };
+  const hits = brAll().map(e => { const tt = brTok(e.title), bt = brTok(brText(e)); let sc = 0, hit = 0;
+    qt.forEach(w => { const inT = tt.some(x => x === w || (w.length > 3 && x.startsWith(w))), inB = bt.filter(x => x === w || (w.length > 3 && x.startsWith(w))).length; if (inT || inB) hit++; sc += (inT ? 4 : 0) + Math.min(3, inB); });
+    sc *= .5 + .5 * hit / qt.length; if (e.lane === 'library') sc *= .85; return { e, sc, hit }; })
+    .filter(h => h.sc >= 1.5 && h.hit / qt.length >= .5).sort((a, b) => b.sc - a.sc).slice(0, 3);
+  return { q, qt, hits };
+}
+function brAnswer(h, qt){
+  const e = h.e, f = BR_FIELDS[e.lane];
+  if (e.lane === 'people') return `${e.title}${e.role ? `, ${e.role}` : ''}${e.org ? ` at ${e.org}` : ''}. ${e.where ? `Met: ${e.where}. ` : ''}${e.next ? `Next: ${e.next}. ` : ''}${e.body || ''}`.trim();
+  const sent = String(e.body || '').split(/(?<=[.!?])\s+/).filter(Boolean);
+  const best = sent.map(s => ({ s, n: brTok(s).filter(w => qt.includes(w)).length })).filter(x => x.n).sort((a, b) => b.n - a.n).slice(0, 2).map(x => x.s);
+  const extra = f ? f.map(([k, l]) => e[k] ? `${l}: ${e[k]}.` : '').filter(Boolean).join(' ') : '';
+  return ((best.length ? best.join(' ') : sent.slice(0, 2).join(' ')) + (extra ? ' ' + extra : '')).trim() || e.title;
+}
+
+/* ---------- the map: a loop of three lanes around one map file (SVG) ---------- */
+function brMapSVG(){
+  const b = brState(), W = 560, H = 330, cx = W / 2, cy = H / 2, hitId = BR.res && BR.res.hits[0] && BR.res.hits[0].e.id;
+  const rings = [['notes', 150, 52, -8], ['people', 205, 88, 6], ['projects', 258, 124, -4]], lib = brLibrary().length;
+  const pos = (rx, ry, rot, i, n) => { const a = -Math.PI / 2 + (i + .5) / Math.max(1, n) * Math.PI * 2, r = rot * Math.PI / 180, x = Math.cos(a) * rx, y = Math.sin(a) * ry; return [cx + x * Math.cos(r) - y * Math.sin(r), cy + x * Math.sin(r) + y * Math.cos(r)]; };
+  let hitXY = null;
+  const dots = rings.map(([lane, rx, ry, rot]) => { const es = b[lane].slice(0, 40);
+    return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" transform="rotate(${rot} ${cx} ${cy})" class="br-lane ${lane}"/>` + es.map((e, i) => { const [x, y] = pos(rx, ry, rot, i, es.length), on = e.id === hitId; if (on) hitXY = [x, y];
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${on ? 6 : 3.6}" class="br-dot ${lane}${on ? ' hit' : ''}" data-br-open="${e.id}"><title>${esc(lane + '/' + e.slug)}.md</title></circle>`; }).join('')
+      + `<text x="${(cx + rx * .72).toFixed(0)}" y="${(cy - ry - 6).toFixed(0)}" class="br-ll">${lane} · ${b[lane].length}</text>`; }).join('');
+  const pins = [['memory', -78], ['lessons', 0], ['decisions', 78]].map(([l, dx]) => `<g class="br-pin" data-br-lane="${l}"><rect x="${cx + dx - 34}" y="${cy + 26}" width="68" height="18" rx="9"/><text x="${cx + dx}" y="${cy + 38.5}">${l} ${b[l].length}</text></g>`).join('');
+  const path = hitXY ? `<path id="brPath" d="M${cx} ${cy} Q${((cx + hitXY[0]) / 2).toFixed(0)} ${(Math.min(cy, hitXY[1]) - 40).toFixed(0)} ${hitXY[0].toFixed(1)} ${hitXY[1].toFixed(1)}" class="br-route"/>${motionOff() ? '' : `<circle r="4" class="br-pulse"><animateMotion dur="1.4s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;.5;1" calcMode="linear"><mpath href="#brPath"/></animateMotion></circle>`}` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" class="br-map" role="img" aria-label="Your brain: one map with notes, people and projects around it">
+    <ellipse cx="${cx}" cy="${cy}" rx="272" ry="150" class="br-libring"/><text x="${cx}" y="${cy + 146}" class="br-ll lib">library · ${lib} files, read-only</text>
+    ${dots}${path}<g class="br-core" data-br-lane="map"><rect x="${cx - 46}" y="${cy - 16}" width="92" height="32" rx="16"/><text x="${cx}" y="${cy + 5}">map.md</text></g>${pins}</svg>`;
+}
+const BR_STEPS = ['Load map', 'Parse', 'Locate', 'Open', 'Cited'];
+function brResHTML(){
+  const r = BR.res; if (!r) return `<p class="br-hint">Ask anything you have saved: “who did I meet at the interview?”, “what is mould shrinkage?”, “why did I pick this budget?”</p>`;
+  const steps = BR_STEPS.map((s, i) => { const done = BR.step < 0 || i <= BR.step, last = i === 4; return `<span class="br-st ${done ? 'on' : ''}${last && !r.hits.length && done ? ' miss' : ''}">${last && !r.hits.length ? 'Not found' : s}</span>`; }).join('<i></i>');
+  if (BR.step >= 0 && BR.step < 4) return `<div class="br-steps">${steps}</div>`;
+  if (!r.hits.length) return `<div class="br-steps">${steps}</div><div class="br-ans miss"><b>Never stored.</b><p>Nothing in your map answers “${esc(r.q)}”. I won’t guess.</p><button class="btn btn-deep sm" data-br-new="notes" data-br-title="${esc(r.q.slice(0, 60))}">Add it as a note</button></div>`;
+  const h = r.hits[0], e = h.e;
+  return `<div class="br-steps">${steps}</div><div class="br-ans"><p>${esc(brAnswer(h, r.qt))}</p>
+    <div class="br-cite"><button class="br-file" data-br-open="${e.id}">${ic(BR_LANES.find(l => l[0] === e.lane)[3], 13)} ${esc(brPath(e))}</button>${e.lib === 'pack' ? '<span>from your knowledge packs</span>' : e.lib === 'word' ? '<span>from your engineering words</span>' : ''}</div>
+    ${r.hits.length > 1 ? `<div class="br-also">Also: ${r.hits.slice(1).map(x => `<button class="br-file sm" data-br-open="${x.e.id}">${esc(brPath(x.e))}</button>`).join(' ')}</div>` : ''}
+    <button class="btn btn-soft sm" data-br-claude="${e.id}">Ask Claude about this note only</button></div>`;
+}
+function brEditHTML(){
+  const ed = BR.edit; if (!ed) return '';
+  const e = ed.id ? brAll().find(x => x.id === ed.id) : { lane: ed.lane, title: ed.title || '', body: '' }, ro = e.lane === 'library', f = BR_FIELDS[e.lane] || [];
+  return `<div class="br-ed" role="dialog" aria-label="${ro ? 'Library file' : 'Edit file'}"><div class="br-edh"><b>${esc(e.lane)}/${esc(brSlug(e.title) || 'new-file')}.md</b><button class="br-x" data-br-close aria-label="Close">${ic('x', 16)}</button></div>
+    ${ro ? `<h4>${esc(e.title)}</h4><p class="br-ro">${esc(e.body)}</p>${e.lib === 'pack' ? `<button class="btn btn-soft sm" data-a="go" data-go="learn">Open in Learn</button>` : ''}`
+      : `<label>Title<input id="brT" maxlength="80" value="${esc(e.title)}" placeholder="${e.lane === 'people' ? 'Full name' : 'One topic, e.g. Mould shrinkage on PP trays'}"></label>
+        ${f.map(([k, l]) => `<label>${l}<input id="brF-${k}" maxlength="120" value="${esc(e[k] || '')}"></label>`).join('')}
+        <label>${e.lane === 'decisions' ? 'What and why' : 'Text'}<textarea id="brB" rows="6" maxlength="4000" placeholder="Write it the way you would say it to a friend.">${esc(e.body || '')}</textarea></label>
+        <label>Tags<input id="brG" maxlength="80" value="${esc(e.tags || '')}" placeholder="e.g. thermoforming, quality"></label>
+        <div class="br-edf"><button class="btn btn-deep" data-br-save="${esc(ed.id || '')}" data-br-lane2="${e.lane}">Save</button>${ed.id ? `<button class="btn btn-soft" data-br-del="${ed.id}">${BR.del === ed.id ? 'Tap again to delete' : 'Delete'}</button>` : ''}</div>`}</div>`;
+}
+function renderBrain(){
+  const b = brState(), lane = BR.lane, list = lane === 'library' ? brLibrary() : b[lane].slice().sort((x, y) => y.at - x.at), total = BR_LANES.slice(0, 6).reduce((a, [id]) => a + b[id].length, 0);
+  const mapMd = `# map.md · what lives where\n${BR_LANES.map(([id, n, d]) => `${id}/  ${n.toLowerCase()}: ${d} (${id === 'library' ? brLibrary().length : b[id].length})`).join('\n')}\nRule: answer only from the file this map points to, and name it. Never stored? Say so.`;
+  return `<div class="br" id="brRoot">
+    <header class="br-top"><div><small>${total} files · one map · nothing invented</small><h2>Brain</h2><p>Every answer comes from one of your files, named, or it says “never stored”.</p></div>
+      <div class="br-acts"><button class="btn btn-soft sm" data-br-export>${ic('download', 14)} Download as Markdown</button></div></header>
+    <form class="br-ask" data-br-ask><input id="brQ" value="${esc(BR.q)}" placeholder="Ask your brain…" aria-label="Ask your brain" autocomplete="off"><button class="btn btn-deep" type="submit">Ask</button></form>
+    <div class="br-res" id="brRes" aria-live="polite">${brResHTML()}</div>
+    <div class="br-grid"><section class="br-mapw">${brMapSVG()}<pre class="br-md">${esc(mapMd)}</pre></section>
+      <section class="br-files"><div class="br-tabs" role="tablist">${BR_LANES.map(([id, n, , icn]) => `<button role="tab" aria-selected="${lane === id}" class="${lane === id ? 'on' : ''}" data-br-lane="${id}">${ic(icn, 13)} ${n} <em>${id === 'library' ? brLibrary().length : b[id].length}</em></button>`).join('')}</div>
+        <p class="br-ld">${esc(BR_LANES.find(l => l[0] === lane)[2])}</p>
+        ${lane !== 'library' ? `<button class="br-add" data-br-new="${lane}">${ic('plus', 14)} New ${lane === 'people' ? 'person' : lane.replace(/s$/, '')}</button>` : ''}
+        <ul class="br-list">${list.slice(0, lane === 'library' ? 60 : 200).map(e => `<li><button data-br-open="${e.id}"><b>${esc(e.title)}</b><small>${esc(lane)}/${esc(e.slug)}.md${e.at ? ' · ' + new Date(e.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</small><span>${esc(String(e.lane === 'people' ? [e.role, e.org].filter(Boolean).join(' at ') || e.body || '' : e.body || '').slice(0, 110))}</span></button></li>`).join('') || `<li class="br-empty">Nothing here yet. One topic per file: small and easy to find.</li>`}</ul></section></div>
+    ${brEditHTML()}</div>`;
+}
+
+function brRun(q){
+  BR.q = q; BR.res = brAsk(q); BR.edit = null;
+  const out = document.getElementById('brRes'), paint = () => { const o = document.getElementById('brRes'); if (o) o.innerHTML = brResHTML(); };
+  if (motionOff() || !out){ BR.step = -1; renderView('brain'); return; }
+  BR.step = 0; paint(); let i = 0; const t = setInterval(() => { i++; BR.step = i; paint(); if (i >= 4){ clearInterval(t); BR.step = -1; renderView('brain'); const qi = document.getElementById('brQ'); } }, 260);
+}
+function brSave(id, lane){
+  const b = brState(), v = s => (document.getElementById(s) || {}).value || '', title = v('brT').trim();
+  if (!title){ toast('Give it a title: one topic per file.', 'warn', 1800); return; }
+  const rec = id ? b[lane].find(e => e.id === id) : { id: 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5) };
+  Object.assign(rec, { title, slug: brSlug(title), body: v('brB').trim(), tags: v('brG').trim(), at: Date.now() });
+  (BR_FIELDS[lane] || []).forEach(([k]) => { rec[k] = v('brF-' + k).trim(); });
+  if (!id) b[lane].push(rec);
+  const dup = b[lane].filter(e => e.slug === rec.slug && e.id !== rec.id).length; if (dup) rec.slug += '-' + (dup + 1);
+  BR.edit = null; BR.lane = lane; save(); renderView('brain'); toast(`Saved as ${lane}/${rec.slug}.md`, 'ok', 1800);
+}
+async function brClaude(id){
+  const e = brAll().find(x => x.id === id); if (!e) return;
+  aiOpen('chat');
+  const prompt = `Answer my question using ONLY this one file from my notes. Cite it as ${brPath(e)}. If the file does not answer it, say "Never stored." and nothing else.\n\nQuestion: ${BR.q}\n\n--- ${brPath(e)} ---\n${e.title}\n${brText(e).slice(0, 2500)}`;
+  try { await aiSend(prompt); } catch(_){}
+}
+
+document.addEventListener('submit', ev => { const f = ev.target.closest('[data-br-ask]'); if (!f) return; ev.preventDefault(); const q = (document.getElementById('brQ') || {}).value || ''; if (q.trim()) brRun(q.trim()); }, true);
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('#brRoot [data-br-lane], #brRoot [data-br-open], #brRoot [data-br-new], #brRoot [data-br-close], #brRoot [data-br-save], #brRoot [data-br-del], #brRoot [data-br-export], #brRoot [data-br-claude]'); if (!t) return;
+  ev.stopPropagation(); state._lastEdit = Date.now();
+  if (t.dataset.brLane){ if (t.dataset.brLane !== 'map'){ BR.lane = t.dataset.brLane; BR.edit = null; } renderView('brain'); return; }
+  if (t.dataset.brOpen){ const e = brAll().find(x => x.id === t.dataset.brOpen); if (e){ BR.lane = e.lane; BR.edit = { id: e.id }; BR.del = ''; renderView('brain'); setTimeout(() => document.querySelector('#brRoot .br-ed')?.scrollIntoView({ block: 'nearest', behavior: motionOff() ? 'auto' : 'smooth' }), 30); } return; }
+  if (t.dataset.brNew){ BR.lane = t.dataset.brNew; BR.edit = { lane: t.dataset.brNew, title: t.dataset.brTitle || '' }; renderView('brain'); setTimeout(() => document.getElementById('brT')?.focus(), 30); return; }
+  if (t.hasAttribute('data-br-close')){ BR.edit = null; renderView('brain'); return; }
+  if (t.hasAttribute('data-br-save')){ brSave(t.dataset.brSave, t.dataset.brLane2); return; }
+  if (t.dataset.brDel){ if (BR.del !== t.dataset.brDel){ BR.del = t.dataset.brDel; renderView('brain'); return; } const b = brState(); BR_LANES.forEach(([l]) => { if (Array.isArray(b[l])) b[l] = b[l].filter(e => e.id !== t.dataset.brDel); }); BR.edit = null; BR.del = ''; save(); renderView('brain'); toast('Deleted.', 'ok', 1400); return; }
+  if (t.hasAttribute('data-br-export')){ const b = brState(), md = ['# My brain · exported ' + dkey(), '', ...BR_LANES.slice(0, 6).flatMap(([l]) => b[l].map(e => `## ${l}/${e.slug}.md\n# ${e.title}\n${(BR_FIELDS[l] || []).map(([k, n]) => e[k] ? `- ${n}: ${e[k]}` : '').filter(Boolean).join('\n')}\n${e.body || ''}${e.tags ? `\n\nTags: ${e.tags}` : ''}\n`))].join('\n'); dcSave(`brain-${dkey()}.md`, md, 'Brain'); return; }
+  if (t.dataset.brClaude){ brClaude(t.dataset.brClaude); return; }
+}, true);
+
+/* register the tab */
+if (typeof TABS !== 'undefined' && !TABS.find(t => t.id === 'brain')) TABS.push({ id: 'brain', name: 'Brain', icon: 'book', title: 'Brain', sub: 'One map of your notes, people and projects. Answers name their file, or say never stored.' });
+renderView = (orig => function(tab){
+  if (tab !== 'brain') return orig.apply(this, arguments);
+  const el = document.getElementById('view-brain'); if (el){ el.innerHTML = renderBrain(); try { if (typeof glassWatch === 'function') glassWatch(el); } catch(_){} }
+})(renderView);
 
 </script>
 <script data-src="src/js/70-boot.js">
