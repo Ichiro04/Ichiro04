@@ -170,7 +170,7 @@ async function syInit(){
       try { const fr = syFresh((await db.collection('m').get()).docs); if (fr.length){ const need = await syPull(fr); SY.at = Date.now(); syStatus('on'); if (Date.now() - SY.toastAt > 60000){ SY.toastAt = Date.now(); toast('Updated with changes from your other device.', 'ok', 2200); } if (need && syEdited()) SY.again = true; } } catch(_){ }
       SY.busy = false; if (SY.again || SY.pending){ SY.again = false; syPush(); } }, 600);
   }, () => {});
-  syBriefingWatch();
+  syBriefingWatch(); syInboxWatch();
 }
 /* remember when the person (not an automatic job) last changed something: used on clashes */
 document.addEventListener('click', e => { if (e.target.closest('button, [data-a], input, select, label')) state._lastEdit = Date.now(); }, true);
@@ -220,3 +220,29 @@ setBody = (orig => function(sec){ const h = orig.apply(this, arguments); if (sec
 document.addEventListener('click', e => { const b = e.target.closest('[data-sync-now]'); if (!b) return; e.stopPropagation(); (async () => { syDigestAt = 0; state._lastEdit = Date.now(); await syPush(); toast('Synced.', 'ok', 1400); })(); }); // a push pulls other devices' changes first });
 
 setTimeout(syInit, 0);
+
+/* ---------- inbox: data packs Claude adds from screenshots or statements (19 Nov 2026) ----------
+   Claude writes { pack:'daily-coach-add', from, days, expenses } to inbox/<id> in this artifact's own
+   database (owner-only). The first device to see it adds it with packMerge (idempotent: spending by id,
+   notes once), records the id in state.inboxDone (synced, so other devices skip it) and deletes the doc. */
+function syInboxWatch(){
+  if (!SY.db) return;
+  SY.unsubI = SY.db.collection('inbox').onSnapshot(q => {
+    const todo = q.docs.filter(d => d.exists && !(state.inboxDone || {})[d.id]);
+    if (!todo.length) return;
+    clearTimeout(SY.inT); SY.inT = setTimeout(() => syInboxApply(todo), 500);
+  }, () => {});
+}
+function syInboxApply(docs){
+  state.inboxDone = state.inboxDone || {}; const tot = { d: 0, e: 0 }, from = [];
+  docs.forEach(d => {
+    if (state.inboxDone[d.id]) return; let p = null; try { p = d.data(); } catch(_){ }
+    if (!p || p.pack !== 'daily-coach-add') return;
+    const r = packMerge(p); tot.d += r.d; tot.e += r.e; state.inboxDone[d.id] = Date.now(); from.push(p.from || d.id);
+    SY.db.doc('inbox/' + d.id).delete().catch(() => {});
+  });
+  if (!from.length) return;
+  const ids = Object.keys(state.inboxDone).sort((a, b) => state.inboxDone[b] - state.inboxDone[a]); ids.slice(50).forEach(id => delete state.inboxDone[id]);
+  save(); if (typeof syRedraw === 'function') syRedraw(); else renderView(activeTab);
+  toast(`Claude added ${tot.d} day${tot.d === 1 ? '' : 's'} and ${tot.e} spend${tot.e === 1 ? '' : 's'}: ${from.join('; ')}.`, 'ok', 6000);
+}
