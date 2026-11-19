@@ -104,19 +104,26 @@ function brEditHTML(){
         <label>Tags<input id="brG" maxlength="80" value="${esc(e.tags || '')}" placeholder="e.g. thermoforming, quality"></label>
         <div class="br-edf"><button class="btn btn-deep" data-br-save="${esc(ed.id || '')}" data-br-lane2="${e.lane}">Save</button>${ed.id ? `<button class="btn btn-soft" data-br-del="${ed.id}">${BR.del === ed.id ? 'Tap again to delete' : 'Delete'}</button>` : ''}</div>`}</div>`;
 }
+/* Fills the gap under a short list: the newest files from the other sections (19 Nov 2026). */
+function brLatestHTML(lane, n){
+  if (lane === 'library' || n >= 4) return '';
+  const b = brState(), rest = BR_LANES.slice(0, 6).filter(([id]) => id !== lane).flatMap(([id]) => b[id].map(e => ({ ...e, lane: id }))).sort((x, y) => (y.at || 0) - (x.at || 0)).slice(0, 5 - n);
+  if (!rest.length) return '';
+  return `<p class="br-ld">Latest in the rest of your brain</p><ul class="br-list">${rest.map(e => `<li><button data-br-open="${e.id}"><b>${esc(e.title)}</b><small>${esc(e.lane)}/${esc(e.slug)}.md</small><span>${esc(String(e.body || '').slice(0, 110))}</span></button></li>`).join('')}</ul>`;
+}
 function renderBrain(){
   const b = brState(), lane = BR.lane, list = lane === 'library' ? brLibrary() : b[lane].slice().sort((x, y) => y.at - x.at), total = BR_LANES.slice(0, 6).reduce((a, [id]) => a + b[id].length, 0);
   const mapMd = `# map.md · what lives where\n${BR_LANES.map(([id, n, d]) => `${id}/  ${n.toLowerCase()}: ${d} (${id === 'library' ? brLibrary().length : b[id].length})`).join('\n')}\nRule: answer only from the file this map points to, and name it. Never stored? Say so.`;
   return `<div class="br" id="brRoot">
-    <header class="br-top"><div><small>${total} files · one map · nothing invented</small><h2>Brain</h2><p>Every answer comes from one of your files, named, or it says “never stored”.</p></div>
+    <div class="br-head"><header class="br-top"><div><small>${total} files · one map · nothing invented</small><h2>Brain</h2><p>Every answer comes from one of your files, named, or it says “never stored”.</p></div>
       <div class="br-acts"><button class="btn btn-soft sm" data-br-export>${ic('download', 14)} Download as Markdown</button></div></header>
     <form class="br-ask" data-br-ask><input id="brQ" value="${esc(BR.q)}" placeholder="Ask your brain…" aria-label="Ask your brain" autocomplete="off"><button class="btn btn-deep" type="submit">Ask</button></form>
-    <div class="br-res" id="brRes" aria-live="polite">${brResHTML()}</div>
+    <div class="br-res" id="brRes" aria-live="polite">${brResHTML()}</div></div>
     <div class="br-grid"><section class="br-mapw">${brMapSVG()}<pre class="br-md">${esc(mapMd)}</pre></section>
       <section class="br-files"><div class="br-tabs" role="tablist">${BR_LANES.map(([id, n, , icn]) => `<button role="tab" aria-selected="${lane === id}" class="${lane === id ? 'on' : ''}" data-br-lane="${id}">${ic(icn, 13)} ${n} <em>${id === 'library' ? brLibrary().length : b[id].length}</em></button>`).join('')}</div>
         <p class="br-ld">${esc(BR_LANES.find(l => l[0] === lane)[2])}</p>
         ${lane !== 'library' ? `<button class="br-add" data-br-new="${lane}">${ic('plus', 14)} New ${lane === 'people' ? 'person' : lane.replace(/s$/, '')}</button>` : ''}
-        <ul class="br-list">${list.slice(0, lane === 'library' ? 60 : 200).map(e => `<li><button data-br-open="${e.id}"><b>${esc(e.title)}</b><small>${esc(lane)}/${esc(e.slug)}.md${e.at ? ' · ' + new Date(e.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</small><span>${esc(String(e.lane === 'people' ? [e.role, e.org].filter(Boolean).join(' at ') || e.body || '' : e.body || '').slice(0, 110))}</span></button></li>`).join('') || `<li class="br-empty">Nothing here yet. One topic per file: small and easy to find.</li>`}</ul></section></div>
+        <ul class="br-list">${list.slice(0, lane === 'library' ? 60 : 200).map(e => `<li><button data-br-open="${e.id}"><b>${esc(e.title)}</b><small>${esc(lane)}/${esc(e.slug)}.md${e.at ? ' · ' + new Date(e.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</small><span>${esc(String(e.lane === 'people' ? [e.role, e.org].filter(Boolean).join(' at ') || e.body || '' : e.body || '').slice(0, 110))}</span></button></li>`).join('') || `<li class="br-empty">Nothing here yet. One topic per file: small and easy to find.</li>`}</ul>${brLatestHTML(lane, list.length)}</section></div>
     ${brEditHTML()}</div>`;
 }
 

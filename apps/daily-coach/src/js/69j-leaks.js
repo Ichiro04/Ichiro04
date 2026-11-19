@@ -80,22 +80,23 @@ function lkMount(){
     return true; };
   const draw = (time) => {
     if (!cv.isConnected){ cancelAnimationFrame(LK.raf); return; }
-    ctx.clearRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter';
+    ctx.clearRect(0, 0, W, H);
     const pay = nodes[0];
     parts.forEach(p => { p.t += p.sp * (motionOff() ? 0 : 1); if (p.t > 1.6) p.t = 0;
       const n = p.n, k = Math.min(1, p.t), mx = (pay.x + n.x) / 2, my = (pay.y + n.y) / 2 + p.o * 60, u = k;
       let x = (1 - u) * (1 - u) * pay.x + 2 * (1 - u) * u * mx + u * u * n.x, y = (1 - u) * (1 - u) * pay.y + 2 * (1 - u) * u * my + u * u * n.y;
       if (p.t > 1){ p.a += .02; x = n.x + Math.cos(p.a) * p.r; y = n.y + Math.sin(p.a) * p.r * .7; }
-      const red = n.leak > 0, al = p.t > 1 ? .55 : .3;
-      ctx.fillStyle = red ? `rgba(255,${80 + (p.r | 0)},${90},${al})` : n.id === 'save' ? `rgba(120,230,170,${al})` : `rgba(200,220,255,${al})`;
-      ctx.fillRect(x, y, red ? 1.8 : 1.4, red ? 1.8 : 1.4); });
-    ctx.globalCompositeOperation = 'source-over';
-    nodes.forEach(n => { const big = n.id === 'pay', red = n.leak > 0, pulse = motionOff() ? 0 : (Math.sin(time / 500 + n.x) + 1) / 2;
-      if (red){ ctx.strokeStyle = `rgba(255,90,100,${.35 + pulse * .4})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(n.x, n.y, 16 + pulse * 6, 0, 7); ctx.stroke(); }
-      ctx.fillStyle = red ? '#FF5A64' : big ? '#F2F1ED' : n.id === 'save' ? '#7BE3A9' : '#DDE6FF'; ctx.beginPath(); ctx.arc(n.x, n.y, big ? 6 : 4.5, 0, 7); ctx.fill();
-      ctx.font = '600 11px -apple-system, "Segoe UI", sans-serif'; ctx.fillStyle = 'rgba(242,241,237,.9)'; ctx.textAlign = n.x < W * .3 ? 'left' : 'center';
-      ctx.fillText(n.name + (n.v ? ` · ${money0(n.v)}` : ''), n.x + (big ? 10 : 0), n.y - (big ? 10 : 12));
-      if (red){ ctx.fillStyle = '#FF8A90'; ctx.font = '700 11px -apple-system, "Segoe UI", sans-serif'; ctx.fillText(n.leak ? `${money0(n.leak)} a month` : 'check', n.x, n.y + 24); } });
+      const red = n.leak > 0, al = p.t > 1 ? .6 : .35;
+      ctx.fillStyle = red ? `rgba(163,18,42,${al})` : n.id === 'save' ? `rgba(76,138,60,${al})` : `rgba(179,143,111,${al})`;
+      ctx.beginPath(); ctx.arc(x, y, red ? 1.3 : 1, 0, 7); ctx.fill(); });
+    nodes.forEach(n => { const big = n.id === 'pay', red = n.leak > 0, pulse = motionOff() ? 0 : (Math.sin(time / 500 + n.x) + 1) / 2, r = big ? 11 : 8;
+      if (red){ ctx.strokeStyle = `rgba(163,18,42,${.25 + pulse * .35})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(n.x, n.y, 16 + pulse * 6, 0, 7); ctx.stroke(); }
+      ctx.save(); ctx.shadowColor = 'rgba(160,140,122,.55)'; ctx.shadowBlur = 8; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 3;
+      ctx.fillStyle = '#F7F6F3'; ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 7); ctx.fill(); ctx.restore();
+      ctx.fillStyle = red ? '#A3122A' : big ? '#710014' : n.id === 'save' ? '#4C8A3C' : '#B38F6F'; ctx.beginPath(); ctx.arc(n.x, n.y, big ? 5 : 3.5, 0, 7); ctx.fill();
+      ctx.font = '700 11px -apple-system, "Segoe UI", sans-serif'; ctx.fillStyle = '#1E1918'; ctx.textAlign = n.x < W * .3 ? 'left' : 'center';
+      const lbl = n.name + (n.v ? ` · ${money0(n.v)}` : ''), lx = n.x + (big ? 14 : 0), ly = n.y - 14; ctx.lineJoin = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(243,242,238,.92)'; ctx.strokeText(lbl, lx, ly); ctx.fillText(lbl, lx, ly);
+      if (red){ ctx.fillStyle = '#A3122A'; ctx.font = '800 11px -apple-system, "Segoe UI", sans-serif'; const lt = n.leak ? `${money0(n.leak)} a month` : 'check'; ctx.strokeText(lt, n.x, n.y + 26); ctx.fillText(lt, n.x, n.y + 26); } });
     if (!motionOff()) LK.raf = requestAnimationFrame(draw);
   };
   if (lay()) draw(0);
