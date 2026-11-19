@@ -100,49 +100,87 @@ document.addEventListener('click', e => {
   else if (b.dataset.xs === 'go') setTab(b.dataset.go, { force:true });
 }, true);
 
-/* ---------- Progress dashboard: KPI tiles + statistics chart (dashboard reference) ---------- */
-const STX = { mode:'tasks' };
-const STX_MODES = { tasks:['Tasks','check','Share of tasks done each day'], focus:['Focus','clock','Hours of focused work each day'], money:['Money','pound','Spent each day'], steps:['Steps','steps','Steps logged each day'] };
+/* ---------- Progress dashboard: Pulse cards (69l-pulse.js) + statistics chart ----------
+   19 Nov 2026: weight, sleep and saved views; Low / Average / High / Latest from logged days only;
+   drag across it on a phone, or focus it and use the arrow keys (Home / End, Esc hides). */
+const STX = { mode:'tasks', i:-1 };
+const STX_MODES = { tasks:['Tasks','check','Share of tasks done each day'], steps:['Steps','steps','Steps logged each day'], focus:['Focus','clock','Hours of focused work each day'],
+  sleep:['Sleep','moon','Hours slept each night'], weight:['Weight','scale','Bodyweight on the days you weighed in'], saved:['Saved','piggy','Total saved by each day'], money:['Money','pound','Spent each day'] };
 function stxData(mode){
   const ks = lastDays(30), lab = ks.map(k => shortDate(parseKey(k)));
-  const v = ks.map(k => mode === 'tasks' ? Math.round(dayScore(k) * 100) : mode === 'focus' ? +(focusOf(k) / 60).toFixed(1) : mode === 'money' ? (state.expenses || []).filter(e => e.date === k).reduce((a, e) => a + (+e.amount || 0), 0) : +(dayRec(k).steps || 0));
-  const fmt = mode === 'tasks' ? x => x + '%' : mode === 'focus' ? x => num(x) + 'h' : mode === 'money' ? x => money0(x) : x => Math.round(x).toLocaleString('en-GB');
-  return { ks, lab, v, fmt };
+  let real = ks.map(() => true), v;
+  if (mode === 'weight'){
+    const w = weightSeries(), first = w.length ? w[0].kg : 0; let last = null;
+    w.forEach(p => { if (p.date < ks[0]) last = p.kg; });
+    v = ks.map(k => { const x = +dayRec(k).weight; if (x > 0) last = x; return last == null ? first : last; });
+    real = ks.map(k => +dayRec(k).weight > 0);
+  } else if (mode === 'saved'){
+    v = ks.map(k => (state.savings || []).filter(x => (x.date || '') <= k).reduce((a, x) => a + (+x.amount || 0), 0) + (+state.settings.opening || 0));
+  } else {
+    v = ks.map(k => mode === 'tasks' ? Math.round(dayScore(k) * 100) : mode === 'focus' ? +(focusOf(k) / 60).toFixed(1) : mode === 'sleep' ? +((sleepMins(dayRec(k)) || 0) / 60).toFixed(1)
+      : mode === 'money' ? (state.expenses || []).filter(e => e.date === k).reduce((a, e) => a + (+e.amount || 0), 0) : +(dayRec(k).steps || 0));
+    if (mode === 'sleep' || mode === 'steps') real = v.map(x => x > 0);
+  }
+  const fmt = mode === 'tasks' ? x => Math.round(x) + '%' : mode === 'focus' || mode === 'sleep' ? x => num(x) + 'h' : mode === 'money' || mode === 'saved' ? x => money0(x) : mode === 'weight' ? x => num(x) + ' kg' : x => Math.round(x).toLocaleString('en-GB');
+  const rv = v.filter((x, i) => real[i]), lo0 = rv.length ? Math.min(...rv) : 0, hi0 = rv.length ? Math.max(...rv) : 0;
+  const lo = mode === 'weight' && rv.length ? Math.floor(lo0 - 1) : mode === 'saved' && rv.length ? Math.max(0, lo0 * .9) : 0;
+  const mx = mode === 'tasks' ? 100 : mode === 'weight' && rv.length ? Math.ceil(hi0 + 1) : Math.max(1, ...v) * 1.15;
+  return { ks, lab, v, fmt, real, rv, lo, mx };
 }
-function stxChartHTML(){
-  const { lab, v, fmt } = stxData(STX.mode), W = 1000, H = 200, mx = STX.mode === 'tasks' ? 100 : Math.max(1, ...v) * 1.15, n = v.length;
-  const X = i => i * W / (n - 1), Y = x => H - x / mx * (H - 10), pts = v.map((x, i) => [X(i), Y(x)]);
-  const line = smoothPath(pts), area = line + ` L${W},${H} L0,${H} Z`, ticks = [0, .25, .5, .75, 1];
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="stxG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--cr-crimson)" stop-opacity=".35"/><stop offset="1" stop-color="var(--cr-crimson)" stop-opacity="0"/></linearGradient></defs>
-    <g class="stx-grid">${ticks.map(t => `<line x1="0" x2="${W}" y1="${(H - t * (H - 10)).toFixed(1)}" y2="${(H - t * (H - 10)).toFixed(1)}" vector-effect="non-scaling-stroke"/>`).join('')}</g>
-    <path class="stx-area" d="${area}"/><path class="stx-line" d="${line}" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
-    <div class="stx-y">${ticks.map(t => `<span style="bottom:${(t * (H - 10) / H * 100).toFixed(1)}%">${fmt(STX.mode === 'tasks' ? Math.round(t * 100) : t * mx)}</span>`).join('')}</div>
-    <div class="stx-x">${lab.map((l, i) => i % 5 === 0 || i === n - 1 ? `<span style="left:${(i / (n - 1) * 100).toFixed(2)}%">${esc(l)}</span>` : '').join('')}</div>
-    <i class="stx-dot" aria-hidden="true"></i><div class="stx-tip" role="status"></div>`;
+function stxMMHTML(){
+  const { v, fmt, real, rv } = stxData(STX.mode), li = real.lastIndexOf(true), sv = STX.mode === 'saved';
+  if (!rv.length) return `<span class="stx-none">Nothing logged in the last 30 days yet.</span>`;
+  const avg = rv.reduce((a, b) => a + b, 0) / rv.length, cell = (l, x) => `<span><small>${l}</small><b class="num">${x}</b></span>`;
+  return cell('Low', fmt(Math.min(...rv))) + (sv ? cell('30-day change', '+' + fmt(v[v.length - 1] - v[0])) : cell('Average', fmt(avg)))
+    + cell('High', fmt(Math.max(...rv))) + cell('Latest', fmt(v[li])) + `<span class="stx-n">${rv.length} of 30 days logged</span>`;
 }
 function progressDashHTML(){
-  const k = dkey(), s7 = periodStats(dkey(addDays(new Date(), -6)), k), saved = savedTotal(), goal = +state.settings.goal || 25000;
-  const kpi = (icon, label, val, unit, sub) => `<div class="glass kpi"><div class="kh">${ic(icon, 16)}${label}</div><b class="num">${val}<small>${unit}</small></b><i>${sub}</i></div>`;
-  const avg = mode => { const d = stxData(mode).v.slice(-7); return d.reduce((a, b) => a + b, 0) / 7; };
   return `<div class="pdash">
-    <div class="kpis">${kpi('flame', 'Streak', currentStreak(), 'days', `Best ${bestStreak()} days`)}${kpi('target', '7-day completion', s7.pct, '%', `${s7.tasks} of ${s7.tasksAll} tasks`)}${kpi('clock', 'Focus, 7-day average', num(avg('focus')), 'h', 'focused work a day')}${kpi('piggy', 'Saved', money0(saved), '', `${Math.round(saved / goal * 100)}% of ${money0(goal)}`)}</div>
+    ${typeof pulseHTML === 'function' ? pulseHTML() : ''}
     <div class="glass stx"><div class="stx-h"><div><b>Statistics</b><small id="stxSub">${STX_MODES[STX.mode][2]} · last 30 days</small></div>
       <div class="stx-tabs" role="tablist">${Object.entries(STX_MODES).map(([id, m]) => `<button role="tab" aria-selected="${STX.mode === id}" class="${STX.mode === id ? 'on' : ''}" data-stx="${id}">${ic(m[1], 14)} ${m[0]}</button>`).join('')}</div></div>
+      <div class="stx-mm" id="stxMM">${stxMMHTML()}</div>
       <div class="stx-c" id="stxC">${stxChartHTML()}</div></div>
   </div>`;
 }
+function stxChartHTML(){
+  const { lab, v, fmt, lo, mx } = stxData(STX.mode), W = 1000, H = 200, n = v.length;
+  const X = i => i * W / (n - 1), Y = x => H - (x - lo) / (mx - lo || 1) * (H - 10), pts = v.map((x, i) => [X(i), Y(x)]);
+  const line = STX.mode === 'saved' || STX.mode === 'weight' ? 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L') : smoothPath(pts), area = line + ` L${W},${H} L0,${H} Z`, ticks = [0, .25, .5, .75, 1];
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="stxG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--cr-crimson)" stop-opacity=".35"/><stop offset="1" stop-color="var(--cr-crimson)" stop-opacity="0"/></linearGradient></defs>
+    <g class="stx-grid">${ticks.map(t => `<line x1="0" x2="${W}" y1="${(H - t * (H - 10)).toFixed(1)}" y2="${(H - t * (H - 10)).toFixed(1)}" vector-effect="non-scaling-stroke"/>`).join('')}</g>
+    <path class="stx-area" d="${area}"/><path class="stx-line" d="${line}" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
+    <div class="stx-y">${ticks.map(t => `<span style="bottom:${(t * (H - 10) / H * 100).toFixed(1)}%">${fmt(STX.mode === 'tasks' ? Math.round(t * 100) : lo + t * (mx - lo))}</span>`).join('')}</div>
+    <div class="stx-x">${lab.map((l, i) => (i % 5 === 0 && i <= n - 6) || i === n - 1 ? `<span style="left:${(i / (n - 1) * 100).toFixed(2)}%">${esc(l)}</span>` : '').join('')}</div>
+    <i class="stx-cross" aria-hidden="true"></i><i class="stx-dot" aria-hidden="true"></i><div class="stx-tip" role="status" aria-live="polite"></div>`;
+}
+function stxShow(c, i){
+  const { lab, v, fmt, real, lo, mx } = stxData(STX.mode), n = v.length; i = clamp(i, 0, n - 1); STX.i = i;
+  const svg = c.querySelector('svg'), r = svg.getBoundingClientRect(), cr = c.getBoundingClientRect(), ox = r.left - cr.left, oy = r.top - cr.top;
+  const x = ox + i / (n - 1) * r.width, y = oy + (1 - (v[i] - lo) / (mx - lo || 1) * (190 / 200)) * r.height;
+  const tip = c.querySelector('.stx-tip'), dot = c.querySelector('.stx-dot'), cross = c.querySelector('.stx-cross');
+  tip.textContent = `${lab[i]} · ${real[i] ? fmt(v[i]) : STX.mode === 'weight' ? fmt(v[i]) + ' (last weigh-in)' : 'not logged'}`;
+  const hw = tip.offsetWidth / 2 + 4; tip.style.left = clamp(x, hw, cr.width - hw) + 'px'; tip.style.top = y + 'px'; tip.classList.add('on');
+  dot.style.left = x + 'px'; dot.style.top = y + 'px'; cross.style.left = x + 'px'; cross.style.top = oy + 'px'; cross.style.height = r.height + 'px'; c.classList.add('hov');
+}
+function stxHide(c){ STX.i = -1; c.classList.remove('hov'); c.querySelector('.stx-tip')?.classList.remove('on'); }
 function stxMount(){
   const c = document.getElementById('stxC'); if (!c || c.dataset.m) return; c.dataset.m = '1';
-  c.addEventListener('pointermove', e => { const r = c.getBoundingClientRect(), { lab, v, fmt } = stxData(STX.mode), n = v.length, i = clamp(Math.round((e.clientX - r.left) / r.width * (n - 1)), 0, n - 1);
-    const mx = STX.mode === 'tasks' ? 100 : Math.max(1, ...v) * 1.15, x = i / (n - 1) * r.width, y = (1 - v[i] / mx * (190 / 200)) * r.height;
-    const tip = c.querySelector('.stx-tip'), dot = c.querySelector('.stx-dot'); tip.textContent = `${lab[i]} · ${fmt(v[i])}`; tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.classList.add('on');
-    dot.style.left = x + 'px'; dot.style.top = y + 'px'; c.classList.add('hov'); });
-  c.addEventListener('pointerleave', () => { c.classList.remove('hov'); c.querySelector('.stx-tip')?.classList.remove('on'); });
+  c.tabIndex = 0; c.setAttribute('role', 'application'); c.setAttribute('aria-label', 'Statistics chart. Use the left and right arrow keys to read each day.');
+  const at = e => { const r = c.querySelector('svg').getBoundingClientRect(), n = stxData(STX.mode).v.length; return Math.round((e.clientX - r.left) / r.width * (n - 1)); };
+  c.addEventListener('pointerdown', e => stxShow(c, at(e)));
+  c.addEventListener('pointermove', e => stxShow(c, at(e)));
+  c.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') stxHide(c); });
+  c.addEventListener('blur', () => stxHide(c));
+  c.addEventListener('keydown', e => { const n = stxData(STX.mode).v.length, i = STX.i < 0 ? n - 1 : STX.i;
+    const to = { ArrowLeft: i - 1, ArrowRight: i + 1, Home: 0, End: n - 1 }[e.key];
+    if (to !== undefined){ e.preventDefault(); stxShow(c, STX.i < 0 && e.key.startsWith('Arrow') ? n - 1 : to); } else if (e.key === 'Escape') stxHide(c); });
 }
 document.addEventListener('click', e => {
-  const b = e.target.closest('[data-stx]'); if (!b) return; e.stopPropagation(); STX.mode = b.dataset.stx;
+  const b = e.target.closest('[data-stx]'); if (!b) return; e.stopPropagation(); STX.mode = b.dataset.stx; STX.i = -1;
   b.parentNode.querySelectorAll('button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
-  const c = document.getElementById('stxC'); if (c){ c.innerHTML = stxChartHTML(); } const sub = document.getElementById('stxSub'); if (sub) sub.textContent = STX_MODES[STX.mode][2] + ' · last 30 days';
+  const c = document.getElementById('stxC'); if (c){ c.innerHTML = stxChartHTML(); c.classList.remove('hov'); } const sub = document.getElementById('stxSub'); if (sub) sub.textContent = STX_MODES[STX.mode][2] + ' · last 30 days';
+  const mm = document.getElementById('stxMM'); if (mm) mm.innerHTML = stxMMHTML();
 }, true);
 
 /* ---------- Schedule: calendar week strip + day timeline (schedule reference) ---------- */

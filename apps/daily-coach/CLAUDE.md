@@ -484,3 +484,12 @@ He sent six Facebook reels and gave full access to "think, analyse and choose th
 - `lkMount` draws on pearl now (no 'lighter' blending): sand dots for spending, green for savings, crimson for leaks, raised node discs, labels outlined in pearl.
 - Brain: the header, ask bar and answer sit in one raised card (`.br-head`). `brLatestHTML` fills the space under a short list with the newest files from the other sections.
 - Leak map sits beside the list from a container width of 800px.
+
+## Pulse on Progress (19 Nov 2026, from the "data-visualization" skill reel)
+- `69l-pulse.js` (styles at the end of `plan.css`): replaces the four KPI tiles at the top of Progress (`progressDashHTML` now calls `pulseHTML()`).
+  - **Day score card** (crimson): greeting with his first name, date, streak and % saved chips, a 0–100 ring, a short line (Strong day / On track / Keep going), the difference from the 7 days before today, and Tasks / Steps / Sleep / Training bars. Score = tasks 40% + steps 20% + sleep 20% (goal 7 h 30 m, `PU_SLEEP_GOAL`) + training 20% (`puTrain`: session % on strength days, mobility tick on mobility days, full on rest days).
+  - **Activity rings**: steps against the goal, training, focus minutes against the planned day-plan minutes, each labelled with its number (colour is never the only cue).
+  - **Sleep card**: last night, % of goal, 7 nights as bars with a dashed goal line, 7-night average and energy. "Add last night" opens Today when nothing is logged.
+  - Ring colours #A3122A / #C2742A / #3B6FB0 passed the dataviz palette validator on #F2F1ED (the sand #B38F6F failed the chroma check, so it is not used for data).
+  - Layout follows `.pdash` width (container): stacked on phones, score full width with the two cards beside each other from 620px, three across from 1100px.
+- **Statistics chart** (`64-render-wide.js`): new Sleep, Weight (last weigh-in carried forward, scale fitted to his range) and Saved (running total) views. Low / Average / High / Latest row (`stxMMHTML`) from logged days only, with "N of 30 days logged". Drag across it on a phone (`touch-action: pan-y`), or focus it and use ←/→, Home, End and Esc (`stxShow`, `stxHide`). Saved and Weight draw straight segments (the smooth curve overshot steps). A dashed crosshair follows the point; the tooltip stays inside the card. The old 44px `translate` on `.stx-dot`/`.stx-tip` is gone (positions now come from the SVG box). The tab row scrolls sideways on its own, since focusing the chart used to scroll the whole card.

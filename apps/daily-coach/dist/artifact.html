@@ -3606,8 +3606,7 @@ html.reduce .xs-card,html.reduce .xb i,html.reduce .xfs i,html.reduce .xhb i b,h
 .stx-y span{position:absolute;right:0;transform:translateY(50%);font-size:10px;color:var(--pw-ink-3)}
 .stx-x{position:absolute;left:44px;right:0;bottom:0;height:16px}
 .stx-x span{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--pw-ink-3);white-space:nowrap}
-.stx-dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--cr-crimson);box-shadow:0 0 0 3px #fff,0 0 0 7px rgba(var(--gt-accent-rgb,113,0,20),.2);pointer-events:none;translate:44px 0;opacity:0;transition:opacity .15s}
-.stx-tip{translate:44px 0}
+.stx-dot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--cr-crimson);box-shadow:0 0 0 3px #fff,0 0 0 7px rgba(var(--gt-accent-rgb,113,0,20),.2);pointer-events:none;opacity:0;transition:opacity .15s}
 .sch-nav{display:flex;align-items:center;gap:6px}
 .sch-m{margin-top:10px;font-size:14px;font-weight:700;color:var(--pw-ink)}
 @media(max-width:600px){ .kpi b{font-size:24px} .stx-c{height:180px} .qa-g{grid-template-columns:1fr 1fr} }
@@ -4298,6 +4297,69 @@ html.reduce .lk-row.in,html.reduce .lk-scan i{animation:none}
 .br-ed h4{margin:4px 0;font-size:17px;color:var(--pl-ink)}.br-ro{font-size:13.5px;line-height:1.6;color:var(--pl-ink)}
 .br-edf{display:flex;gap:8px;margin-top:14px}
 .br-grid>*{min-width:0}.br-top>div,.br-ask{min-width:0}
+
+/* ---------- Pulse: top of Progress (69l-pulse.js, 19 Nov 2026; from the data-visualization reel, Pearl palette) ---------- */
+.pu{--pl-sh:rgba(160,140,122,.42);--pl-raise:6px 7px 16px var(--pl-sh),-6px -6px 14px #fff;--pl-raise-s:3px 4px 9px var(--pl-sh),-3px -3px 8px #fff;--pl-in:inset 3px 3px 7px var(--pl-sh),inset -3px -3px 7px #fff;
+  display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px;color:#1E1918}
+.pdash{container-type:inline-size}
+.pu>*{min-width:0}
+@container (min-width:620px){.pu{grid-template-columns:1fr 1fr}.pu-score{grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);column-gap:22px;align-items:center}.pu-hi{grid-column:1 / -1}.pu-main{margin:14px 0 4px}.pu-sbs{grid-template-columns:1fr 1fr;gap:14px 16px;padding:0 0 0 20px;border-top:0;border-left:1px solid rgba(255,255,255,.14)}}
+@container (min-width:1100px){.pu{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr)}.pu-score{grid-column:auto;display:block}.pu-main{margin:12px 0 14px}.pu-sbs{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:12px 0 0;border-left:0;border-top:1px solid rgba(255,255,255,.14)}}
+.pu-score{position:relative;overflow:hidden;padding:18px;border-radius:22px;color:#fff;background:radial-gradient(120% 120% at 100% 0%,#A3122A 0%,#710014 45%,#3E000B 100%);box-shadow:0 18px 36px -18px rgba(113,0,20,.6),inset 0 1px 0 rgba(255,255,255,.18)}
+.pu-score::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,168,.22),transparent 70%);pointer-events:none}
+.pu-hi{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.pu-hi small{display:block;font-size:11.5px;font-weight:600;color:rgba(255,236,220,.75)}
+.pu-hi b{display:block;font-size:20px;font-weight:800;letter-spacing:-.01em;margin-top:2px}
+.pu-chips{display:flex;gap:6px;flex-wrap:wrap}
+.pu-chips span{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.pu-main{display:flex;align-items:center;gap:16px;margin:12px 0 14px}
+.pu-big{width:132px;height:132px;flex:0 0 auto}
+.pu-n{fill:#fff;font-size:38px;font-weight:800;text-anchor:middle;font-variant-numeric:tabular-nums}.pu-of{fill:rgba(255,236,220,.7);font-size:10px;font-weight:600;text-anchor:middle}
+.pu-say{min-width:0}.pu-say b{display:block;font-size:24px;font-weight:800;line-height:1.15;letter-spacing:-.01em}
+.pu-d{display:inline-block;margin:6px 0 4px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.14)}
+.pu-d.up{color:#C9F2C2}.pu-d.down{color:#FFD7A8}
+.pu-say small{display:block;font-size:10.5px;color:rgba(255,236,220,.6)}
+.pu-sbs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding-top:12px;border-top:1px solid rgba(255,255,255,.14)}
+.pu-sb small{display:block;font-size:10.5px;font-weight:600;color:rgba(255,236,220,.7)}
+.pu-sb b{display:block;font-size:15px;font-weight:800;margin:2px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pu-sb i{display:block;height:4px;border-radius:4px;background:rgba(255,255,255,.16);overflow:hidden}
+.pu-sb em{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#FFD7A8,#FF8A5B)}
+.pu-card{padding:16px;border-radius:22px;background:#F2F1ED;box-shadow:var(--pl-raise)}
+.pu-ch{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.pu-ch b{font-size:15px;font-weight:800}.pu-ch small{font-size:11.5px;color:#8B7F77;font-weight:600}
+.pu-actb{display:flex;align-items:center;gap:14px}
+.pu-actb svg{width:118px;height:118px;flex:0 0 auto;filter:drop-shadow(2px 3px 4px rgba(160,140,122,.35))}
+.pu-arc{animation:puDraw 1.1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes puDraw{from{stroke-dasharray:0 1000}}
+.pu-leg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;min-width:0;flex:1}
+.pu-leg li{display:grid;grid-template-columns:10px auto 1fr;grid-template-rows:auto auto;column-gap:7px;align-items:center}
+.pu-leg i{width:10px;height:10px;border-radius:50%;grid-row:1 / span 2}
+.pu-leg span{font-size:11.5px;font-weight:700;color:#5B504B}
+.pu-leg b{font-size:15px;font-weight:800;justify-self:end;color:#1E1918}
+.pu-leg small{grid-column:2 / -1;font-size:10.5px;color:#8B7F77}
+.pu-sl{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.pu-sl b{font-size:34px;font-weight:800;letter-spacing:-.02em;color:#1E1918}.pu-sl b small{font-size:15px;font-weight:700;color:#8B7F77;margin-left:1px}
+.pu-sl span{font-size:12px;color:#5B504B;font-weight:600}
+.pu-bars{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:84px;margin:12px 0 8px;padding:8px 8px 0;border-radius:14px;background:#F3F2EE;box-shadow:var(--pl-in)}
+.pu-bars div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;min-width:0}
+.pu-bars i{display:block;width:100%;max-width:18px;border-radius:5px 5px 2px 2px;background:#C9A0A6;transition:height .5s}
+.pu-bars i.ok{background:#A3122A}.pu-bars i.no{background:rgba(113,0,20,.1)}
+.pu-bars small{font-size:9.5px;font-weight:700;color:#8B7F77;line-height:9px;height:9px;padding-bottom:5px}
+.pu-bars em{position:absolute;left:8px;right:8px;height:0;border-top:1.5px dashed rgba(113,0,20,.35);pointer-events:none}
+.pu-sf{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11.5px;color:#5B504B;font-weight:600}.pu-sf b{color:#1E1918}
+.pu .btn-soft{background:#F3F2EE;color:#710014;border-color:transparent;box-shadow:var(--pl-raise-s)}
+html.reduce .pu-arc{animation:none}
+
+/* Statistics additions (64-render-wide.js) */
+.stx-mm{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 18px;margin-top:10px}
+.stx-mm span{display:flex;flex-direction:column}.stx-mm small{font-size:10.5px;font-weight:600;color:var(--pw-ink-3)}.stx-mm b{font-size:16px;font-weight:800;color:var(--pw-ink)}
+.stx-mm .stx-n{margin-left:auto;font-size:11px;color:var(--pw-ink-3)}.stx-none{font-size:12px;color:var(--pw-ink-3)}
+.stx-c{touch-action:pan-y;outline:none;border-radius:12px}
+.stx-c:focus-visible{box-shadow:0 0 0 2px rgba(163,18,42,.45)}
+.stx-cross{position:absolute;width:0;border-left:1px dashed var(--pw-ink-3);opacity:0;pointer-events:none;transition:opacity .15s}
+.stx-c.hov .stx-cross{opacity:.6}
+@media(max-width:600px){.pu-sbs{grid-template-columns:repeat(2,minmax(0,1fr))}.pu-big{width:110px;height:110px}.pu-say b{font-size:20px}}
+.stx-h>div{min-width:0}.stx-tabs{max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stx-tabs::-webkit-scrollbar{display:none}.stx-tabs button{flex:0 0 auto}
 
 </style>
 <style data-src="src/css/agents.css">
@@ -12046,49 +12108,87 @@ document.addEventListener('click', e => {
   else if (b.dataset.xs === 'go') setTab(b.dataset.go, { force:true });
 }, true);
 
-/* ---------- Progress dashboard: KPI tiles + statistics chart (dashboard reference) ---------- */
-const STX = { mode:'tasks' };
-const STX_MODES = { tasks:['Tasks','check','Share of tasks done each day'], focus:['Focus','clock','Hours of focused work each day'], money:['Money','pound','Spent each day'], steps:['Steps','steps','Steps logged each day'] };
+/* ---------- Progress dashboard: Pulse cards (69l-pulse.js) + statistics chart ----------
+   19 Nov 2026: weight, sleep and saved views; Low / Average / High / Latest from logged days only;
+   drag across it on a phone, or focus it and use the arrow keys (Home / End, Esc hides). */
+const STX = { mode:'tasks', i:-1 };
+const STX_MODES = { tasks:['Tasks','check','Share of tasks done each day'], steps:['Steps','steps','Steps logged each day'], focus:['Focus','clock','Hours of focused work each day'],
+  sleep:['Sleep','moon','Hours slept each night'], weight:['Weight','scale','Bodyweight on the days you weighed in'], saved:['Saved','piggy','Total saved by each day'], money:['Money','pound','Spent each day'] };
 function stxData(mode){
   const ks = lastDays(30), lab = ks.map(k => shortDate(parseKey(k)));
-  const v = ks.map(k => mode === 'tasks' ? Math.round(dayScore(k) * 100) : mode === 'focus' ? +(focusOf(k) / 60).toFixed(1) : mode === 'money' ? (state.expenses || []).filter(e => e.date === k).reduce((a, e) => a + (+e.amount || 0), 0) : +(dayRec(k).steps || 0));
-  const fmt = mode === 'tasks' ? x => x + '%' : mode === 'focus' ? x => num(x) + 'h' : mode === 'money' ? x => money0(x) : x => Math.round(x).toLocaleString('en-GB');
-  return { ks, lab, v, fmt };
+  let real = ks.map(() => true), v;
+  if (mode === 'weight'){
+    const w = weightSeries(), first = w.length ? w[0].kg : 0; let last = null;
+    w.forEach(p => { if (p.date < ks[0]) last = p.kg; });
+    v = ks.map(k => { const x = +dayRec(k).weight; if (x > 0) last = x; return last == null ? first : last; });
+    real = ks.map(k => +dayRec(k).weight > 0);
+  } else if (mode === 'saved'){
+    v = ks.map(k => (state.savings || []).filter(x => (x.date || '') <= k).reduce((a, x) => a + (+x.amount || 0), 0) + (+state.settings.opening || 0));
+  } else {
+    v = ks.map(k => mode === 'tasks' ? Math.round(dayScore(k) * 100) : mode === 'focus' ? +(focusOf(k) / 60).toFixed(1) : mode === 'sleep' ? +((sleepMins(dayRec(k)) || 0) / 60).toFixed(1)
+      : mode === 'money' ? (state.expenses || []).filter(e => e.date === k).reduce((a, e) => a + (+e.amount || 0), 0) : +(dayRec(k).steps || 0));
+    if (mode === 'sleep' || mode === 'steps') real = v.map(x => x > 0);
+  }
+  const fmt = mode === 'tasks' ? x => Math.round(x) + '%' : mode === 'focus' || mode === 'sleep' ? x => num(x) + 'h' : mode === 'money' || mode === 'saved' ? x => money0(x) : mode === 'weight' ? x => num(x) + ' kg' : x => Math.round(x).toLocaleString('en-GB');
+  const rv = v.filter((x, i) => real[i]), lo0 = rv.length ? Math.min(...rv) : 0, hi0 = rv.length ? Math.max(...rv) : 0;
+  const lo = mode === 'weight' && rv.length ? Math.floor(lo0 - 1) : mode === 'saved' && rv.length ? Math.max(0, lo0 * .9) : 0;
+  const mx = mode === 'tasks' ? 100 : mode === 'weight' && rv.length ? Math.ceil(hi0 + 1) : Math.max(1, ...v) * 1.15;
+  return { ks, lab, v, fmt, real, rv, lo, mx };
 }
-function stxChartHTML(){
-  const { lab, v, fmt } = stxData(STX.mode), W = 1000, H = 200, mx = STX.mode === 'tasks' ? 100 : Math.max(1, ...v) * 1.15, n = v.length;
-  const X = i => i * W / (n - 1), Y = x => H - x / mx * (H - 10), pts = v.map((x, i) => [X(i), Y(x)]);
-  const line = smoothPath(pts), area = line + ` L${W},${H} L0,${H} Z`, ticks = [0, .25, .5, .75, 1];
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="stxG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--cr-crimson)" stop-opacity=".35"/><stop offset="1" stop-color="var(--cr-crimson)" stop-opacity="0"/></linearGradient></defs>
-    <g class="stx-grid">${ticks.map(t => `<line x1="0" x2="${W}" y1="${(H - t * (H - 10)).toFixed(1)}" y2="${(H - t * (H - 10)).toFixed(1)}" vector-effect="non-scaling-stroke"/>`).join('')}</g>
-    <path class="stx-area" d="${area}"/><path class="stx-line" d="${line}" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
-    <div class="stx-y">${ticks.map(t => `<span style="bottom:${(t * (H - 10) / H * 100).toFixed(1)}%">${fmt(STX.mode === 'tasks' ? Math.round(t * 100) : t * mx)}</span>`).join('')}</div>
-    <div class="stx-x">${lab.map((l, i) => i % 5 === 0 || i === n - 1 ? `<span style="left:${(i / (n - 1) * 100).toFixed(2)}%">${esc(l)}</span>` : '').join('')}</div>
-    <i class="stx-dot" aria-hidden="true"></i><div class="stx-tip" role="status"></div>`;
+function stxMMHTML(){
+  const { v, fmt, real, rv } = stxData(STX.mode), li = real.lastIndexOf(true), sv = STX.mode === 'saved';
+  if (!rv.length) return `<span class="stx-none">Nothing logged in the last 30 days yet.</span>`;
+  const avg = rv.reduce((a, b) => a + b, 0) / rv.length, cell = (l, x) => `<span><small>${l}</small><b class="num">${x}</b></span>`;
+  return cell('Low', fmt(Math.min(...rv))) + (sv ? cell('30-day change', '+' + fmt(v[v.length - 1] - v[0])) : cell('Average', fmt(avg)))
+    + cell('High', fmt(Math.max(...rv))) + cell('Latest', fmt(v[li])) + `<span class="stx-n">${rv.length} of 30 days logged</span>`;
 }
 function progressDashHTML(){
-  const k = dkey(), s7 = periodStats(dkey(addDays(new Date(), -6)), k), saved = savedTotal(), goal = +state.settings.goal || 25000;
-  const kpi = (icon, label, val, unit, sub) => `<div class="glass kpi"><div class="kh">${ic(icon, 16)}${label}</div><b class="num">${val}<small>${unit}</small></b><i>${sub}</i></div>`;
-  const avg = mode => { const d = stxData(mode).v.slice(-7); return d.reduce((a, b) => a + b, 0) / 7; };
   return `<div class="pdash">
-    <div class="kpis">${kpi('flame', 'Streak', currentStreak(), 'days', `Best ${bestStreak()} days`)}${kpi('target', '7-day completion', s7.pct, '%', `${s7.tasks} of ${s7.tasksAll} tasks`)}${kpi('clock', 'Focus, 7-day average', num(avg('focus')), 'h', 'focused work a day')}${kpi('piggy', 'Saved', money0(saved), '', `${Math.round(saved / goal * 100)}% of ${money0(goal)}`)}</div>
+    ${typeof pulseHTML === 'function' ? pulseHTML() : ''}
     <div class="glass stx"><div class="stx-h"><div><b>Statistics</b><small id="stxSub">${STX_MODES[STX.mode][2]} · last 30 days</small></div>
       <div class="stx-tabs" role="tablist">${Object.entries(STX_MODES).map(([id, m]) => `<button role="tab" aria-selected="${STX.mode === id}" class="${STX.mode === id ? 'on' : ''}" data-stx="${id}">${ic(m[1], 14)} ${m[0]}</button>`).join('')}</div></div>
+      <div class="stx-mm" id="stxMM">${stxMMHTML()}</div>
       <div class="stx-c" id="stxC">${stxChartHTML()}</div></div>
   </div>`;
 }
+function stxChartHTML(){
+  const { lab, v, fmt, lo, mx } = stxData(STX.mode), W = 1000, H = 200, n = v.length;
+  const X = i => i * W / (n - 1), Y = x => H - (x - lo) / (mx - lo || 1) * (H - 10), pts = v.map((x, i) => [X(i), Y(x)]);
+  const line = STX.mode === 'saved' || STX.mode === 'weight' ? 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L') : smoothPath(pts), area = line + ` L${W},${H} L0,${H} Z`, ticks = [0, .25, .5, .75, 1];
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="stxG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--cr-crimson)" stop-opacity=".35"/><stop offset="1" stop-color="var(--cr-crimson)" stop-opacity="0"/></linearGradient></defs>
+    <g class="stx-grid">${ticks.map(t => `<line x1="0" x2="${W}" y1="${(H - t * (H - 10)).toFixed(1)}" y2="${(H - t * (H - 10)).toFixed(1)}" vector-effect="non-scaling-stroke"/>`).join('')}</g>
+    <path class="stx-area" d="${area}"/><path class="stx-line" d="${line}" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
+    <div class="stx-y">${ticks.map(t => `<span style="bottom:${(t * (H - 10) / H * 100).toFixed(1)}%">${fmt(STX.mode === 'tasks' ? Math.round(t * 100) : lo + t * (mx - lo))}</span>`).join('')}</div>
+    <div class="stx-x">${lab.map((l, i) => (i % 5 === 0 && i <= n - 6) || i === n - 1 ? `<span style="left:${(i / (n - 1) * 100).toFixed(2)}%">${esc(l)}</span>` : '').join('')}</div>
+    <i class="stx-cross" aria-hidden="true"></i><i class="stx-dot" aria-hidden="true"></i><div class="stx-tip" role="status" aria-live="polite"></div>`;
+}
+function stxShow(c, i){
+  const { lab, v, fmt, real, lo, mx } = stxData(STX.mode), n = v.length; i = clamp(i, 0, n - 1); STX.i = i;
+  const svg = c.querySelector('svg'), r = svg.getBoundingClientRect(), cr = c.getBoundingClientRect(), ox = r.left - cr.left, oy = r.top - cr.top;
+  const x = ox + i / (n - 1) * r.width, y = oy + (1 - (v[i] - lo) / (mx - lo || 1) * (190 / 200)) * r.height;
+  const tip = c.querySelector('.stx-tip'), dot = c.querySelector('.stx-dot'), cross = c.querySelector('.stx-cross');
+  tip.textContent = `${lab[i]} · ${real[i] ? fmt(v[i]) : STX.mode === 'weight' ? fmt(v[i]) + ' (last weigh-in)' : 'not logged'}`;
+  const hw = tip.offsetWidth / 2 + 4; tip.style.left = clamp(x, hw, cr.width - hw) + 'px'; tip.style.top = y + 'px'; tip.classList.add('on');
+  dot.style.left = x + 'px'; dot.style.top = y + 'px'; cross.style.left = x + 'px'; cross.style.top = oy + 'px'; cross.style.height = r.height + 'px'; c.classList.add('hov');
+}
+function stxHide(c){ STX.i = -1; c.classList.remove('hov'); c.querySelector('.stx-tip')?.classList.remove('on'); }
 function stxMount(){
   const c = document.getElementById('stxC'); if (!c || c.dataset.m) return; c.dataset.m = '1';
-  c.addEventListener('pointermove', e => { const r = c.getBoundingClientRect(), { lab, v, fmt } = stxData(STX.mode), n = v.length, i = clamp(Math.round((e.clientX - r.left) / r.width * (n - 1)), 0, n - 1);
-    const mx = STX.mode === 'tasks' ? 100 : Math.max(1, ...v) * 1.15, x = i / (n - 1) * r.width, y = (1 - v[i] / mx * (190 / 200)) * r.height;
-    const tip = c.querySelector('.stx-tip'), dot = c.querySelector('.stx-dot'); tip.textContent = `${lab[i]} · ${fmt(v[i])}`; tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.classList.add('on');
-    dot.style.left = x + 'px'; dot.style.top = y + 'px'; c.classList.add('hov'); });
-  c.addEventListener('pointerleave', () => { c.classList.remove('hov'); c.querySelector('.stx-tip')?.classList.remove('on'); });
+  c.tabIndex = 0; c.setAttribute('role', 'application'); c.setAttribute('aria-label', 'Statistics chart. Use the left and right arrow keys to read each day.');
+  const at = e => { const r = c.querySelector('svg').getBoundingClientRect(), n = stxData(STX.mode).v.length; return Math.round((e.clientX - r.left) / r.width * (n - 1)); };
+  c.addEventListener('pointerdown', e => stxShow(c, at(e)));
+  c.addEventListener('pointermove', e => stxShow(c, at(e)));
+  c.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') stxHide(c); });
+  c.addEventListener('blur', () => stxHide(c));
+  c.addEventListener('keydown', e => { const n = stxData(STX.mode).v.length, i = STX.i < 0 ? n - 1 : STX.i;
+    const to = { ArrowLeft: i - 1, ArrowRight: i + 1, Home: 0, End: n - 1 }[e.key];
+    if (to !== undefined){ e.preventDefault(); stxShow(c, STX.i < 0 && e.key.startsWith('Arrow') ? n - 1 : to); } else if (e.key === 'Escape') stxHide(c); });
 }
 document.addEventListener('click', e => {
-  const b = e.target.closest('[data-stx]'); if (!b) return; e.stopPropagation(); STX.mode = b.dataset.stx;
+  const b = e.target.closest('[data-stx]'); if (!b) return; e.stopPropagation(); STX.mode = b.dataset.stx; STX.i = -1;
   b.parentNode.querySelectorAll('button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', String(x === b)); });
-  const c = document.getElementById('stxC'); if (c){ c.innerHTML = stxChartHTML(); } const sub = document.getElementById('stxSub'); if (sub) sub.textContent = STX_MODES[STX.mode][2] + ' · last 30 days';
+  const c = document.getElementById('stxC'); if (c){ c.innerHTML = stxChartHTML(); c.classList.remove('hov'); } const sub = document.getElementById('stxSub'); if (sub) sub.textContent = STX_MODES[STX.mode][2] + ' · last 30 days';
+  const mm = document.getElementById('stxMM'); if (mm) mm.innerHTML = stxMMHTML();
 }, true);
 
 /* ---------- Schedule: calendar week strip + day timeline (schedule reference) ---------- */
@@ -14619,6 +14719,88 @@ renderView = (orig => function(tab){
   if (tab !== 'brain') return orig.apply(this, arguments);
   const el = document.getElementById('view-brain'); if (el){ el.innerHTML = renderBrain(); try { if (typeof glassWatch === 'function') glassWatch(el); } catch(_){} }
 })(renderView);
+
+</script>
+<script data-src="src/js/69l-pulse.js">
+/* ============================================================
+   PULSE · top of the Progress tab (19 Nov 2026)
+   From the "data-visualization" skill reel: one day score ring,
+   three activity rings and a sleep card, all from his own data.
+   Replaces the four KPI tiles that used to sit above Statistics.
+   - Day score 0–100 = tasks 40% + steps 20% + sleep 20% + training 20%.
+   - Compared with the average of the 7 days before today.
+   - Ring colours passed the dataviz palette check on #F2F1ED:
+     crimson #A3122A (steps), amber #C2742A (training), blue #3B6FB0 (focus).
+   ============================================================ */
+const PU_SLEEP_GOAL = 450; // minutes (7 h 30 m)
+
+function puTrain(k){
+  const ids = tasksForDay(k).map(t => t.id);
+  if (ids.includes('train')) return Math.max(sessionDonePct(k) / 100, taskDone(k, 'train') ? 1 : 0);
+  if (ids.includes('mobility')) return taskDone(k, 'mobility') ? 1 : 0;
+  return 1;
+}
+function puFocus(k){
+  const plan = dayBlocks(k).filter(b => !b.skip).reduce((a, b) => a + (b.dur || 0), 0), done = focusOf(k);
+  return { done, plan, pct: plan ? Math.min(1, done / plan) : 0 };
+}
+function puParts(k){
+  const r = dayRec(k), goal = +state.settings.stepsGoal || 8000, sl = sleepMins(r);
+  return { tasks: dayScore(k), done: countDone(k), tot: tasksForDay(k).length, steps: +r.steps || 0, stepsP: Math.min(1, (+r.steps || 0) / goal), goal,
+    sleep: sl, sleepP: sl ? Math.min(1, sl / PU_SLEEP_GOAL) : 0, train: puTrain(k) };
+}
+function puScore(k){ const p = puParts(k); return Math.round(100 * (.4 * p.tasks + .2 * p.stepsP + .2 * p.sleepP + .2 * p.train)); }
+
+function puRing(cx, cy, r, w, pct, col, track = 'rgba(113,0,20,.08)'){
+  const c = 2 * Math.PI * r, d = Math.max(0, Math.min(1, pct)) * c;
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${track}" stroke-width="${w}"/>
+    ${d < .5 ? '' : `<circle class="pu-arc" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${d.toFixed(1)} ${c.toFixed(1)}" style="--c:${c.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`}`;
+}
+
+function pulseHTML(){
+  const k = dkey(), p = puParts(k), sc = puScore(k), h = new Date().getHours();
+  const prev = Array.from({ length: 7 }, (_, i) => puScore(dkey(addDays(new Date(), -1 - i)))), avg = Math.round(prev.reduce((a, b) => a + b, 0) / 7), diff = sc - avg;
+  const hello = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  const head = sc >= 85 ? 'Strong day.' : sc >= 60 ? 'On track.' : sc >= 30 ? 'Keep going.' : h < 11 ? 'Day just started.' : 'Quiet day so far.';
+  const saved = savedTotal(), goalM = +state.settings.goal || 25000, fo = puFocus(k);
+  const bar = (label, val, pct) => `<div class="pu-sb"><small>${label}</small><b class="num">${val}</b><i><em style="width:${Math.round(pct * 100)}%"></em></i></div>`;
+  const ringsT = `Steps ${p.steps.toLocaleString('en-GB')} of ${p.goal.toLocaleString('en-GB')}, training ${Math.round(p.train * 100)}%, focus ${fmtHM(fo.done)} of ${fmtHM(fo.plan)}`;
+  // sleep: last 7 nights
+  const nights = Array.from({ length: 7 }, (_, i) => { const kk = dkey(addDays(new Date(), i - 6)); return { k: kk, m: sleepMins(dayRec(kk)) || 0 }; });
+  const logged = nights.filter(n => n.m), sAvg = logged.length ? Math.round(logged.reduce((a, n) => a + n.m, 0) / logged.length) : 0, sMax = Math.max(PU_SLEEP_GOAL, ...nights.map(n => n.m));
+  const f = dayRec(k).feel || {};
+  return `<div class="pu" id="puRoot">
+    <section class="pu-score" aria-label="Day score">
+      <div class="pu-hi"><div><small>${DAYS_LONG[isoWeekday()]}, ${new Date().getDate()} ${MONTHS[new Date().getMonth()]}</small><b>${hello}, ${esc(mvFirstName())}</b></div>
+        <div class="pu-chips"><span>${ic('flame', 13)} ${currentStreak()}-day streak</span><span>${ic('piggy', 13)} ${Math.round(saved / goalM * 100)}% saved</span></div></div>
+      <div class="pu-main">
+        <svg class="pu-big" viewBox="0 0 132 132" role="img" aria-label="Day score ${sc} out of 100">${puRing(66, 66, 54, 12, sc / 100, 'url(#puG)', 'rgba(255,255,255,.14)')}
+          <defs><linearGradient id="puG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD7A8"/><stop offset=".55" stop-color="#F08A4B"/><stop offset="1" stop-color="#FF4D63"/></linearGradient></defs>
+          <text x="66" y="68" class="pu-n">${sc}</text><text x="66" y="88" class="pu-of">out of 100</text></svg>
+        <div class="pu-say"><b>${head}</b><span class="pu-d ${diff >= 0 ? 'up' : 'down'}">${diff >= 0 ? '↑' : '↓'} ${Math.abs(diff)} ${diff >= 0 ? 'above' : 'below'} your 7-day average (${avg})</span>
+          <small>Tasks 40% · steps 20% · sleep 20% · training 20%</small></div></div>
+      <div class="pu-sbs">${bar('Tasks', `${p.done}/${p.tot}`, p.tasks)}${bar('Steps', p.steps.toLocaleString('en-GB'), p.stepsP)}${bar('Sleep', p.sleep ? fmtHM(p.sleep) : '–', p.sleepP)}${bar('Training', Math.round(p.train * 100) + '%', p.train)}</div>
+    </section>
+    <section class="pu-card pu-act" aria-label="Activity rings">
+      <div class="pu-ch"><b>Activity</b><small>Today</small></div>
+      <div class="pu-actb"><svg viewBox="0 0 120 120" role="img" aria-label="${esc(ringsT)}">${puRing(60, 60, 50, 11, p.stepsP, '#A3122A')}${puRing(60, 60, 36, 11, p.train, '#C2742A')}${puRing(60, 60, 22, 11, fo.pct, '#3B6FB0')}</svg>
+        <ul class="pu-leg">
+          <li><i style="background:#A3122A"></i><span>Steps</span><b class="num">${p.steps.toLocaleString('en-GB')}</b><small>of ${p.goal.toLocaleString('en-GB')}</small></li>
+          <li><i style="background:#C2742A"></i><span>Training</span><b class="num">${Math.round(p.train * 100)}%</b><small>${tasksForDay(k).some(t => t.id === 'train') ? 'strength session' : tasksForDay(k).some(t => t.id === 'mobility') ? 'mobility day' : 'rest day'}</small></li>
+          <li><i style="background:#3B6FB0"></i><span>Focus</span><b class="num">${fmtHM(fo.done)}</b><small>of ${fmtHM(fo.plan)} planned</small></li></ul></div>
+    </section>
+    <section class="pu-card pu-sleep" aria-label="Sleep">
+      <div class="pu-ch"><b>Sleep</b><small>Last night</small></div>
+      ${p.sleep ? `<div class="pu-sl"><b class="num">${Math.floor(p.sleep / 60)}<small>h</small> ${p.sleep % 60}<small>m</small></b><span>${Math.round(p.sleep / PU_SLEEP_GOAL * 100)}% of your 7h 30m goal</span></div>`
+        : `<div class="pu-sl"><b class="num">–</b><button class="btn btn-soft sm" data-pu-go="today">Add last night</button></div>`}
+      <div class="pu-bars" role="img" aria-label="Sleep, last 7 nights: ${nights.map(n => `${shortDate(parseKey(n.k))} ${n.m ? fmtHM(n.m) : 'not logged'}`).join(', ')}">
+        ${nights.map(n => `<div title="${esc(shortDate(parseKey(n.k)))} · ${n.m ? fmtHM(n.m) : 'not logged'}"><i style="height:${n.m ? Math.max(4, Math.round(n.m / sMax * 56)) : 3}px" class="${n.m ? (n.m >= PU_SLEEP_GOAL ? 'ok' : '') : 'no'}"></i><small>${DAYS[isoWeekday(parseKey(n.k))].slice(0, 1)}</small></div>`).join('')}
+        <em style="bottom:${17 + Math.round(PU_SLEEP_GOAL / sMax * 56)}px" title="Goal 7 h 30 min" aria-hidden="true"></em></div>
+      <div class="pu-sf"><span>7-night average <b class="num">${sAvg ? fmtHM(sAvg) : '–'}</b></span><span>Energy <b class="num">${f.energy || '–'}/5</b></span></div>
+    </section>
+  </div>`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-pu-go]'); if (!b) return; e.stopPropagation(); setTab(b.dataset.puGo, { force: true }); }, true);
 
 </script>
 <script data-src="src/js/70-boot.js">
