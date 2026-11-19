@@ -10450,9 +10450,9 @@ function stepsSave(){
   toast(`${v.toLocaleString('en-GB')} steps saved for ${k === dkey() ? 'today' : 'yesterday'}.`, 'ok', 1600);
 }
 document.addEventListener('keydown', e => { if (e.target && e.target.id === 'stepsIn'){ if (e.key === 'Enter'){ e.preventDefault(); stepsSave(); } else if (e.key === 'Escape'){ STEPS.edit = false; renderView('today'); } } });
-function syncAutoTasks(k = dkey()){
+function syncAutoTasks(k = dkey(), quiet = false){
   const steps = dayRec(k).steps || 0;
-  if (steps >= state.settings.stepsGoal && !taskDone(k,'walk')) { setTask(k,'walk',true); toast(`${Number(state.settings.stepsGoal).toLocaleString('en-GB')} steps logged${k !== dkey() ? ' for yesterday' : ''}. Nice.`); }
+  if (steps >= state.settings.stepsGoal && !taskDone(k,'walk')) { setTask(k,'walk',true); if (!quiet) toast(`${Number(state.settings.stepsGoal).toLocaleString('en-GB')} steps logged${k !== dkey() ? ' for yesterday' : ''}. Nice.`); }
   if (k !== dkey()) return;
   if (sessionDonePct(k) >= 100 && !taskDone(k,'train') && todaysSession().blocks.length) { setTask(k,'train',true); }
 }
@@ -10683,10 +10683,11 @@ document.addEventListener('click', e=>{
       break;
     }
     case 'import': {
-      openSheet({ title:'Import backup', body:`<form data-form="import" style="display:grid;gap:12px">
-        <div class="field"><label for="imp">Paste a backup file’s contents</label><textarea class="input" id="imp" name="json" placeholder='{"v":1,…}' required></textarea></div>
-        <button class="btn btn-deep" type="submit">${ic('upload',16)} Merge and reload</button>
-        <p class="tiny">Import replaces current data with the file’s data. Export first if unsure.</p>
+      openSheet({ title:'Import backup or data pack', body:`<form data-form="import" style="display:grid;gap:12px">
+        <div class="field"><label for="impFile">Choose a file</label><input class="input" type="file" id="impFile" accept=".json,application/json,text/plain"></div>
+        <div class="field"><label for="imp">Or paste its contents</label><textarea class="input" id="imp" name="json" placeholder='{"v":1,…}' required></textarea></div>
+        <button class="btn btn-deep" type="submit">${ic('upload',16)} Import</button>
+        <p class="tiny">A full backup replaces the data in this browser, so export first if unsure. A data pack (from Claude) only adds: steps and notes on its days and new spending. Nothing else changes, and importing it twice adds nothing twice.</p>
       </form>`});
       break;
     }
@@ -10773,6 +10774,11 @@ document.addEventListener('submit', e=>{
   if (kind === 'import'){
     try {
       const parsed = JSON.parse(data.json);
+      if (parsed && parsed.pack === 'daily-coach-add'){
+        const r = packMerge(parsed); closeSheet(); renderView(activeTab); updateChrome();
+        toast(`Added: ${r.d} day${r.d === 1 ? '' : 's'} of steps and notes, ${r.e} spend${r.e === 1 ? '' : 's'}${r.skip ? ` (${r.skip} already there)` : ''}.`, 'ok', 3600);
+        return;
+      }
       state = deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
       save(); closeSheet(); setTab('today',{force:true});
       toast('Backup imported.','ok',2000);
@@ -10781,6 +10787,31 @@ document.addEventListener('submit', e=>{
 
   // a form submitted from the sheet should dismiss the sheet
   if (form.closest('#sheet')) closeSheet();
+});
+
+/* Data pack (19 Nov 2026): adds to the store and never replaces it.
+   { pack:'daily-coach-add', days:{ 'YYYY-MM-DD':{ steps, note } }, expenses:[{ id, date, amount, cat, note }] }
+   Steps take the pack's number (it comes from the watch), a note is appended once, spending is added by id. */
+function packMerge(p){
+  let d = 0, e = 0, skip = 0;
+  Object.entries(p.days || {}).forEach(([k, v]) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(k) || !v) return; const r = dayRec(k, true);
+    if (v.steps != null && isFinite(+v.steps)) r.steps = clamp(Math.round(+v.steps), 0, 100000);
+    if (v.note && !String(r.note || '').includes(v.note)) r.note = r.note ? r.note + '\n' + v.note : String(v.note);
+    syncAutoTasks(k, true); d++;
+  });
+  const have = new Set((state.expenses || []).map(x => x.id));
+  (p.expenses || []).forEach(x => {
+    if (!x || !x.id || !/^\d{4}-\d{2}-\d{2}$/.test(x.date || '') || !(+x.amount > 0)) return;
+    if (have.has(x.id)){ skip++; return; }
+    state.expenses.push({ id: String(x.id), date: x.date, amount: +(+x.amount).toFixed(2), cat: catOf(x.cat).id, note: String(x.note || '') }); have.add(x.id); e++;
+  });
+  state._lastEdit = Date.now(); save();
+  return { d, e, skip };
+}
+document.addEventListener('change', ev => {
+  const f = ev.target.closest && ev.target.closest('#impFile'); if (!f || !f.files || !f.files[0]) return;
+  const rd = new FileReader(); rd.onload = () => { const t = document.getElementById('imp'); if (t) t.value = String(rd.result || ''); }; rd.readAsText(f.files[0]);
 });
 
 /* ---------- fab ---------- */
