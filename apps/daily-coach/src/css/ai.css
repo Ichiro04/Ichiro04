@@ -35,7 +35,7 @@
 /* conversation overlay: always the dark sunset world */
 body.ai-open{overflow:hidden}
 body.ai-open .tabbar,body.ai-open .topbar{visibility:hidden}
-.ai-chat{position:fixed;inset:0;z-index:280;display:grid;grid-template-rows:auto auto minmax(0,auto) minmax(0,1fr) auto auto;color:#F2F1ED;color-scheme:dark;
+.ai-chat{position:fixed;inset:0;z-index:280;display:flex;flex-direction:column;color:#F2F1ED;color-scheme:dark;
   padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
   background:radial-gradient(90% 50% at 50% 34%,rgba(113,0,20,.38),transparent 70%),radial-gradient(80% 40% at 50% 110%,rgba(179,143,111,.22),transparent 70%),linear-gradient(180deg,#111111,#161616 50%,#0C0C0C);
   animation:aiIn .4s cubic-bezier(.2,.8,.2,1) both}
@@ -54,8 +54,11 @@ body.ai-open .tabbar,body.ai-open .topbar{visibility:hidden}
 .ai-menu button:hover{background:rgba(230,205,176,.08)}
 .ai-hint{margin:8px 0 0;text-align:center;font-size:13.5px;color:#B8AA9A;transition:color .3s}
 .ai-chat[data-state="thinking"] .ai-hint,.ai-chat[data-state="speaking"] .ai-hint{color:#E6CDB0}
-.ai-big{width:min(64vw,300px);height:min(64vw,300px);justify-self:center;margin:6px 0 4px;transition:width .5s cubic-bezier(.2,.8,.2,1),height .5s cubic-bezier(.2,.8,.2,1)}
+.ai-big{width:min(64vw,300px);height:min(64vw,300px);align-self:center;flex:none;margin:6px 0 4px;transition:width .5s cubic-bezier(.2,.8,.2,1),height .5s cubic-bezier(.2,.8,.2,1)}
 .ai-chat.has-log .ai-big,.ai-chat.full .ai-big{width:min(40vw,170px);height:min(40vw,170px)}
+@media (max-height:760px){ .ai-chat.has-log .ai-big,.ai-chat.full .ai-big{width:min(30vw,112px);height:min(30vw,112px);margin:2px 0} }
+.ai-chat>*{flex:none}
+.ai-chat>.ai-log{flex:1 1 0;min-height:0}
 .ai-log{overflow:auto;max-width:720px;width:100%;margin:0 auto;padding:6px 2px 12px;display:flex;flex-direction:column;gap:12px;mask-image:linear-gradient(180deg,transparent,#000 24px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 24px)}
 .ai-empty{margin:auto 0 0;font-size:15px;color:#978A7E;text-align:center;line-height:1.5}
 .ai-older{display:none;flex-direction:column;gap:8px}

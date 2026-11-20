@@ -158,7 +158,7 @@ document.addEventListener('keydown', e => {
 /* ---------- Learn → Words: the deck ---------- */
 function srsDeckHTML(){
   const c = srsCounts(), q = srsQueue(), s = srsState(), lg = srsLog();
-  return `<section class="card srs-deck"><div class="srs-dh"><div><h3>Review deck</h3><p class="muted">Engineering words, IELTS words and your own cards come back just before you would forget them.</p></div>
+  return `<section class="glass card srs-deck"><div class="srs-dh"><div><h3>Review deck</h3><p class="muted">Engineering words, IELTS words and your own cards come back just before you would forget them.</p></div>
       <button class="btn btn-deep" data-srs-start${q.all.length ? '' : '="extra"'}>${q.all.length ? `Review ${q.all.length} now` : 'Review more'}</button></div>
     <div class="srs-nums"><div><b>${c.total}</b><small>cards</small></div><div><b>${c.nw}</b><small>not seen yet</small></div><div><b>${c.lr}</b><small>learning</small></div><div><b>${c.mt}</b><small>remembered 3 weeks +</small></div><div><b>${lg.n}</b><small>reviewed today</small></div></div>
     <div class="srs-np"><span>New cards a day</span>${[5, 10, 20].map(n => `<button class="${s.newPerDay === n ? 'on' : ''}" data-srs-np="${n}" aria-pressed="${s.newPerDay === n}">${n}</button>`).join('')}</div>

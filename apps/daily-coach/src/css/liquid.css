@@ -29,6 +29,7 @@ html[data-theme="dark"] .lg::after{background:linear-gradient(90deg,transparent,
 #wvCanvas{display:block;width:100%;height:100%;cursor:pointer;touch-action:pan-y}
 .wv-axis{position:relative;height:16px;margin-top:2px;font-size:10.5px;font-weight:650;color:var(--pw-ink-3);font-variant-numeric:tabular-nums}
 .wv-axis span{position:absolute;transform:translateX(-50%)}
+.wv-axis span:first-child{transform:translateX(max(-50%, -4px))}
 .wv-pick{min-height:18px;margin:4px 0 2px;color:var(--pw-ink-2)!important}
 .wv-pick b{color:var(--pw-ink)}
 

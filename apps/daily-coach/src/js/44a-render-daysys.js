@@ -123,7 +123,7 @@ function focusChartHTML(){
   const days = Array.from({length:14},(_,i)=>{ const d = addDays(new Date(), i-13), k = dkey(d); return { k, d, v: focusOf(k) }; });
   const mx = Math.max(60, ...days.map(x=>x.v)), W = 340, H = 120, bw = W/14, best = Math.max(...days.map(x=>x.v));
   const avg = days.reduce((s,x)=>s+x.v,0)/14;
-  return `<div class="glass ds-chart"><div class="ds-ch"><div class="h3">Focus minutes · last 14 days</div><span class="tiny num">${Math.round(days[13].v)} min today</span></div>
+  return `<div class="glass ds-chart"><div class="ds-ch"><span class="tiny num">${Math.round(days[13].v)} min today</span></div>
     <svg viewBox="0 0 ${W} ${H+18}" class="ds-bars14" role="img" aria-label="Focus minutes for the last 14 days">
       ${[0.25,0.5,0.75,1].map(f=>`<line x1="0" x2="${W}" y1="${(H - H*f).toFixed(1)}" y2="${(H - H*f).toFixed(1)}" class="gl"/>`).join('')}
       ${days.map((x,i)=>{ const h = Math.max(2, x.v/mx*(H-8)); return `<rect x="${(i*bw+3).toFixed(1)}" y="${(H-h).toFixed(1)}" width="${(bw-6).toFixed(1)}" height="${h.toFixed(1)}" rx="3" class="${i===13?'today':x.v===best&&best>0?'best':''}" style="animation-delay:${i*30}ms"/><text x="${(i*bw+bw/2).toFixed(1)}" y="${H+13}" text-anchor="middle">${'MTWTFSS'[isoWeekday(x.d)]}</text>`; }).join('')}
@@ -135,7 +135,7 @@ function timeBarsHTML(){
   const ws = startOfWeek(), cats = {};
   for (let i=0;i<7;i++){ const kk = dkey(addDays(ws,i)); dayBlocks(kk).forEach(b=>{ const st = blockStatus(kk,b); const v = st==='done' ? b.dur : st==='partly' ? b.dur/2 : 0; cats[b.cat] = (cats[b.cat]||0) + v; }); }
   const order = [['Training','f-rd'],['English','f-bl'],['Engineering','f-pu'],['Career','f-ye'],['Walking','f-gr'],['Routine','f-mu']], mx = Math.max(30, ...Object.values(cats));
-  return `<div class="glass ds-tbars"><div class="ds-ch"><div class="h3">Where the time went</div><span class="tiny">this week</span></div>
+  return `<div class="glass ds-tbars">
     ${order.map(([c,cl])=>`<div class="ds-brow"><span>${c}</span><span class="ds-bar"><i class="${cl}" style="width:${((cats[c]||0)/mx*100).toFixed(0)}%"></i></span><b class="num">${fmtHM(cats[c]||0).replace(' min','m').replace(' h','h')}</b></div>`).join('')}</div>`;
 }
 function daySystemHTML(){
@@ -145,7 +145,7 @@ function daySystemHTML(){
     <div class="ds-row2">${threeHTML()}${feelHTML()}</div>
     ${numbersHTML()}
     ${planBoardHTML()}
-    <div class="ds-row3"><div><div class="h2">Focus <span class="side">last 14 days</span></div>${focusChartHTML()}</div>
+    <div class="ds-row3"><div><div class="h2">Focus minutes <span class="side">last 14 days</span></div>${focusChartHTML()}</div>
       <div><div class="h2">Where the time went <span class="side">this week</span></div>${timeBarsHTML()}</div></div>
   </section>`;
 }

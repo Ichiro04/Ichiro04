@@ -136,7 +136,7 @@ function stxMMHTML(){
 }
 function progressDashHTML(){
   return `<div class="pdash">
-    ${typeof pulseHTML === 'function' ? pulseHTML() : ''}
+    ${typeof dayPulseHTML === 'function' ? dayPulseHTML() : ''}
     <div class="glass stx"><div class="stx-h"><div><b>Statistics</b><small id="stxSub">${STX_MODES[STX.mode][2]} · last 30 days</small></div>
       <div class="stx-tabs" role="tablist">${Object.entries(STX_MODES).map(([id, m]) => `<button role="tab" aria-selected="${STX.mode === id}" class="${STX.mode === id ? 'on' : ''}" data-stx="${id}">${ic(m[1], 14)} ${m[0]}</button>`).join('')}</div></div>
       <div class="stx-mm" id="stxMM">${stxMMHTML()}</div>

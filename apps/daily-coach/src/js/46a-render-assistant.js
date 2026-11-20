@@ -15,7 +15,7 @@ const aiOnline = () => !!AI.sample && AI.sample !== 'denied';
 
 function coachContext(){
   const k = dkey(), next = typeof upNext==='function' ? upNext() : null, ns = typeof nowState==='function' ? nowState(k) : null;
-  const allowance = Math.max(0, freeAfterFixed()), spent = spentMonth(), saved = savedTotal(), goal = Number(state.settings.goal)||25000;
+  const allowance = flexMonth(), spent = spentMonth(), saved = savedTotal(), goal = Number(state.settings.goal)||25000;
   const packs = KNOWLEDGE_PACKS.filter(p=>state.knowledge[p.id]).map(p=>p.title);
   const h = Object.assign({applied:true}, (state.career||{}).huht||{}), stage = HUHT_STAGES.filter(s=>h[s.id]).map(s=>s.t).pop();
   const f = (dayRec(k).feel)||{};
@@ -24,7 +24,7 @@ function coachContext(){
     next ? `Next task: ${next.name} (${next.meta}).` : 'All tasks for today are done.',
     ns && ns.b ? `Day plan: ${ns.kind==='now'?'now in':'next block'} "${ns.b.name}" at ${ns.b.t}.` : '',
     f.energy || f.mood ? `Energy ${f.energy||'?'}/5, mood ${f.mood||'not set'}.` : '',
-    `Money: income ${money0(Number(state.settings.income)||0)}/month, flexible budget ${money0(allowance)}, spent ${money0(spent)} so far this month; saved ${money0(saved)} of the ${money0(goal)} goal.`,
+    `Money: income ${money0(Number(state.settings.income)||0)}/month, spending budget without rent ${money0(allowance)}, budget saves ${money0(feasiblePerMonth())}/month, spent ${money0(spent)} so far this month; saved ${money0(saved)} of the ${money0(goal)} goal.`,
     `Learning: ${packs.length} of ${KNOWLEDGE_PACKS.length} knowledge packs learned${packs.length?` (${packs.slice(0,4).join(', ')})`:''}; drawing test best ${typeof dxBest==='function'?dxBest():0}/8; IELTS essays logged ${((state.ielts||{}).essays||[]).length}.`,
     `Career: Huhtamaki thermo machine operator application, latest stage passed: ${stage||'applied'}.`
   ].filter(Boolean).join('\n');
@@ -189,7 +189,10 @@ function aiOpen(mode){
 function aiClose(){ AI.ctl?.abort(); document.getElementById('aiChat')?.classList.add('out'); setTimeout(()=>document.getElementById('aiChat')?.remove(), motionOff()?0:260); document.body.classList.remove('ai-open'); AI.open = false; if (activeTab==='coach') renderView('coach'); }
 function aiHint(){ const h = document.getElementById('aiHint'); if (!h) return; h.textContent = AI.state==='thinking' ? 'Thinking…' : AI.state==='speaking' ? (AI.mode==='translate'?'Translating':'Answering') : AI.state==='listening' ? 'I’m listening…' : AI.mode==='translate' ? 'Type English, Burmese or Japanese' : AI_LANGS[aiLang()].hint; document.getElementById('aiChat')?.setAttribute('data-state', AI.state);
   const m = document.getElementById('aiMain'); if (m){ m.innerHTML = AI.state==='thinking'||AI.state==='speaking' ? '<span class="ai-stop"></span>' : ic('arrowRight',26); m.setAttribute('aria-label', AI.state==='thinking'||AI.state==='speaking' ? 'Stop' : 'Send'); } }
-function aiScroll(){ const l = document.getElementById('aiLog'); if (l) l.scrollTop = l.scrollHeight; }
+// follow the answer down, but never past the start of the latest question, so a long answer is read from its first line
+function aiScroll(){ const l = document.getElementById('aiLog'); if (!l) return; let to = l.scrollHeight;
+  const q = l.querySelector('.ai-q:last-of-type'); if (q && !document.getElementById('aiChat')?.classList.contains('full')) to = Math.min(to, l.scrollTop + q.getBoundingClientRect().top - l.getBoundingClientRect().top - 8);
+  l.scrollTop = Math.max(0, to); }
 async function aiSend(preset, opt={}){
   if (AI.state==='thinking' || AI.state==='speaking'){ AI.ctl?.abort(); return; }
   const q = document.getElementById('aiQ'), text = (preset ?? q.value).trim(); if (!text) { q.focus(); return; }

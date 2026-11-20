@@ -79,3 +79,5 @@ html.reduce .view.cascade > *{animation:none}
 html.reduce .ringmid b{animation:none}
 html.reduce .tabbar .lens.travelling{animation:none}
 
+/* scroll-into-view lands below the sticky title bar and above the phone tab bar (20 Nov 2026) */
+html{scroll-padding-top:72px;scroll-padding-bottom:110px}

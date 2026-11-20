@@ -96,6 +96,7 @@ html[data-theme="dark"] .task .cbx{background:rgba(179,143,111,.10);box-shadow:i
   background:linear-gradient(150deg,rgba(179,143,111,.28),rgba(244,244,246,.6));color:#A0560E;box-shadow:inset 0 0 0 1px rgba(179,143,111,.35)}
 html[data-theme="dark"] .cue .cuehead .ico{color:#E6CDB0;background:linear-gradient(150deg,rgba(179,143,111,.3),rgba(179,143,111,.12))}
 .cue .cuehead .ct{flex:1;min-width:0}
+.cue .cuehead .ct .t,.cue .cuehead .ct .s{display:block}
 .cue .cuehead .ct .t{font-size:15.5px;font-weight:640;letter-spacing:-.015em}
 .cue .cuehead .ct .s{font-size:12.5px;color:var(--ink-3)}
 .cue .chev{transition:transform .4s var(--ease-spring);color:var(--ink-3)}

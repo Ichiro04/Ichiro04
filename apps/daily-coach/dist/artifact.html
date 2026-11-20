@@ -449,6 +449,7 @@ html[data-theme="dark"] .task .cbx{background:rgba(179,143,111,.10);box-shadow:i
   background:linear-gradient(150deg,rgba(179,143,111,.28),rgba(244,244,246,.6));color:#A0560E;box-shadow:inset 0 0 0 1px rgba(179,143,111,.35)}
 html[data-theme="dark"] .cue .cuehead .ico{color:#E6CDB0;background:linear-gradient(150deg,rgba(179,143,111,.3),rgba(179,143,111,.12))}
 .cue .cuehead .ct{flex:1;min-width:0}
+.cue .cuehead .ct .t,.cue .cuehead .ct .s{display:block}
 .cue .cuehead .ct .t{font-size:15.5px;font-weight:640;letter-spacing:-.015em}
 .cue .cuehead .ct .s{font-size:12.5px;color:var(--ink-3)}
 .cue .chev{transition:transform .4s var(--ease-spring);color:var(--ink-3)}
@@ -1147,6 +1148,8 @@ html.reduce .view.cascade > *{animation:none}
 html.reduce .ringmid b{animation:none}
 html.reduce .tabbar .lens.travelling{animation:none}
 
+/* scroll-into-view lands below the sticky title bar and above the phone tab bar (20 Nov 2026) */
+html{scroll-padding-top:72px;scroll-padding-bottom:110px}
 
 </style>
 <style data-src="src/css/f1.css">
@@ -2469,7 +2472,7 @@ html.reduce .km *,html.reduce .km{animation:none!important}
 /* conversation overlay: always the dark sunset world */
 body.ai-open{overflow:hidden}
 body.ai-open .tabbar,body.ai-open .topbar{visibility:hidden}
-.ai-chat{position:fixed;inset:0;z-index:280;display:grid;grid-template-rows:auto auto minmax(0,auto) minmax(0,1fr) auto auto;color:#F2F1ED;color-scheme:dark;
+.ai-chat{position:fixed;inset:0;z-index:280;display:flex;flex-direction:column;color:#F2F1ED;color-scheme:dark;
   padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
   background:radial-gradient(90% 50% at 50% 34%,rgba(113,0,20,.38),transparent 70%),radial-gradient(80% 40% at 50% 110%,rgba(179,143,111,.22),transparent 70%),linear-gradient(180deg,#111111,#161616 50%,#0C0C0C);
   animation:aiIn .4s cubic-bezier(.2,.8,.2,1) both}
@@ -2488,8 +2491,11 @@ body.ai-open .tabbar,body.ai-open .topbar{visibility:hidden}
 .ai-menu button:hover{background:rgba(230,205,176,.08)}
 .ai-hint{margin:8px 0 0;text-align:center;font-size:13.5px;color:#B8AA9A;transition:color .3s}
 .ai-chat[data-state="thinking"] .ai-hint,.ai-chat[data-state="speaking"] .ai-hint{color:#E6CDB0}
-.ai-big{width:min(64vw,300px);height:min(64vw,300px);justify-self:center;margin:6px 0 4px;transition:width .5s cubic-bezier(.2,.8,.2,1),height .5s cubic-bezier(.2,.8,.2,1)}
+.ai-big{width:min(64vw,300px);height:min(64vw,300px);align-self:center;flex:none;margin:6px 0 4px;transition:width .5s cubic-bezier(.2,.8,.2,1),height .5s cubic-bezier(.2,.8,.2,1)}
 .ai-chat.has-log .ai-big,.ai-chat.full .ai-big{width:min(40vw,170px);height:min(40vw,170px)}
+@media (max-height:760px){ .ai-chat.has-log .ai-big,.ai-chat.full .ai-big{width:min(30vw,112px);height:min(30vw,112px);margin:2px 0} }
+.ai-chat>*{flex:none}
+.ai-chat>.ai-log{flex:1 1 0;min-height:0}
 .ai-log{overflow:auto;max-width:720px;width:100%;margin:0 auto;padding:6px 2px 12px;display:flex;flex-direction:column;gap:12px;mask-image:linear-gradient(180deg,transparent,#000 24px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 24px)}
 .ai-empty{margin:auto 0 0;font-size:15px;color:#978A7E;text-align:center;line-height:1.5}
 .ai-older{display:none;flex-direction:column;gap:8px}
@@ -2946,6 +2952,7 @@ html[data-theme="dark"] .lg::after{background:linear-gradient(90deg,transparent,
 #wvCanvas{display:block;width:100%;height:100%;cursor:pointer;touch-action:pan-y}
 .wv-axis{position:relative;height:16px;margin-top:2px;font-size:10.5px;font-weight:650;color:var(--pw-ink-3);font-variant-numeric:tabular-nums}
 .wv-axis span{position:absolute;transform:translateX(-50%)}
+.wv-axis span:first-child{transform:translateX(max(-50%, -4px))}
 .wv-pick{min-height:18px;margin:4px 0 2px;color:var(--pw-ink-2)!important}
 .wv-pick b{color:var(--pw-ink)}
 
@@ -3781,7 +3788,7 @@ html[data-theme="dark"] .pb-views button.on{background:rgba(255,255,255,.12)}
 .pb-empty{padding:16px 10px;border-radius:14px;border:1.5px dashed var(--pw-line-2);font-size:12px;color:var(--pw-ink-3);text-align:center}
 .pb-card{position:relative;display:grid;gap:7px;padding:12px 12px 11px;border-radius:15px;background:var(--pw-panel,rgba(255,255,255,.85));
   box-shadow:inset 0 0 0 1px var(--pw-line),0 6px 16px -12px rgba(40,10,10,.35);cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;transition:transform .2s,box-shadow .2s,opacity .2s}
-html[data-theme="dark"] .pb-card{background:rgba(255,255,255,.05)}
+html[data-theme="dark"] .pb-card{background:rgba(32,22,24,.88);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .pb-card:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px var(--pw-line-2),0 10px 22px -14px rgba(40,10,10,.45)}
 .pb-card:focus-visible{outline:2px solid var(--pw-gold);outline-offset:2px}
 .pb-card.dragging{opacity:.35}
@@ -4377,6 +4384,17 @@ button.wg-more:hover{color:var(--pw-ink)}
 .wg-menu .done i{background:var(--st-done)}.wg-menu .partly i{background:var(--st-mid)}.wg-menu .missed i{background:var(--st-bad)}.wg-menu .clear i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--pw-ink-3)}
 html.reduce .wg-menu{animation:none}
 @media(max-width:560px){.stx-x span:nth-child(even):not(:last-child){display:none}}
+@media (max-width:599px){ .br-ll{font-size:12.5px} .br-pin text{font-size:11px} .br-core text{font-size:14px} }
+/* Study plan fold (20 Nov 2026): on phones the plan folds to three progress bars, so each Learn section starts near the top */
+.sb-foldb{display:none}
+@media (max-width:899px){
+  .sb-foldb{display:inline-flex;align-items:center;min-height:34px;padding:0 14px;border-radius:999px;border:0;font:700 12.5px/1 inherit;font-family:inherit;color:var(--cr-crimson,#710014);background:var(--pw-panel,rgba(255,255,255,.8));box-shadow:inset 0 0 0 1px var(--pw-line)}
+  .sb.sb-fold .pb-views,.sb.sb-fold .pb-list{display:none}
+  .sb.sb-fold .pb-board.sb-board{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .sb.sb-fold .pb-col{min-height:0;padding:8px;background:var(--pw-panel,rgba(255,255,255,.85));box-shadow:inset 0 0 0 1px var(--pw-line)}
+  .sb.sb-fold .pb-col header{padding:0 0 6px;flex-wrap:wrap;gap:4px}
+  .sb.sb-fold .pb-col header .pb-tag{font-size:11px}
+}
 
 </style>
 <style data-src="src/css/agents.css">
@@ -5887,6 +5905,15 @@ const needPerMonth = () => Math.max(0, (Number(state.settings.goal) - Number(sta
 const freeAfterFixed = () => Number(state.settings.income||0) - fixedTotal();
 // the budget in docs/money-plan.md already carries a £50 buffer, so no extra haircut: £2,500 − £1,197 = £1,303/month
 const feasiblePerMonth = () => Math.max(0, freeAfterFixed());
+// the spending money: every budget line except rent + bills (that leaves the account on its own), £597 with the default plan
+const flexMonth = () => Math.max(0, fixedTotal() - state.settings.fixed.filter(f => f.id === 'rent').reduce((a, f) => a + Number(f.amount||0), 0));
+// spending pace: in the first week one shop can't fairly be projected over the month, so judge it against a week's share instead
+function spendPace(now = new Date()){
+  const spend = spentMonth(now), { day, dim } = monthProgress(now), flex = flexMonth(), early = day < 7;
+  const proj = day ? spend / day * dim : 0;
+  const onPace = early ? spend <= flex * 7 / dim : proj <= flex;
+  return { spend, day, dim, flex, early, proj, onPace, left: Math.max(0, flex - spend) };
+}
 const milestoneList = (() => {
   const goal = 25000; return [5000,10000,15000,20000,25000].map(v=>({ v, pct:v/goal }));
 })();
@@ -5931,16 +5958,19 @@ function sessionDonePct(k=dkey()){
   s.blocks.forEach(b=>{ total += b.sets; const arr = r.sets[b.ex] || []; for (let i=0;i<b.sets;i++) if (arr[i]) done++; });
   return total ? Math.round(done/total*100) : 0;
 }
-function workoutsThisWeek(){
-  const ws = startOfWeek();
+// a strength session counts when its sets are logged or the day plan / task list marks it done (the day plan used to count as 0)
+function workoutsThisWeek(ws = startOfWeek()){
   let n = 0;
-  for (let i=0;i<7;i++){ const k = dkey(addDays(ws,i)); if (sessionDonePct(k) >= 80) n++; }
+  for (let i=0;i<7;i++){ const k = dkey(addDays(ws,i)); if (sessionDonePct(k) >= 80 || taskDone(k, 'train')) n++; }
   return n;
 }
+// strength sessions the plan asks for in that week (3 with the default plan)
+function sessionsPlanned(ws = startOfWeek()){ let n = 0; for (let i=0;i<7;i++) if (tasksForDay(dkey(addDays(ws,i))).some(t => t.id === 'train')) n++; return n || 3; }
 
 /* ---------- IELTS progress ---------- */
-const essaysThisWeek = () => { const ws = startOfWeek(); return state.ielts.essays.filter(e=>parseKey(e.date) >= ws).length; };
-const speakingThisWeek = () => { const ws = startOfWeek(); return Object.keys(state.ielts.speaking).filter(k=>parseKey(k) >= ws).length; };
+const essaysThisWeek = (ws = startOfWeek()) => { const we = addDays(ws, 7); return state.ielts.essays.filter(e=>{ const d = parseKey(e.date); return d >= ws && d < we; }).length; };
+// speaking days: the speaking log or the speaking task ticked that day
+const speakingThisWeek = (ws = startOfWeek()) => { let n = 0; for (let i=0;i<7;i++){ const k = dkey(addDays(ws,i)); if (state.ielts.speaking[k] || taskDone(k, 'speaking')) n++; } return n; };
 
 /* ---------- derived summaries ---------- */
 function todayDone(){ return countDone(dkey()); }
@@ -7742,7 +7772,7 @@ function focusChartHTML(){
   const days = Array.from({length:14},(_,i)=>{ const d = addDays(new Date(), i-13), k = dkey(d); return { k, d, v: focusOf(k) }; });
   const mx = Math.max(60, ...days.map(x=>x.v)), W = 340, H = 120, bw = W/14, best = Math.max(...days.map(x=>x.v));
   const avg = days.reduce((s,x)=>s+x.v,0)/14;
-  return `<div class="glass ds-chart"><div class="ds-ch"><div class="h3">Focus minutes · last 14 days</div><span class="tiny num">${Math.round(days[13].v)} min today</span></div>
+  return `<div class="glass ds-chart"><div class="ds-ch"><span class="tiny num">${Math.round(days[13].v)} min today</span></div>
     <svg viewBox="0 0 ${W} ${H+18}" class="ds-bars14" role="img" aria-label="Focus minutes for the last 14 days">
       ${[0.25,0.5,0.75,1].map(f=>`<line x1="0" x2="${W}" y1="${(H - H*f).toFixed(1)}" y2="${(H - H*f).toFixed(1)}" class="gl"/>`).join('')}
       ${days.map((x,i)=>{ const h = Math.max(2, x.v/mx*(H-8)); return `<rect x="${(i*bw+3).toFixed(1)}" y="${(H-h).toFixed(1)}" width="${(bw-6).toFixed(1)}" height="${h.toFixed(1)}" rx="3" class="${i===13?'today':x.v===best&&best>0?'best':''}" style="animation-delay:${i*30}ms"/><text x="${(i*bw+bw/2).toFixed(1)}" y="${H+13}" text-anchor="middle">${'MTWTFSS'[isoWeekday(x.d)]}</text>`; }).join('')}
@@ -7754,7 +7784,7 @@ function timeBarsHTML(){
   const ws = startOfWeek(), cats = {};
   for (let i=0;i<7;i++){ const kk = dkey(addDays(ws,i)); dayBlocks(kk).forEach(b=>{ const st = blockStatus(kk,b); const v = st==='done' ? b.dur : st==='partly' ? b.dur/2 : 0; cats[b.cat] = (cats[b.cat]||0) + v; }); }
   const order = [['Training','f-rd'],['English','f-bl'],['Engineering','f-pu'],['Career','f-ye'],['Walking','f-gr'],['Routine','f-mu']], mx = Math.max(30, ...Object.values(cats));
-  return `<div class="glass ds-tbars"><div class="ds-ch"><div class="h3">Where the time went</div><span class="tiny">this week</span></div>
+  return `<div class="glass ds-tbars">
     ${order.map(([c,cl])=>`<div class="ds-brow"><span>${c}</span><span class="ds-bar"><i class="${cl}" style="width:${((cats[c]||0)/mx*100).toFixed(0)}%"></i></span><b class="num">${fmtHM(cats[c]||0).replace(' min','m').replace(' h','h')}</b></div>`).join('')}</div>`;
 }
 function daySystemHTML(){
@@ -7764,7 +7794,7 @@ function daySystemHTML(){
     <div class="ds-row2">${threeHTML()}${feelHTML()}</div>
     ${numbersHTML()}
     ${planBoardHTML()}
-    <div class="ds-row3"><div><div class="h2">Focus <span class="side">last 14 days</span></div>${focusChartHTML()}</div>
+    <div class="ds-row3"><div><div class="h2">Focus minutes <span class="side">last 14 days</span></div>${focusChartHTML()}</div>
       <div><div class="h2">Where the time went <span class="side">this week</span></div>${timeBarsHTML()}</div></div>
   </section>`;
 }
@@ -8016,14 +8046,14 @@ function kmDraw(now){
   const list = KM.nodes.filter(n=>n.type!=='core' && n.va > 0).sort((a,b)=>a.dz-b.dz); KM.labs = kmPanels().map(p=>p.slice());
   // reserve label space front-to-back: domains first, then the nearest topics
   const labOK = new Set(); g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
-  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill'||n.type==='task'||n.type==='hole') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (5 + n.w*.28)*1.6*clamp(Math.pow(KM.cam.z,.75), .75, 10) : 3.4*clamp(Math.pow(KM.cam.z,.8), .8, 12), h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; n.lside = xr + w > W - 8 ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
+  [...list].sort((a,b)=>(a.type==='domain'?0:a.type==='topic'?1:2)-(b.type==='domain'?0:b.type==='topic'?1:2) || (KM.sel===b)-(KM.sel===a) || b.dz-a.dz).forEach(n=>{ if (n.type==='practice'||n.type==='skill'||n.type==='task'||n.type==='hole') return; const w = g.measureText(n.name).width*(n.type==='topic'?.93:1) + 6, r = n.type==='domain' ? (5 + n.w*.28)*1.6*clamp(Math.pow(KM.cam.z,.75), .75, 10) : 3.4*clamp(Math.pow(KM.cam.z,.8), .8, 12), h = n.type==='domain' ? 30 : 16, xr = n.sx + r + 6, xl = n.sx - r - 6 - w; const fitR = xr + w <= W - 8, fitL = xl >= 8; n.lside = fitR ? 1 : fitL ? -1 : 1; if (kmLabelFree(n.lside > 0 ? xr : xl, n.sy - 10, w, h)) labOK.add(n); else if (n.type==='domain' && (n.lside > 0 ? fitL : fitR) && kmLabelFree(n.lside > 0 ? xl : xr, n.sy - 10, w, h)){ n.lside = -n.lside; labOK.add(n); } });
   const zs = Math.max(.7, Math.min(1.8, KM.cam.z));
   list.forEach(n=>{
     const depth = n.pk || 1, hov = KM.hover===n ? 1.25 : 1, blur = clamp(-(n.dz||0) - .35, 0, 1)*(KM.cam.z < 2 ? 1 : 0);
     if (n.type==='domain'){ const di = KM_DOMAINS.indexOf(n.dom), r = (5 + n.w*.28)*gz*depth*hov;
       kmStar(g, n.sx, n.sy, r, KM_STAR_COLS[di % KM_STAR_COLS.length], TT, n.va*(1 - blur*.35), n.ph, still); n.sr = r*1.6;
       g.globalAlpha = n.va; g.font = '600 13px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#F4EFE8'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 8;
-      const lab = W < 760 && n.name.length > 16 ? n.name.slice(0,15).trimEnd()+'…' : n.name, lw = g.measureText(lab).width, lx = n.lside < 0 ? n.sx - r*1.6 - 9 - lw : n.sx + r*1.6 + 9; if (!labOK.has(n)) g.globalAlpha = 0; else if (kmInTitle(lx, n.sy, lw)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, lx, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, lx, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(lx, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
+      const lab = W < 760 && n.name.length > 16 ? n.name.slice(0,15).trimEnd()+'…' : n.name, lw = g.measureText(lab).width, lx = clamp(n.lside < 0 ? n.sx - r*1.6 - 9 - lw : n.sx + r*1.6 + 9, Math.min(6, n.sx), Math.max(n.sx, W - 6 - lw)); if (!labOK.has(n)) g.globalAlpha = 0; else if (kmInTitle(lx, n.sy, lw)) g.globalAlpha = n.va*(1-KM.tA); g.fillText(lab, lx, n.sy + 1); g.shadowBlur = 0; if (labOK.has(n)) kmChip(g, lx, n.sy + 15, n.w + '%', n.va*.95*(kmInTitle(lx, n.sy, 40) ? 1-KM.tA : 1)); g.globalAlpha = 1; }
     else if (n.type==='task'){ const r = (5.2 + (n.task.go==='train' ? 1.5 : 0))*gt*depth*hov, done = taskDone(dkey(), n.task.id), col = KM_TASK_COLS[n.task.go] || KM_TASK_COLS.def;
       if (n.ringed) kmPlanetRing(g, n.sx, n.sy, r, col, v.tilt, n.va, true);
       kmGloss(g, n.sx, n.sy, r, col, core.sx-n.sx, core.sy-n.sy, n.va*(1 - blur*.4), done, TT);
@@ -8032,7 +8062,7 @@ function kmDraw(now){
     else if (n.type==='sat'){ const r = 4.5*gt*depth*hov; kmSat(g, n.sx, n.sy, r, TT, n.va, n.ph, still); n.sr = r*2.4;
       if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.3)){ g.globalAlpha = kmOverPanel(n.sx + r*2.6, n.sy - 10, 130, 16) ? 0 : n.va*.9; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#BFE0FF'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 6; g.fillText(`${n.block.t} ${n.name}`, n.sx + r*2.6, n.sy + 4); g.shadowBlur = 0; g.globalAlpha = 1; } }
     else if (n.type==='neb'){ const r = 26*gz*depth*hov; kmNeb(g, n.sx, n.sy, r, n.col, n.prog, TT, n.va, n.ph, still); n.sr = r*.8;
-      { const t = `${n.name} · ${Math.round(n.prog*100)}%`; g.font = '650 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; const tw = g.measureText(t).width; g.globalAlpha = kmOverPanel(n.sx - tw/2, n.sy + r*1.05, tw, 16) ? 0 : n.va*.9; } g.fillStyle = `rgb(${n.col})`; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 8; g.textAlign = 'center'; g.fillText(`${n.name} · ${Math.round(n.prog*100)}%`, n.sx, n.sy + r*1.05 + 12); g.textAlign = 'start'; g.shadowBlur = 0; g.globalAlpha = 1; }
+      { const t = `${n.name} · ${Math.round(n.prog*100)}%`; g.font = '650 12px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; const tw = g.measureText(t).width; g.globalAlpha = kmOverPanel(n.sx - tw/2, n.sy + r*1.05, tw, 16) ? 0 : n.va*.9; } g.fillStyle = `rgb(${n.col})`; g.shadowColor = 'rgba(0,0,0,.95)'; g.shadowBlur = 8; g.textAlign = 'center'; { const t = `${n.name} · ${Math.round(n.prog*100)}%`, hw = g.measureText(t).width/2 + 6; g.fillText(t, n.sx > -r && n.sx < W + r ? clamp(n.sx, hw, Math.max(hw, W - hw)) : n.sx, n.sy + r*1.05 + 12); } g.textAlign = 'start'; g.shadowBlur = 0; g.globalAlpha = 1; }
     else if (n.type==='pulsar'){ const r = 4*gz*depth*hov; kmPulsar(g, n.sx, n.sy, r, TT, n.va, still); n.sr = r*3;
       if (KM.hover===n || KM.sel===n || (KM.labels && KM.cam.z > 1.1)){ g.globalAlpha = kmOverPanel(n.sx + r*3, n.sy - r*2 - 12, 110, 16) ? 0 : n.va*.85; g.font = '600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif'; g.fillStyle = '#CFE6FF'; g.fillText(`Streak · ${currentStreak()} days`, n.sx + r*3, n.sy - r*2); g.globalAlpha = 1; } }
     else if (n.type==='const'){ const r = 12*gz*depth; kmConst(g, n.sx, n.sy, r, TT, n.va); n.sr = r*3; }
@@ -9508,9 +9538,8 @@ function renderMoney(){
   const pct = clamp(saved/goal,0,1);
   const spend = spentMonth(now);
   const { day, dim, frac } = monthProgress(now);
-  const allowance = Math.max(0, freeAfterFixed()/dim);
-  const proj = day ? spend/day*dim : 0;
-  const onPace = proj <= allowance;
+  const flex = flexMonth(), allowance = Math.max(0, (flex - spend) / Math.max(1, dim - day + 1));
+  const { proj, onPace } = spendPace(now);
   const need = needPerMonth(), feasible = feasiblePerMonth();
   const gap = Math.max(0, need - feasible);
   // the £25k year runs from the plan start (createdAt), matching "Day N of 365" in the status bar
@@ -9573,10 +9602,10 @@ function renderMoney(){
       <div class="h2">This month <span class="side">${monthLabel(monthKey(now))}</span></div>
       <div class="glass card">
         <div class="row between" style="align-items:flex-end">
-          <div><div class="mono" style="font-size:26px;font-weight:700;letter-spacing:-.04em">${money0(spend)}</div><div class="tiny">of ${money0(allowance*dim)} flexible</div></div>
+          <div><div class="mono" style="font-size:26px;font-weight:700;letter-spacing:-.04em">${money0(spend)}</div><div class="tiny">of ${money0(flex)} to spend</div></div>
           <span class="chip ${onPace?'chip-teal':'chip-orange'}">${onPace?'On pace':'Over pace'}</span>
         </div>
-        <div class="pbar" style="margin-top:12px"><i class="${onPace?'teal':'orange'}" style="width:${clamp(spend/Math.max(1,allowance*dim)*100,0,100)}%"></i></div>
+        <div class="pbar" style="margin-top:12px"><i class="${onPace?'teal':'orange'}" style="width:${clamp(spend/Math.max(1,flex)*100,0,100)}%"></i></div>
         <div class="row between" style="margin-top:8px"><span class="tiny">Day ${day} of ${dim}</span><span class="tiny">${money0(allowance)} a day left</span></div>
         ${byCat.length?`<div class="divider"></div><div style="display:grid;gap:9px">
           ${byCat.map(c=>`<div>
@@ -9848,7 +9877,7 @@ function chatBubble(m){
 }
 function coachRead(){
   const done = todayDone(), total = todayTotal(), next = upNext();
-  const spend = spentMonth(), allowance = Math.max(0, freeAfterFixed());
+  const spend = spentMonth(), allowance = flexMonth();
   const bits = [];
   bits.push(done===0?`Nothing logged yet today — ${total} tasks are waiting.`:`${done} of ${total} done today.`);
   if (next) bits.push(`Next best move: ${next.name.toLowerCase()}.`);
@@ -9881,7 +9910,7 @@ const aiOnline = () => !!AI.sample && AI.sample !== 'denied';
 
 function coachContext(){
   const k = dkey(), next = typeof upNext==='function' ? upNext() : null, ns = typeof nowState==='function' ? nowState(k) : null;
-  const allowance = Math.max(0, freeAfterFixed()), spent = spentMonth(), saved = savedTotal(), goal = Number(state.settings.goal)||25000;
+  const allowance = flexMonth(), spent = spentMonth(), saved = savedTotal(), goal = Number(state.settings.goal)||25000;
   const packs = KNOWLEDGE_PACKS.filter(p=>state.knowledge[p.id]).map(p=>p.title);
   const h = Object.assign({applied:true}, (state.career||{}).huht||{}), stage = HUHT_STAGES.filter(s=>h[s.id]).map(s=>s.t).pop();
   const f = (dayRec(k).feel)||{};
@@ -9890,7 +9919,7 @@ function coachContext(){
     next ? `Next task: ${next.name} (${next.meta}).` : 'All tasks for today are done.',
     ns && ns.b ? `Day plan: ${ns.kind==='now'?'now in':'next block'} "${ns.b.name}" at ${ns.b.t}.` : '',
     f.energy || f.mood ? `Energy ${f.energy||'?'}/5, mood ${f.mood||'not set'}.` : '',
-    `Money: income ${money0(Number(state.settings.income)||0)}/month, flexible budget ${money0(allowance)}, spent ${money0(spent)} so far this month; saved ${money0(saved)} of the ${money0(goal)} goal.`,
+    `Money: income ${money0(Number(state.settings.income)||0)}/month, spending budget without rent ${money0(allowance)}, budget saves ${money0(feasiblePerMonth())}/month, spent ${money0(spent)} so far this month; saved ${money0(saved)} of the ${money0(goal)} goal.`,
     `Learning: ${packs.length} of ${KNOWLEDGE_PACKS.length} knowledge packs learned${packs.length?` (${packs.slice(0,4).join(', ')})`:''}; drawing test best ${typeof dxBest==='function'?dxBest():0}/8; IELTS essays logged ${((state.ielts||{}).essays||[]).length}.`,
     `Career: Huhtamaki thermo machine operator application, latest stage passed: ${stage||'applied'}.`
   ].filter(Boolean).join('\n');
@@ -10055,7 +10084,10 @@ function aiOpen(mode){
 function aiClose(){ AI.ctl?.abort(); document.getElementById('aiChat')?.classList.add('out'); setTimeout(()=>document.getElementById('aiChat')?.remove(), motionOff()?0:260); document.body.classList.remove('ai-open'); AI.open = false; if (activeTab==='coach') renderView('coach'); }
 function aiHint(){ const h = document.getElementById('aiHint'); if (!h) return; h.textContent = AI.state==='thinking' ? 'Thinking…' : AI.state==='speaking' ? (AI.mode==='translate'?'Translating':'Answering') : AI.state==='listening' ? 'I’m listening…' : AI.mode==='translate' ? 'Type English, Burmese or Japanese' : AI_LANGS[aiLang()].hint; document.getElementById('aiChat')?.setAttribute('data-state', AI.state);
   const m = document.getElementById('aiMain'); if (m){ m.innerHTML = AI.state==='thinking'||AI.state==='speaking' ? '<span class="ai-stop"></span>' : ic('arrowRight',26); m.setAttribute('aria-label', AI.state==='thinking'||AI.state==='speaking' ? 'Stop' : 'Send'); } }
-function aiScroll(){ const l = document.getElementById('aiLog'); if (l) l.scrollTop = l.scrollHeight; }
+// follow the answer down, but never past the start of the latest question, so a long answer is read from its first line
+function aiScroll(){ const l = document.getElementById('aiLog'); if (!l) return; let to = l.scrollHeight;
+  const q = l.querySelector('.ai-q:last-of-type'); if (q && !document.getElementById('aiChat')?.classList.contains('full')) to = Math.min(to, l.scrollTop + q.getBoundingClientRect().top - l.getBoundingClientRect().top - 8);
+  l.scrollTop = Math.max(0, to); }
 async function aiSend(preset, opt={}){
   if (AI.state==='thinking' || AI.state==='speaking'){ AI.ctl?.abort(); return; }
   const q = document.getElementById('aiQ'), text = (preset ?? q.value).trim(); if (!text) { q.focus(); return; }
@@ -10739,7 +10771,7 @@ document.addEventListener('click', e=>{
     }
     case 'close-sheet': closeSheet(); break;
     case 'fab-expense': closeFab(); openExpenseSheet(); break;
-    case 'fab-saving': closeFab(); document.querySelector('[data-a="add-saving"]')?.click() || openSheet({title:'Add to savings', body:''}); break;
+    case 'fab-saving': closeFab(); openSavingSheet(); break;
   }
 });
 
@@ -10772,10 +10804,9 @@ document.addEventListener('submit', e=>{
     if (!amount) return;
     state.expenses.push({ id:uid(), date:dkey(), amount, cat:data.cat||'life', note:(data.note||'').trim() });
     setTask(dkey(),'log',true); save();
-    const spend = spentMonth(), dim = monthProgress().dim;
-    const proj = spend/monthProgress().day*dim;
+    const P = spendPace();
     renderView('money'); updateChrome();
-    toast(proj > freeAfterFixed() ? `Logged. Projected ${money0(proj)} this month — that is over your flexible budget.` : `Logged ${money(amount)}. ${money0(Math.max(0,freeAfterFixed()-spend))} of flexible budget left.`, proj>freeAfterFixed()?'warn':'ok',2800);
+    toast(!P.onPace ? (P.early ? `Logged. ${money0(P.spend)} spent this month already, more than a week's share of your ${money0(P.flex)} spending budget.` : `Logged. Projected ${money0(P.proj)} this month — that is over your ${money0(P.flex)} spending budget.`) : `Logged ${money(amount)}. ${money0(P.left)} of this month’s spending budget left.`, P.onPace?'ok':'warn',2800);
   }
   if (kind === 'saving'){
     const amount = Number(data.amount);
@@ -10859,10 +10890,12 @@ $('#fab').addEventListener('click', ()=>{
   $('#fab').classList.toggle('open', open);
   $('#fab').setAttribute('aria-expanded', String(open));
 });
+// opens the Add to savings sheet from any tab (the old code fell through to an empty sheet, or threw off the Money tab)
+function openSavingSheet(){ const t = document.createElement('button'); t.dataset.a = 'add-saving'; t.hidden = true; document.body.appendChild(t); t.click(); t.remove(); }
 $('#fabmenu').addEventListener('click', e=>{
   const b = e.target.closest('button[data-fab]'); if (!b) return;
   if (b.dataset.fab === 'expense'){ closeFab(); openExpenseSheet(); }
-  else { closeFab(); document.querySelector('[data-a="add-saving"]').click(); }
+  else { closeFab(); openSavingSheet(); }
 });
 function openExpenseSheet(){
   openSheet({ title:'Log spending', body:`<form data-form="expense" style="display:grid;gap:12px">
@@ -11237,20 +11270,22 @@ if (typeof waveTips === 'function'){ const _wt = waveTips; waveTips = function()
    COACH ENGINE — rule-based, reads your own numbers
    ============================================================ */
 function moneyRead(){
-  const spend = spentMonth(), free = freeAfterFixed(), dim = monthProgress().dim, day = monthProgress().day;
+  // the budget list is the whole month (rent included); logged spends count against everything except rent
+  const spend = spentMonth(), { dim, day } = monthProgress();
   const proj = day ? spend/day*dim : 0;
-  const gap = Math.max(0, needPerMonth()-feasiblePerMonth());
+  const flex = flexMonth();
+  const mk = monthKey(), savedM = state.savings.filter(x => (x.date||'').startsWith(mk)).reduce((a, x) => a + Number(x.amount||0), 0);
+  const plan = feasiblePerMonth(), need = needPerMonth(), gap = Math.max(0, need - plan);
   const lines = [];
-  lines.push(`Money, honestly: ${money0(spend)} spent in ${monthProgress().day} days, which projects to ${money0(proj)} by month end.`);
-  lines.push(`Flexible budget is ${money0(free)} a month, so you are ${proj>free?'over by '+money0(proj-free):'inside it by '+money0(free-proj)}.`);
+  lines.push(`Saved this month: ${money0(savedM)} of the ${money0(plan)} your budget allows. In total: ${money0(savedTotal())} of ${money0(state.settings.goal)}.`);
+  lines.push(day < 7 ? `Spent: ${money0(spend)} in ${day} day${day===1?'':'s'}, ${money0(Math.max(0, flex - spend))} left of your ${money0(flex)} budget without rent. Too early in the month to project.` : `Spent: ${money0(spend)} in ${day} days, about ${money0(proj)} by month end. Your budget without rent is ${money0(flex)}, so you are ${proj>flex?'over by '+money0(proj-flex):'inside it by '+money0(flex-proj)}.`);
   if (gap > 0){
-    lines.push(`The £25,000 target needs ${money0(needPerMonth())} a month. Your fixed costs leave ${money0(free)}, and a survivable save rate is ${money0(feasiblePerMonth())}.`);
-    lines.push(`Gap: ${money0(gap)} a month, or ${money0(gap*12)} a year.`);
-    lines.push(`Fix: one extra shift a month (~£150), one paid piece of CAD or tutoring work a month (~£200), and halve the eating out (~£45). That is ${money0(395)} before touching your food shop.`);
+    lines.push(`The £25k goal needs ${money0(need)} a month. Your budget saves ${money0(plan)}, so the gap is ${money0(gap)} a month (${money0(gap*12)} a year).`);
+    lines.push(`To close it: extra paid hours or a paid CAD job (about £200 to £350 a month), and the leaks on the Money tab.`);
   } else {
-    lines.push(`You are on track. Set a standing order for ${money0(needPerMonth())} on payday and treat your current account as the spending account only.`);
+    lines.push(`You are on track. Set a standing order for ${money0(need)} on payday and treat your current account as the spending account only.`);
   }
-  lines.push(`Next action: log tonight's spending before you sleep — including the small ones.`);
+  lines.push(`Next step: log today's spending before you sleep, small ones too.`);
   return lines.join('\n\n');
 }
 function trainRead(){
@@ -11259,7 +11294,7 @@ function trainRead(){
   const wk = workoutsThisWeek();
   const w = lastWeight(), ch = weightChangeWeek();
   const lines = [];
-  lines.push(`Training: ${wk} of 6 sessions logged this week, today's ${sess.id==='REST'?'rest day':sess.day.toLowerCase()} is ${pct}% complete.`);
+  lines.push(`Training: ${wk} of ${sessionsPlanned()} strength sessions done this week, today's ${sess.id==='REST'?'rest day':sess.day.toLowerCase()} is ${pct}% complete.`);
   if (pct < 100 && sess.blocks.length) lines.push(`Unfinished sets: ${sess.blocks.length} movements. Start with ${EX[sess.blocks[0].ex].name.toLowerCase()} — three sets, two minutes rest, done inside 15 minutes.`);
   lines.push(`Bodyweight is ${num(w)} kg${ch!==null?` (${ch>0?'+':''}${num(ch)} kg this week)`:''}. Target ${state.profile.weightTarget} kg.`);
   if (ch !== null && ch > 0.4) lines.push(`A gain of ${num(ch)} kg in a week is usually water, salt or a missed walk, not fat. Keep the food log honest and the steps at 8,000.`);
@@ -11287,35 +11322,42 @@ function stuckRead(){
   lines.push(`If it is the money part that is worrying you, that is a different problem — say "money" and I will show you the numbers instead of the fog.`);
   return lines.join('\n\n');
 }
-function planRead(){
-  const k = dkey();
-  const list = tasksForDay(k);
-  const next = upNext();
-  const lines = [`Here is today, in order. You have 1.5–2 hours.`];
-  lines.push(list.map((t,i)=>`${i+1}. ${t.name} — ${t.meta}${taskDone(k,t.id)?' ✓':''}`).join('\n'));
-  if (next) lines.push(`Start with ${next.name.toLowerCase()}. ${next.go==='train'?'Warm up for five minutes first, then the first three movements only.':next.go==='learn'?'Timer on, phone face down, one task only.':next.go==='money'?'Sixty seconds of admin, then done.':'Set a timer and stop when it rings.'}`);
-  lines.push(`Non-negotiables: 8,000 steps, 130g+ protein, lights out by 11. Everything else is negotiable.`);
+function planRead(q = ''){
+  // "tomorrow", or asking after 8 pm, plans the next day instead of listing today's ticks
+  const tmr = /tomorrow|tmr|tonight.*plan/.test(q) || new Date().getHours() >= 20;
+  const k = tmr ? dkey(addDays(new Date(), 1)) : dkey();
+  const blocks = (typeof dayBlocks === 'function' ? dayBlocks(k) : []).filter(b => !b.skip), at = t => { const b = blocks.find(x => x.task === t.id); return b ? b.start : 9999; };
+  const list = tasksForDay(k).slice().sort((a, b) => at(a) - at(b));   // in time order
+  const next = tmr ? list[0] : upNext();
+  const lines = [tmr ? `Here is tomorrow (${shortDate(parseKey(k))}), in order. You have 1.5–2 hours.` : `Here is today, in order. You have 1.5–2 hours.`];
+  lines.push(list.map((t,i)=>{ const b = blocks.find(x => x.task === t.id); return `${i+1}. ${b ? b.t + ' · ' : ''}${t.name} — ${t.meta}${!tmr && taskDone(k,t.id)?' ✓':''}`; }).join('\n'));
+  if (next) lines.push(`${tmr ? 'First thing' : 'Start with'}: ${next.name.toLowerCase()}. ${next.go==='train'?'Warm up for five minutes first, then the first three movements only.':next.go==='learn'?'Timer on, phone face down, one task only.':next.go==='money'?'Sixty seconds of admin, then done.':'Set a timer and stop when it rings.'}`);
+  if (tmr) lines.push(`Tonight: lay out what the first block needs, log today's spending, lights out by 11.`);
+  else lines.push(`Non-negotiables: 8,000 steps, 130g+ protein, lights out by 11. Everything else is negotiable.`);
   return lines.join('\n\n');
 }
 function weeklyReview(){
-  const days = Array.from({length:7},(_,i)=>dkey(addDays(startOfWeek(),i)));
+  // on Monday the new week has barely started, so review the week that just ended
+  const ws = isoWeekday() === 0 ? addDays(startOfWeek(), -7) : startOfWeek(), we = addDays(ws, 6), past = isoWeekday() === 0;
+  const days = Array.from({length:7},(_,i)=>dkey(addDays(ws,i))).filter(d => d <= dkey());
   const doneDays = days.filter(d=>isStreakDay(d)).length;
   const tasks = days.reduce((a,d)=>a+countDone(d),0);
-  const sess = workoutsThisWeek();
-  const spend = spentMonth();
-  const essays = essaysThisWeek();
+  const sess = workoutsThisWeek(ws), plan = sessionsPlanned(ws);
+  const spend = state.expenses.filter(e => e.date >= dkey(ws) && e.date <= dkey(we)).reduce((a, e) => a + Number(e.amount||0), 0), wkBudget = flexMonth() * 7 / 30.4;
+  const essays = essaysThisWeek(ws), spk = speakingThisWeek(ws);
   const wch = weightChangeWeek();
   const wins = [], fixes = [];
-  if (doneDays >= 4) wins.push(`${doneDays} streak days out of 7 — the habit is holding.`); else fixes.push(`Only ${doneDays} streak days. Pick two fixed times in the day and defend them.`);
-  if (sess >= 3) wins.push(`${sess} sessions logged: you are actually training, not just reading about training.`); else fixes.push(`${sess} sessions. Put Monday, Tuesday and Thursday in the calendar like shifts.`);
-  if (essays >= 2) wins.push(`${essays} essays written.`); else fixes.push(`${essays} essays — write one before Thursday.`);
-  if (spend <= freeAfterFixed()) wins.push(`Spending is inside the flexible budget at ${money0(spend)}.`); else fixes.push(`Spending is ${money0(spend - freeAfterFixed())} past your flexible budget.`);
+  if (doneDays >= Math.min(4, days.length)) wins.push(`${doneDays} streak days out of ${days.length} — the habit is holding.`); else fixes.push(`Only ${doneDays} streak days out of ${days.length}. Pick two fixed times in the day and defend them.`);
+  if (sess >= plan) wins.push(`${sess} of ${plan} strength sessions done.`); else fixes.push(`${sess} of ${plan} strength sessions. Treat the next one like a shift.`);
+  if (essays >= 2) wins.push(`${essays} essays written.`); else fixes.push(`${essays} essay${essays===1?'':'s'} — ${past ? 'two this week' : 'write one before Thursday'}.`);
+  if (spk >= 3) wins.push(`${spk} speaking days.`); else fixes.push(`${spk} speaking day${spk===1?'':'s'}. One cue card on a walk counts.`);
+  if (spend <= wkBudget) wins.push(`Spending ${money0(spend)}, inside the week's share (${money0(wkBudget)}).`); else fixes.push(`Spending ${money0(spend)}, ${money0(spend - wkBudget)} over the week's share.`);
   if (wch !== null) (wch <= 0 ? wins : fixes).push(`Bodyweight ${wch>0?'+':''}${num(wch)} kg this week.`);
-  const lines = [`Weekly review · ${shortDate(startOfWeek())} to ${shortDate(addDays(startOfWeek(),6))}`];
-  lines.push(`${tasks} tasks completed, ${doneDays}/7 streak days, ${sess}/6 sessions, ${essays} essays, ${money0(spend)} spent.`);
+  const lines = [`Weekly review · ${shortDate(ws)} to ${shortDate(we)}${past ? ' (last week)' : ''}`];
+  lines.push(`${tasks} tasks completed, ${doneDays} streak days, ${sess}/${plan} sessions, ${essays} essays, ${spk} speaking days, ${money0(spend)} spent.`);
   if (wins.length) lines.push(`Held:\n${wins.map(w=>'· '+w).join('\n')}`);
   if (fixes.length) lines.push(`Slipped:\n${fixes.map(f=>'· '+f).join('\n')}`);
-  lines.push(`Next week's single focus: ${doneDays < 4 ? 'hit four tasks a day, no exceptions' : sess < 3 ? 'three strength sessions, minimum' : essays < 2 ? 'two timed essays' : 'raise the money gap by £150'}.`);
+  lines.push(`Next week's single focus: ${doneDays < Math.min(4, days.length) ? 'hit four tasks a day, no exceptions' : sess < plan ? `${plan} strength sessions` : essays < 2 ? 'two timed essays' : spk < 3 ? 'three speaking days' : 'raise the money gap by £150'}.`);
   return lines.join('\n\n');
 }
 function careerRead(){
@@ -11342,11 +11384,11 @@ function sleepRead(){
 }
 function fallbackRead(){
   const done = todayDone(), total = todayTotal();
-  const spend = spentMonth(), free = freeAfterFixed();
+  const spend = spentMonth(), free = flexMonth();
   return [
     `Here is the state of things.`,
-    `${done}/${total} tasks today, ${currentStreak()} day streak, ${workoutsThisWeek()}/6 sessions this week, ${essaysThisWeek()} essays.`,
-    `Saved ${money0(savedTotal())} of ${money0(state.settings.goal)}; ${money0(spend)} spent this month against ${money0(free)} flexible.`,
+    `${done}/${total} tasks today, ${currentStreak()} day streak, ${workoutsThisWeek()}/${sessionsPlanned()} sessions this week, ${essaysThisWeek()} essays.`,
+    `Saved ${money0(savedTotal())} of ${money0(state.settings.goal)}; ${money0(spend)} spent this month against ${money0(free)} to spend (budget without rent).`,
     `The one thing that would move the most in the next hour: ${upNext() ? upNext().name.toLowerCase() : 'go outside and walk'}.`,
     `Ask me for a plan, a review, money, training, English or career — I read your own numbers, not generic advice.`
   ].join('\n\n');
@@ -11360,7 +11402,7 @@ function generateReply(text){
   if (/career|job|engineer|learn|knowledge|interview|cv/.test(q)) return careerRead();
   if (/stuck|motivat|tired|lazy|can'?t|give up|overwhelm|anxious/.test(q)) return stuckRead();
   if (/sleep|rest|recover|energy/.test(q)) return sleepRead();
-  if (/plan|today|next|should i|start|day/.test(q)) return planRead();
+  if (/plan|today|tomorrow|next|should i|start|day/.test(q)) return planRead(q);
   return fallbackRead();
 }
 
@@ -12208,7 +12250,7 @@ function stxMMHTML(){
 }
 function progressDashHTML(){
   return `<div class="pdash">
-    ${typeof pulseHTML === 'function' ? pulseHTML() : ''}
+    ${typeof dayPulseHTML === 'function' ? dayPulseHTML() : ''}
     <div class="glass stx"><div class="stx-h"><div><b>Statistics</b><small id="stxSub">${STX_MODES[STX.mode][2]} · last 30 days</small></div>
       <div class="stx-tabs" role="tablist">${Object.entries(STX_MODES).map(([id, m]) => `<button role="tab" aria-selected="${STX.mode === id}" class="${STX.mode === id ? 'on' : ''}" data-stx="${id}">${ic(m[1], 14)} ${m[0]}</button>`).join('')}</div></div>
       <div class="stx-mm" id="stxMM">${stxMMHTML()}</div>
@@ -12999,10 +13041,13 @@ function studyBoardHTML(){
   const left = v === 'week' ? 6 - isoWeekday(new Date()) : v === 'month' ? Math.round((to - new Date()) / 864e5) : 0;
   const side = v === 'finished' ? 'this month, newest first' : `${all} of ${tot}${v === 'day' ? ' today' : ` · ${left > 0 ? left + ' day' + (left > 1 ? 's' : '') + ' left' : 'last day'}`}`;
   const views = [['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['finished', 'Finished']];
-  return `<section class="sb" id="studyBoard"><div class="pb-head"><div class="h2">Study plan <span class="side num">${side}</span></div>
+  const fold = !state.studyOpen;   // phones: folded to three progress bars until opened (wide screens always show it all)
+  return `<section class="sb${fold ? ' sb-fold' : ''}" id="studyBoard"><div class="pb-head"><div class="h2">Study plan <span class="side num">${side}</span></div>
+      <button class="sb-foldb" data-sb-fold aria-expanded="${!fold}">${fold ? 'Show the plan' : 'Fold it'}</button>
       <div class="pb-views" role="tablist" aria-label="Study period">${views.map(([id, l]) => `<button role="tab" aria-selected="${v === id}" class="${v === id ? 'on' : ''}" data-sb-view="${id}">${id === 'finished' ? ic('check', 14) : ic('calendar', 14)}<span>${l}</span></button>`).join('')}</div></div>
     <div class="pb-board sb-board">${cols.join('')}</div></section>`;
 }
+document.addEventListener('click', e => { const f = e.target.closest('[data-sb-fold]'); if (!f) return; e.stopPropagation(); state.studyOpen = !state.studyOpen; save(); const el = document.getElementById('studyBoard'); if (el){ const y = window.scrollY; el.outerHTML = studyBoardHTML(); window.scrollTo(0, y); } });
 document.addEventListener('click', e => { const b = e.target.closest('[data-sb-view]'); if (!b) return; e.stopPropagation(); state.studyView = SB.view = b.dataset.sbView; save(); const el = document.getElementById('studyBoard'); if (el){ const y = window.scrollY; el.outerHTML = studyBoardHTML(); window.scrollTo(0, y); } if (typeof fillView === 'function') setTimeout(() => fillView('learn'), 30); }, true);
 renderLearn = (orig => function(){ return orig.apply(this, arguments).replace('<div class="learngrid">', studyBoardHTML() + '<div class="learngrid">'); })(renderLearn);
 
@@ -14304,7 +14349,7 @@ document.addEventListener('keydown', e => {
 /* ---------- Learn → Words: the deck ---------- */
 function srsDeckHTML(){
   const c = srsCounts(), q = srsQueue(), s = srsState(), lg = srsLog();
-  return `<section class="card srs-deck"><div class="srs-dh"><div><h3>Review deck</h3><p class="muted">Engineering words, IELTS words and your own cards come back just before you would forget them.</p></div>
+  return `<section class="glass card srs-deck"><div class="srs-dh"><div><h3>Review deck</h3><p class="muted">Engineering words, IELTS words and your own cards come back just before you would forget them.</p></div>
       <button class="btn btn-deep" data-srs-start${q.all.length ? '' : '="extra"'}>${q.all.length ? `Review ${q.all.length} now` : 'Review more'}</button></div>
     <div class="srs-nums"><div><b>${c.total}</b><small>cards</small></div><div><b>${c.nw}</b><small>not seen yet</small></div><div><b>${c.lr}</b><small>learning</small></div><div><b>${c.mt}</b><small>remembered 3 weeks +</small></div><div><b>${lg.n}</b><small>reviewed today</small></div></div>
     <div class="srs-np"><span>New cards a day</span>${[5, 10, 20].map(n => `<button class="${s.newPerDay === n ? 'on' : ''}" data-srs-np="${n}" aria-pressed="${s.newPerDay === n}">${n}</button>`).join('')}</div>
@@ -14488,7 +14533,7 @@ function spkHistHTML(kind){
 }
 function spkLaunchHTML(kind){
   const ielts = kind === 'ielts';
-  return `<section class="card spk-launch"><div class="spk-lh"><span class="srs-ic">${ic(ielts ? 'mic' : 'target', 18)}</span><div><h3>${ielts ? 'Speaking examiner' : 'Interview coach'}</h3>
+  return `<section class="glass card spk-launch"><div class="spk-lh"><span class="srs-ic">${ic(ielts ? 'mic' : 'target', 18)}</span><div><h3>${ielts ? 'Speaking examiner' : 'Interview coach'}</h3>
       <p class="muted">${ielts ? 'A full IELTS Speaking test: Part 1, a cue card with 1 minute to prepare and 2 to talk, then Part 3. About 12 minutes.' : 'Five questions for operator and engineering roles, answered out loud with STAR. About 10 minutes.'}</p></div>
       <button class="btn btn-deep" data-spk-start="${kind}">${ielts ? 'Start the test' : 'Start practice'}</button></div>${spkHistHTML(kind)}</section>`;
 }
@@ -14521,7 +14566,8 @@ function lkScan(){
   const byNote = {}; in90.forEach(e => { const n = lkNorm(e.note); if (n.length >= 3) (byNote[n] = byNote[n] || []).push(e); });
   Object.entries(byNote).forEach(([n, es]) => {
     const months = new Set(es.map(e => e.date.slice(0, 7))), med = lkMed(es.map(e => +e.amount));
-    if (months.size >= 2 && es.every(e => Math.abs(+e.amount - med) <= Math.max(1, med * .2)) && es.length <= months.size * 2)
+    const ds = es.map(e => parseKey(e.date).getTime()).sort((a, b) => a - b), span = (ds[ds.length - 1] - ds[0]) / 864e5;   // 30 Nov and 2 Dec are two months but not a monthly bill
+    if (months.size >= 2 && span >= 20 && es.every(e => Math.abs(+e.amount - med) <= Math.max(1, med * .2)) && es.length <= months.size * 2)
       L.push({ id: 'sub:' + n, kind: 'Repeats monthly', cat: es[0].cat, m: med * (es.length / months.size), t: `${lkCap(n)}: ${money(med)} every month`,
         why: `Paid ${es.length} times in ${months.size} months (${es.slice(-3).map(e => fmtD(e.date)).join(', ')})`, act: 'Still using it? Cancel, pause or move to a cheaper plan.', ids: es.map(e => e.id) });
   });
@@ -14714,18 +14760,20 @@ function brAnswer(h, qt){
 
 /* ---------- the map: a loop of three lanes around one map file (SVG) ---------- */
 function brMapSVG(){
-  const b = brState(), W = 560, H = 330, cx = W / 2, cy = H / 2, hitId = BR.res && BR.res.hits[0] && BR.res.hits[0].e.id;
-  const rings = [['notes', 150, 52, -8], ['people', 205, 88, 6], ['projects', 258, 124, -4]], lib = brLibrary().length;
+  // phones get a narrower, taller map so the labels stay readable (the 560-wide one shrank its text to about 5 px)
+  const nar = (window.innerWidth || 1000) < 600, sx = nar ? .62 : 1, sy = nar ? 1.3 : 1;
+  const b = brState(), W = nar ? 360 : 560, H = nar ? 430 : 330, cx = W / 2, cy = H / 2, hitId = BR.res && BR.res.hits[0] && BR.res.hits[0].e.id;
+  const rings = [['notes', 150, 52, -8], ['people', 205, 88, 6], ['projects', 258, 124, -4]].map(([l, rx, ry, rot]) => [l, rx * sx, ry * sy, nar ? rot * 2 : rot]), lib = brLibrary().length;
   const pos = (rx, ry, rot, i, n) => { const a = -Math.PI / 2 + (i + .5) / Math.max(1, n) * Math.PI * 2, r = rot * Math.PI / 180, x = Math.cos(a) * rx, y = Math.sin(a) * ry; return [cx + x * Math.cos(r) - y * Math.sin(r), cy + x * Math.sin(r) + y * Math.cos(r)]; };
   let hitXY = null;
   const dots = rings.map(([lane, rx, ry, rot]) => { const es = b[lane].slice(0, 40);
     return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" transform="rotate(${rot} ${cx} ${cy})" class="br-lane ${lane}"/>` + es.map((e, i) => { const [x, y] = pos(rx, ry, rot, i, es.length), on = e.id === hitId; if (on) hitXY = [x, y];
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${on ? 6 : 3.6}" class="br-dot ${lane}${on ? ' hit' : ''}" data-br-open="${e.id}"><title>${esc(lane + '/' + e.slug)}.md</title></circle>`; }).join('')
-      + `<text x="${(cx + rx * .72).toFixed(0)}" y="${(cy - ry - 6).toFixed(0)}" class="br-ll">${lane} · ${b[lane].length}</text>`; }).join('');
-  const pins = [['memory', -78], ['lessons', 0], ['decisions', 78]].map(([l, dx]) => `<g class="br-pin" data-br-lane="${l}"><rect x="${cx + dx - 34}" y="${cy + 26}" width="68" height="18" rx="9"/><text x="${cx + dx}" y="${cy + 38.5}">${l} ${b[l].length}</text></g>`).join('');
+      + `<text x="${(cx + rx * (nar ? .3 : .72)).toFixed(0)}" y="${(cy - ry - 6).toFixed(0)}" class="br-ll">${lane} · ${b[lane].length}</text>`; }).join('');
+  const pins = [['memory', -74], ['lessons', 0], ['decisions', 74]].map(([l, dx]) => `<g class="br-pin" data-br-lane="${l}"><rect x="${cx + dx - 34}" y="${cy + 26}" width="68" height="18" rx="9"/><text x="${cx + dx}" y="${cy + 38.5}">${l} ${b[l].length}</text></g>`).join('');
   const path = hitXY ? `<path id="brPath" d="M${cx} ${cy} Q${((cx + hitXY[0]) / 2).toFixed(0)} ${(Math.min(cy, hitXY[1]) - 40).toFixed(0)} ${hitXY[0].toFixed(1)} ${hitXY[1].toFixed(1)}" class="br-route"/>${motionOff() ? '' : `<circle r="4" class="br-pulse"><animateMotion dur="1.4s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;.5;1" calcMode="linear"><mpath href="#brPath"/></animateMotion></circle>`}` : '';
   return `<svg viewBox="0 0 ${W} ${H}" class="br-map" role="img" aria-label="Your brain: one map with notes, people and projects around it">
-    <ellipse cx="${cx}" cy="${cy}" rx="272" ry="150" class="br-libring"/><text x="${cx}" y="${cy + 146}" class="br-ll lib">library · ${lib} files, read-only</text>
+    <ellipse cx="${cx}" cy="${cy}" rx="${272 * sx}" ry="${150 * sy}" class="br-libring"/><text x="${cx}" y="${cy + 146 * sy}" class="br-ll lib">library · ${lib} files, read-only</text>
     ${dots}${path}<g class="br-core" data-br-lane="map"><rect x="${cx - 46}" y="${cy - 16}" width="92" height="32" rx="16"/><text x="${cx}" y="${cy + 5}">map.md</text></g>${pins}</svg>`;
 }
 const BR_STEPS = ['Load map', 'Parse', 'Locate', 'Open', 'Cited'];
@@ -14760,7 +14808,7 @@ function brLatestHTML(lane, n){
 }
 function renderBrain(){
   const b = brState(), lane = BR.lane, list = lane === 'library' ? brLibrary() : b[lane].slice().sort((x, y) => y.at - x.at), total = BR_LANES.slice(0, 6).reduce((a, [id]) => a + b[id].length, 0);
-  const mapMd = `# map.md · what lives where\n${BR_LANES.map(([id, n, d]) => `${id}/  ${n.toLowerCase()}: ${d} (${id === 'library' ? brLibrary().length : b[id].length})`).join('\n')}\nRule: answer only from the file this map points to, and name it. Never stored? Say so.`;
+  const mapMd = `# map.md · what lives where\n${BR_LANES.map(([id, n, d]) => `${id}/  ${d} (${id === 'library' ? brLibrary().length : b[id].length})`).join('\n')}\nRule: answer only from the file this map points to, and name it. Never stored? Say so.`;
   return `<div class="br" id="brRoot">
     <div class="br-head"><header class="br-top"><div><small>${total} files · one map · nothing invented</small><h2>Brain</h2><p>Every answer comes from one of your files, named, or it says “never stored”.</p></div>
       <div class="br-acts"><button class="btn btn-soft sm" data-br-export>${ic('download', 14)} Download as Markdown</button></div></header>
@@ -14855,7 +14903,7 @@ function puRing(cx, cy, r, w, pct, col, track = 'rgba(113,0,20,.08)'){
     ${d < .5 ? '' : `<circle class="pu-arc" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${d.toFixed(1)} ${c.toFixed(1)}" style="--c:${c.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`}`;
 }
 
-function pulseHTML(){
+function dayPulseHTML(){
   const k = dkey(), p = puParts(k), sc = puScore(k), h = new Date().getHours();
   const prev = Array.from({ length: 7 }, (_, i) => puScore(dkey(addDays(new Date(), -1 - i)))), avg = Math.round(prev.reduce((a, b) => a + b, 0) / 7), diff = sc - avg;
   const hello = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';

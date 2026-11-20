@@ -7,9 +7,8 @@ function renderMoney(){
   const pct = clamp(saved/goal,0,1);
   const spend = spentMonth(now);
   const { day, dim, frac } = monthProgress(now);
-  const allowance = Math.max(0, freeAfterFixed()/dim);
-  const proj = day ? spend/day*dim : 0;
-  const onPace = proj <= allowance;
+  const flex = flexMonth(), allowance = Math.max(0, (flex - spend) / Math.max(1, dim - day + 1));
+  const { proj, onPace } = spendPace(now);
   const need = needPerMonth(), feasible = feasiblePerMonth();
   const gap = Math.max(0, need - feasible);
   // the £25k year runs from the plan start (createdAt), matching "Day N of 365" in the status bar
@@ -72,10 +71,10 @@ function renderMoney(){
       <div class="h2">This month <span class="side">${monthLabel(monthKey(now))}</span></div>
       <div class="glass card">
         <div class="row between" style="align-items:flex-end">
-          <div><div class="mono" style="font-size:26px;font-weight:700;letter-spacing:-.04em">${money0(spend)}</div><div class="tiny">of ${money0(allowance*dim)} flexible</div></div>
+          <div><div class="mono" style="font-size:26px;font-weight:700;letter-spacing:-.04em">${money0(spend)}</div><div class="tiny">of ${money0(flex)} to spend</div></div>
           <span class="chip ${onPace?'chip-teal':'chip-orange'}">${onPace?'On pace':'Over pace'}</span>
         </div>
-        <div class="pbar" style="margin-top:12px"><i class="${onPace?'teal':'orange'}" style="width:${clamp(spend/Math.max(1,allowance*dim)*100,0,100)}%"></i></div>
+        <div class="pbar" style="margin-top:12px"><i class="${onPace?'teal':'orange'}" style="width:${clamp(spend/Math.max(1,flex)*100,0,100)}%"></i></div>
         <div class="row between" style="margin-top:8px"><span class="tiny">Day ${day} of ${dim}</span><span class="tiny">${money0(allowance)} a day left</span></div>
         ${byCat.length?`<div class="divider"></div><div style="display:grid;gap:9px">
           ${byCat.map(c=>`<div>

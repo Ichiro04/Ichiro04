@@ -33,7 +33,7 @@ function puRing(cx, cy, r, w, pct, col, track = 'rgba(113,0,20,.08)'){
     ${d < .5 ? '' : `<circle class="pu-arc" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${d.toFixed(1)} ${c.toFixed(1)}" style="--c:${c.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`}`;
 }
 
-function pulseHTML(){
+function dayPulseHTML(){
   const k = dkey(), p = puParts(k), sc = puScore(k), h = new Date().getHours();
   const prev = Array.from({ length: 7 }, (_, i) => puScore(dkey(addDays(new Date(), -1 - i)))), avg = Math.round(prev.reduce((a, b) => a + b, 0) / 7), diff = sc - avg;
   const hello = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';

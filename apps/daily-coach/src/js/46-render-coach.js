@@ -79,7 +79,7 @@ function chatBubble(m){
 }
 function coachRead(){
   const done = todayDone(), total = todayTotal(), next = upNext();
-  const spend = spentMonth(), allowance = Math.max(0, freeAfterFixed());
+  const spend = spentMonth(), allowance = flexMonth();
   const bits = [];
   bits.push(done===0?`Nothing logged yet today — ${total} tasks are waiting.`:`${done} of ${total} done today.`);
   if (next) bits.push(`Next best move: ${next.name.toLowerCase()}.`);

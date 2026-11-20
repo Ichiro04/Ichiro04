@@ -22,7 +22,8 @@ function lkScan(){
   const byNote = {}; in90.forEach(e => { const n = lkNorm(e.note); if (n.length >= 3) (byNote[n] = byNote[n] || []).push(e); });
   Object.entries(byNote).forEach(([n, es]) => {
     const months = new Set(es.map(e => e.date.slice(0, 7))), med = lkMed(es.map(e => +e.amount));
-    if (months.size >= 2 && es.every(e => Math.abs(+e.amount - med) <= Math.max(1, med * .2)) && es.length <= months.size * 2)
+    const ds = es.map(e => parseKey(e.date).getTime()).sort((a, b) => a - b), span = (ds[ds.length - 1] - ds[0]) / 864e5;   // 30 Nov and 2 Dec are two months but not a monthly bill
+    if (months.size >= 2 && span >= 20 && es.every(e => Math.abs(+e.amount - med) <= Math.max(1, med * .2)) && es.length <= months.size * 2)
       L.push({ id: 'sub:' + n, kind: 'Repeats monthly', cat: es[0].cat, m: med * (es.length / months.size), t: `${lkCap(n)}: ${money(med)} every month`,
         why: `Paid ${es.length} times in ${months.size} months (${es.slice(-3).map(e => fmtD(e.date)).join(', ')})`, act: 'Still using it? Cancel, pause or move to a cheaper plan.', ids: es.map(e => e.id) });
   });

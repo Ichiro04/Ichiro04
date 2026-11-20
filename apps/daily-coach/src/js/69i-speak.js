@@ -168,7 +168,7 @@ function spkHistHTML(kind){
 }
 function spkLaunchHTML(kind){
   const ielts = kind === 'ielts';
-  return `<section class="card spk-launch"><div class="spk-lh"><span class="srs-ic">${ic(ielts ? 'mic' : 'target', 18)}</span><div><h3>${ielts ? 'Speaking examiner' : 'Interview coach'}</h3>
+  return `<section class="glass card spk-launch"><div class="spk-lh"><span class="srs-ic">${ic(ielts ? 'mic' : 'target', 18)}</span><div><h3>${ielts ? 'Speaking examiner' : 'Interview coach'}</h3>
       <p class="muted">${ielts ? 'A full IELTS Speaking test: Part 1, a cue card with 1 minute to prepare and 2 to talk, then Part 3. About 12 minutes.' : 'Five questions for operator and engineering roles, answered out loud with STAR. About 10 minutes.'}</p></div>
       <button class="btn btn-deep" data-spk-start="${kind}">${ielts ? 'Start the test' : 'Start practice'}</button></div>${spkHistHTML(kind)}</section>`;
 }

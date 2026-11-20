@@ -615,7 +615,7 @@ document.addEventListener('click', e=>{
     }
     case 'close-sheet': closeSheet(); break;
     case 'fab-expense': closeFab(); openExpenseSheet(); break;
-    case 'fab-saving': closeFab(); document.querySelector('[data-a="add-saving"]')?.click() || openSheet({title:'Add to savings', body:''}); break;
+    case 'fab-saving': closeFab(); openSavingSheet(); break;
   }
 });
 
@@ -648,10 +648,9 @@ document.addEventListener('submit', e=>{
     if (!amount) return;
     state.expenses.push({ id:uid(), date:dkey(), amount, cat:data.cat||'life', note:(data.note||'').trim() });
     setTask(dkey(),'log',true); save();
-    const spend = spentMonth(), dim = monthProgress().dim;
-    const proj = spend/monthProgress().day*dim;
+    const P = spendPace();
     renderView('money'); updateChrome();
-    toast(proj > freeAfterFixed() ? `Logged. Projected ${money0(proj)} this month — that is over your flexible budget.` : `Logged ${money(amount)}. ${money0(Math.max(0,freeAfterFixed()-spend))} of flexible budget left.`, proj>freeAfterFixed()?'warn':'ok',2800);
+    toast(!P.onPace ? (P.early ? `Logged. ${money0(P.spend)} spent this month already, more than a week's share of your ${money0(P.flex)} spending budget.` : `Logged. Projected ${money0(P.proj)} this month — that is over your ${money0(P.flex)} spending budget.`) : `Logged ${money(amount)}. ${money0(P.left)} of this month’s spending budget left.`, P.onPace?'ok':'warn',2800);
   }
   if (kind === 'saving'){
     const amount = Number(data.amount);
@@ -735,10 +734,12 @@ $('#fab').addEventListener('click', ()=>{
   $('#fab').classList.toggle('open', open);
   $('#fab').setAttribute('aria-expanded', String(open));
 });
+// opens the Add to savings sheet from any tab (the old code fell through to an empty sheet, or threw off the Money tab)
+function openSavingSheet(){ const t = document.createElement('button'); t.dataset.a = 'add-saving'; t.hidden = true; document.body.appendChild(t); t.click(); t.remove(); }
 $('#fabmenu').addEventListener('click', e=>{
   const b = e.target.closest('button[data-fab]'); if (!b) return;
   if (b.dataset.fab === 'expense'){ closeFab(); openExpenseSheet(); }
-  else { closeFab(); document.querySelector('[data-a="add-saving"]').click(); }
+  else { closeFab(); openSavingSheet(); }
 });
 function openExpenseSheet(){
   openSheet({ title:'Log spending', body:`<form data-form="expense" style="display:grid;gap:12px">

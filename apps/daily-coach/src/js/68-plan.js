@@ -138,10 +138,13 @@ function studyBoardHTML(){
   const left = v === 'week' ? 6 - isoWeekday(new Date()) : v === 'month' ? Math.round((to - new Date()) / 864e5) : 0;
   const side = v === 'finished' ? 'this month, newest first' : `${all} of ${tot}${v === 'day' ? ' today' : ` · ${left > 0 ? left + ' day' + (left > 1 ? 's' : '') + ' left' : 'last day'}`}`;
   const views = [['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['finished', 'Finished']];
-  return `<section class="sb" id="studyBoard"><div class="pb-head"><div class="h2">Study plan <span class="side num">${side}</span></div>
+  const fold = !state.studyOpen;   // phones: folded to three progress bars until opened (wide screens always show it all)
+  return `<section class="sb${fold ? ' sb-fold' : ''}" id="studyBoard"><div class="pb-head"><div class="h2">Study plan <span class="side num">${side}</span></div>
+      <button class="sb-foldb" data-sb-fold aria-expanded="${!fold}">${fold ? 'Show the plan' : 'Fold it'}</button>
       <div class="pb-views" role="tablist" aria-label="Study period">${views.map(([id, l]) => `<button role="tab" aria-selected="${v === id}" class="${v === id ? 'on' : ''}" data-sb-view="${id}">${id === 'finished' ? ic('check', 14) : ic('calendar', 14)}<span>${l}</span></button>`).join('')}</div></div>
     <div class="pb-board sb-board">${cols.join('')}</div></section>`;
 }
+document.addEventListener('click', e => { const f = e.target.closest('[data-sb-fold]'); if (!f) return; e.stopPropagation(); state.studyOpen = !state.studyOpen; save(); const el = document.getElementById('studyBoard'); if (el){ const y = window.scrollY; el.outerHTML = studyBoardHTML(); window.scrollTo(0, y); } });
 document.addEventListener('click', e => { const b = e.target.closest('[data-sb-view]'); if (!b) return; e.stopPropagation(); state.studyView = SB.view = b.dataset.sbView; save(); const el = document.getElementById('studyBoard'); if (el){ const y = window.scrollY; el.outerHTML = studyBoardHTML(); window.scrollTo(0, y); } if (typeof fillView === 'function') setTimeout(() => fillView('learn'), 30); }, true);
 renderLearn = (orig => function(){ return orig.apply(this, arguments).replace('<div class="learngrid">', studyBoardHTML() + '<div class="learngrid">'); })(renderLearn);
 

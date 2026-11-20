@@ -67,18 +67,20 @@ function brAnswer(h, qt){
 
 /* ---------- the map: a loop of three lanes around one map file (SVG) ---------- */
 function brMapSVG(){
-  const b = brState(), W = 560, H = 330, cx = W / 2, cy = H / 2, hitId = BR.res && BR.res.hits[0] && BR.res.hits[0].e.id;
-  const rings = [['notes', 150, 52, -8], ['people', 205, 88, 6], ['projects', 258, 124, -4]], lib = brLibrary().length;
+  // phones get a narrower, taller map so the labels stay readable (the 560-wide one shrank its text to about 5 px)
+  const nar = (window.innerWidth || 1000) < 600, sx = nar ? .62 : 1, sy = nar ? 1.3 : 1;
+  const b = brState(), W = nar ? 360 : 560, H = nar ? 430 : 330, cx = W / 2, cy = H / 2, hitId = BR.res && BR.res.hits[0] && BR.res.hits[0].e.id;
+  const rings = [['notes', 150, 52, -8], ['people', 205, 88, 6], ['projects', 258, 124, -4]].map(([l, rx, ry, rot]) => [l, rx * sx, ry * sy, nar ? rot * 2 : rot]), lib = brLibrary().length;
   const pos = (rx, ry, rot, i, n) => { const a = -Math.PI / 2 + (i + .5) / Math.max(1, n) * Math.PI * 2, r = rot * Math.PI / 180, x = Math.cos(a) * rx, y = Math.sin(a) * ry; return [cx + x * Math.cos(r) - y * Math.sin(r), cy + x * Math.sin(r) + y * Math.cos(r)]; };
   let hitXY = null;
   const dots = rings.map(([lane, rx, ry, rot]) => { const es = b[lane].slice(0, 40);
     return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" transform="rotate(${rot} ${cx} ${cy})" class="br-lane ${lane}"/>` + es.map((e, i) => { const [x, y] = pos(rx, ry, rot, i, es.length), on = e.id === hitId; if (on) hitXY = [x, y];
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${on ? 6 : 3.6}" class="br-dot ${lane}${on ? ' hit' : ''}" data-br-open="${e.id}"><title>${esc(lane + '/' + e.slug)}.md</title></circle>`; }).join('')
-      + `<text x="${(cx + rx * .72).toFixed(0)}" y="${(cy - ry - 6).toFixed(0)}" class="br-ll">${lane} · ${b[lane].length}</text>`; }).join('');
-  const pins = [['memory', -78], ['lessons', 0], ['decisions', 78]].map(([l, dx]) => `<g class="br-pin" data-br-lane="${l}"><rect x="${cx + dx - 34}" y="${cy + 26}" width="68" height="18" rx="9"/><text x="${cx + dx}" y="${cy + 38.5}">${l} ${b[l].length}</text></g>`).join('');
+      + `<text x="${(cx + rx * (nar ? .3 : .72)).toFixed(0)}" y="${(cy - ry - 6).toFixed(0)}" class="br-ll">${lane} · ${b[lane].length}</text>`; }).join('');
+  const pins = [['memory', -74], ['lessons', 0], ['decisions', 74]].map(([l, dx]) => `<g class="br-pin" data-br-lane="${l}"><rect x="${cx + dx - 34}" y="${cy + 26}" width="68" height="18" rx="9"/><text x="${cx + dx}" y="${cy + 38.5}">${l} ${b[l].length}</text></g>`).join('');
   const path = hitXY ? `<path id="brPath" d="M${cx} ${cy} Q${((cx + hitXY[0]) / 2).toFixed(0)} ${(Math.min(cy, hitXY[1]) - 40).toFixed(0)} ${hitXY[0].toFixed(1)} ${hitXY[1].toFixed(1)}" class="br-route"/>${motionOff() ? '' : `<circle r="4" class="br-pulse"><animateMotion dur="1.4s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;.5;1" calcMode="linear"><mpath href="#brPath"/></animateMotion></circle>`}` : '';
   return `<svg viewBox="0 0 ${W} ${H}" class="br-map" role="img" aria-label="Your brain: one map with notes, people and projects around it">
-    <ellipse cx="${cx}" cy="${cy}" rx="272" ry="150" class="br-libring"/><text x="${cx}" y="${cy + 146}" class="br-ll lib">library · ${lib} files, read-only</text>
+    <ellipse cx="${cx}" cy="${cy}" rx="${272 * sx}" ry="${150 * sy}" class="br-libring"/><text x="${cx}" y="${cy + 146 * sy}" class="br-ll lib">library · ${lib} files, read-only</text>
     ${dots}${path}<g class="br-core" data-br-lane="map"><rect x="${cx - 46}" y="${cy - 16}" width="92" height="32" rx="16"/><text x="${cx}" y="${cy + 5}">map.md</text></g>${pins}</svg>`;
 }
 const BR_STEPS = ['Load map', 'Parse', 'Locate', 'Open', 'Cited'];
@@ -113,7 +115,7 @@ function brLatestHTML(lane, n){
 }
 function renderBrain(){
   const b = brState(), lane = BR.lane, list = lane === 'library' ? brLibrary() : b[lane].slice().sort((x, y) => y.at - x.at), total = BR_LANES.slice(0, 6).reduce((a, [id]) => a + b[id].length, 0);
-  const mapMd = `# map.md · what lives where\n${BR_LANES.map(([id, n, d]) => `${id}/  ${n.toLowerCase()}: ${d} (${id === 'library' ? brLibrary().length : b[id].length})`).join('\n')}\nRule: answer only from the file this map points to, and name it. Never stored? Say so.`;
+  const mapMd = `# map.md · what lives where\n${BR_LANES.map(([id, n, d]) => `${id}/  ${d} (${id === 'library' ? brLibrary().length : b[id].length})`).join('\n')}\nRule: answer only from the file this map points to, and name it. Never stored? Say so.`;
   return `<div class="br" id="brRoot">
     <div class="br-head"><header class="br-top"><div><small>${total} files · one map · nothing invented</small><h2>Brain</h2><p>Every answer comes from one of your files, named, or it says “never stored”.</p></div>
       <div class="br-acts"><button class="btn btn-soft sm" data-br-export>${ic('download', 14)} Download as Markdown</button></div></header>

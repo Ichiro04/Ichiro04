@@ -45,7 +45,7 @@ html[data-theme="dark"] .pb-views button.on{background:rgba(255,255,255,.12)}
 .pb-empty{padding:16px 10px;border-radius:14px;border:1.5px dashed var(--pw-line-2);font-size:12px;color:var(--pw-ink-3);text-align:center}
 .pb-card{position:relative;display:grid;gap:7px;padding:12px 12px 11px;border-radius:15px;background:var(--pw-panel,rgba(255,255,255,.85));
   box-shadow:inset 0 0 0 1px var(--pw-line),0 6px 16px -12px rgba(40,10,10,.35);cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;transition:transform .2s,box-shadow .2s,opacity .2s}
-html[data-theme="dark"] .pb-card{background:rgba(255,255,255,.05)}
+html[data-theme="dark"] .pb-card{background:rgba(32,22,24,.88);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .pb-card:hover{transform:translateY(-1px);box-shadow:inset 0 0 0 1px var(--pw-line-2),0 10px 22px -14px rgba(40,10,10,.45)}
 .pb-card:focus-visible{outline:2px solid var(--pw-gold);outline-offset:2px}
 .pb-card.dragging{opacity:.35}
@@ -641,3 +641,14 @@ button.wg-more:hover{color:var(--pw-ink)}
 .wg-menu .done i{background:var(--st-done)}.wg-menu .partly i{background:var(--st-mid)}.wg-menu .missed i{background:var(--st-bad)}.wg-menu .clear i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--pw-ink-3)}
 html.reduce .wg-menu{animation:none}
 @media(max-width:560px){.stx-x span:nth-child(even):not(:last-child){display:none}}
+@media (max-width:599px){ .br-ll{font-size:12.5px} .br-pin text{font-size:11px} .br-core text{font-size:14px} }
+/* Study plan fold (20 Nov 2026): on phones the plan folds to three progress bars, so each Learn section starts near the top */
+.sb-foldb{display:none}
+@media (max-width:899px){
+  .sb-foldb{display:inline-flex;align-items:center;min-height:34px;padding:0 14px;border-radius:999px;border:0;font:700 12.5px/1 inherit;font-family:inherit;color:var(--cr-crimson,#710014);background:var(--pw-panel,rgba(255,255,255,.8));box-shadow:inset 0 0 0 1px var(--pw-line)}
+  .sb.sb-fold .pb-views,.sb.sb-fold .pb-list{display:none}
+  .sb.sb-fold .pb-board.sb-board{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .sb.sb-fold .pb-col{min-height:0;padding:8px;background:var(--pw-panel,rgba(255,255,255,.85));box-shadow:inset 0 0 0 1px var(--pw-line)}
+  .sb.sb-fold .pb-col header{padding:0 0 6px;flex-wrap:wrap;gap:4px}
+  .sb.sb-fold .pb-col header .pb-tag{font-size:11px}
+}
