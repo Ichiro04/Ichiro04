@@ -1,0 +1,12 @@
+{
+  "name": "daily-coach",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Daily Coach — a single-file personal coaching app for Kyaw Soe Han.",
+  "scripts": {
+    "dev": "npx --yes serve . -l 4173",
+    "build": "node build.mjs",
+    "open": "node -e \"console.log('file://' + process.cwd() + '/index.html')\""
+  }
+}

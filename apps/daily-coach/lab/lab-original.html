@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mechanical Engineering Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: a drawing-office workbench. Title-block header, 3D viewport on the left, data sheet on the right; stacks on phones. */
+  --paper:#eceff2; --panel:#ffffff; --ink:#17212b; --muted:#566370; --line:#cdd5dc; --accent:#1d5fa8;
+  --accent-soft:#e3ecf7; --pass:#1d7344; --pass-bg:#e2f3e8; --fail:#b0261c; --fail-bg:#fbe6e3; --warn:#9a5b00; --warn-bg:#fdf0db;
+  --vp-top:#d9e1ea; --vp-bottom:#f6f8fa;
+  --font-display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --font-body:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",Consolas,"Courier New",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11161b; --panel:#192027; --ink:#e2e8ed; --muted:#97a4af; --line:#2d3740; --accent:#6aa5e6;
+    --accent-soft:#1d2c3c; --pass:#5cc38a; --pass-bg:#16301f; --fail:#f07a6e; --fail-bg:#3a1b18; --warn:#e4a64a; --warn-bg:#36290f;
+    --vp-top:#26303a; --vp-bottom:#141a1f; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11161b; --panel:#192027; --ink:#e2e8ed; --muted:#97a4af; --line:#2d3740; --accent:#6aa5e6;
+  --accent-soft:#1d2c3c; --pass:#5cc38a; --pass-bg:#16301f; --fail:#f07a6e; --fail-bg:#3a1b18; --warn:#e4a64a; --warn-bg:#36290f;
+  --vp-top:#26303a; --vp-bottom:#141a1f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.2}
+h2{font-size:1.35rem;font-weight:600}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+
+/* Title block */
+.titleblock{display:grid;grid-template-columns:auto 1fr auto;border-bottom:1px solid var(--line);background:var(--panel)}
+.tb-name{padding:10px 16px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.tb-name h1{font-size:1.15rem;font-weight:700;letter-spacing:.02em}
+.tb-name span{font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
+.tb-cells{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));}
+.tb-cell{padding:6px 12px;border-right:1px solid var(--line);font-size:.8rem;min-width:0}
+.tb-cell b{display:block;font-family:var(--font-mono);font-size:.66rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tb-cell span{font-family:var(--font-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.tb-actions{display:flex;align-items:center;padding:8px 12px;gap:8px}
+nav.tabs{display:flex;gap:0;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto;padding:0 8px}
+nav.tabs a{padding:11px 16px;text-decoration:none;color:var(--muted);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.btn{border:1px solid var(--line);background:var(--panel);padding:7px 12px;border-radius:4px;cursor:pointer;font-weight:500;font-size:.88rem;display:inline-flex;align-items:center;gap:6px;min-height:36px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.small{padding:4px 9px;min-height:30px;font-size:.8rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.demo-on{background:var(--fail);border-color:var(--fail);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;border-right:1px solid var(--line);background:var(--panel);padding:6px 11px;cursor:pointer;font-size:.84rem;min-height:34px}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+
+main{padding:16px;max-width:1440px;margin:0 auto}
+section.view{display:none}
+section.view.active{display:block}
+.lede{color:var(--muted);max-width:68ch;margin-top:4px}
+.view-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+
+/* Workbench */
+.bench{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,1fr);gap:14px;align-items:start}
+.vp-slot{position:sticky;top:8px}
+.viewport{position:relative;height:min(64vh,620px);min-height:300px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:linear-gradient(var(--vp-top),var(--vp-bottom))}
+.viewport canvas{display:block;width:100%;height:100%;touch-action:none}
+.vp-fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted)}
+.vp-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.vp-hud{position:absolute;left:10px;top:10px;font-family:var(--font-mono);font-size:.75rem;background:color-mix(in srgb,var(--panel) 82%,transparent);border:1px solid var(--line);border-radius:4px;padding:6px 8px;max-width:70%;pointer-events:none}
+.vp-legend{position:absolute;right:10px;top:10px;display:none;background:color-mix(in srgb,var(--panel) 85%,transparent);border:1px solid var(--line);border-radius:4px;padding:6px 8px;font-family:var(--font-mono);font-size:.7rem;pointer-events:none}
+.vp-legend .ramp{width:14px;height:120px;background:linear-gradient(#8e1b1b,#d63b2a,#e9c43b,#3fae5a,#2f6fd6);border-radius:2px}
+.vp-legend .row{display:flex;gap:6px}
+.vp-legend .ticks{display:flex;flex-direction:column;justify-content:space-between;height:120px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+/* Feature tree */
+.tree{list-style:none;margin:0;padding:0;font-size:.88rem;border:1px solid var(--line);border-radius:4px}
+.tree li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line);cursor:pointer}
+.tree li:last-child{border-bottom:0}
+.tree li .ico{width:20px;height:20px;border:1px solid var(--line);border-radius:3px;display:grid;place-items:center;font-family:var(--font-mono);font-size:.62rem;color:var(--accent);flex:none}
+.tree li.future{color:var(--muted);opacity:.55}
+.tree li.current{background:var(--accent-soft);font-weight:600}
+.tree li.rollback{border-bottom:3px solid var(--accent)}
+.tree li:hover{background:var(--accent-soft)}
+.theory h3{margin-bottom:4px}
+.theory .cmd{font-family:var(--font-mono);font-size:.78rem;color:var(--accent)}
+.theory p+p{margin-top:8px}
+.tip{border-left:3px solid var(--accent);padding:6px 10px;background:var(--accent-soft);font-size:.88rem;border-radius:0 4px 4px 0}
+.tip.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.stepper{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stepper .count{font-family:var(--font-mono);font-size:.82rem;color:var(--muted)}
+
+/* Forms + tables */
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px}
+.field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.field label{font-size:.76rem;color:var(--muted)}
+.field .inp{display:flex;align-items:center;border:1px solid var(--line);border-radius:4px;background:var(--paper)}
+.field input,.field select,.field textarea{border:0;background:transparent;padding:6px 8px;width:100%;min-width:0;font-family:var(--font-mono);font-size:.88rem}
+.field textarea{font-family:var(--font-body);resize:vertical;min-height:60px}
+.field .unit{font-family:var(--font-mono);font-size:.74rem;color:var(--muted);padding-right:8px;white-space:nowrap}
+.field.wide{grid-column:1/-1}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+td.num,th.num{text-align:right}
+.tablewrap{overflow-x:auto}
+.chip{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:3px;font-family:var(--font-mono);white-space:nowrap}
+.chip.pass{background:var(--pass-bg);color:var(--pass)}
+.chip.fail{background:var(--fail-bg);color:var(--fail)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.info{background:var(--accent-soft);color:var(--accent)}
+.verdict{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:4px;font-weight:600}
+.verdict.pass{background:var(--pass-bg);color:var(--pass)}
+.verdict.fail{background:var(--fail-bg);color:var(--fail)}
+.verdict .big{font-family:var(--font-mono);font-size:1.1rem}
+.change{font-size:.88rem;border:1px dashed var(--line);padding:8px 10px;border-radius:4px}
+details.working{font-size:.84rem}
+details.working summary{cursor:pointer;color:var(--accent);font-weight:500}
+details.working pre{font-family:var(--font-mono);font-size:.78rem;white-space:pre-wrap;background:var(--paper);border:1px solid var(--line);padding:8px;border-radius:4px;margin:8px 0 0}
+
+/* Trends */
+.trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.trend{display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--accent)}
+.trend .meta{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.trend p{font-size:.9rem}
+.trend .why{font-size:.86rem;color:var(--muted)}
+.trend .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.8rem}
+.trend.user{border-top-color:var(--pass)}
+
+/* Career */
+.career-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,1fr);gap:14px;align-items:start}
+.cert{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cert:last-child{border-bottom:0}
+.cert h3{font-size:.98rem}
+.cert .facts{font-family:var(--font-mono);font-size:.76rem;color:var(--muted)}
+.cert p{font-size:.88rem;grid-column:1/-1}
+.statusbtn{border:1px solid var(--line);border-radius:4px;background:var(--panel);font-size:.75rem;font-weight:600;padding:4px 8px;cursor:pointer;font-family:var(--font-mono);min-width:76px;min-height:30px}
+.statusbtn[data-s="booked"]{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.statusbtn[data-s="done"]{background:var(--pass-bg);color:var(--pass);border-color:transparent}
+.tierhead{display:flex;align-items:baseline;gap:10px;margin:14px 0 2px}
+.tierhead:first-child{margin-top:0}
+.tierhead .chip{font-size:.68rem}
+.progress{height:8px;background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.progress>div{height:100%;background:var(--pass)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.check:last-child{border-bottom:0}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+
+/* Data */
+.data-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.store{display:flex;align-items:center;gap:8px;font-size:.85rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:var(--pass)}.dot.bad{background:var(--warn)}
+.src{font-size:.72rem;color:var(--muted);font-family:var(--font-mono)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:4px;font-size:.88rem;display:none;z-index:50;max-width:90vw}
+
+/* Demo bar */
+.demobar{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:var(--paper);padding:10px 16px;display:none;align-items:center;gap:12px;z-index:40;font-size:.92rem}
+.demobar .lbl{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;border:1px solid currentColor;padding:2px 6px;border-radius:3px;flex:none}
+.demobar .cap{flex:1;min-width:0}
+.demobar .btn{background:transparent;color:inherit;border-color:currentColor}
+
+/* Levels, path, quizzes, sweep */
+.levelchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:4px;padding:6px 10px;text-decoration:none;color:var(--ink);font-size:.82rem;min-height:36px;white-space:nowrap}
+.levelchip b{font-family:var(--font-mono);color:var(--accent)}
+.lk{font-family:var(--font-mono);font-size:.66rem;color:var(--muted);margin-left:4px}
+.lock{border-style:dashed;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.ladder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lvl{display:flex;flex-direction:column;gap:8px;border-top:4px solid var(--line)}
+.lvl.done{border-top-color:var(--pass)} .lvl.current{border-top-color:var(--accent)}
+.lvl .tag{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.task{display:flex;gap:8px;align-items:flex-start;font-size:.88rem}
+.task .box{width:16px;height:16px;border:1.5px solid var(--line);border-radius:3px;flex:none;margin-top:3px;display:grid;place-items:center;font-size:.7rem;font-weight:700;color:#fff}
+.task.ok .box{background:var(--pass);border-color:var(--pass)}
+.task.ok span{color:var(--muted)}
+.unlocks{font-size:.82rem;color:var(--muted);margin:0;padding-left:18px}
+fieldset.q{border:1px solid var(--line);border-radius:4px;padding:8px 12px;margin:0 0 10px}
+fieldset.q legend{font-weight:600;font-size:.92rem;padding:0 4px}
+fieldset.q.right{border-color:var(--pass)} fieldset.q.wrong{border-color:var(--fail)}
+.opt{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:.9rem;cursor:pointer}
+.opt input{margin-top:4px;accent-color:var(--accent)}
+.expl{font-size:.84rem;margin-top:4px}
+.sweepwrap canvas{width:100%;height:240px;display:block}
+.legendrow{display:flex;flex-wrap:wrap;gap:10px;font-size:.78rem;font-family:var(--font-mono)}
+.legendrow i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px}
+.fitout td{font-family:var(--font-mono);font-size:.82rem}
+@media (max-width: 900px){
+  .ladder{grid-template-columns:1fr}
+  .bench,.career-grid,.data-grid{grid-template-columns:1fr}
+  .vp-slot{position:static}
+  .viewport{height:46vh;min-height:280px}
+  .titleblock{grid-template-columns:1fr auto}
+  .tb-cells{grid-column:1/-1;grid-row:2;border-top:1px solid var(--line);grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tb-name{border-right:0}
+}
+@media (max-width: 420px){
+  main{padding:12px}
+  .fields{grid-template-columns:1fr}
+  .tb-cells{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tb-cell:nth-child(n+3){display:none}
+}
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto!important;transition:none!important} }
+</style>
+</head>
+<body>
+<header class="titleblock">
+  <div class="tb-name"><h1>Mechanical Engineering Lab</h1><span>DWG MEL-2026 · SHEET 1 OF 6</span></div>
+  <div class="tb-cells">
+    <div class="tb-cell"><b>Units</b><span>mm · N · MPa · °C</span></div>
+    <div class="tb-cell"><b>Data</b><span id="tbData">Checking…</span></div>
+    <div class="tb-cell"><b>Part</b><span>MB-01 bracket</span></div>
+    <div class="tb-cell"><b>Revised</b><span>29 Oct 2026</span></div>
+  </div>
+  <div class="tb-actions"><a class="levelchip" href="#path" id="levelChip">Level <b>Beginner</b></a><button class="btn primary" id="demoBtn" type="button">Run demo</button></div>
+</header>
+<nav class="tabs" aria-label="Sections">
+  <a href="#trends" data-tab="trends">Trends</a>
+  <a href="#path" data-tab="path">Path</a>
+  <a href="#cad" data-tab="cad">CAD theory</a>
+  <a href="#tests" data-tab="tests">Test bench</a>
+  <a href="#career" data-tab="career">Career</a>
+  <a href="#data" data-tab="data">Data</a>
+</nav>
+
+<main>
+<!-- TRENDS -->
+<section class="view" id="view-trends">
+  <div class="view-head">
+    <div><h2>What's moving in mechanical engineering, late 2026</h2>
+    <p class="lede">Six trends from current industry and research sources. Each one links to the part of this lab where you practise the skill behind it.</p></div>
+  </div>
+  <div class="trend-grid" id="trendGrid"></div>
+</section>
+
+<!-- PATH -->
+<section class="view" id="view-path">
+  <div class="view-head">
+    <div><h2>Your path: Beginner → Intermediate → Advanced</h2>
+    <p class="lede">Each level unlocks harder cases and tools. Tasks tick themselves when you do them in the lab. Pass the checkpoint quiz (4 out of 5) to finish a level.</p></div>
+    <label class="check" style="border:0;padding:0"><input type="checkbox" id="freeMode"><span>Unlock everything (skip the path)</span></label>
+  </div>
+  <div class="ladder" id="pathLadder"></div>
+  <div class="stack" id="pathQuizzes" style="margin-top:14px"></div>
+</section>
+
+<!-- CAD -->
+<section class="view" id="view-cad">
+  <div class="view-head">
+    <div><h2>CAD theory: building bracket MB-01 feature by feature</h2>
+    <p class="lede">Works the way SOLIDWORKS does: a plane, a sketch, then features stacked in a tree. Tap any feature in the tree to roll back to it.</p></div>
+  </div>
+  <div class="bench">
+    <div class="vp-slot" id="slot-cad"></div>
+    <div class="stack">
+      <div class="panel stack">
+        <div class="stepper">
+          <button class="btn" id="cadPrev" type="button">Previous</button>
+          <button class="btn primary" id="cadNext" type="button">Next feature</button>
+          <span class="count" id="cadCount"></span>
+        </div>
+        <div class="theory" id="cadTheory"></div>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:8px">FeatureManager design tree</h3>
+        <ul class="tree" id="cadTree"></ul>
+      </div>
+      <div class="panel" id="cadMassPanel"></div>
+      <div id="fitsPanel"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTS -->
+<section class="view" id="view-tests">
+  <div class="view-head">
+    <div><h2>Test bench: real-life load cases</h2>
+    <p class="lede">Each case starts as a design that fails. Change the inputs yourself, or press Improve to fix it one revision at a time and read why each change was made.</p></div>
+    <div class="seg" id="scenarioSeg" role="group" aria-label="Scenario">
+      <button type="button" data-sc="beam" aria-pressed="true">Shelf bracket</button>
+      <button type="button" data-sc="gear" aria-pressed="false">Gear drive</button>
+      <button type="button" data-sc="rail" aria-pressed="false">Rail in summer</button>
+      <button type="button" data-sc="arm" aria-pressed="false">Robot arm</button>
+    </div>
+  </div>
+  <div class="bench">
+    <div class="vp-slot" id="slot-tests"></div>
+    <div class="stack" id="testPanel"></div>
+  </div>
+</section>
+
+<!-- CAREER -->
+<section class="view" id="view-career">
+  <div class="view-head">
+    <div><h2>Licences, certificates and hiring must-haves</h2>
+    <p class="lede">Built for the Thermo Machine Operator role at Huhtamaki, Gosport, and for the step up to setter, technician and engineer. Tap a status to cycle To do → Booked → Done. Prices are typical UK figures from October 2026; check before booking.</p></div>
+  </div>
+  <div class="career-grid">
+    <div class="panel" id="certList"></div>
+    <div class="stack">
+      <div class="panel stack">
+        <h3>Your progress</h3>
+        <div class="progress"><div id="careerBar" style="width:0%"></div></div>
+        <p class="mono" id="careerPct" style="font-size:.82rem"></p>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:6px">Hiring process must-haves</h3>
+        <div id="hireList"></div>
+      </div>
+      <div id="interviewBox"></div>
+      <div class="panel stack">
+        <h3>Add a licence or certificate</h3>
+        <form id="certForm" class="fields">
+          <div class="field wide"><label for="cfName">Name</label><div class="inp"><input id="cfName" required placeholder="e.g. Abrasive wheels"></div></div>
+          <div class="field"><label for="cfCost">Typical cost</label><div class="inp"><input id="cfCost" placeholder="£"></div></div>
+          <div class="field"><label for="cfTime">Time</label><div class="inp"><input id="cfTime" placeholder="1 day"></div></div>
+          <div class="field wide"><label for="cfWhy">Why it helps</label><div class="inp"><textarea id="cfWhy"></textarea></div></div>
+          <div class="field wide"><button class="btn primary" type="submit">Add to list</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA -->
+<section class="view" id="view-data">
+  <div class="view-head">
+    <div><h2>Data: add now, use later</h2>
+    <p class="lede">Everything you add here feeds the lab: new materials appear in the CAD and test bench pickers, trends join the Trends page, and saved test revisions build a log. Export a backup at any time.</p></div>
+    <div class="store"><span class="dot" id="storeDot"></span><span id="storeText">Checking storage…</span></div>
+  </div>
+  <div class="data-grid">
+    <div class="panel stack">
+      <h3>Materials</h3>
+      <div class="tablewrap"><table id="matTable"></table></div>
+      <form id="matForm" class="fields">
+        <div class="field wide"><label for="mfName">Material name</label><div class="inp"><input id="mfName" required placeholder="e.g. EN8 carbon steel"></div></div>
+        <div class="field"><label for="mfE">Young's modulus E</label><div class="inp"><input id="mfE" type="number" step="any" min="0.01" required><span class="unit">GPa</span></div></div>
+        <div class="field"><label for="mfSy">Yield strength σy</label><div class="inp"><input id="mfSy" type="number" step="any" min="1" required><span class="unit">MPa</span></div></div>
+        <div class="field"><label for="mfRho">Density ρ</label><div class="inp"><input id="mfRho" type="number" step="any" min="0.01" required><span class="unit">g/cm³</span></div></div>
+        <div class="field"><label for="mfA">Expansion α</label><div class="inp"><input id="mfA" type="number" step="any" min="0" required><span class="unit">µm/m·°C</span></div></div>
+        <div class="field wide"><label for="mfNote">Source or note</label><div class="inp"><input id="mfNote" placeholder="datasheet, supplier, standard"></div></div>
+        <div class="field wide"><button class="btn primary" type="submit">Add material</button></div>
+      </form>
+    </div>
+    <div class="stack">
+      <div class="panel stack">
+        <h3>Add a trend</h3>
+        <form id="trendForm" class="fields">
+          <div class="field wide"><label for="tfTitle">Trend</label><div class="inp"><input id="tfTitle" required placeholder="e.g. Hydrogen-ready boilers"></div></div>
+          <div class="field wide"><label for="tfNote">What it means</label><div class="inp"><textarea id="tfNote"></textarea></div></div>
+          <div class="field wide"><label for="tfSrc">Source link</label><div class="inp"><input id="tfSrc" type="url" placeholder="https://"></div></div>
+          <div class="field wide"><button class="btn primary" type="submit">Add trend</button></div>
+        </form>
+      </div>
+      <div class="panel stack">
+        <h3>Saved test revisions</h3>
+        <div class="tablewrap"><table id="runTable"></table></div>
+      </div>
+      <div class="panel stack">
+        <h3>Backup and restore</h3>
+        <p style="font-size:.88rem;color:var(--muted)">The backup is one JSON file holding your materials, trends, test revisions, certificates and career progress. Keep a copy in Google Drive or email it to yourself.</p>
+        <div class="stepper">
+          <button class="btn" id="copyJson" type="button">Copy backup</button>
+          <button class="btn" id="dlJson" type="button" hidden>Download backup (.json)</button>
+          <button class="btn" id="dlCsv" type="button" hidden>Download test log (.csv)</button>
+        </div>
+        <div class="field"><label for="importBox">Restore: paste a backup here or choose a file</label><div class="inp"><textarea id="importBox" placeholder='{"version":1, ...}'></textarea></div></div>
+        <div class="stepper">
+          <input type="file" id="importFile" accept=".json,application/json">
+          <button class="btn primary" id="importBtn" type="button">Import</button>
+        </div>
+        <details class="working"><summary>Data format for adding records later</summary>
+<pre>{
+ "version": 1,
+ "materials": [{"name":"EN8 steel","E":210,"sy":465,"rho":7.85,"alpha":11.5,"note":"BS 970 080M40"}],
+ "trends":    [{"title":"...","note":"...","source":"https://..."}],
+ "certs":     [{"name":"...","cost":"£..","time":"1 day","why":"..."}],
+ "runs":      [ saved automatically from the Test bench ],
+ "careerStatus": {"food-l2":"done"}
+}</pre></details>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div id="vpHome" hidden>
+  <div class="viewport" id="viewport">
+    <div class="vp-hud" id="vpHud"></div>
+    <div class="vp-legend" id="vpLegend"><div class="row"><div class="ramp"></div><div class="ticks"><span id="lg1">σy</span><span id="lg2"></span><span id="lg3"></span><span id="lg4">0</span></div></div></div>
+    <div class="vp-fallback" id="vpFallback"><p>The 3D view needs WebGL and the three.js library. Calculations, revisions and data still work below.</p></div>
+  </div>
+  <div class="vp-toolbar" id="vpToolbar">
+    <div class="seg" role="group" aria-label="View orientation">
+      <button type="button" data-view="iso" aria-pressed="true">Iso</button>
+      <button type="button" data-view="front" aria-pressed="false">Front</button>
+      <button type="button" data-view="top" aria-pressed="false">Top</button>
+      <button type="button" data-view="right" aria-pressed="false">Right</button>
+    </div>
+    <div class="seg" role="group" aria-label="Display style" id="displaySeg">
+      <button type="button" data-disp="edges" aria-pressed="true">Shaded + edges</button>
+      <button type="button" data-disp="wire" aria-pressed="false">Wireframe</button>
+    </div>
+    <button class="btn small" type="button" id="planesBtn" aria-pressed="true">Planes</button>
+    <button class="btn small" type="button" id="sectionBtn" aria-pressed="false">Section view</button>
+  </div>
+</div>
+
+<div class="demobar" id="demobar" role="status"><span class="lbl">DEMO</span><span class="cap" id="demoCap"></span><button class="btn small" type="button" id="demoStop">Stop</button></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+/* ============================== DATA ============================== */
+const BUILTIN_MATERIALS = [
+  {id:"s275", name:"S275 structural steel", E:210, sy:275, rho:7.85, alpha:12, note:"EN 10025-2, typical"},
+  {id:"aisi1020", name:"AISI 1020 steel, cold drawn", E:205, sy:350, rho:7.87, alpha:11.7, note:"typical"},
+  {id:"rail", name:"R260 rail steel", E:210, sy:480, rho:7.85, alpha:11.5, note:"EN 13674-1, typical"},
+  {id:"al6061", name:"6061-T6 aluminium", E:69, sy:276, rho:2.70, alpha:23.6, note:"typical"},
+  {id:"ss304", name:"304 stainless steel", E:193, sy:215, rho:8.00, alpha:17.3, note:"annealed, typical"},
+  {id:"ti64", name:"Ti-6Al-4V titanium", E:114, sy:880, rho:4.43, alpha:8.6, note:"typical"},
+  {id:"pla", name:"PLA (3D printed)", E:3.5, sy:50, rho:1.24, alpha:68, note:"varies with print settings"},
+  {id:"apet", name:"APET sheet (thermoformed trays)", E:2.7, sy:55, rho:1.34, alpha:65, note:"typical"}
+];
+const BUILTIN_TRENDS = [
+  {id:"t-ai-cad", tag:"Design software", title:"AI inside CAD",
+   body:"SOLIDWORKS 2026 brought AI features into everyday modelling. The 2026x FD01 release added prompt-guided drawing generation, root-cause analysis for part failures and an assembly structure generator. Student licences of SOLIDWORKS Design Standard have been free since 1 July 2026.",
+   why:"AI can write features for you, but it can only follow design intent you understand. Clean sketches, sensible references and a readable feature tree matter more now.",
+   link:"cad", linkText:"Practise design intent", src:"https://www.3ds.com/newsroom/media-alerts/dassault-systemes-announces-solidworks-2026-ai-powered-design-and-collaboration-generative-economy", srcName:"Dassault Systèmes"},
+  {id:"t-twin", tag:"Simulation", title:"Digital twins go mainstream",
+   body:"Early 2026 is widely described as the point where digital twins moved from pilot projects into production use. Siemens showed a Digital Twin Composer built with NVIDIA Omniverse at CES 2026.",
+   why:"A twin is a model driven by live inputs. The test bench works the same way on a small scale: change an input and the model and the checks update at once.",
+   link:"tests", linkText:"Open the test bench", src:"https://inzonex.co.uk/ai/reports/state-of-digital-twins-in-manufacturing-2026", srcName:"Inzonex report"},
+  {id:"t-gen-am", tag:"Manufacturing", title:"Generative design for 3D printing",
+   body:"Algorithms explore many candidate shapes from loads, supports and manufacturing limits. Research in 2026 focuses on stress-driven lattices and process simulation, and the best generative tools are closing the gap between optimised shapes and parts that actually print.",
+   why:"The idea behind it is removing material that carries no load. The shelf bracket's last revision does this by hand: it keeps the strength and stiffness and cuts the mass.",
+   link:"tests", linkText:"See the mass cut", src:"https://www.epj-conferences.org/10.1051/epjconf/202635502013", srcName:"EPJ Web of Conferences"},
+  {id:"t-hybrid", tag:"Manufacturing", title:"Hybrid print-and-machine cells",
+   body:"Additive manufacturing is now treated as a production tool. 2026 shops increasingly print a near-net shape and finish the critical faces by CNC in the same workflow.",
+   why:"Printed parts still need machined holes and faces where fits matter. Know your clearance holes and fits, and know which faces a machinist has to reach.",
+   link:"cad", linkText:"Hole sizes and fits", src:"https://facfox.com/news/beyond-the-hype-10-industrial-trends-redefining-3d-printing-in-2026/", srcName:"FacFox"},
+  {id:"t-mechatronics", tag:"Skills", title:"Mechatronics and automation",
+   body:"More mechanical roles now ask for sensors, actuators, controllers and some programming. Employers describe the target as a T-shaped engineer: deep mechanical fundamentals with broad digital skills.",
+   why:"Most automated lines still turn on gears, belts and motors sized by hand. The gear drive case is motor-to-load sizing, which is daily work in automation.",
+   link:"tests", linkText:"Size a gear drive", src:"https://www.shework.in/mechanical-engineer-hiring-india-trends-tips/", srcName:"SheWork"},
+  {id:"t-sustain", tag:"Careers", title:"Sustainability and renewables",
+   body:"Renewable energy is the clearest growth sector for mechanical graduates in 2026. Lighter parts, longer life and recyclable packaging all come back to material choice and load paths.",
+   why:"Thermal movement, fatigue and material efficiency are core in energy and infrastructure work. The rail case is a classic thermal design problem.",
+   link:"tests", linkText:"Run the thermal case", src:"https://www.myengineeringbuddy.com/blog/mechanical-engineering-job-market/", srcName:"MyEngineeringBuddy"},
+  {id:"t-robotics", tag:"Robotics", title:"Low-cost open robotics (LeRobot)",
+   body:"Hugging Face's LeRobot is an open-source Python library for real robots. It supports low-cost arms such as the SO-100 and SO-101, has a web interface (LeLab) for calibrating, recording and training without the command line, and is licensed under Apache 2.0.",
+   why:"A robot arm combines statics, servo sizing, materials and code in one build, which makes it strong evidence of practical skill on a CV. Size the arm on paper before buying parts.",
+   link:"tests", linkText:"Size a robot arm (Advanced)", src:"https://github.com/huggingface/lerobot", srcName:"GitHub: huggingface/lerobot"}
+];
+const BUILTIN_CERTS = [
+  {tier:"role", id:"food-l2", name:"Level 2 Food Safety & Hygiene for Manufacturing", cost:"£15–25 online", time:"2–3 hours",
+   why:"The Gosport thermo operator advert asks you to keep hygiene and BRC standards. This is the cheapest, fastest certificate that matches it word for word. Do it before the final interview."},
+  {id:"iosh-ws", tier:"role", name:"IOSH Working Safely", cost:"£65–150 online", time:"About 1 day",
+   why:"A recognised safety certificate that is valid for life. It covers hazards, risk and safety performance, and it gives you the safety vocabulary interviewers listen for."},
+  {id:"brcgs", tier:"role", name:"BRCGS Packaging Materials standard (awareness)", cost:"Free to read", time:"2 evenings",
+   why:"Huhtamaki sites work to this food-packaging standard. Learn its six areas: senior management commitment, hazard and risk management, product safety and quality management, site standards, product and process control, and personnel. Then name it in your interview."},
+  {id:"flt", tier:"role", name:"Counterbalance forklift, novice (RTITB / AITT / ITSSAR)", cost:"£400–800", time:"3–5 days",
+   why:"Thermoforming operator adverts often ask for a forklift licence or the ability to get one. There is no DVSA forklift licence; employers accept accredited certificates, and RTITB cards are typically valid for 3 years. Ask Huhtamaki first, because many employers pay for it at induction."},
+  {id:"manual-coshh", tier:"role", name:"Manual handling + COSHH awareness", cost:"Low-cost online", time:"1–2 hours each",
+   why:"Short courses usually covered at induction. Holding them already shows you are ready to start on day one."},
+  {id:"lss-yb", tier:"step", name:"Lean Six Sigma Yellow Belt (accredited)", cost:"About £95 for an ILSSI-accredited one", time:"1–2 days",
+   why:"Continuous improvement is part of the operator job description. Choose an accredited provider (ILSSI, or ISO 18404 aligned). A £12 'CPD' certificate carries little weight with employers."},
+  {id:"efaw", tier:"step", name:"Emergency First Aid at Work", cost:"Varies by provider", time:"1 day",
+   why:"Shift teams need trained first aiders, so this makes you useful straight away. It is valid for 3 years."},
+  {id:"cswa", tier:"eng", name:"SOLIDWORKS CSWA (Certified Associate)", cost:"$99 exam", time:"3 hour exam",
+   why:"Recognised proof of CAD skill for design, tooling and setter roles. Practise in the CAD theory tab first."},
+  {id:"imeche", tier:"eng", name:"IMechE Associate Member (AMIMechE)", cost:"Application fee + yearly subscription", time:"Online form",
+   why:"Graduates with a STEM degree can join. It starts your route to IEng/CEng, and a 2:2 does not block it. An accredited BEng fully meets the academic requirement for IEng."},
+  {id:"rb-python", tier:"robot", name:"Python basics", cost:"Free (python.org tutorial)", time:"2–3 weeks of evenings",
+   why:"LeRobot is driven from Python. You need variables, loops, functions, installing packages with pip, and reading error messages."},
+  {id:"rb-install", tier:"robot", name:"Install LeRobot and run lerobot-info", cost:"Free", time:"1 evening",
+   why:"`pip install lerobot`, then `lerobot-info` to confirm it works. For an SO-101 arm, add the extras for its Feetech servos: `pip install 'lerobot[core_scripts,feetech]'`."},
+  {id:"rb-size", tier:"robot", name:"Size the arm in the Robot arm case", cost:"Free", time:"1 hour",
+   why:"Check shoulder torque, elbow torque and tip accuracy for your payload before you buy servos. This is the engineering judgement employers look for."},
+  {id:"rb-build", tier:"robot", name:"Build an SO-101 arm", cost:"Check the official build guide for current parts and prices", time:"A weekend or two",
+   why:"Most parts are printed, and the arm uses serial-bus servos. Record what went wrong during assembly; those notes become interview stories."},
+  {id:"rb-lelab", tier:"robot", name:"Calibrate and teleoperate with LeLab", cost:"Free", time:"1 evening",
+   why:"LeLab is LeRobot's web interface for calibrating, teleoperating, recording and training an SO arm without the command line."},
+  {id:"rb-train", tier:"robot", name:"Record a dataset and train a policy", cost:"Free (GPU time optional)", time:"1–2 weeks",
+   why:"Teach the arm a pick-and-place by demonstration. That gives you a complete project: design, build, calibrate, train, test."},
+  {id:"rb-licence", tier:"robot", name:"Licence check before sharing your project", cost:"Free", time:"10 minutes",
+   why:"LeRobot is Apache 2.0, with some parts under MIT. If you share code that includes theirs, keep their licence and copyright notices and mark files you changed. You can say 'built with LeRobot', but don't use the Hugging Face name or logo as if they endorse your project. This is not legal advice."}
+];
+const TIERS = {role:["For the Thermo Operator role","Get now"], step:["Step up to setter / lead operator","Next 6 months"], eng:["Engineering career path","Longer term"], robot:["Robotics build: SO-101 + LeRobot","Portfolio project"]};
+const HIRING = [
+  {id:"h-rtw", text:"Right-to-work documents and two references ready to hand over"},
+  {id:"h-cv", text:"CV uses the advert's own words: hygiene and BRC standards, fault finding, shift handovers, minimum waste, machine adjustments"},
+  {id:"h-degree", text:"CV line that turns the degree into shop-floor value: reading drawings, measuring, root-cause problem solving"},
+  {id:"h-process", text:"Can explain the thermoforming cycle: heat sheet → form (vacuum or pressure, plug assist) → cool → trim → stack"},
+  {id:"h-defects", text:"Know common defects and first checks: webbing, thin corners, blisters, poor detail, warping"},
+  {id:"h-assess", text:"Practised for the technical assessment: vernier and micrometer reading, unit conversions, basic gears and levers, temperature and pressure settings"},
+  {id:"h-star", text:"Three STAR stories ready: a fault you found, a time you worked safely under pressure, something you improved"},
+  {id:"h-shift", text:"Clear answer on shift availability and reliable transport (a driving licence helps but is not legally needed for forklifts)"},
+  {id:"h-ask", text:"Questions ready to ask: training plan, route to setter, which machines and tools you would run"}
+];
+
+/* ============================== LEVELS + QUIZZES ============================== */
+const LEVELS = ["Beginner","Intermediate","Advanced"];
+const PATH_TASKS = {
+  1:[{id:"cad-done", text:"Build bracket MB-01 to the last feature in CAD theory", go:"cad"},
+     {id:"beam-pass", text:"Get the shelf bracket to PASS", go:"tests"},
+     {id:"rail-pass", text:"Get the rail case to PASS", go:"tests"},
+     {id:"cp1", text:"Score 4 or 5 out of 5 on Checkpoint 1", go:"path"}],
+  2:[{id:"gear-pass", text:"Get the gear drive to PASS", go:"tests"},
+     {id:"fits-used", text:"Check a fit in the Fits & tolerances panel (CAD theory)", go:"cad"},
+     {id:"runs3", text:"Save three test revisions to Data", go:"tests"},
+     {id:"cp2", text:"Score 4 or 5 out of 5 on Checkpoint 2", go:"path"}],
+  3:[{id:"arm-pass", text:"Get the robot arm to PASS", go:"tests"},
+     {id:"sweep-used", text:"Run a design sweep on any test case", go:"tests"},
+     {id:"cp3", text:"Score 4 or 5 out of 5 on Checkpoint 3", go:"path"}]
+};
+const UNLOCKS = {
+  1:["CAD theory: 10 feature steps","Shelf bracket and rail cases","Career tracker, data and backups"],
+  2:["Gear drive case","Fits & tolerances calculator (ISO 286)","Section view in CAD","Interview practice quiz"],
+  3:["Robot arm case (LeRobot-style)","Design sweep charts on every case","Max payload and dynamic torque"]
+};
+const QUIZ = {
+ cp1:[
+  {q:"In a SOLIDWORKS sketch, blue lines mean the sketch is…", o:["Fully defined","Under defined","Over defined","Construction geometry"], a:1, e:"Blue means it can still move. Black is fully defined, and red means conflicting dimensions or relations."},
+  {q:"For a cantilever with an end load, tip deflection grows with length as…", o:["L","L²","L³","L⁴"], a:2, e:"δ = FL³/(3EI). Double the length and the sag goes up 8 times."},
+  {q:"You double the thickness h of a flat bar loaded in bending. Bending stress becomes…", o:["Half","A quarter","An eighth","Unchanged"], a:1, e:"σ = 6FL/(bh²), so σ ∝ 1/h². Doubling h divides stress by 4 (and deflection by 8, since I ∝ h³)."},
+  {q:"A 10 m steel rail (α = 11.5×10⁻⁶ /°C) heats up by 40 °C. Free expansion is about…", o:["0.46 mm","4.6 mm","46 mm","0.046 mm"], a:1, e:"ΔL = α·L·ΔT = 11.5e-6 × 10 000 mm × 40 = 4.6 mm."},
+  {q:"Factor of safety against yield is…", o:["Working stress ÷ yield strength","Yield strength ÷ working stress","Load × length","Yield strength − working stress"], a:1, e:"FoS = σy/σ. A value of 2 means the part could take twice the stress before yielding."}
+ ],
+ cp2:[
+  {q:"Why avoid very few teeth on a 20° pressure angle pinion?", o:["It runs too quietly","The cutter undercuts the tooth root and weakens it","It increases the gear ratio","It needs more lubrication"], a:1, e:"Below about 17 teeth the generating cutter removes material at the root (undercut), which thins the tooth exactly where bending stress peaks."},
+  {q:"A 20-tooth pinion on a 1500 rpm motor drives a 60-tooth gear. Ignoring losses, the output is…", o:["4500 rpm, torque ÷3","500 rpm, torque ×3","500 rpm, torque ÷3","1500 rpm, torque ×3"], a:1, e:"Ratio 3:1. Speed falls by 3 and torque rises by 3, because power = torque × speed is conserved (minus losses)."},
+  {q:"An H7/g6 fit is a…", o:["Clearance (sliding) fit","Transition fit","Interference fit","Shrink fit"], a:0, e:"The g shaft is always below the H hole's lower limit, so there is always clearance. It's used for locating pins and parts that must slide."},
+  {q:"Rails jammed end to end keep heating. The compressive stress…", o:["Stays at zero","Rises about 2.4 MPa per °C","Falls as the steel softens","Turns to tension"], a:1, e:"Blocked thermal strain gives σ = E·α·ΔT = 210 000 × 11.5e-6 ≈ 2.4 MPa for every extra degree."},
+  {q:"In the Lewis equation, increasing the module (all else equal) makes tooth bending stress…", o:["Rise","Fall","Stay the same","Become negative"], a:1, e:"Module enters twice: a thicker tooth section (b·m·Y), and a bigger pitch diameter that lowers the tangential force Ft = 2T/d."}
+ ],
+ cp3:[
+  {q:"A robot arm is held horizontal. Which joint needs the most torque?", o:["Gripper","Wrist","Elbow","Shoulder"], a:3, e:"The shoulder carries every mass downstream of it, at the longest lever arms."},
+  {q:"Shoulder torque on a horizontal arm is dominated by the payload. Halving the reach changes it by about…", o:["÷2","÷4","÷8","No change"], a:0, e:"For a point load, torque = m·g·r, which is linear in r. Link self-weight adds a smaller term."},
+  {q:"A 16 kg·cm servo drives through a 2:1 reduction that is 90% efficient. Available torque is…", o:["8 kg·cm","16 kg·cm","28.8 kg·cm","32 kg·cm"], a:2, e:"16 × 2 × 0.9 = 28.8 kg·cm, at half the speed."},
+  {q:"0.5° of backlash at the shoulder of a 260 mm arm moves the tip by about…", o:["0.23 mm","2.3 mm","23 mm","0.5 mm"], a:1, e:"Arc length = r·θ = 260 × 0.5 × π/180 ≈ 2.27 mm. On small arms, backlash usually costs more accuracy than link bending."},
+  {q:"A design sweep shows every check below 1.0 between h = 18 mm and h = 40 mm. Usually the best pick is…", o:["40 mm, for maximum safety","The smallest stock size inside the pass band","Halfway, at 29 mm","Anything outside the band"], a:1, e:"The lightest, cheapest option that passes every check, rounded up to a stock size. Extra margin costs mass and money."}
+ ],
+ interview:[
+  {q:"Thermoformed cups come out with thin corners. What do you check first?", o:["Pallet labels","Sheet temperature in those zones and the plug assist depth and timing","Trim press speed","Stacker count"], a:1, e:"Thin corners mean the material stretched too far before touching the mould. Lower the heat in that zone and check that the plug assist pre-stretches material into the corners."},
+  {q:"Webbing (folds of plastic between cavities) is usually caused by…", o:["Sheet too hot or sagging too much, or too much material in that area","Not enough cooling water","Trim tool too sharp","Low line speed"], a:0, e:"Overheated sheet sags and folds over itself. Reduce heat in that zone, improve vacuum timing, or add web catchers to the tool."},
+  {q:"Vernier calliper, 0.02 mm resolution: the main scale shows 12 mm and vernier line 7 aligns. The reading is…", o:["12.07 mm","12.14 mm","12.70 mm","19.00 mm"], a:1, e:"12 + 7 × 0.02 = 12.14 mm."},
+  {q:"Metric micrometer: the sleeve shows 5.5 mm and the thimble reads 28. The reading is…", o:["5.28 mm","5.78 mm","8.30 mm","5.528 mm"], a:1, e:"Sleeve 5.50 + thimble 28 × 0.01 = 5.78 mm."},
+  {q:"A part is jammed inside the guarding. Before you reach in, you must…", o:["Press the stop button","Isolate, lock off and tag (LOTO), then prove zero energy, including air and stored heat","Slow the machine down","Ask a colleague to watch"], a:1, e:"A stop button is not isolation. Lock out every energy source (electric, pneumatic, hydraulic, gravity, heat) and test it is dead before entry."},
+  {q:"Bubbles or blisters appear in formed parts. The likely cause is…", o:["Moisture in the sheet or overheating","Wrong carton size","Trim misalignment","Too much stacking pressure"], a:0, e:"Moisture-sensitive sheet traps steam when heated, and overheating degrades the surface. Dry or store the sheet properly and reduce the heat."}
+ ]
+};
+const P = {done:{}, quiz:{}, free:false};
+function taskDone(id){ if(id==="runs3") return S.runs.length>=3; if(/^cp\d$/.test(id)) return (P.quiz[id]||0)>=4; return !!P.done[id]; }
+function level(){ if(P.free) return 3; const l1=PATH_TASKS[1].every(t=>taskDone(t.id)); const l2=l1 && PATH_TASKS[2].every(t=>taskDone(t.id)); return l2?3:(l1?2:1); }
+function mastered(){ return level()===3 && PATH_TASKS[3].every(t=>taskDone(t.id)); }
+function unlocked(n){ return DEMO.on || P.free || level()>=n; }
+function markTask(id){
+  if(DEMO.on || P.done[id]) return;
+  const before=level(); P.done[id]=true; saveProgress(); afterProgress(before);
+}
+function afterProgress(before){
+  renderLevelChip();
+  if(S.tab==="path") renderPathLadder();
+  const now=level();
+  if(now>before){ toast(`Level up: ${LEVELS[now-1]} unlocked`); if(S.tab==="path") renderPathQuizzes(); if(S.tab==="career") renderInterview(); if(S.tab==="cad"){ renderFits(); } }
+}
+function lockCard(n, what){
+  return `<div class="panel lock"><span class="chip warn">Unlocks at ${LEVELS[n-1]}</span><h3>${esc(what)}</h3><p style="font-size:.9rem">Finish the ${LEVELS[n-2]} tasks on the Path tab, or switch on "Unlock everything" there.</p><a class="btn" href="#path">Open Path</a></div>`;
+}
+
+/* ============================== STATE ============================== */
+const S = {
+  tab:"trends", db:null, store:"pending", uid:null,
+  userMaterials:[], userTrends:[], runs:[], userCerts:[], careerStatus:{}, hireStatus:{},
+  downloads:null
+};
+const $ = s => document.querySelector(s);
+const el = (tag, attrs={}, html="") => { const e=document.createElement(tag); for(const k in attrs){ if(k==="class") e.className=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html) e.innerHTML=html; return e; };
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = (n,d=2) => (n===undefined||n===null||!isFinite(n)) ? "–" : Number(n).toLocaleString("en-GB",{maximumFractionDigits:d,minimumFractionDigits:0});
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",2600); }
+function allMaterials(){ return BUILTIN_MATERIALS.concat(S.userMaterials.map(m=>({...m, user:true}))); }
+function matById(id){ return allMaterials().find(m=>m.id===id) || BUILTIN_MATERIALS[0]; }
+function safeUrl(u){ try{ const x=new URL(u); return (x.protocol==="https:"||x.protocol==="http:") ? x.href : ""; }catch(e){ return ""; } }
+
+/* ============================== 3D CORE ============================== */
+const V = { ok:false, renderer:null, camera:null, controls:null, scene:null, tickers:[], camAnim:null, display:"edges", planes:true, section:false, clipPlane:null };
+function init3D(){
+  if(!window.THREE || !THREE.OrbitControls){ return false; }
+  try{
+    const r = new THREE.WebGLRenderer({antialias:true, alpha:true});
+    r.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+    r.outputEncoding = THREE.sRGBEncoding;
+    r.localClippingEnabled = true; V.clipPlane = new THREE.Plane(new THREE.Vector3(-1,0,0), 0);
+    V.renderer = r;
+    $("#viewport").appendChild(r.domElement);
+    V.camera = new THREE.PerspectiveCamera(35, 1, 1, 50000);
+    V.camera.position.set(250,200,250);
+    V.controls = new THREE.OrbitControls(V.camera, r.domElement);
+    V.controls.enableDamping = true; V.controls.dampingFactor = 0.12;
+    V.controls.addEventListener("start", ()=>{ V.camAnim=null; });
+    new ResizeObserver(resize3D).observe($("#viewport"));
+    resize3D();
+    V.ok = true;
+    let last = performance.now();
+    const loop = (t)=>{
+      const dt = Math.min(0.05,(t-last)/1000); last=t;
+      if(V.camAnim){
+        const a=V.camAnim; a.t=Math.min(1,a.t+dt/a.dur); const e=a.t<.5?2*a.t*a.t:1-Math.pow(-2*a.t+2,2)/2;
+        V.camera.position.lerpVectors(a.p0,a.p1,e); V.controls.target.lerpVectors(a.t0,a.t1,e);
+        if(a.t>=1) V.camAnim=null;
+      }
+      V.controls.update();
+      for(const f of V.tickers) f(dt);
+      if(V.scene) r.render(V.scene, V.camera);
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+    return true;
+  }catch(e){ console.warn(e); return false; }
+}
+function resize3D(){
+  if(!V.renderer) return;
+  const vp=$("#viewport"); const w=vp.clientWidth||600, h=vp.clientHeight||400;
+  V.renderer.setSize(w,h,false); V.camera.aspect=w/h; V.camera.updateProjectionMatrix();
+}
+function makeScene(){
+  const s = new THREE.Scene();
+  s.add(new THREE.HemisphereLight(0xffffff, 0x7d8a99, 0.85));
+  const d = new THREE.DirectionalLight(0xffffff, 0.75); d.position.set(300,500,400); s.add(d);
+  const d2 = new THREE.DirectionalLight(0xffffff, 0.25); d2.position.set(-400,200,-300); s.add(d2);
+  return s;
+}
+const VIEW_DIRS = { iso:[1,0.8,1.15], front:[0,0,1], top:[0,1,0.0001], right:[1,0,0] };
+function frameObject(obj, dirName="iso", animate=true){
+  if(!V.ok) return;
+  const box = new THREE.Box3().setFromObject(obj);
+  if(box.isEmpty()) return;
+  const sphere = box.getBoundingSphere(new THREE.Sphere());
+  const dir = new THREE.Vector3(...VIEW_DIRS[dirName]).normalize();
+  const dist = sphere.radius / Math.sin(THREE.MathUtils.degToRad(V.camera.fov/2)) * 1.08;
+  const p1 = sphere.center.clone().add(dir.multiplyScalar(dist));
+  V.camera.near = Math.max(0.5, dist/200); V.camera.far = dist*20; V.camera.updateProjectionMatrix();
+  if(!animate || reduced){ V.camera.position.copy(p1); V.controls.target.copy(sphere.center); V.camAnim=null; return; }
+  V.camAnim = {t:0, dur:0.8, p0:V.camera.position.clone(), p1, t0:V.controls.target.clone(), t1:sphere.center.clone()};
+}
+function textSprite(text, opts={}){
+  const px = 44, pad = 10;
+  const c = document.createElement("canvas"); const g = c.getContext("2d");
+  g.font = `600 ${px}px "IBM Plex Mono", monospace`;
+  const w = Math.ceil(g.measureText(text).width)+pad*2, h = px+pad*2;
+  c.width=w; c.height=h;
+  g.font = `600 ${px}px "IBM Plex Mono", monospace`;
+  if(opts.bg!==false){ g.fillStyle = opts.bg||"rgba(255,255,255,0.88)"; g.fillRect(0,0,w,h); }
+  g.fillStyle = opts.color||"#111"; g.textBaseline="middle"; g.fillText(text,pad,h/2+2);
+  const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, depthTest:false, transparent:true}));
+  const sc = opts.scale||0.2; sp.scale.set(w*sc, h*sc, 1); sp.renderOrder = 20;
+  return sp;
+}
+function withEdges(mesh, color=0x1a1f24){
+  const e = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), new THREE.LineBasicMaterial({color}));
+  e.userData.isEdge = true; mesh.add(e); return mesh;
+}
+function applyDisplay(root){
+  const clip = (root===CAD.part && V.section && unlocked(2)) ? [V.clipPlane] : null;
+  root.traverse(o=>{
+    if(o.isMesh && o.material && !o.userData.noWire){ o.material.wireframe = (V.display==="wire"); o.material.transparent = V.display==="wire"; o.material.opacity = V.display==="wire"?0.25:1; }
+    if(o.material && root===CAD.part){ o.material.clippingPlanes = clip; o.material.needsUpdate = true; }
+  });
+}
+function disposeGroup(g){
+  g.traverse(o=>{ if(o.geometry) o.geometry.dispose(); if(o.material){ if(o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+  while(g.children.length) g.remove(g.children[0]);
+}
+const RAMP = [[0,[0.18,0.44,0.84]],[0.4,[0.25,0.68,0.35]],[0.7,[0.91,0.77,0.23]],[0.9,[0.84,0.23,0.16]],[1.0,[0.56,0.1,0.1]]];
+function rampColor(u){
+  u = Math.max(0, Math.min(1, u));
+  for(let i=1;i<RAMP.length;i++){ if(u<=RAMP[i][0]){ const [a,ca]=RAMP[i-1],[b,cb]=RAMP[i]; const t=(u-a)/(b-a); return ca.map((v,k)=>v+(cb[k]-v)*t); } }
+  return RAMP[RAMP.length-1][1];
+}
+function steelMat(color=0xb7c0c9){ return new THREE.MeshStandardMaterial({color, metalness:0.35, roughness:0.5, side:THREE.DoubleSide}); }
+function placeViewport(slotId){ const slot=document.getElementById(slotId); const home=$("#vpHome"); const vp=$("#viewport"), tb=$("#vpToolbar"); if(slot && vp.parentElement!==slot){ slot.appendChild(vp); slot.appendChild(tb); } home.hidden=true; resize3D(); }
+function setLegend(show, top="σy", mid1="", mid2="", bot="0"){ $("#vpLegend").style.display = show?"block":"none"; $("#lg1").textContent=top; $("#lg2").textContent=mid1; $("#lg3").textContent=mid2; $("#lg4").textContent=bot; }
+function setHud(html){ const h=$("#vpHud"); h.innerHTML=html; h.style.display=html?"block":"none"; }
+
+/* ============================== CAD ============================== */
+const CAD = { step:9, scene:null, part:null, aux:null, mat:"s275", view:"iso" };
+const CAD_STEPS = [
+  {code:"PL", name:"Top Plane", cmd:"Select plane → Sketch", title:"Choose the sketch plane",
+   text:"Every part starts from the origin and three default planes: Front, Top and Right. Pick the plane that matches how the part sits in real life. This bracket bolts flat onto a bench, so its base goes on the <b>Top Plane</b>. Your drawing views will then line up with how a fitter sees the part.",
+   tip:"Wrong plane choice is the classic beginner error. The model looks fine, but every standard view comes out sideways on the drawing."},
+  {code:"SK", name:"Sketch1 (under defined)", cmd:"Sketch → Center Rectangle", title:"Sketch the profile",
+   text:"A centre rectangle snapped to the origin. The lines are <b>blue</b> because the sketch is <b>under defined</b>: you could still drag them. SOLIDWORKS colours tell you the state: blue is under defined, black is fully defined, red is over defined (conflicting dimensions).",
+   tip:"Centring on the origin is design intent. The part stays symmetric about its datum when sizes change."},
+  {code:"SD", name:"Sketch1 (fully defined)", cmd:"Smart Dimension", title:"Dimension to fully define",
+   text:"Add 120 and 60. The lines turn <b>black</b>, which means fully defined. Dimension what the inspector will measure, the overall sizes, rather than chaining small dimensions together. Each chained dimension adds its own tolerance to the stack.",
+   tip:"If the status bar says 'Over Defined', delete the last dimension or relation. Never keep red geometry."},
+  {code:"BE", name:"Boss-Extrude1", cmd:"Features → Extruded Boss/Base", title:"Extrude the base: 8 mm blind",
+   text:"Extrude the sketch 8 mm up. 8 mm is a standard plate and flat-bar thickness, so the base can be cut from stock with no machining of the faces. Other end conditions: <b>Mid Plane</b> grows both ways from the sketch plane, and <b>Up To Surface</b> stops at another face.",
+   tip:"Choose stock sizes on purpose. Designing a 7.3 mm plate forces someone to machine it from 10 mm."},
+  {code:"CE", name:"Cut-Extrude1", cmd:"Hole Wizard / Extruded Cut", title:"Cut a Ø10 hole, Through All",
+   text:"A Ø10 hole for an M8 bolt. Under ISO 273, M8 clearance holes are 8.4 fine, 9 medium and 10 coarse, so Ø10 gives a fitter room to align two parts. Use <b>Through All</b> rather than a fixed 8 mm depth, so the hole still goes through if the plate later becomes 10 mm.",
+   tip:"Hole Wizard holes carry the fastener size into the drawing callout automatically. Prefer them to plain circle cuts."},
+  {code:"LP", name:"LinearPattern1", cmd:"Features → Linear Pattern", title:"Pattern the hole: 2 instances at 70 mm",
+   text:"Pattern the hole instead of drawing a second one. Change the seed hole and every instance follows. The 70 mm spacing is dimensioned centre to centre, the way the mating part's holes will be measured.",
+   tip:"Parent/child: the pattern is a child of Cut-Extrude1. Delete the hole and the pattern goes with it."},
+  {code:"FI", name:"Fillet1", cmd:"Features → Fillet", title:"Fillet the front corners: R10",
+   text:"Round the two exposed corners. Sharp outside corners cut hands, chip paint and catch on clothing, which is why drawings carry the note 'Remove all sharp edges'. On inside corners, fillets also cut stress concentration.",
+   tip:"Add fillets late. If later features reference fillet edges, they fail every time you change the radius."},
+  {code:"BE", name:"Boss-Extrude2", cmd:"Sketch on back face → Extrude", title:"Add the upright flange with a Ø12 hole",
+   text:"Sketch on the back face of the base and extrude a 50 mm high, 8 mm thick flange with a Ø12 hole for wall fixing. The flange is a <b>child</b> of Boss-Extrude1 because its sketch sits on that face.",
+   tip:"Sketching on the Front Plane instead of a model face cuts the parent/child link. Use that when you want features to stay independent."},
+  {code:"RB", name:"Rib1", cmd:"Features → Rib", title:"Stiffen the corner: two 6 mm ribs",
+   text:"A load on the flange tries to fold the 90° corner. That corner carries the highest bending moment, so two triangular gussets go there. The Rib feature needs only an open sketch line; SOLIDWORKS extends it to the faces.",
+   tip:"Ribs stiffen far more per gram than thickening the whole plate. The same idea drives generative design."},
+  {code:"MP", name:"Material + Mass Properties", cmd:"Edit Material → Evaluate → Mass Properties", title:"Assign material, check mass",
+   text:"Apply a material before any simulation or weight check. Mass Properties gives volume, mass and centre of mass. Buyers use mass to estimate cost; designers use it to check lifting and handling limits.",
+   tip:"Change the material below and watch the mass change. The geometry does not change."}
+];
+function cadVolume(k){
+  let v=0; if(k>=3) v+=120*60*8;
+  if(k>=4) v-=Math.PI*25*8;
+  if(k>=5) v-=Math.PI*25*8;
+  if(k>=6) v-=2*(100-Math.PI*100/4)*8;
+  if(k>=7) v+=120*50*8 - Math.PI*36*8;
+  if(k>=8) v+=2*0.5*30*40*6;
+  return v;
+}
+function baseShape(k){
+  const r = k>=6 ? 10 : 0; const s = new THREE.Shape();
+  s.moveTo(-60,30); s.lineTo(60,30);
+  if(r){ s.lineTo(60,-30+r); s.absarc(60-r,-30+r,r,0,-Math.PI/2,true); s.lineTo(-60+r,-30); s.absarc(-60+r,-30+r,r,-Math.PI/2,-Math.PI,true); }
+  else { s.lineTo(60,-30); s.lineTo(-60,-30); }
+  s.lineTo(-60,30);
+  const holes = k>=5 ? [-35,35] : (k>=4 ? [-35] : []);
+  holes.forEach(x=>{ const h=new THREE.Path(); h.absarc(x,-8,5,0,Math.PI*2,true); s.holes.push(h); });
+  return s;
+}
+function buildCad(){
+  if(!V.ok) return;
+  const k = CAD.step;
+  disposeGroup(CAD.part); disposeGroup(CAD.aux);
+  const m = matById(CAD.mat);
+  const baseColor = m.id==="al6061" ? 0xc9cfd6 : (m.rho<2 ? 0xd8d2c4 : 0xb3bcc6);
+  const hl = 0x7fa7d9;
+  // planes
+  if(V.planes && k<=3){
+    const mk = (rot, name, active, pos)=>{
+      const g = new THREE.PlaneGeometry(170,110);
+      const mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({color: active?0x2f6fd6:0x8a96a3, transparent:true, opacity: active?0.16:0.06, side:THREE.DoubleSide, depthWrite:false}));
+      mesh.userData.noWire=true;
+      mesh.rotation.set(...rot);
+      const border = new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({color: active?0x2f6fd6:0x8a96a3}));
+      mesh.add(border);
+      const lab = textSprite(name,{scale:0.16, bg:false, color: active?"#1d5fa8":"#5b6672"}); lab.position.set(...pos);
+      CAD.aux.add(mesh); CAD.aux.add(lab);
+    };
+    mk([0,0,0],"Front Plane",false,[-70,60,0]);
+    mk([-Math.PI/2,0,0],"Top Plane",true,[-70,2,-58]);
+    mk([0,Math.PI/2,0],"Right Plane",false,[0,60,-70]);
+  }
+  CAD.aux.add(new THREE.AxesHelper(22));
+  // sketch
+  if(k===1 || k===2){
+    const col = k===1 ? 0x1f5fe0 : 0x111111;
+    const pts = [[-60,30],[60,30],[60,-30],[-60,-30],[-60,30]].map(([x,z])=>new THREE.Vector3(x,0.3,z));
+    CAD.aux.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:col})));
+    if(k===2){
+      const dimMat = new THREE.LineBasicMaterial({color:0x111111});
+      const dl = (a,b)=>CAD.aux.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...a),new THREE.Vector3(...b)]), dimMat));
+      dl([-60,0.3,30],[-60,0.3,44]); dl([60,0.3,30],[60,0.3,44]); dl([-60,0.3,40],[60,0.3,40]);
+      dl([60,0.3,-30],[74,0.3,-30]); dl([60,0.3,30],[74,0.3,30]); dl([70,0.3,-30],[70,0.3,30]);
+      const a=textSprite("120",{scale:0.16}); a.position.set(0,6,40); CAD.aux.add(a);
+      const b=textSprite("60",{scale:0.16}); b.position.set(70,6,0); CAD.aux.add(b);
+    }
+  }
+  if(k>=3){
+    const g = new THREE.ExtrudeGeometry(baseShape(k), {depth:8, bevelEnabled:false, curveSegments:24});
+    g.rotateX(-Math.PI/2);
+    const mesh = new THREE.Mesh(g, steelMat((k>=3&&k<=6&&k!==9)?hl:baseColor));
+    CAD.part.add(withEdges(mesh));
+    if(k===5 || k===4){
+      const lab = textSprite(k===4?"Ø10 THRU ALL":"2 × Ø10 · 70 c/c",{scale:0.14}); lab.position.set(0,26,-8+0); CAD.aux.add(lab);
+    }
+    if(k===6){ const lab=textSprite("R10 (2)",{scale:0.14}); lab.position.set(62,18,32); CAD.aux.add(lab); }
+  }
+  if(k>=7){
+    const s = new THREE.Shape(); s.moveTo(-60,8); s.lineTo(60,8); s.lineTo(60,58); s.lineTo(-60,58); s.lineTo(-60,8);
+    const h = new THREE.Path(); h.absarc(0,38,6,0,Math.PI*2,true); s.holes.push(h);
+    const g = new THREE.ExtrudeGeometry(s,{depth:8, bevelEnabled:false, curveSegments:24});
+    const mesh = new THREE.Mesh(g, steelMat(k===7?hl:baseColor)); mesh.position.z=-30;
+    CAD.part.add(withEdges(mesh));
+    if(k===7){ const lab=textSprite("Ø12 THRU",{scale:0.14}); lab.position.set(0,64,-26); CAD.aux.add(lab); }
+  }
+  if(k>=8){
+    [-45,45].forEach(x=>{
+      const s=new THREE.Shape(); s.moveTo(22,8); s.lineTo(-8,8); s.lineTo(22,48); s.lineTo(22,8);
+      const g=new THREE.ExtrudeGeometry(s,{depth:6,bevelEnabled:false}); g.rotateY(Math.PI/2);
+      const mesh=new THREE.Mesh(g, steelMat(k===8?hl:baseColor)); mesh.position.x = x-3;
+      CAD.part.add(withEdges(mesh));
+    });
+  }
+  applyDisplay(CAD.part);
+}
+function renderCadPanel(){
+  const k = CAD.step, st = CAD_STEPS[k];
+  $("#cadCount").textContent = `Step ${k+1} of ${CAD_STEPS.length}`;
+  $("#cadPrev").disabled = k===0; $("#cadNext").disabled = k===CAD_STEPS.length-1;
+  $("#cadTheory").innerHTML = `<p class="cmd">${esc(st.cmd)}</p><h3>${esc(st.title)}</h3><p>${st.text}</p><p class="tip${k===2?" warn":""}">${esc(st.tip)}</p>`;
+  const tree = $("#cadTree"); tree.innerHTML="";
+  const head = el("li",{class:"",tabindex:"-1"},`<span class="ico">P</span><span>Part MB-01 · ${esc(matById(CAD.mat).name)}</span>`);
+  head.style.cursor="default"; tree.appendChild(head);
+  CAD_STEPS.forEach((s,i)=>{
+    if(i===2) return; // sketch fully-defined shares the Sketch1 row
+    const li = el("li",{tabindex:"0", role:"button"},`<span class="ico">${s.code}</span><span>${esc(i===1&&k>=2?"Sketch1":s.name)}</span>`);
+    const effective = (i===1 && k===2) ? 2 : i;
+    if(effective>k) li.classList.add("future");
+    if(effective===k || (i===1&&k===2)) li.classList.add("current");
+    if(i===k || (i===1&&k===2)) li.classList.add("rollback");
+    const go = ()=>{ cadSet(i===1 && k>=2 ? 2 : i); };
+    li.addEventListener("click", go); li.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); }});
+    tree.appendChild(li);
+  });
+  const vol = cadVolume(k), m = matById(CAD.mat);
+  const opts = allMaterials().map(x=>`<option value="${esc(x.id)}"${x.id===CAD.mat?" selected":""}>${esc(x.name)}</option>`).join("");
+  $("#cadMassPanel").innerHTML = `<h3 style="margin-bottom:8px">Mass properties</h3>
+   <div class="fields"><div class="field wide"><label for="cadMat">Material</label><div class="inp"><select id="cadMat">${opts}</select></div></div></div>
+   <table style="margin-top:8px"><tr><th>Quantity</th><th class="num">Value</th></tr>
+   <tr><td>Volume</td><td class="num">${fmt(vol,0)} mm³</td></tr>
+   <tr><td>Density</td><td class="num">${fmt(m.rho,2)} g/cm³</td></tr>
+   <tr><td><b>Mass</b></td><td class="num"><b>${fmt(vol*m.rho/1000,1)} g</b></td></tr></table>
+   ${k<3?'<p class="src" style="margin-top:6px">No solid body yet: a sketch has no volume.</p>':''}`;
+  $("#cadMat").addEventListener("change", e=>{ CAD.mat=e.target.value; buildCad(); renderCadPanel(); });
+  setHud(`${esc(st.name)}<br>${k>=3?`V = ${fmt(vol,0)} mm³`:"Sketch mode"}`);
+}
+function cadSet(i){ CAD.step = Math.max(0,Math.min(CAD_STEPS.length-1,i)); buildCad(); renderCadPanel(); if(V.ok) frameObject(CAD.root, CAD.view); if(CAD.step===CAD_STEPS.length-1) markTask("cad-done"); }
+
+/* ---- ISO 286 fits (sizes over 3 up to 50 mm) ---- */
+const FIT_RANGES=[3,6,10,18,30,50];
+const IT6=[8,9,11,13,16], IT7=[12,15,18,21,25];
+const SHAFT_DEV={ g:{es:[-4,-5,-6,-7,-9]}, h:{es:[0,0,0,0,0]}, k:{ei:[1,1,1,2,2]}, n:{ei:[8,10,12,15,17]}, p:{ei:[12,15,18,22,26]}, s:{ei:[19,23,28,35,43]} };
+const FITS={ "H7/g6":"Sliding clearance fit: locating pins, parts that must slide or turn freely and accurately.",
+  "H7/h6":"Location clearance: assembles by hand, locates accurately, e.g. a spigot in a bore.",
+  "H7/k6":"Transition: pulleys and couplings on keyed shafts. Light tap to assemble.",
+  "H7/n6":"Transition, tighter: gears and bushes that must not shift. Press to assemble.",
+  "H7/p6":"Location interference: bushes pressed in, can still be dismantled.",
+  "H7/s6":"Press or shrink fit: permanent bushes and seats under heavy load." };
+function fitCalc(d, fit){
+  const idx=FIT_RANGES.findIndex((v,i)=>i<5 && d>FIT_RANGES[i] && d<=FIT_RANGES[i+1]);
+  if(idx<0) return null;
+  const letter=fit.split("/")[1][0], it6=IT6[idx], it7=IT7[idx], dev=SHAFT_DEV[letter];
+  let es, ei; if(dev.es){ es=dev.es[idx]; ei=es-it6; } else { ei=dev.ei[idx]; es=ei+it6; }
+  const ES=it7, EI=0, cmax=ES-ei, cmin=EI-es;
+  const type = cmin>=0 ? "Clearance" : (cmax<=0 ? "Interference" : "Transition");
+  return {range:`over ${FIT_RANGES[idx]} to ${FIT_RANGES[idx+1]} mm`, it6, it7, ES, EI, es, ei, cmax, cmin, type};
+}
+const FITSTATE={d:12, fit:"H7/g6"};
+function renderFits(){
+  const box=$("#fitsPanel"); if(!box) return;
+  if(!unlocked(2)){ box.innerHTML=lockCard(2,"Fits & tolerances (ISO 286) and section view"); return; }
+  const f=fitCalc(FITSTATE.d, FITSTATE.fit), d=FITSTATE.d, mm=v=>(d+v/1000).toFixed(3);
+  box.innerHTML=`<div class="panel stack"><h3>Fits & tolerances (ISO 286)</h3>
+   <p style="font-size:.86rem;color:var(--muted)">The flange's Ø12 hole takes a pin. Choose how tight it should be. The values are the ISO 286 tolerance grades and shaft deviations, in micrometres (µm).</p>
+   <div class="fields"><div class="field"><label for="fitD">Nominal size</label><div class="inp"><input id="fitD" type="number" min="3.01" max="50" step="any" value="${d}"><span class="unit">mm</span></div></div>
+   <div class="field"><label for="fitSel">Fit</label><div class="inp"><select id="fitSel">${Object.keys(FITS).map(k=>`<option${k===FITSTATE.fit?" selected":""}>${k}</option>`).join("")}</select></div></div></div>
+   ${f?`<table class="fitout"><tr><th>Part</th><th class="num">Max</th><th class="num">Min</th><th class="num">Tol.</th></tr>
+   <tr><td>Hole ${FITSTATE.fit.split("/")[0]}</td><td class="num">${mm(f.ES)}</td><td class="num">${mm(f.EI)}</td><td class="num">${f.it7} µm</td></tr>
+   <tr><td>Shaft ${FITSTATE.fit.split("/")[1]}</td><td class="num">${mm(f.es)}</td><td class="num">${mm(f.ei)}</td><td class="num">${f.it6} µm</td></tr>
+   <tr><td>Max clearance</td><td class="num" colspan="3">${f.cmax>0?"+":""}${f.cmax} µm</td></tr>
+   <tr><td>Min clearance</td><td class="num" colspan="3">${f.cmin>0?"+":""}${f.cmin} µm ${f.cmin<0?"(interference)":""}</td></tr></table>
+   <div><span class="chip ${f.type==="Clearance"?"pass":f.type==="Transition"?"warn":"fail"}">${f.type.toUpperCase()}</span> <span style="font-size:.86rem">${esc(FITS[FITSTATE.fit])}</span></div>
+   <p class="src">Size range ${f.range}. Negative clearance means interference: the shaft is bigger than the hole and must be pressed or shrunk in.</p>`
+   :`<p class="tip warn">This table covers sizes over 3 mm up to 50 mm.</p>`}</div>`;
+  const upd=()=>{ const v=parseFloat($("#fitD").value); if(isFinite(v)) FITSTATE.d=v; FITSTATE.fit=$("#fitSel").value; markTask("fits-used"); renderFits(); };
+  $("#fitD").addEventListener("change",upd); $("#fitSel").addEventListener("change",upd);
+}
+
+/* ============================== TEST BENCH ============================== */
+const STD_T = [3,4,5,6,8,10,12,15,16,20,25,30,35,40,50];
+const STD_W = [10,12,15,16,20,25,30,35,40,50,60,75,80,100];
+const STD_M = [1,1.25,1.5,2,2.5,3,4,5,6,8,10];
+const LEWIS = [[12,.245],[13,.261],[14,.277],[15,.290],[16,.296],[17,.303],[18,.309],[19,.314],[20,.322],[21,.328],[22,.331],[24,.337],[26,.346],[28,.353],[30,.359],[34,.371],[38,.384],[43,.397],[50,.409],[60,.422],[75,.435],[100,.447],[150,.460],[300,.472],[400,.480]];
+function lewisY(z){ if(z<=12) return .245; for(let i=1;i<LEWIS.length;i++){ if(z<=LEWIS[i][0]){ const [z0,y0]=LEWIS[i-1],[z1,y1]=LEWIS[i]; return y0+(y1-y0)*(z-z0)/(z1-z0);} } return .48; }
+const nextStd = (list, v) => list.find(x=>x>=v-1e-9);
+
+const SC = {
+ beam:{
+  name:"Shelf bracket", story:"A steel flat-bar arm holds a workshop shelf. The worst case is a 40 kg vice placed at the very end, 300 mm from the wall. The arm must not yield (FoS ≥ 2) and must not sag more than L/200, or the shelf visibly tilts.",
+  defaults:{F:392, L:300, b:25, h:6, mat:"s275", fos:2, defl:200},
+  sweep:{key:"h", label:"Bar thickness h (mm)", min:4, max:40, step:1},
+  fields:[["F","Load at tip","N"],["L","Arm length","mm"],["b","Bar width b","mm"],["h","Bar thickness h","mm"],["fos","Required FoS","–"],["defl","Sag limit L /","–"]],
+  calc(p,m){
+    const E=m.E*1000, I=p.b*Math.pow(p.h,3)/12, M=p.F*p.L, sig=6*p.F*p.L/(p.b*p.h*p.h), d=p.F*Math.pow(p.L,3)/(3*E*I), fos=m.sy/sig, dAllow=p.L/p.defl, mass=p.b*p.h*p.L*m.rho/1000;
+    const checks=[
+      {name:"Bending stress σ", val:`${fmt(sig,1)} MPa`, lim:`≤ ${fmt(m.sy/p.fos,1)} MPa`, ok: fos>=p.fos-1e-9, u:p.fos/fos},
+      {name:"Factor of safety", val:fmt(fos,2), lim:`≥ ${fmt(p.fos,1)}`, ok: fos>=p.fos-1e-9},
+      {name:"Tip deflection δ", val:`${fmt(d,2)} mm`, lim:`≤ ${fmt(dAllow,2)} mm`, ok: d<=dAllow+1e-9, u:d/dAllow},
+      {name:"Mass of arm", val:`${fmt(mass,0)} g`, lim:"lower is better", ok:null}
+    ];
+    const work = `I  = b·h³/12 = ${p.b}·${p.h}³/12 = ${fmt(I,1)} mm⁴
+M  = F·L = ${p.F}·${p.L} = ${fmt(M,0)} N·mm
+σ  = M·c/I = 6FL/(b·h²) = ${fmt(sig,1)} MPa   (c = h/2)
+FoS = σy/σ = ${m.sy}/${fmt(sig,1)} = ${fmt(fos,2)}
+δ  = F·L³/(3·E·I) = ${p.F}·${p.L}³/(3·${fmt(E,0)}·${fmt(I,1)}) = ${fmt(d,2)} mm
+δallow = L/${p.defl} = ${fmt(dAllow,2)} mm`;
+    return {checks, work, sig, fos, d, I, E, mass, pass: checks.filter(c=>c.ok!==null).every(c=>c.ok), key:`h ${p.h} × b ${p.b} · FoS ${fmt(fos,2)} · δ ${fmt(d,2)} mm · ${fmt(mass,0)} g`};
+  },
+  improve(p,m){
+    const r=this.calc(p,m), q={...p};
+    if(r.fos < p.fos){
+      let hReq=Math.sqrt(6*p.F*p.L*p.fos/(p.b*m.sy)); let h=nextStd(STD_T,hReq);
+      if(!h){ q.b=nextStd(STD_W,p.b+1)||p.b*1.5; return {q, why:`Thickness would pass 50 mm, so widen the bar to ${q.b} mm first.`}; }
+      q.h=h; return {q, why:`<b>Strength fails.</b> Bending stress goes with 1/h², so thickness is the strongest lever. Needed h ≥ √(6·F·L·FoS / (b·σy)) = ${fmt(hReq,2)} mm, so use the next stock size: <b>${h} mm</b> flat bar.`};
+    }
+    if(r.d > p.L/p.defl){
+      const Ireq=p.F*Math.pow(p.L,3)/(3*r.E*(p.L/p.defl)); const hReq=Math.cbrt(12*Ireq/p.b); const h=nextStd(STD_T,hReq);
+      if(!h){ q.b=nextStd(STD_W,p.b+1)||p.b*1.5; return {q, why:`Needs more than 50 mm thickness, so widen the bar to ${q.b} mm.`}; }
+      q.h=h; return {q, why:`<b>Strong enough, but too floppy.</b> Stiffness depends on E·I, and I grows with h³. Required I = F·L³/(3·E·δallow) = ${fmt(Ireq,0)} mm⁴, so h ≥ ${fmt(hReq,2)} mm. Next stock size: <b>${h} mm</b>.`};
+    }
+    for(const b of STD_W){ if(b>=p.b) break; const t=this.calc({...p,b},m); if(t.pass){ q.b=b; return {q, why:`<b>Passes, now cut weight.</b> Width enters stress and stiffness only linearly, so it is the cheapest dimension to trim. The narrowest stock width that still passes both checks is <b>${b} mm</b>. Same idea as generative design: remove material that carries no load.`}; } }
+    return {q:null, why:"No further improvement: the design passes both checks with the lightest stock section."};
+  }
+ },
+ gear:{
+  name:"Gear drive", story:"A 4 kW, 1450 rpm motor drives a mixer paddle through one spur-gear pair. The paddle must turn at 290 rpm ± 3%. Steel gears are checked with the Lewis bending equation and the Barth velocity factor for cut teeth.",
+  defaults:{P:4, n1:1450, z1:12, z2:54, m:1.5, b:12, eta:0.98, target:290, tol:3, fos:2, mat:"aisi1020"},
+  sweep:{key:"m", label:"Module m (mm)", min:1, max:5, step:0.125},
+  fields:[["P","Motor power","kW"],["n1","Motor speed","rpm"],["z1","Pinion teeth z₁","–"],["z2","Gear teeth z₂","–"],["m","Module m","mm"],["b","Face width b","mm"],["target","Target output","rpm"],["fos","Required FoS","–"]],
+  calc(p,m){
+    const i=p.z2/p.z1, n2=p.n1/i, T1=9550*p.P/p.n1, T2=T1*i*p.eta, d1=p.m*p.z1, d2=p.m*p.z2, a=(d1+d2)/2, v=Math.PI*d1*p.n1/60000, Ft=2000*T1/d1, Y=lewisY(p.z1), Kv=(6.1+v)/6.1, sig=Kv*Ft/(p.b*p.m*Y), fos=m.sy/sig, err=(n2-p.target)/p.target*100, bm=p.b/p.m;
+    const checks=[
+      {name:"Output speed", val:`${fmt(n2,1)} rpm`, lim:`${p.target} ± ${p.tol}%`, ok: Math.abs(err)<=p.tol, u:Math.abs(err)/p.tol},
+      {name:"Pinion teeth (no undercut)", val:`${p.z1}`, lim:"≥ 17 at 20° PA", ok: p.z1>=17, u:17/p.z1},
+      {name:"Tooth bending FoS", val:fmt(fos,2), lim:`≥ ${fmt(p.fos,1)}`, ok: fos>=p.fos-1e-9, u:p.fos/fos},
+      {name:"Face width ratio b/m", val:fmt(bm,1), lim:"8 – 12", ok: bm>=8-1e-9 && bm<=12+1e-9, u:Math.max(8/bm, bm/12)},
+      {name:"Ratio per stage", val:fmt(i,2), lim:"≤ 6", ok: i<=6+1e-9, u:i/6},
+      {name:"Centre distance", val:`${fmt(a,1)} mm`, lim:"info", ok:null},
+      {name:"Output torque", val:`${fmt(T2,1)} N·m`, lim:"info", ok:null}
+    ];
+    const work = `i   = z₂/z₁ = ${p.z2}/${p.z1} = ${fmt(i,3)}
+n₂  = n₁/i = ${p.n1}/${fmt(i,3)} = ${fmt(n2,1)} rpm  (error ${fmt(err,1)}%)
+T₁  = 9550·P/n₁ = 9550·${p.P}/${p.n1} = ${fmt(T1,2)} N·m
+d₁  = m·z₁ = ${fmt(d1,1)} mm,  d₂ = ${fmt(d2,1)} mm,  a = (d₁+d₂)/2 = ${fmt(a,1)} mm
+Ft  = 2·T₁/d₁ = ${fmt(Ft,0)} N
+v   = π·d₁·n₁/60000 = ${fmt(v,2)} m/s,  Kv = (6.1+v)/6.1 = ${fmt(Kv,3)}
+Y(z₁=${p.z1}) = ${fmt(Y,3)}  (Lewis form factor, 20° full depth)
+σ   = Kv·Ft/(b·m·Y) = ${fmt(sig,1)} MPa,  FoS = ${m.sy}/${fmt(sig,1)} = ${fmt(fos,2)}
+T₂  = T₁·i·η = ${fmt(T2,1)} N·m  (η = ${p.eta})`;
+    return {checks, work, i, n2, d1, d2, a, sig, fos, util: p.fos/fos, pass: checks.filter(c=>c.ok!==null).every(c=>c.ok), key:`${p.z1}/${p.z2}T · m${p.m} · b${p.b} · ${fmt(n2,0)} rpm · FoS ${fmt(fos,2)}`};
+  },
+  improve(p,m){
+    const r=this.calc(p,m), q={...p}, iT=p.n1/p.target;
+    if(p.z1<17){ q.z1=17; q.z2=Math.round(17*iT); return {q, why:`<b>Pinion undercut and wrong speed.</b> With a 20° pressure angle, fewer than 17 teeth makes the cutter undercut the tooth root, which weakens it. Use z₁ = 17, then set z₂ = 17 × ${fmt(iT,2)} ≈ <b>${q.z2}</b> to hit ${p.target} rpm.`}; }
+    if(Math.abs((r.n2-p.target)/p.target*100)>p.tol){ q.z2=Math.round(p.z1*iT); return {q, why:`<b>Speed off target.</b> Required ratio n₁/n₂ = ${fmt(iT,2)}, so z₂ = ${p.z1} × ${fmt(iT,2)} ≈ <b>${q.z2}</b>.`}; }
+    if(r.fos<p.fos){
+      for(const mm of STD_M){ if(mm<p.m) continue; const bb=Math.round(Math.min(Math.max(p.b,8*mm),12*mm)); const t=this.calc({...p,m:mm,b:bb},m); if(t.fos>=p.fos){ q.m=mm; q.b=bb; return {q, why:`<b>Teeth too weak.</b> Lewis stress falls with module twice: a bigger tooth section, and a bigger pitch diameter that lowers the tangential force. Smallest standard module that passes: <b>m = ${mm}</b>, with face width set inside the 8–12·m rule: <b>b = ${bb} mm</b>.`}; } }
+      return {q:null, why:"Even module 10 fails. Use a stronger material or two stages."};
+    }
+    const bm=p.b/p.m; if(bm<8||bm>12){ q.b=Math.round(10*p.m); return {q, why:`<b>Face width out of proportion.</b> Below 8·m the load is carried on a narrow strip; above 12·m small misalignment loads one edge. Set b = 10·m = <b>${q.b} mm</b>.`}; }
+    return {q:null, why:"No further improvement: speed, tooth strength and proportions all pass."};
+  }
+ },
+ rail:{
+  name:"Rail in summer", story:"Jointed track built from 120 ft (36.576 m) 60E1 rails, laid at 10 °C with a 4 mm gap at each joint. Rail temperature reaches 50 °C in a heatwave (well above air temperature) and −15 °C in winter. The gap must not close in summer, or the rails go into compression and can buckle. In winter the joint must not open beyond the 20 mm the fishplates allow.",
+  defaults:{L:36.576, Ti:10, Tmax:50, Tmin:-15, g:4, gmax:20, mat:"rail"},
+  sweep:{key:"g", label:"Gap when laid g (mm)", min:1, max:30, step:0.5},
+  fields:[["L","Rail length","m"],["Ti","Laying temperature","°C"],["Tmax","Max rail temp","°C"],["Tmin","Min rail temp","°C"],["g","Gap when laid","mm"],["gmax","Max joint opening","mm"]],
+  calc(p,m){
+    const a=m.alpha*1e-6, Lmm=p.L*1000, dHot=a*Lmm*(p.Tmax-p.Ti), gHot=p.g-dHot, gCold=p.g+a*Lmm*(p.Ti-p.Tmin), Tclose=p.Ti+p.g/(a*Lmm), sig = gHot<0 ? m.E*1000*(-gHot)/Lmm : 0;
+    const checks=[
+      {name:"Gap at max temperature", val:`${fmt(gHot,2)} mm`, lim:"≥ 0", ok: gHot>=-1e-9, u: p.g>0 ? dHot/p.g : 9},
+      {name:"Compressive stress if closed", val:`${fmt(sig,1)} MPa`, lim:"0 for jointed track", ok: sig<=1e-9},
+      {name:"Joint opening at min temp", val:`${fmt(gCold,2)} mm`, lim:`≤ ${p.gmax} mm`, ok: gCold<=p.gmax+1e-9, u:gCold/p.gmax},
+      {name:"Gap closes at", val:`${fmt(Tclose,1)} °C`, lim:"info", ok:null}
+    ];
+    const work = `α  = ${m.alpha}×10⁻⁶ /°C,  L = ${fmt(Lmm,0)} mm
+ΔL(hot) = α·L·(Tmax − Ti) = ${m.alpha}e-6·${fmt(Lmm,0)}·${p.Tmax-p.Ti} = ${fmt(dHot,2)} mm
+gap(hot) = g − ΔL = ${p.g} − ${fmt(dHot,2)} = ${fmt(gHot,2)} mm
+If gap < 0, the blocked strain is ε = |gap|/L, so σ = E·ε = ${fmt(sig,1)} MPa (compression)
+gap(cold) = g + α·L·(Ti − Tmin) = ${fmt(gCold,2)} mm
+Gap closes at T = Ti + g/(α·L) = ${fmt(Tclose,1)} °C`;
+    return {checks, work, a, Lmm, gHot, gCold, sig, pass: checks.filter(c=>c.ok!==null).every(c=>c.ok), key:`L ${fmt(p.L,3)} m · gap ${p.g} mm · hot ${fmt(gHot,1)} · cold ${fmt(gCold,1)} mm`};
+  },
+  improve(p,m){
+    const r=this.calc(p,m), q={...p}, a=m.alpha*1e-6;
+    if(r.gHot<0){ q.g=Math.ceil(a*p.L*1000*(p.Tmax-p.Ti)+1); return {q, why:`<b>Gap closes at ${fmt(p.Ti+p.g/(a*p.L*1000),1)} °C.</b> Above that the rail is jammed, and steel's high E turns tiny blocked strains into large stresses. The gap must at least equal the expansion α·L·ΔT = ${fmt(a*p.L*1000*(p.Tmax-p.Ti),2)} mm, plus 1 mm margin: <b>${q.g} mm</b>.`}; }
+    if(r.gCold>p.gmax){
+      const range=p.Tmax-p.Tmin; const lens=[36.576,18.288,12.192,9.144];
+      const L=lens.find(x=>a*x*1000*range+2<=p.gmax);
+      if(!L) return {q:null, why:"No standard length fits that temperature range. Use continuous welded rail, which is stressed to a set neutral temperature instead of using gaps."};
+      q.L=L; q.g=Math.ceil(a*L*1000*(p.Tmax-p.Ti)+1);
+      return {q, why:`<b>Joint opens too far in winter.</b> The total movement α·L·(Tmax − Tmin) = ${fmt(a*p.L*1000*range,1)} mm cannot be absorbed by one joint, and changing the laying temperature only shifts it between seasons. Shorten the rail to the classic <b>60 ft (18.288 m)</b> length and reset the gap to <b>${q.g} mm</b>.`};
+    }
+    return {q:null, why:"No further improvement: the joint stays open in summer and within the fishplate limit in winter."};
+  }
+ },
+ arm:{
+  name:"Robot arm", story:"A desktop arm in the style of the SO-101 that LeRobot drives (dimensions are illustrative, not the official design). It must lift a 200 g part at 260 mm from the shoulder axis, with printed PLA links and hobby servos. A servo's stall torque is the most it can give for a moment; to hold a load all day, keep demand at or below half of stall (FoS 2). The gripper must place parts within 2 mm.",
+  defaults:{L1:150, L2:150, reach:260, mp:200, mg:80, me:60, w:24, hgt:30, t:3, stall:16, rs:1, re:1, bl:0.5, acc:3, prec:2, fos:2, mat:"pla"},
+  sweep:{key:"mp", label:"Payload (g)", min:0, max:800, step:20},
+  fields:[["L1","Upper arm L₁","mm"],["L2","Forearm L₂","mm"],["reach","Required reach","mm"],["mp","Payload","g"],["mg","Gripper + wrist","g"],["me","Elbow servo mass","g"],["hgt","Link section height","mm"],["w","Link section width","mm"],["t","Link wall thickness","mm"],["stall","Servo stall torque","kg·cm"],["rs","Shoulder reduction","×"],["re","Elbow reduction","×"],["bl","Servo backlash","°"],["acc","Shoulder accel α","rad/s²"],["prec","Tip accuracy target","mm"],["fos","Servo FoS","–"]],
+  calc(p,m){
+    const g=9.81e-3, KGCM=98.0665;
+    const A=p.w*p.hgt-Math.max(0,p.w-2*p.t)*Math.max(0,p.hgt-2*p.t), lam=A*m.rho/1000;
+    const m1=lam*p.L1, m2=lam*p.L2, tip=p.mg+p.mp, R=p.L1+p.L2;
+    const TsStat=g*(m1*p.L1/2 + p.me*p.L1 + m2*(p.L1+p.L2/2) + tip*R);
+    const J=(m1*Math.pow(p.L1/2,2) + p.me*p.L1*p.L1 + m2*Math.pow(p.L1+p.L2/2,2) + tip*R*R)*1e-9;
+    const TsDyn=J*p.acc*1000, Ts=TsStat+TsDyn, Te=g*(m2*p.L2/2 + tip*p.L2);
+    const effS=p.rs>1?0.9:1, effE=p.re>1?0.9:1;
+    const allowS=p.stall*p.rs*effS/p.fos, allowE=p.stall*p.re*effE/p.fos;
+    const uS=(Ts/KGCM)/allowS, uE=(Te/KGCM)/allowE;
+    const I=(p.w*Math.pow(p.hgt,3)-Math.max(0,p.w-2*p.t)*Math.pow(Math.max(0,p.hgt-2*p.t),3))/12, EI=m.E*1000*I;
+    const P1=g*(p.me+m2+tip), q=g*lam, P2=g*tip;
+    const d1=P1*Math.pow(p.L1,3)/(3*EI)+Te*p.L1*p.L1/(2*EI)+q*Math.pow(p.L1,4)/(8*EI);
+    const th1=P1*p.L1*p.L1/(2*EI)+Te*p.L1/EI+q*Math.pow(p.L1,3)/(6*EI);
+    const d2=P2*Math.pow(p.L2,3)/(3*EI)+q*Math.pow(p.L2,4)/(8*EI);
+    const sag=d1+th1*p.L2+d2;
+    const rad=Math.PI/180, eBl=(p.bl/p.rs)*rad*R + (p.bl/p.re)*rad*p.L2, err=sag+eBl;
+    const tipWo=g*(m1*p.L1/2 + p.me*p.L1 + m2*(p.L1+p.L2/2) + p.mg*R) + (m1*Math.pow(p.L1/2,2)+p.me*p.L1*p.L1+m2*Math.pow(p.L1+p.L2/2,2)+p.mg*R*R)*1e-9*p.acc*1000;
+    const perGram=g*R + R*R*1e-9*p.acc*1000, mpMax=Math.max(0,(allowS*KGCM - tipWo)/perGram);
+    const checks=[
+      {name:"Reach", val:`${fmt(R,0)} mm`, lim:`≥ ${p.reach} mm`, ok: R>=p.reach-1e-9, u:p.reach/R},
+      {name:"Shoulder torque", val:`${fmt(Ts/KGCM,2)} kg·cm`, lim:`≤ ${fmt(allowS,2)} kg·cm`, ok: uS<=1+1e-9, u:uS},
+      {name:"Elbow torque", val:`${fmt(Te/KGCM,2)} kg·cm`, lim:`≤ ${fmt(allowE,2)} kg·cm`, ok: uE<=1+1e-9, u:uE},
+      {name:"Tip error (sag + backlash)", val:`${fmt(err,2)} mm`, lim:`≤ ${p.prec} mm`, ok: err<=p.prec+1e-9, u:err/p.prec},
+      {name:"Max payload at full reach", val:`${fmt(mpMax,0)} g`, lim:"info", ok:null},
+      {name:"Arm mass (links)", val:`${fmt(m1+m2,0)} g`, lim:"info", ok:null}
+    ];
+    const work=`Link section A = w·h − (w−2t)(h−2t) = ${fmt(A,0)} mm², mass/length λ = A·ρ = ${fmt(lam,3)} g/mm
+m₁ = ${fmt(m1,1)} g, m₂ = ${fmt(m2,1)} g, tip mass = gripper + payload = ${fmt(tip,0)} g, R = ${fmt(R,0)} mm
+Shoulder (arm horizontal, worst case):
+  Ts,static = g·[m₁·L₁/2 + m_elbow·L₁ + m₂(L₁+L₂/2) + m_tip·R] = ${fmt(TsStat,0)} N·mm
+  J = Σ m·r² = ${fmt(J,5)} kg·m²,  Ts,dyn = J·α = ${fmt(TsDyn,0)} N·mm
+  Ts = ${fmt(Ts,0)} N·mm = ${fmt(Ts/KGCM,2)} kg·cm   (1 kg·cm = 98.07 N·mm)
+  Allowed = stall × ratio × η / FoS = ${p.stall} × ${p.rs} × ${effS} / ${p.fos} = ${fmt(allowS,2)} kg·cm
+Elbow: Te = g·[m₂·L₂/2 + m_tip·L₂] = ${fmt(Te,0)} N·mm = ${fmt(Te/KGCM,2)} kg·cm, allowed ${fmt(allowE,2)}
+Link bending (PLA, E = ${m.E} GPa): I = ${fmt(I,0)} mm⁴
+  link 1 tip δ₁ = P₁L₁³/3EI + M·L₁²/2EI + qL₁⁴/8EI = ${fmt(d1,3)} mm, slope θ₁ = ${fmt(th1,5)} rad
+  gripper sag = δ₁ + θ₁·L₂ + δ₂ = ${fmt(sag,3)} mm
+Backlash: (${p.bl}°/${p.rs})·R + (${p.bl}°/${p.re})·L₂ in radians = ${fmt(eBl,2)} mm
+Max payload: (allowed torque − torque without payload) / (g·R + R²·α) = ${fmt(mpMax,0)} g`;
+    return {checks, work, uS, uE, err, sag, eBl, m1, m2, tip, lam, R, pass: checks.filter(c=>c.ok!==null).every(c=>c.ok), key:`L ${p.L1}/${p.L2} · grip ${p.mg} g · ${p.rs}:1 · bl ${p.bl}° · Ts ${fmt(uS*100,0)}% · err ${fmt(err,2)} mm`};
+  },
+  improve(p,m){
+    const r=this.calc(p,m), q={...p}, R=p.L1+p.L2;
+    if(R<p.reach){ const L=Math.ceil(p.reach/2/5)*5; q.L1=L; q.L2=L; return {q, why:`<b>Can't reach the part.</b> L₁ + L₂ must be at least ${p.reach} mm, so set both links to <b>${L} mm</b>.`}; }
+    if(R>p.reach+5){ const L=Math.ceil(p.reach/2/5)*5; q.L1=L; q.L2=L; return {q, why:`<b>Too much reach.</b> Shoulder torque grows with the distance to every mass, so reach you don't need costs torque all the time. Trim both links to <b>${L} mm</b> (total ${2*L} mm for a ${p.reach} mm requirement).`}; }
+    if(r.uS>1 && p.mg>50){ q.mg=50; return {q, why:`<b>Shoulder overloaded (${fmt(r.uS*100,0)}% of allowed).</b> The gripper sits at the longest lever arm, so every gram there costs the most torque. Lighten the gripper and wrist from ${p.mg} g to <b>50 g</b> with hollow printed fingers and a micro servo.`}; }
+    if(r.uS>1){ for(const k of [2,3,4]){ const t=this.calc({...p,rs:k},m); if(t.uS<=1){ q.rs=k; return {q, why:`<b>Shoulder still overloaded.</b> Add a <b>${k}:1</b> belt or gear reduction at the shoulder. Torque goes up by ratio × efficiency (${k} × 0.9) and speed goes down by ${k}. It also divides the servo's backlash at the output by ${k}.`}; } } q.stall=p.stall*1.5; return {q, why:`Reduction alone is not enough. Fit a stronger servo: stall <b>${fmt(q.stall,1)} kg·cm</b>.`}; }
+    if(r.uE>1){ for(const k of [2,3,4]){ const t=this.calc({...p,re:k},m); if(t.uE<=1){ q.re=k; return {q, why:`<b>Elbow overloaded.</b> Add a <b>${k}:1</b> reduction at the elbow.`}; } } }
+    if(r.err>p.prec){
+      if(r.eBl>r.sag && p.bl>0.2){ q.bl=0.2; return {q, why:`<b>Not accurate enough: ${fmt(r.err,2)} mm.</b> Bending is only ${fmt(r.sag,2)} mm; backlash causes ${fmt(r.eBl,2)} mm. Use servos with less play, or preload each joint with a spring so the gears always sit on one flank. Backlash drops to <b>0.2°</b>.`}; }
+      const h=[35,40,45,50].find(x=>x>p.hgt && this.calc({...p,hgt:x},m).err<=p.prec); if(h){ q.hgt=h; return {q, why:`<b>Links bend too much.</b> I grows with h³, so make the link section <b>${h} mm</b> deep.`}; }
+    }
+    return {q:null, why:"No further improvement: reach, both joint torques and tip accuracy all pass. Check the max payload figure before you change the job."};
+  }
+ }
+};
+const TB = { sc:"beam", state:{}, scene:null, group:null, gearSpin:null, railT:null };
+function scState(id){
+  if(!TB.state[id]){ const d={...SC[id].defaults}; TB.state[id]={revs:[{label:"A", p:d, why:"Starting design"}], cur:0, edited:false}; }
+  return TB.state[id];
+}
+function curP(){ const st=scState(TB.sc); return st.revs[st.cur].p; }
+const SC_LEVEL={beam:1, rail:1, gear:2, arm:3};
+function renderTests(){
+  if(!unlocked(SC_LEVEL[TB.sc])){
+    $("#testPanel").innerHTML = lockCard(SC_LEVEL[TB.sc], SC[TB.sc].name+" case");
+    if(V.ok){ disposeGroup(TB.group); V.tickers=V.tickers.filter(f=>!f.tb); }
+    setHud(""); setLegend(false); return;
+  }
+  const sc=SC[TB.sc], st=scState(TB.sc), p=st.revs[st.cur].p, m=matById(p.mat), r=sc.calc(p,m);
+  if(r.pass) markTask(TB.sc+"-pass");
+  const matOpts = allMaterials().map(x=>`<option value="${esc(x.id)}"${x.id===p.mat?" selected":""}>${esc(x.name)}</option>`).join("");
+  const fields = sc.fields.map(([k,lab,u])=>`<div class="field"><label for="in-${k}">${esc(lab)}</label><div class="inp"><input id="in-${k}" data-k="${k}" type="number" step="any" value="${p[k]}"><span class="unit">${esc(u)}</span></div></div>`).join("");
+  const rows = r.checks.map(c=>`<tr><td>${esc(c.name)}</td><td class="num mono">${esc(c.val)}</td><td class="mono" style="color:var(--muted)">${esc(c.lim)}</td><td>${c.ok===null?'<span class="chip info">INFO</span>':c.ok?'<span class="chip pass">PASS</span>':'<span class="chip fail">FAIL</span>'}</td></tr>`).join("");
+  const revRows = st.revs.map((rv,i)=>{ const rr=sc.calc(rv.p,matById(rv.p.mat)); return `<tr${i===st.cur?' style="background:var(--accent-soft)"':''}><td class="mono">${rv.label}${i===st.cur&&st.edited?"*":""}</td><td style="font-size:.82rem">${rv.why.replace(/<[^>]+>/g,"").slice(0,90)}${rv.why.length>90?"…":""}</td><td class="mono" style="font-size:.76rem">${esc(rr.key)}</td><td>${rr.pass?'<span class="chip pass">PASS</span>':'<span class="chip fail">FAIL</span>'}</td></tr>`; }).join("");
+  const firstFail = r.checks.find(c=>c.ok===false);
+  $("#testPanel").innerHTML = `
+   <div class="panel stack"><h3>${esc(sc.name)}</h3><p style="font-size:.9rem">${esc(sc.story)}</p></div>
+   <div class="verdict ${r.pass?"pass":"fail"}"><span class="big">Rev ${st.revs[st.cur].label}${st.edited?"*":""}</span><span>${r.pass?"PASS: meets every check":"FAIL: "+esc(firstFail?firstFail.name:"")}</span></div>
+   <div class="panel stack">
+     <div class="stepper"><button class="btn primary" id="tbImprove" type="button">Improve one step</button><button class="btn" id="tbReset" type="button">Reset to Rev A</button><button class="btn" id="tbSave" type="button">Save revision</button></div>
+     <div class="change" id="tbWhy">${st.revs[st.cur].why}</div>
+   </div>
+   <div class="panel"><div class="tablewrap"><table><tr><th>Check</th><th class="num">Value</th><th>Limit</th><th></th></tr>${rows}</table></div>
+     <details class="working" style="margin-top:8px"><summary>Show the working</summary><pre>${esc(r.work)}</pre></details></div>
+   ${unlocked(3) ? `<div class="panel stack sweepwrap"><h3>Design sweep: ${esc(sc.sweep.label)}</h3>
+     <p style="font-size:.86rem;color:var(--muted)">Each line is one check as a fraction of its limit. Below 1.0 passes. The shaded band is where every check passes, and the dashed line is your current design.</p>
+     <div class="stepper"><button class="btn" type="button" id="sweepBtn">Run sweep</button><span class="mono" id="sweepNote" style="font-size:.8rem"></span></div>
+     <canvas id="sweepCanvas" hidden></canvas><div class="legendrow" id="sweepLegend"></div></div>` : `<div class="panel lock"><span class="chip warn">Unlocks at Advanced</span><p style="font-size:.88rem">Design sweep: see every check across a range of ${esc(sc.sweep.label.toLowerCase())} in one chart.</p></div>`}
+   <div class="panel stack"><h3>Inputs</h3><div class="fields">${fields}<div class="field wide"><label for="in-mat">Material</label><div class="inp"><select id="in-mat">${matOpts}</select></div></div></div>
+     <p class="src">E ${fmt(m.E,1)} GPa · σy ${fmt(m.sy,0)} MPa · ρ ${fmt(m.rho,2)} g/cm³ · α ${fmt(m.alpha,1)} µm/m·°C</p></div>
+   <div class="panel"><h3 style="margin-bottom:6px">Revision history</h3><div class="tablewrap"><table><tr><th>Rev</th><th>Change</th><th>Result</th><th></th></tr>${revRows}</table></div></div>`;
+  $("#testPanel").querySelectorAll("input[data-k]").forEach(inp=>inp.addEventListener("change",e=>{
+    const v=parseFloat(e.target.value); if(!isFinite(v)||v<=0&&!["Ti","Tmin","Tmax"].includes(e.target.dataset.k)){ toast("Enter a positive number"); renderTests(); return; }
+    editParam(e.target.dataset.k, v);
+  }));
+  $("#in-mat").addEventListener("change",e=>editParam("mat",e.target.value));
+  $("#tbImprove").addEventListener("click", improveStep);
+  $("#tbReset").addEventListener("click", ()=>{ delete TB.state[TB.sc]; renderTests(); buildTest(); });
+  $("#tbSave").addEventListener("click", saveRun);
+  if(TB.sc==="rail") renderRailSlider(p);
+  if(TB.sc==="arm") renderArmSliders(p,m,r);
+  const sb=$("#sweepBtn"); if(sb) sb.addEventListener("click", ()=>{ runSweep(); markTask("sweep-used"); });
+  buildTest();
+}
+const SWEEP_COLORS=["#2f6fd6","#d9822b","#159a8c","#8a4fd0","#c2417a"];
+function runSweep(){
+  const sc=SC[TB.sc], p=curP(), m=matById(p.mat), sw=sc.sweep, cv=$("#sweepCanvas"); if(!cv) return;
+  const xs=[]; for(let x=sw.min; x<=sw.max+1e-9; x+=sw.step) xs.push(+x.toFixed(4));
+  const names=sc.calc(p,m).checks.filter(c=>typeof c.u==="number").map(c=>c.name);
+  const series=names.map(()=>[]), passX=[];
+  xs.forEach(x=>{ const r=sc.calc({...p,[sw.key]:x},m); const cs=r.checks.filter(c=>typeof c.u==="number"); cs.forEach((c,i)=>series[i].push(c.u)); if(cs.every(c=>c.u<=1+1e-9)) passX.push(x); });
+  cv.hidden=false;
+  const dpr=Math.min(2,window.devicePixelRatio||1), W=cv.clientWidth||600, H=240; cv.width=W*dpr; cv.height=H*dpr;
+  const g=cv.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+  const cs=getComputedStyle(document.documentElement), muted=cs.getPropertyValue("--muted").trim()||"#666", line=cs.getPropertyValue("--line").trim()||"#ccc", ink=cs.getPropertyValue("--ink").trim()||"#111", passC=cs.getPropertyValue("--pass").trim()||"#1d7344";
+  const L=40,R=12,T=10,B=34, x0=sw.min, x1=sw.max, Y=2;
+  const X=v=>L+(v-x0)/(x1-x0)*(W-L-R), YY=v=>T+(1-Math.min(Y,Math.max(0,v))/Y)*(H-T-B);
+  g.globalAlpha=0.14; g.fillStyle=passC; passX.forEach(x=>{ g.fillRect(X(x)-((W-L-R)/xs.length)/2, T, (W-L-R)/xs.length+0.5, H-T-B); }); g.globalAlpha=1;
+  g.font="11px 'IBM Plex Mono', monospace"; g.fillStyle=muted; g.strokeStyle=line; g.lineWidth=1;
+  [0,0.5,1,1.5,2].forEach(v=>{ g.beginPath(); g.moveTo(L,YY(v)); g.lineTo(W-R,YY(v)); g.stroke(); g.fillText(v.toFixed(1),6,YY(v)+4); });
+  g.strokeStyle=ink; g.lineWidth=1.5; g.beginPath(); g.moveTo(L,YY(1)); g.lineTo(W-R,YY(1)); g.stroke(); g.fillStyle=ink; g.fillText("limit",W-R-36,YY(1)-4);
+  g.fillStyle=muted; for(let i=0;i<=4;i++){ const v=x0+(x1-x0)*i/4; const t=fmt(v,2); g.fillText(t, Math.min(W-R-g.measureText(t).width, Math.max(L, X(v)-g.measureText(t).width/2)), H-B+16); }
+  g.fillText(sw.label, L, H-4);
+  series.forEach((sr,i)=>{ g.strokeStyle=SWEEP_COLORS[i%SWEEP_COLORS.length]; g.lineWidth=2; g.beginPath(); sr.forEach((v,k)=>{ const px=X(xs[k]), py=YY(v); k?g.lineTo(px,py):g.moveTo(px,py); }); g.stroke(); });
+  const cx=X(Math.min(x1,Math.max(x0,p[sw.key]))); g.setLineDash([5,4]); g.strokeStyle=ink; g.lineWidth=1; g.beginPath(); g.moveTo(cx,T); g.lineTo(cx,H-B); g.stroke(); g.setLineDash([]);
+  $("#sweepLegend").innerHTML=names.map((n,i)=>`<span><i style="background:${SWEEP_COLORS[i%SWEEP_COLORS.length]}"></i>${esc(n)}</span>`).join("");
+  $("#sweepNote").textContent = passX.length ? `Every check passes from ${fmt(passX[0],2)} to ${fmt(passX[passX.length-1],2)}${passX.length<xs.length && (passX[passX.length-1]-passX[0])/sw.step+1>passX.length?" (with gaps)":""}` : "No value in this range passes every check: change another input first";
+}
+function editParam(k,v){
+  const st=scState(TB.sc); const rv=st.revs[st.cur];
+  if(st.cur!==st.revs.length-1){ st.revs=st.revs.slice(0,st.cur+1); }
+  rv.p={...rv.p,[k]:v}; st.edited=true; rv.why = rv.why.includes("(edited by you)")?rv.why:rv.why+" (edited by you)";
+  renderTests();
+}
+function improveStep(){
+  const sc=SC[TB.sc], st=scState(TB.sc), p=st.revs[st.cur].p, m=matById(p.mat);
+  const res=sc.improve(p,m);
+  if(!res.q){ $("#tbWhy").innerHTML=res.why; toast("No further change needed"); return false; }
+  st.revs=st.revs.slice(0,st.cur+1);
+  const label=String.fromCharCode(65+st.revs.length);
+  st.revs.push({label, p:res.q, why:res.why}); st.cur=st.revs.length-1; st.edited=false;
+  renderTests(); return true;
+}
+async function saveRun(){
+  const sc=SC[TB.sc], st=scState(TB.sc), rv=st.revs[st.cur], m=matById(rv.p.mat), r=sc.calc(rv.p,m);
+  const rec={scenario:sc.name, rev:rv.label+(st.edited?"*":""), inputs:rv.p, material:m.name, result:r.key, verdict:r.pass?"PASS":"FAIL", created:new Date().toISOString()};
+  await addRecord("runs", rec, "runs");
+  toast(`Rev ${rec.rev} saved to Data`);
+}
+function buildTest(){
+  if(!V.ok) return;
+  disposeGroup(TB.group); V.tickers = V.tickers.filter(f=>!f.tb);
+  const p=curP(), m=matById(p.mat), r=SC[TB.sc].calc(p,m);
+  if(TB.sc==="beam") buildBeam(p,m,r); else if(TB.sc==="gear") buildGear(p,m,r); else if(TB.sc==="arm") buildArm(p,m,r); else buildRail(p,m,r);
+  applyDisplay(TB.group);
+}
+function buildBeam(p,m,r){
+  const L=p.L, b=p.b, h=p.h;
+  const wall = new THREE.Mesh(new THREE.BoxGeometry(20, 260, 220), new THREE.MeshStandardMaterial({color:0xa9a39a, roughness:.9}));
+  wall.position.set(-10, 0, 0); TB.group.add(wall);
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(6, 70, Math.max(b+30,50)), steelMat()); plate.position.set(3,0,0); TB.group.add(withEdges(plate));
+  const nx=48, g=new THREE.BoxGeometry(L, h, b, nx, 4, 2); g.translate(L/2,0,0);
+  const pos=g.attributes.position, cols=new Float32Array(pos.count*3);
+  const wTip=r.d; const scale = wTip>0 ? Math.max(1, Math.min(200, Math.round(0.06*L/wTip))) : 1;
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i), y=pos.getY(i);
+    const M=p.F*(L-x), s=Math.abs(M*y/r.I);
+    const c=rampColor(s/m.sy); cols[i*3]=c[0]; cols[i*3+1]=c[1]; cols[i*3+2]=c[2];
+    const w = p.F*x*x*(3*L-x)/(6*r.E*r.I);
+    pos.setY(i, y - w*scale);
+  }
+  g.setAttribute("color", new THREE.BufferAttribute(cols,3)); g.computeVertexNormals();
+  const beam = new THREE.Mesh(g, new THREE.MeshStandardMaterial({vertexColors:true, metalness:.1, roughness:.6, side:THREE.DoubleSide}));
+  beam.position.x=6; TB.group.add(withEdges(beam,0x22282e));
+  const tipY = -r.d*scale;
+  const blk = new THREE.Mesh(new THREE.BoxGeometry(60,40,60), new THREE.MeshStandardMaterial({color:0x4b5560, metalness:.4, roughness:.5}));
+  blk.position.set(6+L-30, tipY+h/2+20, 0); TB.group.add(withEdges(blk));
+  const kg = textSprite(`${fmt(p.F/9.81,0)} kg · ${p.F} N`,{scale:0.18}); kg.position.set(6+L-30, tipY+h/2+62, 0); TB.group.add(kg);
+  const arrow = new THREE.ArrowHelper(new THREE.Vector3(0,-1,0), new THREE.Vector3(6+L, tipY+110, 0), 85, 0xb0261c, 18, 10); TB.group.add(arrow);
+  setLegend(true, `${fmt(m.sy,0)} MPa`, `${fmt(m.sy*.7,0)}`, `${fmt(m.sy*.4,0)}`, "0");
+  setHud(`von Mises ≈ bending σ<br>σmax ${fmt(r.sig,0)} MPa · δ ${fmt(r.d,2)} mm<br>Deflection shown ×${scale}`);
+}
+function gearGeom(z, mod, b, bore){
+  const rp=mod*z/2, ra=rp+mod, rf=rp-1.25*mod, pa=2*Math.PI/z;
+  const s=new THREE.Shape();
+  for(let i=0;i<z;i++){
+    const c=i*pa, pts=[[rf,c-0.30*pa],[ra,c-0.13*pa],[ra,c+0.13*pa],[rf,c+0.30*pa],[rf,c+0.70*pa]];
+    pts.forEach(([r,t],j)=>{ const x=r*Math.cos(t), y=r*Math.sin(t); if(i===0&&j===0) s.moveTo(x,y); else s.lineTo(x,y); });
+  }
+  const h=new THREE.Path(); h.absarc(0,0,bore,0,Math.PI*2,true); s.holes.push(h);
+  const g=new THREE.ExtrudeGeometry(s,{depth:b, bevelEnabled:false, curveSegments:16}); g.translate(0,0,-b/2); return g;
+}
+function buildGear(p,m,r){
+  const z1=Math.max(6,Math.round(p.z1)), z2=Math.max(6,Math.round(p.z2));
+  const u=Math.min(1.2, r.util); const c=rampColor(u*0.9);
+  const pin=new THREE.Mesh(gearGeom(z1,p.m,p.b,Math.max(3,p.m*z1*0.15)), new THREE.MeshStandardMaterial({color:new THREE.Color(c[0],c[1],c[2]), metalness:.35, roughness:.45}));
+  const gear=new THREE.Mesh(gearGeom(z2,p.m,p.b,Math.max(4,p.m*z2*0.1)), steelMat(0xb7c0c9));
+  withEdges(pin); withEdges(gear);
+  const g1=new THREE.Group(), g2=new THREE.Group(); g1.add(pin); g2.add(gear); g2.position.x=r.a;
+  TB.group.add(g1); TB.group.add(g2);
+  const shaftL=p.b*3+40;
+  [[0,p.m*z1*0.15],[r.a,p.m*z2*0.1]].forEach(([x,rad])=>{ const s=new THREE.Mesh(new THREE.CylinderGeometry(rad,rad,shaftL,24), steelMat(0x8e979f)); s.rotation.x=Math.PI/2; s.position.set(x,0,-shaftL/2+p.b); TB.group.add(s); });
+  const motorR=Math.max(40,p.m*z1*0.9);
+  const motor=new THREE.Mesh(new THREE.CylinderGeometry(motorR,motorR,motorR*2.2,32), new THREE.MeshStandardMaterial({color:0x35618f, metalness:.3, roughness:.55}));
+  motor.rotation.x=Math.PI/2; motor.position.set(0,0,-shaftL+p.b-motorR*1.1); TB.group.add(withEdges(motor));
+  const ml=textSprite(`${p.P} kW · ${p.n1} rpm`,{scale:0.2}); ml.position.set(0,motorR+30,-shaftL+p.b-motorR); TB.group.add(ml);
+  const ol=textSprite(`${fmt(r.n2,0)} rpm out`,{scale:0.2}); ol.position.set(r.a, p.m*z2/2+p.m+30, 0); TB.group.add(ol);
+  const phase = Math.PI - Math.PI/z2;
+  let th=0; const w1 = 1.2*(p.n1/1450);
+  const tick = (dt)=>{ if(!reduced || DEMO.on) th += w1*dt*(DEMO.on||!reduced?1:0); g1.rotation.z = th; g2.rotation.z = phase - th*z1/z2; };
+  tick.tb=true; V.tickers.push(tick); tick(0);
+  setLegend(true, "FoS < req", "", "", "safe");
+  setHud(`${z1}T → ${z2}T · m ${p.m} · a ${fmt(r.a,1)} mm<br>Pinion coloured by tooth stress use<br>FoS ${fmt(r.fos,2)} (need ${p.fos})`);
+}
+function buildRail(p,m,r){
+  const prof=new THREE.Shape(); [[-75,0],[75,0],[75,12],[8.25,30],[8.25,135],[36,140],[36,172],[-36,172],[-36,140],[-8.25,135],[-8.25,30],[-75,12]].forEach(([x,y],i)=> i?prof.lineTo(x,y):prof.moveTo(x,y));
+  const RL=1100, ex=10;
+  const railGeo=()=>{ const g=new THREE.ExtrudeGeometry(prof,{depth:RL,bevelEnabled:false}); g.rotateY(Math.PI/2); return g; };
+  const matL=new THREE.MeshStandardMaterial({color:0x9aa3ab, metalness:.45, roughness:.45}), matR=matL.clone();
+  const left=withEdges(new THREE.Mesh(railGeo(),matL)), right=withEdges(new THREE.Mesh(railGeo(),matR));
+  TB.group.add(left); TB.group.add(right);
+  for(let i=-3;i<=3;i++){ const s=new THREE.Mesh(new THREE.BoxGeometry(250,200,700), new THREE.MeshStandardMaterial({color:0x8d8a83, roughness:.95})); s.position.set(i*600,-100,0); s.userData.noWire=true; TB.group.add(s); }
+  const fp=new THREE.Mesh(new THREE.BoxGeometry(600,90,14), steelMat(0x6f7881)); fp.position.set(0,82,-16); TB.group.add(withEdges(fp));
+  const tl=textSprite("",{scale:0.5}); TB.group.add(tl);
+  const cold=new THREE.Color(0x3d7ad6), neutral=new THREE.Color(0x9aa3ab), hot=new THREE.Color(0xd9532b);
+  const update=(T)=>{
+    const gap = p.g - r.a*r.Lmm*(T-p.Ti); const vis=Math.max(0,gap)*ex;
+    left.position.x = -vis/2 - RL; right.position.x = vis/2;
+    const col = T>=p.Ti ? neutral.clone().lerp(hot, Math.min(1,(T-p.Ti)/Math.max(1,p.Tmax-p.Ti))) : neutral.clone().lerp(cold, Math.min(1,(p.Ti-T)/Math.max(1,p.Ti-p.Tmin)));
+    if(gap<0) col.copy(new THREE.Color(0xb0261c));
+    matL.color.copy(col); matR.color.copy(col);
+    const sig = gap<0 ? m.E*1000*(-gap)/r.Lmm : 0;
+    TB.group.remove(TB.group.userData.lab); const lab=textSprite(gap<0?`CLOSED · ${fmt(sig,0)} MPa compression`:`gap ${fmt(gap,1)} mm`,{scale:0.5, color: gap<0?"#b0261c":"#111"}); lab.position.set(0,320,0); TB.group.add(lab); TB.group.userData.lab=lab;
+    setHud(`Rail temp ${fmt(T,0)} °C · 60E1 profile<br>Joint gap ${fmt(gap,2)} mm (shown ×${ex})${gap<0?`<br>Rails jammed: σ = ${fmt(sig,0)} MPa`:""}`);
+  };
+  TB.group.remove(tl);
+  TB.railUpdate=update;
+  const T0 = TB.railT ?? p.Tmax; update(Math.max(p.Tmin,Math.min(p.Tmax,T0)));
+  setLegend(false);
+}
+function renderRailSlider(p){
+  let box=$("#railSliderBox");
+  if(!box){ box=el("div",{class:"panel stack",id:"railSliderBox"}); $("#testPanel").insertBefore(box, $("#testPanel").children[2]); }
+  const T = TB.railT ?? p.Tmax;
+  box.innerHTML=`<div class="field"><label for="railT">Rail temperature now: <b class="mono" id="railTv">${fmt(T,0)} °C</b></label><input id="railT" type="range" min="${p.Tmin}" max="${p.Tmax}" step="1" value="${T}" style="width:100%"></div>`;
+  $("#railT").addEventListener("input",e=>{ TB.railT=+e.target.value; $("#railTv").textContent=`${e.target.value} °C`; TB.railUpdate && TB.railUpdate(TB.railT); });
+}
+function armPoseTorque(p,r,t1d,t2d){
+  const g=9.81e-3, KGCM=98.0665, a1=t1d*Math.PI/180, a12=(t1d+t2d)*Math.PI/180;
+  const x1=p.L1*Math.cos(a1), c1=p.L1/2*Math.cos(a1), c2=x1+p.L2/2*Math.cos(a12), xt=x1+p.L2*Math.cos(a12);
+  const Ts=g*(r.m1*c1 + p.me*x1 + r.m2*c2 + r.tip*xt), Te=g*(r.m2*p.L2/2*Math.cos(a12) + r.tip*p.L2*Math.cos(a12));
+  return {Ts:Math.abs(Ts)/KGCM, Te:Math.abs(Te)/KGCM, x:xt, y:p.L1*Math.sin(a1)+p.L2*Math.sin(a12)};
+}
+function buildArm(p,m,r){
+  const H0=70, eff=p.rs>1?0.9:1;
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(55,60,20,40), steelMat(0x3a4048)); base.position.y=10; TB.group.add(withEdges(base));
+  const turret=new THREE.Mesh(new THREE.CylinderGeometry(28,28,H0-20,32), steelMat(0xd8d2c4)); turret.position.y=20+(H0-20)/2; TB.group.add(withEdges(turret));
+  const inner=Math.abs(p.L1-p.L2), outer=p.L1+p.L2;
+  const ring=new THREE.Mesh(new THREE.RingGeometry(Math.max(1,inner), outer, 96, 1, -Math.PI/6, Math.PI*7/6), new THREE.MeshBasicMaterial({color:0x2f6fd6, transparent:true, opacity:0.08, side:THREE.DoubleSide, depthWrite:false}));
+  ring.userData.noWire=true; ring.position.set(0,H0,-p.w); TB.group.add(ring);
+  const arc=[]; for(let i=0;i<=64;i++){ const t=-Math.PI/6+Math.PI*7/6*i/64; arc.push(new THREE.Vector3(p.reach*Math.cos(t), H0+p.reach*Math.sin(t), -p.w)); }
+  TB.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(arc), new THREE.LineDashedMaterial({color:0xb0261c, dashSize:8, gapSize:6})).computeLineDistances());
+  const rl=textSprite(`required reach ${p.reach} mm`,{scale:0.16, color:"#b0261c"}); rl.position.set(p.reach*0.72, H0+p.reach*0.78, -p.w); TB.group.add(rl);
+  const sh=new THREE.Group(); sh.position.set(0,H0,0); TB.group.add(sh);
+  const cS=rampColor(Math.min(1.2,r.uS)*0.9), cE=rampColor(Math.min(1.2,r.uE)*0.9);
+  const servoM=new THREE.MeshStandardMaterial({color:0x22272c, metalness:.2, roughness:.6});
+  const sS=new THREE.Mesh(new THREE.BoxGeometry(40,40,p.w+16), servoM); sh.add(withEdges(sS,0x555555));
+  if(p.rs>1){ const pul=new THREE.Mesh(new THREE.CylinderGeometry(14*p.rs,14*p.rs,8,40), steelMat(0x8e979f)); pul.rotation.x=Math.PI/2; pul.position.z=(p.w+16)/2+6; sh.add(withEdges(pul)); const lb=textSprite(`${p.rs}:1 reduction`,{scale:0.14}); lb.position.set(0,-14*p.rs-14,(p.w+16)/2+6); sh.add(lb); }
+  const l1=new THREE.Mesh(new THREE.BoxGeometry(p.L1,p.hgt,p.w), new THREE.MeshStandardMaterial({color:new THREE.Color(...cS), roughness:.7})); l1.position.x=p.L1/2; sh.add(withEdges(l1));
+  const el=new THREE.Group(); el.position.x=p.L1; sh.add(el);
+  const sE=new THREE.Mesh(new THREE.BoxGeometry(34,34,p.w+14), servoM); el.add(withEdges(sE,0x555555));
+  const l2=new THREE.Mesh(new THREE.BoxGeometry(p.L2,p.hgt*0.85,p.w*0.9), new THREE.MeshStandardMaterial({color:new THREE.Color(...cE), roughness:.7})); l2.position.x=p.L2/2; el.add(withEdges(l2));
+  const palm=new THREE.Mesh(new THREE.BoxGeometry(16,34,p.w+10), servoM); palm.position.x=p.L2+8; el.add(withEdges(palm,0x555555));
+  [-1,1].forEach(sgn=>{ const f=new THREE.Mesh(new THREE.BoxGeometry(34,6,8), steelMat(0xd8d2c4)); f.position.set(p.L2+32, sgn*12, 0); el.add(withEdges(f)); });
+  const cube=Math.cbrt(Math.max(p.mp,1)/1.2)*1.6; const pay=new THREE.Mesh(new THREE.BoxGeometry(cube,cube,cube), new THREE.MeshStandardMaterial({color:0xd9822b, roughness:.6})); pay.position.set(p.L2+34,0,0); el.add(withEdges(pay));
+  const pl=textSprite(`${p.mp} g`,{scale:0.14}); pl.position.set(p.L2+34, cube/2+16, 0); el.add(pl);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(900,500), new THREE.MeshStandardMaterial({color:0xb9b2a6, roughness:1, side:THREE.DoubleSide})); floor.rotation.x=-Math.PI/2; floor.position.set(150,0,0); floor.userData.noWire=true; TB.group.add(floor);
+  TB.armRefs={sh, el};
+  TB.armPose = TB.armPose || {t1:0, t2:0};
+  applyArmPose(p,r);
+  setLegend(true,"100%+","","","0%");
+}
+function applyArmPose(p,r){
+  const ps=TB.armPose||{t1:0,t2:0};
+  if(TB.armRefs){ TB.armRefs.sh.rotation.z=ps.t1*Math.PI/180; TB.armRefs.el.rotation.z=ps.t2*Math.PI/180; }
+  const pt=armPoseTorque(p,r,ps.t1,ps.t2);
+  const allowS=p.stall*p.rs*(p.rs>1?0.9:1)/p.fos, allowE=p.stall*p.re*(p.re>1?0.9:1)/p.fos;
+  setHud(`Pose: shoulder ${ps.t1}°, elbow ${ps.t2}°<br>Static shoulder ${fmt(pt.Ts,2)} kg·cm (${fmt(pt.Ts/allowS*100,0)}% of allowed)<br>Static elbow ${fmt(pt.Te,2)} kg·cm (${fmt(pt.Te/allowE*100,0)}%)<br>Links coloured by worst-case joint use`);
+  const o=$("#armPoseOut"); if(o) o.textContent=`Tip at x ${fmt(pt.x,0)} mm, y ${fmt(pt.y,0)} mm · static shoulder ${fmt(pt.Ts/allowS*100,0)}% · elbow ${fmt(pt.Te/allowE*100,0)}% of allowed`;
+}
+function renderArmSliders(p,m,r){
+  const box=el("div",{class:"panel stack",id:"armSliderBox"});
+  const ps=TB.armPose||(TB.armPose={t1:0,t2:0});
+  box.innerHTML=`<h3>Move the joints</h3>
+   <div class="field"><label for="armT1">Shoulder angle: <b class="mono" id="armT1v">${ps.t1}°</b> (0° = horizontal)</label><input id="armT1" type="range" min="-10" max="170" step="1" value="${ps.t1}" style="width:100%"></div>
+   <div class="field"><label for="armT2">Elbow angle: <b class="mono" id="armT2v">${ps.t2}°</b> (relative to upper arm)</label><input id="armT2" type="range" min="-150" max="150" step="1" value="${ps.t2}" style="width:100%"></div>
+   <p class="mono" id="armPoseOut" style="font-size:.8rem"></p>
+   <p class="src">The checks use the worst case: arm straight out and horizontal. Raise the arm and watch the holding torque drop with cos θ.</p>`;
+  $("#testPanel").insertBefore(box, $("#testPanel").children[2]);
+  const upd=()=>{ ps.t1=+$("#armT1").value; ps.t2=+$("#armT2").value; $("#armT1v").textContent=ps.t1+"°"; $("#armT2v").textContent=ps.t2+"°"; applyArmPose(p,r); };
+  $("#armT1").addEventListener("input",upd); $("#armT2").addEventListener("input",upd);
+  applyArmPose(p,r);
+}
+function selectScenario(id){
+  TB.sc=id; TB.railT=null;
+  document.querySelectorAll("#scenarioSeg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.sc===id?"true":"false"));
+  renderTests();
+  if(V.ok) frameObject(TB.group, TB.sc==="rail"?"iso":"iso");
+}
+
+/* ============================== TRENDS / CAREER / DATA RENDER ============================== */
+function renderTrends(){
+  const grid=$("#trendGrid"); grid.innerHTML="";
+  BUILTIN_TRENDS.forEach(t=>{
+    const c=el("article",{class:"panel trend"});
+    c.innerHTML=`<span class="meta">${esc(t.tag)}</span><h3>${esc(t.title)}</h3><p>${esc(t.body)}</p><p class="why"><b>Why it matters for you:</b> ${esc(t.why)}</p>
+    <div class="foot"><a class="btn small" href="#${t.link}">${esc(t.linkText)}</a><a href="${t.src}" target="_blank" rel="noopener">Source: ${esc(t.srcName)}</a></div>`;
+    grid.appendChild(c);
+  });
+  S.userTrends.forEach(t=>{
+    const c=el("article",{class:"panel trend user"}); const u=safeUrl(t.source);
+    c.innerHTML=`<span class="meta">Added by you</span><h3>${esc(t.title)}</h3><p>${esc(t.note)}</p><div class="foot">${u?`<a href="${esc(u)}" target="_blank" rel="noopener">Source</a>`:"<span></span>"}<button class="btn small" data-del-trend="${esc(t.id)}" type="button">Remove</button></div>`;
+    grid.appendChild(c);
+  });
+  grid.querySelectorAll("[data-del-trend]").forEach(b=>b.addEventListener("click",()=>delRecord("trends",b.dataset.delTrend,"userTrends")));
+}
+const STATUS_NEXT={todo:"booked", booked:"done", done:"todo"}; const STATUS_LABEL={todo:"To do", booked:"Booked", done:"Done"};
+function renderCareer(){
+  const list=$("#certList"); list.innerHTML="";
+  const certs = BUILTIN_CERTS.concat(S.userCerts.map(c=>({...c, tier:"mine", user:true})));
+  const tiers = {...TIERS, mine:["Added by you","Your list"]};
+  Object.keys(tiers).forEach(tk=>{
+    const items=certs.filter(c=>c.tier===tk); if(!items.length) return;
+    list.appendChild(el("div",{class:"tierhead"},`<h3>${esc(tiers[tk][0])}</h3><span class="chip ${tk==="role"?"fail":tk==="step"?"warn":"info"}">${esc(tiers[tk][1])}</span>`));
+    items.forEach(c=>{
+      const s=S.careerStatus[c.id]||"todo";
+      const row=el("div",{class:"cert"});
+      row.innerHTML=`<div><h3>${esc(c.name)}</h3><div class="facts">${esc(c.cost||"")}${c.time?" · "+esc(c.time):""}</div></div>
+       <div style="display:flex;gap:6px;align-items:start"><button class="statusbtn" type="button" data-s="${s}" data-id="${esc(c.id)}" aria-label="Status for ${esc(c.name)}: ${STATUS_LABEL[s]}">${STATUS_LABEL[s]}</button>${c.user?`<button class="btn small" type="button" data-del-cert="${esc(c.id)}">Remove</button>`:""}</div>
+       <p>${esc(c.why||"")}</p>`;
+      list.appendChild(row);
+    });
+  });
+  list.querySelectorAll(".statusbtn").forEach(b=>b.addEventListener("click",()=>{ const id=b.dataset.id; S.careerStatus[id]=STATUS_NEXT[S.careerStatus[id]||"todo"]; saveCareer(); renderCareer(); }));
+  list.querySelectorAll("[data-del-cert]").forEach(b=>b.addEventListener("click",()=>delRecord("certs",b.dataset.delCert,"userCerts")));
+  const hl=$("#hireList"); hl.innerHTML="";
+  HIRING.forEach(h=>{
+    const row=el("label",{class:"check"}); const chk=!!S.hireStatus[h.id];
+    row.innerHTML=`<input type="checkbox" ${chk?"checked":""} data-h="${h.id}"><span>${esc(h.text)}</span>`;
+    hl.appendChild(row);
+  });
+  hl.querySelectorAll("input").forEach(i=>i.addEventListener("change",()=>{ S.hireStatus[i.dataset.h]=i.checked; saveCareer(); renderCareerProgress(); }));
+  renderCareerProgress();
+}
+function renderCareerProgress(){
+  const certs = BUILTIN_CERTS.concat(S.userCerts);
+  const total = certs.length + HIRING.length;
+  const done = certs.filter(c=>S.careerStatus[c.id]==="done").length + HIRING.filter(h=>S.hireStatus[h.id]).length;
+  const booked = certs.filter(c=>S.careerStatus[c.id]==="booked").length;
+  const pct = total? Math.round(done/total*100):0;
+  $("#careerBar").style.width=pct+"%";
+  $("#careerPct").textContent=`${done} of ${total} done · ${booked} booked · ${pct}%`;
+}
+function renderData(){
+  const mt=$("#matTable");
+  mt.innerHTML=`<tr><th>Material</th><th class="num">E GPa</th><th class="num">σy MPa</th><th class="num">ρ</th><th class="num">α</th><th></th></tr>`+
+   allMaterials().map(m=>`<tr><td>${esc(m.name)}<div class="src">${esc(m.note||"")}${m.user?" · yours":""}</div></td><td class="num mono">${fmt(m.E,1)}</td><td class="num mono">${fmt(m.sy,0)}</td><td class="num mono">${fmt(m.rho,2)}</td><td class="num mono">${fmt(m.alpha,1)}</td><td>${m.user?`<button class="btn small" type="button" data-del-mat="${esc(m.id)}">Remove</button>`:""}</td></tr>`).join("");
+  mt.querySelectorAll("[data-del-mat]").forEach(b=>b.addEventListener("click",()=>delRecord("materials",b.dataset.delMat,"userMaterials")));
+  const rt=$("#runTable");
+  const runs=[...S.runs].sort((a,b)=>String(b.created).localeCompare(String(a.created)));
+  rt.innerHTML = runs.length ? `<tr><th>When</th><th>Case</th><th>Rev</th><th>Result</th><th></th></tr>`+runs.map(r=>`<tr><td class="mono" style="font-size:.76rem">${esc(String(r.created||"").slice(0,16).replace("T"," "))}</td><td>${esc(r.scenario)}</td><td class="mono">${esc(r.rev)}</td><td style="font-size:.8rem">${esc(r.result)} <span class="chip ${r.verdict==="PASS"?"pass":"fail"}">${esc(r.verdict)}</span></td><td><button class="btn small" type="button" data-del-run="${esc(r.id)}">Remove</button></td></tr>`).join("")
+   : `<tr><td style="color:var(--muted)">No saved revisions yet. On the Test bench, press "Save revision" to log one here.</td></tr>`;
+  rt.querySelectorAll("[data-del-run]").forEach(b=>b.addEventListener("click",()=>delRecord("runs",b.dataset.delRun,"runs")));
+}
+function renderAllData(){ renderTrends(); renderCareer(); renderData(); renderLevelChip(); if(S.tab==="path") renderPathLadder(); if(S.tab==="cad") renderCadPanel(); if(S.tab==="tests") renderTests(); }
+
+/* ============================== PATH + QUIZ RENDER ============================== */
+function renderLevelChip(){
+  const lv=level(); $("#levelChip").innerHTML=`Level <b>${mastered()?"Advanced ✓":LEVELS[lv-1]}</b>`;
+  document.querySelectorAll("#scenarioSeg button").forEach(b=>{ const n=SC_LEVEL[b.dataset.sc]; const lab={beam:"Shelf bracket",gear:"Gear drive",rail:"Rail in summer",arm:"Robot arm"}[b.dataset.sc]; b.innerHTML = esc(lab) + (unlocked(n)?"":`<span class="lk">L${n}</span>`); });
+  const sb=$("#sectionBtn"); if(sb){ sb.disabled=!unlocked(2); sb.title=unlocked(2)?"Cut the part at the flange hole":"Unlocks at Intermediate"; }
+  $("#freeMode").checked=!!P.free;
+}
+function renderPathLadder(){
+  const lv=level(), box=$("#pathLadder"); box.innerHTML="";
+  [1,2,3].forEach(n=>{
+    const tasks=PATH_TASKS[n], done=tasks.filter(t=>taskDone(t.id)).length, complete=done===tasks.length && (n<3 || mastered());
+    const state = n<lv || (n===3&&mastered()) ? "done" : (n===lv ? "current" : "locked");
+    const c=el("div",{class:`panel lvl ${state}`});
+    c.innerHTML=`<span class="tag">Level ${n} · ${state==="done"?"Complete":state==="current"?"You are here":"Locked"}</span><h3>${LEVELS[n-1]}</h3>
+      <div class="stack" style="gap:6px">${tasks.map(t=>{ const ok=taskDone(t.id); return `<div class="task ${ok?"ok":""}"><span class="box">${ok?"✓":""}</span><span>${esc(t.text)}${t.id==="runs3"?` (${Math.min(3,S.runs.length)}/3)`:""}${/^cp/.test(t.id)&&P.quiz[t.id]!=null?` · best ${P.quiz[t.id]}/5`:""}</span></div>`; }).join("")}</div>
+      <p class="src">${done}/${tasks.length} tasks${n<3?` · finishing these unlocks ${LEVELS[n]}`:" · finishing these completes the path"}</p>
+      <div><b style="font-size:.8rem">This level opens:</b><ul class="unlocks">${UNLOCKS[n].map(u=>`<li>${esc(u)}</li>`).join("")}</ul></div>`;
+    box.appendChild(c);
+  });
+}
+function renderQuiz(host, key, title, sub){
+  const qs=QUIZ[key];
+  host.innerHTML=`<h3>${esc(title)}</h3><p style="font-size:.86rem;color:var(--muted);margin-bottom:8px">${esc(sub)}</p>`+
+    qs.map((q,i)=>`<fieldset class="q"><legend>${i+1}. ${esc(q.q)}</legend>${q.o.map((o,j)=>`<label class="opt"><input type="radio" name="${key}-${i}" value="${j}"><span>${esc(o)}</span></label>`).join("")}<p class="expl" hidden></p></fieldset>`).join("")+
+    `<div class="stepper"><button class="btn primary" type="button" data-mark>Mark my answers</button><span class="mono" data-score style="font-size:.82rem">${P.quiz[key]!=null?`Best so far: ${P.quiz[key]}/${qs.length}`:""}</span></div>`;
+  host.querySelector("[data-mark]").addEventListener("click",()=>{
+    let sc=0; const fss=host.querySelectorAll("fieldset");
+    qs.forEach((q,i)=>{ const sel=host.querySelector(`input[name="${key}-${i}"]:checked`); const ok=!!sel && +sel.value===q.a; if(ok) sc++;
+      fss[i].classList.toggle("right",ok); fss[i].classList.toggle("wrong",!ok);
+      const ex=fss[i].querySelector(".expl"); ex.hidden=false; ex.innerHTML=`<b>${ok?"Correct.":(sel?"Not quite.":"No answer.")+" Answer: "+esc(q.o[q.a])+"."}</b> ${esc(q.e)}`; });
+    const before=level();
+    if(!DEMO.on){ P.quiz[key]=Math.max(P.quiz[key]||0,sc); saveProgress(); }
+    host.querySelector("[data-score]").textContent=`Score ${sc}/${qs.length}${sc>=4?" · passed":" · 4 needed to pass"} · best ${P.quiz[key]||sc}`;
+    afterProgress(before);
+  });
+}
+function renderPathQuizzes(){
+  const box=$("#pathQuizzes"); box.innerHTML="";
+  const lv=level();
+  [["cp1",1,"Checkpoint 1: Beginner","Statics, CAD states, thermal expansion. 4 out of 5 to pass."],["cp2",2,"Checkpoint 2: Intermediate","Gears, fits and thermal stress."],["cp3",3,"Checkpoint 3: Advanced","Robot arm torque, reductions, backlash and design sweeps."]].forEach(([k,n,t,sub])=>{
+    const host=el("div",{class:"panel"});
+    if(lv>=n || P.free) renderQuiz(host,k,t,sub); else host.innerHTML=`<span class="chip warn">Unlocks at ${LEVELS[n-1]}</span> <b>${esc(t)}</b>`;
+    box.appendChild(host);
+  });
+}
+function renderInterview(){
+  const box=$("#interviewBox"); if(!box) return;
+  if(!unlocked(2)){ box.innerHTML=`<div class="panel lock"><span class="chip warn">Unlocks at Intermediate</span><h3>Interview practice quiz</h3><p style="font-size:.88rem">Six technical assessment questions: thermoforming defects, measuring and lock-out.</p></div>`; return; }
+  const host=el("div",{class:"panel"}); box.innerHTML=""; box.appendChild(host);
+  renderQuiz(host,"interview","Interview practice: technical assessment","Thermoforming defects, measuring instruments and safe isolation.");
+}
+
+/* ============================== STORAGE ============================== */
+function setStore(kind){
+  S.store=kind;
+  const dot=$("#storeDot"), t=$("#storeText");
+  if(kind==="cloud"){ dot.className="dot ok"; t.textContent="Saved to this artifact's database"; $("#tbData").textContent="Saved online"; }
+  else { dot.className="dot bad"; t.textContent="Not saved between visits here: export a backup before closing"; $("#tbData").textContent="This visit only"; }
+}
+const COL_KEY={materials:"userMaterials", trends:"userTrends", runs:"runs", certs:"userCerts"};
+function localId(){ return "l"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+async function addRecord(col, rec, key){
+  key = key || COL_KEY[col];
+  if(S.db){
+    try{ await S.db.collection(col).add(rec); return true; }
+    catch(e){ if(e&&e.code==="quota_exceeded") toast("Database is full: remove old records first"); else toast("Could not save: "+(e&&e.message||"error")); return false; }
+  }
+  S[key]=S[key].concat([{...rec, id:localId()}]); renderAllData(); return true;
+}
+async function delRecord(col, id, key){
+  if(S.db && !String(id).startsWith("l")){ try{ await S.db.collection(col).doc(id).delete(); }catch(e){ toast("Could not remove: "+(e&&e.message||"error")); } }
+  else { S[key]=S[key].filter(x=>x.id!==id); renderAllData(); }
+}
+let careerChain=Promise.resolve(), careerTimer=null;
+function saveCareer(){
+  if(!S.db) return;
+  clearTimeout(careerTimer);
+  careerTimer=setTimeout(()=>{ const body={map:{...S.careerStatus}, hire:{...S.hireStatus}, updated:new Date().toISOString()}; careerChain=careerChain.then(()=>S.db.doc("career/status").set(body)).catch(e=>toast("Could not save progress")); }, 500);
+}
+let progChain=Promise.resolve(), progTimer=null;
+function saveProgress(){
+  if(!S.db) return;
+  clearTimeout(progTimer);
+  progTimer=setTimeout(()=>{ const body={done:{...P.done}, quiz:{...P.quiz}, free:!!P.free, updated:new Date().toISOString()}; progChain=progChain.then(()=>S.db.doc("progress/state").set(body)).catch(()=>toast("Could not save progress")); }, 500);
+}
+async function initStore(){
+  let db=null;
+  try{ if(window.claude && typeof window.claude.use==="function"){ db = await window.claude.use("db"); } }catch(e){ db=null; }
+  if(!db){ setStore("none"); }
+  else {
+    S.db=db; setStore("cloud");
+    const sub=(col,key)=>db.collection(col).onSnapshot(snap=>{ S[key]=snap.docs.map(d=>({id:d.id, ...d.data()})); renderAllData(); }, err=>{ if(err&&err.code==="revoked"){ S.db=null; setStore("none"); } });
+    sub("materials","userMaterials"); sub("trends","userTrends"); sub("runs","runs"); sub("certs","userCerts");
+    db.doc("progress/state").onSnapshot(d=>{ if(!d.exists) return; const x=d.data()||{}; const before=level(); P.done={...(x.done||{})}; P.quiz={...(x.quiz||{})}; P.free=!!x.free; afterProgress(before); if(S.tab==="tests") renderTests(); }, ()=>{});
+    db.doc("career/status").onSnapshot(d=>{ if(d.exists){ const x=d.data()||{}; S.careerStatus={...(x.map||{})}; S.hireStatus={...(x.hire||{})}; } renderCareer(); }, ()=>{});
+  }
+  try{ if(window.claude && typeof window.claude.use==="function"){ S.downloads = await window.claude.use("downloads"); } }catch(e){ S.downloads=null; }
+  $("#dlJson").hidden = !S.downloads; $("#dlCsv").hidden = !S.downloads;
+}
+function exportJson(){
+  const strip = arr => arr.map(({id,user,...rest})=>rest);
+  return JSON.stringify({version:1, exported:new Date().toISOString(), materials:strip(S.userMaterials), trends:strip(S.userTrends), runs:strip(S.runs), certs:strip(S.userCerts), careerStatus:S.careerStatus, hireStatus:S.hireStatus, progress:{done:P.done, quiz:P.quiz, free:P.free}}, null, 2);
+}
+function exportCsv(){
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const rows=[["created","case","revision","material","result","verdict"]].concat([...S.runs].sort((a,b)=>String(a.created).localeCompare(String(b.created))).map(r=>[r.created,r.scenario,r.rev,r.material,r.result,r.verdict]));
+  return rows.map(r=>r.map(q).join(",")).join("\r\n");
+}
+function num(v){ const n=parseFloat(v); return isFinite(n)?n:NaN; }
+async function importJson(text){
+  let d; try{ d=JSON.parse(text); }catch(e){ toast("That is not valid JSON. Check you pasted the whole backup."); return; }
+  if(!d || typeof d!=="object"){ toast("Backup format not recognised"); return; }
+  let n=0;
+  for(const m of (Array.isArray(d.materials)?d.materials:[])){ const rec={name:String(m.name||"").slice(0,80), E:num(m.E), sy:num(m.sy), rho:num(m.rho), alpha:num(m.alpha), note:String(m.note||"").slice(0,120)}; if(rec.name && rec.E>0 && rec.sy>0 && rec.rho>0 && rec.alpha>=0){ await addRecord("materials",rec); n++; } }
+  for(const t of (Array.isArray(d.trends)?d.trends:[])){ if(t&&t.title){ await addRecord("trends",{title:String(t.title).slice(0,120), note:String(t.note||"").slice(0,600), source:safeUrl(t.source||"")}); n++; } }
+  for(const c of (Array.isArray(d.certs)?d.certs:[])){ if(c&&c.name){ await addRecord("certs",{name:String(c.name).slice(0,120), cost:String(c.cost||"").slice(0,60), time:String(c.time||"").slice(0,60), why:String(c.why||"").slice(0,600)}); n++; } }
+  for(const r of (Array.isArray(d.runs)?d.runs:[])){ if(r&&r.scenario){ await addRecord("runs",{scenario:String(r.scenario), rev:String(r.rev||""), inputs:r.inputs||{}, material:String(r.material||""), result:String(r.result||""), verdict:r.verdict==="PASS"?"PASS":"FAIL", created:String(r.created||new Date().toISOString())}); n++; } }
+  if(d.careerStatus && typeof d.careerStatus==="object"){ for(const k in d.careerStatus){ if(["todo","booked","done"].includes(d.careerStatus[k])) S.careerStatus[k]=d.careerStatus[k]; } }
+  if(d.hireStatus && typeof d.hireStatus==="object"){ for(const k in d.hireStatus){ S.hireStatus[k]=!!d.hireStatus[k]; } }
+  if(d.progress && typeof d.progress==="object"){ const before=level(); for(const k in (d.progress.done||{})) if(d.progress.done[k]) P.done[k]=true; for(const k in (d.progress.quiz||{})){ const v=num(d.progress.quiz[k]); if(v>=0) P.quiz[k]=Math.max(P.quiz[k]||0,Math.min(6,v)); } saveProgress(); afterProgress(before); }
+  saveCareer(); renderAllData();
+  toast(`Imported ${n} records`);
+}
+
+/* ============================== ROUTING ============================== */
+const TABS=["trends","path","cad","tests","career","data"];
+function go(tab){
+  if(!TABS.includes(tab)) tab="trends";
+  S.tab=tab;
+  document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("active", s.id==="view-"+tab));
+  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current", a.dataset.tab===tab?"page":"false"));
+  if(tab==="path"){ renderPathLadder(); renderPathQuizzes(); }
+  if(tab==="cad"){ renderFits(); placeViewport("slot-cad"); $("#planesBtn").hidden=false; $("#sectionBtn").hidden=false; $("#displaySeg").hidden=false; if(V.ok){ V.scene=CAD.scene; setLegend(false); } renderCadPanel(); if(V.ok) frameObject(CAD.root, CAD.view, false); }
+  else if(tab==="tests"){ placeViewport("slot-tests"); $("#planesBtn").hidden=true; $("#sectionBtn").hidden=true; if(V.ok){ V.scene=TB.scene; } renderTests(); if(V.ok) frameObject(TB.group,"iso",false); }
+  else if(tab==="career"){ renderCareer(); renderInterview(); }
+  else if(tab==="data") renderData();
+  if(!V.ok) setHud("");
+  if(location.hash!=="#"+tab){ try{ history.replaceState(null,"","#"+tab); }catch(e){ location.hash=tab; } }
+}
+
+/* ============================== DEMO ============================== */
+const DEMO={on:false, token:0};
+const sleep=(ms,tok)=>new Promise((res,rej)=>setTimeout(()=>{ if(tok!==DEMO.token) rej("stop"); else res(); }, ms));
+function cap(t){ $("#demoCap").textContent=t; }
+async function runDemo(){
+  const tok=++DEMO.token; DEMO.on=true; renderLevelChip(); $("#demobar").style.display="flex"; $("#demoBtn").textContent="Stop demo"; $("#demoBtn").classList.add("demo-on");
+  try{
+    cap("CAD theory: building bracket MB-01 one feature at a time"); go("cad"); cadSet(0); await sleep(2600,tok);
+    for(let k=1;k<CAD_STEPS.length;k++){ cadSet(k); cap(`${CAD_STEPS[k].name}: ${CAD_STEPS[k].title}`); await sleep(3000,tok); }
+    cap("Test bench: the shelf bracket starts as Rev A and fails"); go("tests"); delete TB.state.beam; selectScenario("beam"); await sleep(3200,tok);
+    for(let i=0;i<4;i++){ if(!improveStep()) break; const rv=scState("beam"); cap(`Shelf bracket Rev ${rv.revs[rv.cur].label}: ${rv.revs[rv.cur].why.replace(/<[^>]+>/g,"").slice(0,110)}…`); await sleep(3800,tok); }
+    cap("Gear drive: wrong speed, undercut pinion, weak teeth"); delete TB.state.gear; selectScenario("gear"); await sleep(3400,tok);
+    for(let i=0;i<4;i++){ if(!improveStep()) break; const rv=scState("gear"); cap(`Gear drive Rev ${rv.revs[rv.cur].label}: ${rv.revs[rv.cur].why.replace(/<[^>]+>/g,"").slice(0,110)}…`); await sleep(3800,tok); }
+    cap("Rail in summer: heating the rail from winter to a heatwave"); delete TB.state.rail; selectScenario("rail");
+    const p=curP(); for(let T=p.Tmin; T<=p.Tmax; T+=5){ TB.railT=T; TB.railUpdate&&TB.railUpdate(T); const s=$("#railT"); if(s){ s.value=T; $("#railTv").textContent=T+" °C"; } await sleep(450,tok); }
+    for(let i=0;i<4;i++){ if(!improveStep()) break; const rv=scState("rail"); cap(`Rail Rev ${rv.revs[rv.cur].label}: ${rv.revs[rv.cur].why.replace(/<[^>]+>/g,"").slice(0,110)}…`); await sleep(4000,tok); }
+    cap("Robot arm (Advanced level): sizing a LeRobot-style arm before buying servos"); delete TB.state.arm; TB.armPose={t1:0,t2:0}; selectScenario("arm"); await sleep(3600,tok);
+    for(let i=0;i<6;i++){ if(!improveStep()) break; const rv=scState("arm"); cap(`Robot arm Rev ${rv.revs[rv.cur].label}: ${rv.revs[rv.cur].why.replace(/<[^>]+>/g,"").slice(0,110)}…`); await sleep(4000,tok); }
+    cap("Path: levels unlock as you finish tasks and pass checkpoints"); go("path"); await sleep(3500,tok);
+    cap("Career: the licences to get, in order, with progress you can tick off"); go("career"); await sleep(4000,tok);
+    cap("Demo finished. Everything you just saw is editable."); await sleep(2500,tok);
+  }catch(e){ /* stopped */ }
+  if(tok===DEMO.token) stopDemo();
+}
+function stopDemo(){ DEMO.token++; DEMO.on=false; $("#demobar").style.display="none"; $("#demoBtn").textContent="Run demo"; $("#demoBtn").classList.remove("demo-on"); renderLevelChip(); go(S.tab); }
+
+/* ============================== WIRING ============================== */
+function wire(){
+  window.addEventListener("hashchange", ()=>go(location.hash.slice(1)));
+  $("#cadPrev").addEventListener("click",()=>cadSet(CAD.step-1));
+  $("#cadNext").addEventListener("click",()=>cadSet(CAD.step+1));
+  document.querySelectorAll("#scenarioSeg button").forEach(b=>b.addEventListener("click",()=>selectScenario(b.dataset.sc)));
+  document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+    CAD.view=b.dataset.view; frameObject(S.tab==="cad"?CAD.root:TB.group, b.dataset.view);
+  }));
+  document.querySelectorAll("[data-disp]").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll("[data-disp]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+    V.display=b.dataset.disp; if(V.ok){ applyDisplay(CAD.part); applyDisplay(TB.group); }
+  }));
+  $("#sectionBtn").addEventListener("click",e=>{ if(!unlocked(2)) return; V.section=!V.section; e.currentTarget.setAttribute("aria-pressed",V.section?"true":"false"); if(V.ok) applyDisplay(CAD.part); });
+  $("#freeMode").addEventListener("change",e=>{ const before=level(); P.free=e.target.checked; saveProgress(); afterProgress(before); renderPathLadder(); renderPathQuizzes(); renderLevelChip(); if(!P.free) toast("Path mode on: levels unlock as you finish tasks"); });
+  $("#dlCsv").addEventListener("click",async()=>{ if(!S.downloads) return; if(!S.runs.length){ toast("No saved revisions yet"); return; } try{ await S.downloads.save({filename:`me-lab-test-log-${new Date().toISOString().slice(0,10)}.csv`, data:exportCsv()}); toast("Test log saved"); }catch(e){ if(e&&e.code==="declined") toast("Download cancelled"); else toast("Download not available here"); } });
+  $("#planesBtn").addEventListener("click",e=>{ V.planes=!V.planes; e.currentTarget.setAttribute("aria-pressed",V.planes?"true":"false"); buildCad(); });
+  $("#demoBtn").addEventListener("click",()=> DEMO.on ? stopDemo() : runDemo());
+  $("#demoStop").addEventListener("click",stopDemo);
+  $("#matForm").addEventListener("submit",async e=>{ e.preventDefault();
+    const rec={name:$("#mfName").value.trim(), E:num($("#mfE").value), sy:num($("#mfSy").value), rho:num($("#mfRho").value), alpha:num($("#mfA").value), note:$("#mfNote").value.trim()};
+    if(!rec.name||!(rec.E>0)||!(rec.sy>0)||!(rec.rho>0)||!(rec.alpha>=0)){ toast("Fill in every number: E, σy and ρ must be above zero"); return; }
+    if(await addRecord("materials",rec)){ e.target.reset(); toast(`${rec.name} added: pick it in CAD and Test bench`); }
+  });
+  $("#trendForm").addEventListener("submit",async e=>{ e.preventDefault();
+    const rec={title:$("#tfTitle").value.trim(), note:$("#tfNote").value.trim(), source:safeUrl($("#tfSrc").value.trim())};
+    if(!rec.title){ toast("Give the trend a name"); return; }
+    if(await addRecord("trends",rec)){ e.target.reset(); toast("Trend added to the Trends page"); }
+  });
+  $("#certForm").addEventListener("submit",async e=>{ e.preventDefault();
+    const rec={name:$("#cfName").value.trim(), cost:$("#cfCost").value.trim(), time:$("#cfTime").value.trim(), why:$("#cfWhy").value.trim()};
+    if(!rec.name){ toast("Give the certificate a name"); return; }
+    if(await addRecord("certs",rec)){ e.target.reset(); toast("Added to your career list"); }
+  });
+  $("#copyJson").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(exportJson()); toast("Backup copied: paste it into a note or email"); }catch(e){ $("#importBox").value=exportJson(); toast("Copy blocked here: the backup is in the box below, select and copy it"); } });
+  $("#dlJson").addEventListener("click",async()=>{ if(!S.downloads) return; try{ await S.downloads.save({filename:`me-lab-backup-${new Date().toISOString().slice(0,10)}.json`, data:exportJson()}); toast("Backup saved"); }catch(e){ if(e&&e.code==="declined") toast("Download cancelled"); else { toast("Download not available here: use Copy backup"); $("#dlJson").hidden=true; } } });
+  $("#importFile").addEventListener("change",async e=>{ const f=e.target.files[0]; if(!f) return; $("#importBox").value=await f.text(); });
+  $("#importBtn").addEventListener("click",()=>{ const t=$("#importBox").value.trim(); if(!t){ toast("Paste a backup or choose a file first"); return; } importJson(t); });
+}
+function boot(){
+  wire();
+  const ok = init3D();
+  if(ok){
+    CAD.scene=makeScene(); CAD.root=new THREE.Group(); CAD.part=new THREE.Group(); CAD.aux=new THREE.Group(); CAD.root.add(CAD.part); CAD.root.add(CAD.aux); CAD.scene.add(CAD.root);
+    TB.scene=makeScene(); TB.group=new THREE.Group(); TB.scene.add(TB.group);
+    buildCad();
+  } else { $("#vpFallback").style.display="flex"; }
+  renderTrends(); renderCareer(); renderData(); renderLevelChip();
+  go(location.hash.slice(1) || "trends");
+  setStore("none"); $("#tbData").textContent="Checking…"; $("#storeText").textContent="Checking storage…";
+  initStore();
+}
+boot();
+</script>
+</body>
+</html>
