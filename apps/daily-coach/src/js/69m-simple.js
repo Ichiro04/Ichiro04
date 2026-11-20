@@ -77,7 +77,7 @@ function spListHTML(){
 }
 
 /* one tip, not three */
-function spTipHTML(){ const t = waveTips()[0]; if (!t) return ''; tipSeen([t.id]);
+function spTipHTML(){ const t = waveTips().filter(x => !(x.id === 'weigh' && spWeighHTML()))[0]; if (!t) return ''; tipSeen([t.id]);
   return `<div class="wv-tip lg-chip sp-tip" data-tip="${t.id}"><span class="wv-ti">${ic(t.icon, 16)}</span><p>${esc(t.t)}</p>
     <div class="wv-ta"><button class="wv-go" data-wv="go" data-id="${t.id}">${esc(t.b)}</button><button class="wv-x" data-wv="x" data-id="${t.id}" aria-label="Hide this tip for today">${ic('x', 14)}</button></div></div>`; }
 document.addEventListener('click', e => { if (e.target.closest('.sp [data-wv="x"]')) setTimeout(() => { if (activeTab === 'today') renderView('today'); }, motionOff() ? 0 : 380); }, true);
