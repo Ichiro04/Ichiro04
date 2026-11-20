@@ -46,7 +46,7 @@ const KEY = 'dailycoach.v1';
 const DEFAULT_STATE = {
   v: 1,
   theme: 'auto',            // auto | light | dark
-  reduceMotion: false,
+  motion: 'full',          // 'full' | 'device' (follow the phone) | 'reduced' (20 Nov 2026)
   railOpen: false,          // desktop side menu expanded
   tipsOff: {},
   aiMode: 'saver', aiCap: 20, aiUsage: null, aiCache: {},

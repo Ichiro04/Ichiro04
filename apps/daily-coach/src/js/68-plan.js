@@ -10,7 +10,7 @@
      progress dots).
    - Progress: week schedule grid (areas × days, status on every block).
    ============================================================ */
-const PB = { view: null, filter: 'all', wk: 0, drag: null };
+const PB = { view: null, filter: 'all', wk: 0, drag: null, wgOpen: {} };
 const PB_COLS = [['', 'To do', 'todo'], ['partly', 'In progress', 'doing'], ['done', 'Done', 'done'], ['missed', 'Missed', 'missed']];
 const PB_TONE = { Training:'tr', English:'en', Engineering:'eg', Career:'ca', Walking:'wk', Routine:'ro' };
 const pbView = () => PB.view || state.planView || 'board';
@@ -154,8 +154,10 @@ function weekGridHTML(){
     const chips = B.map(b => { const s = blockStatus(k, b); all++; if (s === 'done') done++;
       const st = s || (k < today || (k === today && b.start + b.dur < m) ? 'missedopen' : 'planned');
       const lab = { done:'Done', partly:'Partly', missed:'Missed', missedopen:'Not logged', planned:'' }[st];
-      return `<div class="wg-chip ${st}" title="${esc(b.name)} ${b.t}"><b>${esc(b.name)}</b><small class="num">${b.t}${lab ? `<em><i></i>${lab}</em>` : ''}</small></div>`; });
-    return `<div class="wg-cell${k === today ? ' today' : ''}">${chips.slice(0, 2).join('')}${chips.length > 2 ? `<div class="wg-more">+ ${chips.length - 2} more</div>` : ''}</div>`; };
+      const tag = k <= today ? 'button' : 'div', act = k <= today ? ` data-wgk="${k}" data-wgb="${esc(b.id)}" data-flip="wg-${k}-${esc(b.id)}" aria-label="${esc(b.name)} ${b.t}, ${lab || 'planned'}. Change status"` : '';
+      return `<${tag} class="wg-chip ${st}"${act} title="${esc(b.name)} ${b.t}"><b>${esc(b.name)}</b><small class="num">${b.t}${lab ? `<em><i></i>${lab}</em>` : ''}</small></${tag}>`; });
+    const ck = k + cat, open = PB.wgOpen && PB.wgOpen[ck];
+    return `<div class="wg-cell${k === today ? ' today' : ''}">${(open ? chips : chips.slice(0, 2)).join('')}${chips.length > 2 ? `<button class="wg-more" data-wgmore="${ck}">${open ? 'Show less' : `+ ${chips.length - 2} more`}</button>` : ''}</div>`; };
   const rows = cats.map(c => `<div class="wg-row"><div class="wg-cat"><span class="pb-tag ${PB_TONE[c]}">${c}</span></div>${days.map(d => cell(d, c)).join('')}</div>`).join('');
   const range = `${shortDate(ws)} – ${shortDate(addDays(ws, 6))}`;
   return `<section class="wg" id="weekGrid"><div class="wg-head"><div class="h2">Week schedule <span class="side num">${done} of ${all} blocks done</span></div>
@@ -179,6 +181,10 @@ document.addEventListener('click', e => {
     document.querySelectorAll('.pb-move').forEach(x => { x.hidden = true; x.closest('.pb-card')?.querySelector('[data-pb-menu]')?.setAttribute('aria-expanded', 'false'); });
     mv.hidden = !open; mn.setAttribute('aria-expanded', String(open)); return; }
   const g = e.target.closest('[data-sb-go]'); if (g){ e.stopPropagation(); const [tab, sub] = g.dataset.sbGo.split(':'); if (sub) learnTab = sub; setTab(tab, { force: true }); window.scrollTo(0, 0); return; }
+  const more = e.target.closest('[data-wgmore]'); if (more){ e.stopPropagation(); PB.wgOpen[more.dataset.wgmore] = !PB.wgOpen[more.dataset.wgmore]; wgRedraw(); return; }
+  const pick = e.target.closest('[data-wgset]'); if (pick){ e.stopPropagation(); wgSet(pick.dataset.k, pick.dataset.b, pick.dataset.wgset); return; }
+  const chip = e.target.closest('[data-wgk]'); if (chip){ e.stopPropagation(); wgMenu(chip); return; }
+  if (!e.target.closest('#wgMenu')) document.getElementById('wgMenu')?.remove();
   const w = e.target.closest('[data-wg]'); if (w){ e.stopPropagation(); const d = +w.dataset.wg; PB.wk = d === 0 ? 0 : Math.min(1, PB.wk + d); const el = document.getElementById('weekGrid'); if (el) el.outerHTML = weekGridHTML(); return; }
 }, true);
 
@@ -226,3 +232,31 @@ document.addEventListener('click', e => {
   card.querySelector('[data-pb-menu]')?.click();
 });
 document.addEventListener('keydown', e => { const card = e.target.closest && e.target.closest('#planBoard .pb-card'); if (card && (e.key === 'Enter' || e.key === ' ') && e.target === card){ e.preventDefault(); card.querySelector('[data-pb-menu]')?.click(); } });
+
+/* ---------- week schedule: change a past or today's block (20 Nov 2026) ----------
+   He was away 14–19 Nov and could not mark what he did: Today's board only changes today.
+   Tap any chip up to today → Done / Partly / Missed / Not logged; linked tasks tick with it. */
+function wgRedraw(){ const el = document.getElementById('weekGrid'); if (!el) return; const sx = el.querySelector('.wg-scroll')?.scrollLeft || 0; el.outerHTML = weekGridHTML(); const n = document.querySelector('#weekGrid .wg-scroll'); if (n) n.scrollLeft = sx; }
+function wgMenu(chip){
+  document.getElementById('wgMenu')?.remove();
+  const k = chip.dataset.wgk, id = chip.dataset.wgb, b = dayBlocks(k).find(x => x.id === id); if (!b) return;
+  const cur = blockStatus(k, b), m = document.createElement('div'); m.id = 'wgMenu'; m.className = 'wg-menu lg'; m.setAttribute('role', 'menu');
+  m.innerHTML = `<p><b>${esc(b.name)}</b><small>${esc(shortDate(parseKey(k)))} · ${b.t}</small></p>` + [['done', 'Done'], ['partly', 'Partly'], ['missed', 'Missed'], ['', 'Not logged']].map(([v, l]) =>
+    `<button role="menuitemradio" aria-checked="${(cur || '') === v}" class="${v || 'clear'}${(cur || '') === v ? ' on' : ''}" data-wgset="${v}" data-k="${k}" data-b="${esc(id)}"><i></i>${l}</button>`).join('');
+  document.body.appendChild(m);
+  const r = chip.getBoundingClientRect(), mw = m.offsetWidth, mh = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(innerWidth - mw - 8, r.left + r.width / 2 - mw / 2)) + 'px';
+  m.style.top = (r.bottom + mh + 10 < innerHeight ? r.bottom + 6 : Math.max(8, r.top - mh - 6)) + 'px';
+  m.querySelector('[aria-checked="true"]')?.focus();
+}
+function wgSet(k, id, v){
+  const r = dayRec(k, true), b = dayBlocks(k).find(x => x.id === id); r.plan = r.plan || {};
+  if (v) r.plan[id] = v; else delete r.plan[id];
+  if (b && b.task){ if (v === 'done') setTask(k, b.task, true); else if (taskDone(k, b.task)) setTask(k, b.task, false); }
+  state._lastEdit = Date.now(); save(); document.getElementById('wgMenu')?.remove(); wgRedraw();
+  const c = document.querySelector(`#weekGrid [data-wgk="${k}"][data-wgb="${CSS.escape(id)}"]`);
+  if (c && !motionOff()) c.animate([{ scale: '1' }, { scale: '1.08' }, { scale: '1' }], { duration: 380, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+  toast(`${b ? b.name : 'Block'} on ${shortDate(parseKey(k))}: ${v ? ({ done: 'done', partly: 'partly', missed: 'missed' })[v] : 'not logged'}.`, 'ok', 1800);
+  if (k === dkey() && activeTab === 'today') renderView('today');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('wgMenu')?.remove(); });

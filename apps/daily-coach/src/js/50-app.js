@@ -12,9 +12,22 @@ function applyTheme(){
   syncLabTheme();
   if (typeof paintLandscape === 'function' && document.body) paintLandscape();
 }
+/* Motion (20 Nov 2026): he wants motion even when the phone asks apps for less, so the choice is his.
+   'full' = always animate, 'device' = follow the phone's reduce-motion setting, 'reduced' = calm.
+   The CSS blocks written for the phone setting are switched off unless he picks 'device'. */
+function motionMode(){
+  if (state.motion !== 'full' && state.motion !== 'device' && state.motion !== 'reduced') state.motion = state.reduceMotion ? 'reduced' : 'full';
+  if ('reduceMotion' in state) delete state.reduceMotion;
+  return state.motion;
+}
+const motionReduced = () => { const m = motionMode(); return m === 'reduced' || (m === 'device' && REDUCE_QUERY.matches); };
 function applyMotion(){
-  const on = state.reduceMotion || REDUCE_QUERY.matches;
+  const m = motionMode(), on = motionReduced();
   document.documentElement.classList.toggle('reduce', on);
+  for (const sh of document.styleSheets){ let rules; try { rules = sh.cssRules; } catch(_){ continue; }
+    for (const r of rules){ if (!r.media || !r.conditionText && !r.media.mediaText) continue;
+      if (r.__rm === undefined){ if (!/prefers-reduced-motion/.test(r.media.mediaText)) continue; r.__rm = r.media.mediaText; }
+      const want = m === 'device' ? r.__rm : 'not all'; if (r.media.mediaText !== want) r.media.mediaText = want; } }
 }
 mqDark.addEventListener('change', ()=>{ if (state.theme==='auto') applyTheme(); });
 REDUCE_QUERY.addEventListener('change', applyMotion);
@@ -565,8 +578,8 @@ document.addEventListener('click', e=>{
       state.theme = el.dataset.id; save(); applyTheme(); renderView('coach'); break;
     }
     case 'reduce-toggle': {
-      state.reduceMotion = !state.reduceMotion; save(); applyMotion(); renderView('coach');
-      toast(state.reduceMotion?'Motion reduced.':'Motion restored.','ok',1500);
+      state.motion = motionReduced() ? 'full' : 'reduced'; save(); applyMotion(); renderView('coach');
+      toast(motionReduced()?'Motion reduced.':'Motion restored.','ok',1500);
       break;
     }
     case 'export': {

@@ -150,12 +150,12 @@ async function sendMessage(text){
   $('#chatStreamMount').before(slot);
   log.scrollTop = log.scrollHeight;
 
-  await new Promise(r=>setTimeout(r, REDUCE_QUERY.matches ? 0 : 520));
+  await new Promise(r=>setTimeout(r, motionOff() ? 0 : 520));
   const reply = generateReply(text);
   slot.innerHTML = `<div class="radio-row"><div class="radio eng">${radioHead(false)}<div class="radio-body stream" id="liveStream"><span id="liveText"></span><span class="caret" id="liveCursor"></span></div></div></div>`;
   const liveText = slot.querySelector('#liveText');
   const cursor = slot.querySelector('#liveCursor');
-  if (REDUCE_QUERY.matches || state.reduceMotion){
+  if (motionOff()){
     liveText.textContent = reply; cursor.remove();
   } else {
     for (let i=0; i<reply.length; i+=2){

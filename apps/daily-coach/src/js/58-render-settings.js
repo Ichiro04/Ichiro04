@@ -32,10 +32,11 @@ function setBody(sec){
   if (sec==='profile') return `<h3>Profile</h3><p class="set-note">How the app talks about you. The display name is the big title in Orbit.</p>
     ${setField('Display name','profile.display', displayName())}${setField('Full name','profile.name', p.name)}${setField('City','profile.city', p.city)}
     ${setField('Height (cm)','profile.heightCm', p.heightCm, 'number', 'inputmode="decimal"')}${setField('Starting weight (kg)','profile.weightStart', p.weightStart, 'number', 'step="0.1" inputmode="decimal"')}${setField('Target weight (kg)','profile.weightTarget', p.weightTarget, 'number', 'step="0.1" inputmode="decimal"')}`;
-  if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Pick a style, then tune its glass. Every change saves at once and you can come back and edit it any time. Reduced motion stops every animation, the galaxy included.</p>
+  if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Pick a style, then tune its glass. Every change saves at once and you can come back and edit it any time. Reduced stops every animation, the galaxy included.</p>
     ${typeof skinPickHTML==='function' ? `<div class="set-sub">Style</div>${skinPickHTML()}${skinTuneHTML()}<div class="set-sub">Mode</div>` : ''}
     ${setSeg('Theme','theme', th, [['auto','Auto'],['light','Light'],['dark','Dark']])}
-    ${setToggle('Reduce motion','reduceMotion', state.reduceMotion, 'Also follows your device setting')}
+    ${setSeg('Motion','motion', motionMode(), [['full','Full'],['device','Follow phone'],['reduced','Reduced']])}
+    <p class="set-note">${REDUCE_QUERY.matches ? 'Your phone is asking apps to use less motion. Full keeps every animation here anyway; Follow phone would switch them off.' : 'Full keeps every animation. Follow phone switches them off if your phone asks apps to reduce motion.'}</p>
     ${setToggle('Wide side menu','railOpen', state.railOpen, 'Show names next to the icons (screens 900px and wider)')}
     ${setToggle('Chat button on every tab','chatFab', state.chatFab !== false)}`; }
   if (sec==='goals') return `<h3>Goals and money</h3><p class="set-note">These drive the rings, the savings plan and the coach’s advice.</p>
@@ -100,10 +101,11 @@ document.addEventListener('click', e=>{
     if (k==='aiDeep'){ if (typeof AI!=='undefined') AI.deep = on; }
     else if (k==='gtSolid'){ skinSet('solid', on); }
     else if (k.startsWith('ap.')){ const ap = apState(); ap[k.slice(3)] = on; apLog(`${tg.getAttribute('aria-label')} ${on ? 'on' : 'off'}.`); save(); if (k==='ap.on' && on) apRun('manual'); if (activeTab==='coach') renderView('coach'); }
-    else { state[k] = on; save(); if (k==='reduceMotion') applyMotion(); if (k==='railOpen' && typeof mountRail==='function') mountRail(); if (k==='chatFab') chatFab(); if (k==='tipsShow' && activeTab==='today') renderView('today'); }
+    else { state[k] = on; save(); if (k==='railOpen' && typeof mountRail==='function') mountRail(); if (k==='chatFab') chatFab(); if (k==='tipsShow' && activeTab==='today') renderView('today'); }
     return; }
   const sg = e.target.closest('[data-set-seg]'); if (sg){ e.stopPropagation(); const k = sg.dataset.setSeg, v = sg.dataset.v; sg.parentNode.querySelectorAll('button').forEach(b=>{ const on = b===sg; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     if (k==='theme'){ state.theme = v; save(); applyTheme(); if (typeof mountRail==='function') mountRail(); }
+    else if (k==='motion'){ state.motion = v; save(); applyMotion(); }
     else if (k==='voiceRate'){ state.voiceRate = +v; save(); }
     else if (k==='aiLang'){ if (typeof aiSetLang === 'function') aiSetLang(v); document.getElementById('setBody').innerHTML = setBody('coach'); }
     else if (k==='aiCap'){ state.aiCap = +v; save(); document.getElementById('setBody').innerHTML = setBody('coach'); }

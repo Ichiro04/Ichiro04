@@ -45,9 +45,9 @@ function coachClassicHTML(){
       ${['auto','light','dark'].map(t=>`<button class="${state.theme===t?'on':''}" data-a="theme" data-id="${t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
     <div class="divider"></div>
-    <button class="row between" data-a="reduce-toggle" style="width:100%;text-align:left" aria-pressed="${state.reduceMotion}">
+    <button class="row between" data-a="reduce-toggle" style="width:100%;text-align:left" aria-pressed="${motionReduced()}">
       <span><span class="h3" style="font-size:14.5px;display:block">Reduce motion</span><span class="tiny">Calms the light field and all transitions</span></span>
-      <span class="switch ${state.reduceMotion?'on':''}" aria-hidden="true"><i></i></span>
+      <span class="switch ${motionReduced()?'on':''}" aria-hidden="true"><i></i></span>
     </button>
     <div class="divider"></div>
     <form data-form="settings" style="display:grid;gap:10px">

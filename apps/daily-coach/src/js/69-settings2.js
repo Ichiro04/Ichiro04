@@ -14,7 +14,7 @@ const SET_GROUPS = [
 ];
 const SET_ICO = {
   'profile.display':'sparkle', 'profile.name':'user', 'profile.city':'compass', 'profile.heightCm':'scale', 'profile.weightStart':'scale', 'profile.weightTarget':'target',
-  theme:'sun', reduceMotion:'pause', railOpen:'menu', chatFab:'headset',
+  theme:'sun', motion:'pause', railOpen:'menu', chatFab:'headset',
   'settings.goal':'piggy', 'settings.income':'wallet', 'settings.opening':'pound', 'settings.stepsGoal':'steps', 'settings.ieltsTarget':'pen', 'settings.examDate':'calendar', 'settings.planStart':'calendar', streakSaver:'flame',
   aiMode:'robot', aiCap:'gauge', aiDeep:'sparkles', voiceOut:'volume', voiceRate:'clock', voiceLang:'mic',
   'ap.on':'robot', 'ap.plan':'checklist', 'ap.checkins':'calendar', 'ap.tips':'bell', 'ap.carry':'arrowRight', 'autopilot.anchor':'calendar',

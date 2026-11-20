@@ -82,8 +82,11 @@ Rules that must not drift:
 - **Motion from transitions.dev patterns:** tab lens slide, page blur-slide, checkbox stroke-draw,
   modal, toast, thinking dots, streaming text, plus→menu morph, card tilt + glare, text reveal,
   morphing gapped donut.
-- **Respect reduced motion twice:** the media query *and* the in-app toggle (`state.reduceMotion`).
-  Both add `html.reduce`, which kills every animation. `motionOff()` in `50-app.js` is the JS gate.
+- **Motion is his choice** (20 Nov 2026): `state.motion` = `full` (default) | `device` | `reduced`, in Settings → Look and motion.
+  `motionReduced()` decides; `applyMotion()` sets `html.reduce` (kills every animation) and switches the CSS
+  `@media (prefers-reduced-motion)` blocks off (`not all`) unless he picks `device`. `motionOff()` in `50-app.js` is
+  the JS gate. The old `state.reduceMotion` is migrated once (true → `reduced`) and deleted. Don't read
+  `REDUCE_QUERY.matches` directly anywhere else.
 
 ### Gotchas worth knowing
 
@@ -114,7 +117,7 @@ fields never break old saves.
 
 ```js
 {
-  theme: 'auto'|'light'|'dark', reduceMotion: bool, createdAt: 'YYYY-MM-DD',
+  theme: 'auto'|'light'|'dark', motion: 'full'|'device'|'reduced', createdAt: 'YYYY-MM-DD',
   profile: { name, heightCm, weightStart, weightTarget, city, degree },
   settings: { income, goal, opening, fixed:[{id,name,amount}], stepsGoal, ieltsTarget, examDate },
   days:      { 'YYYY-MM-DD': { tasks:{id:true}, steps, weight, note } },
@@ -502,3 +505,10 @@ He sent six Facebook reels and gave full access to "think, analyse and choose th
 ## Frozen sync data fix (20 Nov 2026)
 - The real artifact database hands out **frozen** document bodies. `syPull` put them straight into `state` (`deepMerge` keeps arrays and new keys by reference), so after any pull on the live link every list push threw (`Cannot add property…`) and edits to pulled days (task ticks, past plan statuses) were silently ignored. This lost his 23 imported spends and stopped the inbox from applying. `syPull` and `syInboxApply` now take a JSON copy of every `data()`; `packMerge` also unfreezes `state.expenses` defensively.
 - The test fake database (`shots/sync.js`, `shots/inbox.js`) now deep-freezes `data()` like the real one. The old code fails that test (`THROW Cannot add property 62`), the fix passes, and the two-device sync test is unchanged (merge OK, 0 idle writes).
+
+## Motion inside tabs and past-day blocks (20 Nov 2026)
+He said the app felt "too solid" and he couldn't change past time blocks.
+- **Cause 1:** with the phone's reduce-motion setting on, the app switched every animation off (see Motion above).
+- **Cause 2:** every tap redrew the whole tab and replayed the section cascade from blank, like a reload. `72-flow.js` (loads last) wraps `renderView`: entering a tab still cascades; redrawing the same tab keeps the page still (`cascade` removed, scroll kept) and animates only what changed by key (`id`, `data-id`, `data-k`, `data-key`, `data-flip`, `data-blk`, `data-pb-card`, `data-lk`, `data-br-open`): moved items glide (FLIP on `translate`, spring), changed items pop (`scale`), new items rise in. Press feedback: pressables sink (`scale` .95, .985 for big cards) and spring back. Web Animations on `scale`/`translate` only, so element transitions are untouched. Give new interactive lists a `data-id`/`data-flip` key so they animate.
+- **Past blocks:** Progress → Week schedule chips up to today are buttons; tapping opens `#wgMenu` (Done / Partly / Missed / Not logged) → `wgSet` writes `dayRec(k).plan[id]`, ticks or unticks the linked task, pops the chip. "+ N more" expands a cell (`PB.wgOpen`).
+- Audit script `shots/kyaw.js <width>` uses the app like him on a frozen fake database (laptop pushes a year of data, "phone" pulls it): tick a task, mark a past block, steps, last week's block, add and delete a spend, add a saving, a past calendar day, a coach item, a Brain note, every tab for errors and overflow. All pass at 390 and 1440.

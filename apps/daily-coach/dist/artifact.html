@@ -4361,6 +4361,23 @@ html.reduce .pu-arc{animation:none}
 @media(max-width:600px){.pu-sbs{grid-template-columns:repeat(2,minmax(0,1fr))}.pu-big{width:110px;height:110px}.pu-say b{font-size:20px}}
 .stx-h>div{min-width:0}.stx-tabs{max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.stx-tabs::-webkit-scrollbar{display:none}.stx-tabs button{flex:0 0 auto}
 
+/* week schedule: tappable chips and the status menu (20 Nov 2026) */
+button.wg-chip{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:2px;padding:6px 8px;border-radius:9px;min-width:0;--cc:var(--st-plan);background:color-mix(in srgb,var(--cc) 12%,transparent);transition:background .2s,box-shadow .2s}
+button.wg-chip:hover{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cc) 45%,transparent)}
+button.wg-chip:focus-visible{outline:2px solid var(--cr-crimson,#710014);outline-offset:1px}
+button.wg-more{all:unset;cursor:pointer;font-size:10.5px;font-weight:700;color:var(--pw-ink-3);padding:3px 6px;border-radius:7px}
+button.wg-more:hover{color:var(--pw-ink)}
+.wg-menu{position:fixed;z-index:120;min-width:180px;padding:8px;border-radius:16px;background:color-mix(in srgb,var(--pw-bg,#F2F1ED) 92%,transparent);box-shadow:0 18px 40px -14px rgba(40,10,10,.45),inset 0 0 0 1px rgba(255,255,255,.4);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);display:grid;gap:3px;animation:wgPop .32s cubic-bezier(.3,1.5,.5,1) both;transform-origin:top center}
+@keyframes wgPop{from{opacity:0;transform:translateY(-4px) scale(.94)}}
+.wg-menu p{margin:2px 6px 6px;display:grid}.wg-menu p b{font-size:13px;color:var(--pw-ink)}.wg-menu p small{font-size:11px;color:var(--pw-ink-3)}
+.wg-menu button{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;font-size:13px;font-weight:650;color:var(--pw-ink)}
+.wg-menu button:hover,.wg-menu button:focus-visible{background:rgba(113,0,20,.08)}
+.wg-menu button.on{background:rgba(113,0,20,.12)}
+.wg-menu button i{width:9px;height:9px;border-radius:50%;background:var(--st-plan,#999)}
+.wg-menu .done i{background:var(--st-done)}.wg-menu .partly i{background:var(--st-mid)}.wg-menu .missed i{background:var(--st-bad)}.wg-menu .clear i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--pw-ink-3)}
+html.reduce .wg-menu{animation:none}
+@media(max-width:560px){.stx-x span:nth-child(even):not(:last-child){display:none}}
+
 </style>
 <style data-src="src/css/agents.css">
 /* ============================================================
@@ -5330,7 +5347,7 @@ const KEY = 'dailycoach.v1';
 const DEFAULT_STATE = {
   v: 1,
   theme: 'auto',            // auto | light | dark
-  reduceMotion: false,
+  motion: 'full',          // 'full' | 'device' (follow the phone) | 'reduced' (20 Nov 2026)
   railOpen: false,          // desktop side menu expanded
   tipsOff: {},
   aiMode: 'saver', aiCap: 20, aiUsage: null, aiCache: {},
@@ -9797,9 +9814,9 @@ function coachClassicHTML(){
       ${['auto','light','dark'].map(t=>`<button class="${state.theme===t?'on':''}" data-a="theme" data-id="${t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
     <div class="divider"></div>
-    <button class="row between" data-a="reduce-toggle" style="width:100%;text-align:left" aria-pressed="${state.reduceMotion}">
+    <button class="row between" data-a="reduce-toggle" style="width:100%;text-align:left" aria-pressed="${motionReduced()}">
       <span><span class="h3" style="font-size:14.5px;display:block">Reduce motion</span><span class="tiny">Calms the light field and all transitions</span></span>
-      <span class="switch ${state.reduceMotion?'on':''}" aria-hidden="true"><i></i></span>
+      <span class="switch ${motionReduced()?'on':''}" aria-hidden="true"><i></i></span>
     </button>
     <div class="divider"></div>
     <form data-form="settings" style="display:grid;gap:10px">
@@ -10119,9 +10136,22 @@ function applyTheme(){
   syncLabTheme();
   if (typeof paintLandscape === 'function' && document.body) paintLandscape();
 }
+/* Motion (20 Nov 2026): he wants motion even when the phone asks apps for less, so the choice is his.
+   'full' = always animate, 'device' = follow the phone's reduce-motion setting, 'reduced' = calm.
+   The CSS blocks written for the phone setting are switched off unless he picks 'device'. */
+function motionMode(){
+  if (state.motion !== 'full' && state.motion !== 'device' && state.motion !== 'reduced') state.motion = state.reduceMotion ? 'reduced' : 'full';
+  if ('reduceMotion' in state) delete state.reduceMotion;
+  return state.motion;
+}
+const motionReduced = () => { const m = motionMode(); return m === 'reduced' || (m === 'device' && REDUCE_QUERY.matches); };
 function applyMotion(){
-  const on = state.reduceMotion || REDUCE_QUERY.matches;
+  const m = motionMode(), on = motionReduced();
   document.documentElement.classList.toggle('reduce', on);
+  for (const sh of document.styleSheets){ let rules; try { rules = sh.cssRules; } catch(_){ continue; }
+    for (const r of rules){ if (!r.media || !r.conditionText && !r.media.mediaText) continue;
+      if (r.__rm === undefined){ if (!/prefers-reduced-motion/.test(r.media.mediaText)) continue; r.__rm = r.media.mediaText; }
+      const want = m === 'device' ? r.__rm : 'not all'; if (r.media.mediaText !== want) r.media.mediaText = want; } }
 }
 mqDark.addEventListener('change', ()=>{ if (state.theme==='auto') applyTheme(); });
 REDUCE_QUERY.addEventListener('change', applyMotion);
@@ -10672,8 +10702,8 @@ document.addEventListener('click', e=>{
       state.theme = el.dataset.id; save(); applyTheme(); renderView('coach'); break;
     }
     case 'reduce-toggle': {
-      state.reduceMotion = !state.reduceMotion; save(); applyMotion(); renderView('coach');
-      toast(state.reduceMotion?'Motion reduced.':'Motion restored.','ok',1500);
+      state.motion = motionReduced() ? 'full' : 'reduced'; save(); applyMotion(); renderView('coach');
+      toast(motionReduced()?'Motion reduced.':'Motion restored.','ok',1500);
       break;
     }
     case 'export': {
@@ -10989,10 +11019,11 @@ function setBody(sec){
   if (sec==='profile') return `<h3>Profile</h3><p class="set-note">How the app talks about you. The display name is the big title in Orbit.</p>
     ${setField('Display name','profile.display', displayName())}${setField('Full name','profile.name', p.name)}${setField('City','profile.city', p.city)}
     ${setField('Height (cm)','profile.heightCm', p.heightCm, 'number', 'inputmode="decimal"')}${setField('Starting weight (kg)','profile.weightStart', p.weightStart, 'number', 'step="0.1" inputmode="decimal"')}${setField('Target weight (kg)','profile.weightTarget', p.weightTarget, 'number', 'step="0.1" inputmode="decimal"')}`;
-  if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Pick a style, then tune its glass. Every change saves at once and you can come back and edit it any time. Reduced motion stops every animation, the galaxy included.</p>
+  if (sec==='look'){ const th = state.theme || 'auto'; return `<h3>Look and motion</h3><p class="set-note">Pick a style, then tune its glass. Every change saves at once and you can come back and edit it any time. Reduced stops every animation, the galaxy included.</p>
     ${typeof skinPickHTML==='function' ? `<div class="set-sub">Style</div>${skinPickHTML()}${skinTuneHTML()}<div class="set-sub">Mode</div>` : ''}
     ${setSeg('Theme','theme', th, [['auto','Auto'],['light','Light'],['dark','Dark']])}
-    ${setToggle('Reduce motion','reduceMotion', state.reduceMotion, 'Also follows your device setting')}
+    ${setSeg('Motion','motion', motionMode(), [['full','Full'],['device','Follow phone'],['reduced','Reduced']])}
+    <p class="set-note">${REDUCE_QUERY.matches ? 'Your phone is asking apps to use less motion. Full keeps every animation here anyway; Follow phone would switch them off.' : 'Full keeps every animation. Follow phone switches them off if your phone asks apps to reduce motion.'}</p>
     ${setToggle('Wide side menu','railOpen', state.railOpen, 'Show names next to the icons (screens 900px and wider)')}
     ${setToggle('Chat button on every tab','chatFab', state.chatFab !== false)}`; }
   if (sec==='goals') return `<h3>Goals and money</h3><p class="set-note">These drive the rings, the savings plan and the coach’s advice.</p>
@@ -11057,10 +11088,11 @@ document.addEventListener('click', e=>{
     if (k==='aiDeep'){ if (typeof AI!=='undefined') AI.deep = on; }
     else if (k==='gtSolid'){ skinSet('solid', on); }
     else if (k.startsWith('ap.')){ const ap = apState(); ap[k.slice(3)] = on; apLog(`${tg.getAttribute('aria-label')} ${on ? 'on' : 'off'}.`); save(); if (k==='ap.on' && on) apRun('manual'); if (activeTab==='coach') renderView('coach'); }
-    else { state[k] = on; save(); if (k==='reduceMotion') applyMotion(); if (k==='railOpen' && typeof mountRail==='function') mountRail(); if (k==='chatFab') chatFab(); if (k==='tipsShow' && activeTab==='today') renderView('today'); }
+    else { state[k] = on; save(); if (k==='railOpen' && typeof mountRail==='function') mountRail(); if (k==='chatFab') chatFab(); if (k==='tipsShow' && activeTab==='today') renderView('today'); }
     return; }
   const sg = e.target.closest('[data-set-seg]'); if (sg){ e.stopPropagation(); const k = sg.dataset.setSeg, v = sg.dataset.v; sg.parentNode.querySelectorAll('button').forEach(b=>{ const on = b===sg; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     if (k==='theme'){ state.theme = v; save(); applyTheme(); if (typeof mountRail==='function') mountRail(); }
+    else if (k==='motion'){ state.motion = v; save(); applyMotion(); }
     else if (k==='voiceRate'){ state.voiceRate = +v; save(); }
     else if (k==='aiLang'){ if (typeof aiSetLang === 'function') aiSetLang(v); document.getElementById('setBody').innerHTML = setBody('coach'); }
     else if (k==='aiCap'){ state.aiCap = +v; save(); document.getElementById('setBody').innerHTML = setBody('coach'); }
@@ -11353,12 +11385,12 @@ async function sendMessage(text){
   $('#chatStreamMount').before(slot);
   log.scrollTop = log.scrollHeight;
 
-  await new Promise(r=>setTimeout(r, REDUCE_QUERY.matches ? 0 : 520));
+  await new Promise(r=>setTimeout(r, motionOff() ? 0 : 520));
   const reply = generateReply(text);
   slot.innerHTML = `<div class="radio-row"><div class="radio eng">${radioHead(false)}<div class="radio-body stream" id="liveStream"><span id="liveText"></span><span class="caret" id="liveCursor"></span></div></div></div>`;
   const liveText = slot.querySelector('#liveText');
   const cursor = slot.querySelector('#liveCursor');
-  if (REDUCE_QUERY.matches || state.reduceMotion){
+  if (motionOff()){
     liveText.textContent = reply; cursor.remove();
   } else {
     for (let i=0; i<reply.length; i+=2){
@@ -12839,7 +12871,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target &&
      progress dots).
    - Progress: week schedule grid (areas × days, status on every block).
    ============================================================ */
-const PB = { view: null, filter: 'all', wk: 0, drag: null };
+const PB = { view: null, filter: 'all', wk: 0, drag: null, wgOpen: {} };
 const PB_COLS = [['', 'To do', 'todo'], ['partly', 'In progress', 'doing'], ['done', 'Done', 'done'], ['missed', 'Missed', 'missed']];
 const PB_TONE = { Training:'tr', English:'en', Engineering:'eg', Career:'ca', Walking:'wk', Routine:'ro' };
 const pbView = () => PB.view || state.planView || 'board';
@@ -12983,8 +13015,10 @@ function weekGridHTML(){
     const chips = B.map(b => { const s = blockStatus(k, b); all++; if (s === 'done') done++;
       const st = s || (k < today || (k === today && b.start + b.dur < m) ? 'missedopen' : 'planned');
       const lab = { done:'Done', partly:'Partly', missed:'Missed', missedopen:'Not logged', planned:'' }[st];
-      return `<div class="wg-chip ${st}" title="${esc(b.name)} ${b.t}"><b>${esc(b.name)}</b><small class="num">${b.t}${lab ? `<em><i></i>${lab}</em>` : ''}</small></div>`; });
-    return `<div class="wg-cell${k === today ? ' today' : ''}">${chips.slice(0, 2).join('')}${chips.length > 2 ? `<div class="wg-more">+ ${chips.length - 2} more</div>` : ''}</div>`; };
+      const tag = k <= today ? 'button' : 'div', act = k <= today ? ` data-wgk="${k}" data-wgb="${esc(b.id)}" data-flip="wg-${k}-${esc(b.id)}" aria-label="${esc(b.name)} ${b.t}, ${lab || 'planned'}. Change status"` : '';
+      return `<${tag} class="wg-chip ${st}"${act} title="${esc(b.name)} ${b.t}"><b>${esc(b.name)}</b><small class="num">${b.t}${lab ? `<em><i></i>${lab}</em>` : ''}</small></${tag}>`; });
+    const ck = k + cat, open = PB.wgOpen && PB.wgOpen[ck];
+    return `<div class="wg-cell${k === today ? ' today' : ''}">${(open ? chips : chips.slice(0, 2)).join('')}${chips.length > 2 ? `<button class="wg-more" data-wgmore="${ck}">${open ? 'Show less' : `+ ${chips.length - 2} more`}</button>` : ''}</div>`; };
   const rows = cats.map(c => `<div class="wg-row"><div class="wg-cat"><span class="pb-tag ${PB_TONE[c]}">${c}</span></div>${days.map(d => cell(d, c)).join('')}</div>`).join('');
   const range = `${shortDate(ws)} – ${shortDate(addDays(ws, 6))}`;
   return `<section class="wg" id="weekGrid"><div class="wg-head"><div class="h2">Week schedule <span class="side num">${done} of ${all} blocks done</span></div>
@@ -13008,6 +13042,10 @@ document.addEventListener('click', e => {
     document.querySelectorAll('.pb-move').forEach(x => { x.hidden = true; x.closest('.pb-card')?.querySelector('[data-pb-menu]')?.setAttribute('aria-expanded', 'false'); });
     mv.hidden = !open; mn.setAttribute('aria-expanded', String(open)); return; }
   const g = e.target.closest('[data-sb-go]'); if (g){ e.stopPropagation(); const [tab, sub] = g.dataset.sbGo.split(':'); if (sub) learnTab = sub; setTab(tab, { force: true }); window.scrollTo(0, 0); return; }
+  const more = e.target.closest('[data-wgmore]'); if (more){ e.stopPropagation(); PB.wgOpen[more.dataset.wgmore] = !PB.wgOpen[more.dataset.wgmore]; wgRedraw(); return; }
+  const pick = e.target.closest('[data-wgset]'); if (pick){ e.stopPropagation(); wgSet(pick.dataset.k, pick.dataset.b, pick.dataset.wgset); return; }
+  const chip = e.target.closest('[data-wgk]'); if (chip){ e.stopPropagation(); wgMenu(chip); return; }
+  if (!e.target.closest('#wgMenu')) document.getElementById('wgMenu')?.remove();
   const w = e.target.closest('[data-wg]'); if (w){ e.stopPropagation(); const d = +w.dataset.wg; PB.wk = d === 0 ? 0 : Math.min(1, PB.wk + d); const el = document.getElementById('weekGrid'); if (el) el.outerHTML = weekGridHTML(); return; }
 }, true);
 
@@ -13056,6 +13094,34 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { const card = e.target.closest && e.target.closest('#planBoard .pb-card'); if (card && (e.key === 'Enter' || e.key === ' ') && e.target === card){ e.preventDefault(); card.querySelector('[data-pb-menu]')?.click(); } });
 
+/* ---------- week schedule: change a past or today's block (20 Nov 2026) ----------
+   He was away 14–19 Nov and could not mark what he did: Today's board only changes today.
+   Tap any chip up to today → Done / Partly / Missed / Not logged; linked tasks tick with it. */
+function wgRedraw(){ const el = document.getElementById('weekGrid'); if (!el) return; const sx = el.querySelector('.wg-scroll')?.scrollLeft || 0; el.outerHTML = weekGridHTML(); const n = document.querySelector('#weekGrid .wg-scroll'); if (n) n.scrollLeft = sx; }
+function wgMenu(chip){
+  document.getElementById('wgMenu')?.remove();
+  const k = chip.dataset.wgk, id = chip.dataset.wgb, b = dayBlocks(k).find(x => x.id === id); if (!b) return;
+  const cur = blockStatus(k, b), m = document.createElement('div'); m.id = 'wgMenu'; m.className = 'wg-menu lg'; m.setAttribute('role', 'menu');
+  m.innerHTML = `<p><b>${esc(b.name)}</b><small>${esc(shortDate(parseKey(k)))} · ${b.t}</small></p>` + [['done', 'Done'], ['partly', 'Partly'], ['missed', 'Missed'], ['', 'Not logged']].map(([v, l]) =>
+    `<button role="menuitemradio" aria-checked="${(cur || '') === v}" class="${v || 'clear'}${(cur || '') === v ? ' on' : ''}" data-wgset="${v}" data-k="${k}" data-b="${esc(id)}"><i></i>${l}</button>`).join('');
+  document.body.appendChild(m);
+  const r = chip.getBoundingClientRect(), mw = m.offsetWidth, mh = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(innerWidth - mw - 8, r.left + r.width / 2 - mw / 2)) + 'px';
+  m.style.top = (r.bottom + mh + 10 < innerHeight ? r.bottom + 6 : Math.max(8, r.top - mh - 6)) + 'px';
+  m.querySelector('[aria-checked="true"]')?.focus();
+}
+function wgSet(k, id, v){
+  const r = dayRec(k, true), b = dayBlocks(k).find(x => x.id === id); r.plan = r.plan || {};
+  if (v) r.plan[id] = v; else delete r.plan[id];
+  if (b && b.task){ if (v === 'done') setTask(k, b.task, true); else if (taskDone(k, b.task)) setTask(k, b.task, false); }
+  state._lastEdit = Date.now(); save(); document.getElementById('wgMenu')?.remove(); wgRedraw();
+  const c = document.querySelector(`#weekGrid [data-wgk="${k}"][data-wgb="${CSS.escape(id)}"]`);
+  if (c && !motionOff()) c.animate([{ scale: '1' }, { scale: '1.08' }, { scale: '1' }], { duration: 380, easing: 'cubic-bezier(.3,1.6,.5,1)' });
+  toast(`${b ? b.name : 'Block'} on ${shortDate(parseKey(k))}: ${v ? ({ done: 'done', partly: 'partly', missed: 'missed' })[v] : 'not logged'}.`, 'ok', 1800);
+  if (k === dkey() && activeTab === 'today') renderView('today');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('wgMenu')?.remove(); });
+
 </script>
 <script data-src="src/js/69-settings2.js">
 /* ============================================================
@@ -13074,7 +13140,7 @@ const SET_GROUPS = [
 ];
 const SET_ICO = {
   'profile.display':'sparkle', 'profile.name':'user', 'profile.city':'compass', 'profile.heightCm':'scale', 'profile.weightStart':'scale', 'profile.weightTarget':'target',
-  theme:'sun', reduceMotion:'pause', railOpen:'menu', chatFab:'headset',
+  theme:'sun', motion:'pause', railOpen:'menu', chatFab:'headset',
   'settings.goal':'piggy', 'settings.income':'wallet', 'settings.opening':'pound', 'settings.stepsGoal':'steps', 'settings.ieltsTarget':'pen', 'settings.examDate':'calendar', 'settings.planStart':'calendar', streakSaver:'flame',
   aiMode:'robot', aiCap:'gauge', aiDeep:'sparkles', voiceOut:'volume', voiceRate:'clock', voiceLang:'mic',
   'ap.on':'robot', 'ap.plan':'checklist', 'ap.checkins':'calendar', 'ap.tips':'bell', 'ap.carry':'arrowRight', 'autopilot.anchor':'calendar',
@@ -15150,5 +15216,88 @@ function syInboxApply(docs){
   save(); if (typeof syRedraw === 'function') syRedraw(); else renderView(activeTab);
   toast(`Claude added ${tot.d} day${tot.d === 1 ? '' : 's'} and ${tot.e} spend${tot.e === 1 ? '' : 's'}: ${from.join('; ')}.`, 'ok', 6000);
 }
+
+</script>
+<script data-src="src/js/72-flow.js">
+/* ============================================================
+   FLOW · motion inside a tab (20 Nov 2026)
+   He said the app felt "too solid": every tap redrew the whole tab and
+   replayed the section fade-in from blank, like a reload. Now:
+   - Opening a tab still cascades the sections in (renderView as before).
+   - Redrawing the tab you are on (after a tick, a move, an add) keeps the
+     page still and animates only what changed: items that moved glide to
+     their new place (FLIP, spring easing), items whose state changed give
+     a small pop, new items rise in.
+   - Anything pressable sinks a little under the finger and springs back.
+   All of it uses the Web Animations API on the `scale` / `translate`
+   properties, so it never fights the elements' own CSS transitions, and
+   it is skipped when motion is reduced (motionOff()).
+   ============================================================ */
+const FLOW = { tab: null, ease: 'cubic-bezier(.22,1.25,.36,1)' };
+
+function flowKey(el){
+  if (el.id) return '#' + el.id;
+  const d = el.dataset; if (d.flip) return 'f:' + d.flip;
+  const id = d.id || d.k || d.key || d.blk || d.pbCard || d.lk || d.brOpen;
+  if (!id) return null;
+  return (d.a || d.ds || d.pb || '') + '|' + (el.classList[0] || el.tagName) + '|' + id;
+}
+function flowSnap(root){
+  const out = new Map(), H = innerHeight;
+  root.querySelectorAll('[id],[data-id],[data-k],[data-key],[data-flip],[data-blk],[data-pb-card],[data-lk],[data-br-open]').forEach(el => {
+    const k = flowKey(el); if (!k || out.has(k)) return;
+    const r = el.getBoundingClientRect(); if (r.bottom < -150 || r.top > H + 150 || !r.width) return;
+    out.set(k, { x: r.left, y: r.top, c: el.className, t: el.textContent.length > 400 ? '' : el.textContent });
+  });
+  return out;
+}
+function flowPlay(root, before){
+  const H = innerHeight, seen = new Set(); let n = 0;
+  root.querySelectorAll('[id],[data-id],[data-k],[data-key],[data-flip],[data-blk],[data-pb-card],[data-lk],[data-br-open]').forEach(el => {
+    if (n > 60) return; const k = flowKey(el); if (!k || seen.has(k)) return; seen.add(k);
+    // only the outermost keyed element moves, so children do not double up
+    if (el.parentElement && el.parentElement.closest('[data-flowing]') ) return;
+    const r = el.getBoundingClientRect(); if (r.bottom < -100 || r.top > H + 100 || !r.width) return;
+    const b = before.get(k);
+    if (!b){ if (before.size){ el.animate([{ opacity: 0, translate: '0 10px', scale: '.97' }, { opacity: 1, translate: '0 0', scale: '1' }], { duration: 380, easing: FLOW.ease, delay: Math.min(n, 8) * 22 }); n++; } return; }
+    const dx = b.x - r.left, dy = b.y - r.top;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2){
+      el.setAttribute('data-flowing', ''); n++;
+      const a = el.animate([{ translate: `${dx}px ${dy}px` }, { translate: '0 0' }], { duration: 520, easing: FLOW.ease });
+      a.onfinish = a.oncancel = () => el.removeAttribute('data-flowing');
+    } else if (b.c !== el.className || (b.t && b.t !== el.textContent)){
+      n++; el.animate([{ scale: '1' }, { scale: '1.045' }, { scale: '1' }], { duration: 360, easing: 'cubic-bezier(.3,1.5,.5,1)' });
+    }
+  });
+}
+renderView = (orig => function(tab){
+  const el = document.getElementById('view-' + tab);
+  const again = el && FLOW.tab === tab && el.childElementCount > 0 && !motionOff() && !el.hidden;
+  FLOW.tab = tab;
+  if (!again) return orig.apply(this, arguments);
+  const before = flowSnap(el), y = scrollY;
+  const r = orig.apply(this, arguments);
+  el.classList.remove('cascade');                    // no reload-style replay inside the tab
+  if (Math.abs(scrollY - y) > 1) scrollTo(0, y);
+  try { flowPlay(el, before); } catch(_){ }
+  return r;
+})(renderView);
+// switching tabs always enters with the cascade
+setTab = (orig => function(tab, opts){ if (tab !== activeTab) FLOW.tab = null; return orig.apply(this, arguments); })(setTab);
+
+/* press feedback: sink under the finger, spring back on release */
+const FLOW_PRESS = 'button, [data-a], [role="button"], [role="tab"], [role="radio"], .btn, .chip, .pb-card, .wg-chip, .task, a[href]';
+let flowPressed = null;
+document.addEventListener('pointerdown', e => {
+  if (motionOff() || e.button > 0) return;
+  const el = e.target.closest(FLOW_PRESS); if (!el || el.disabled || el.closest('input, textarea, select, canvas, .km')) return;
+  const r = el.getBoundingClientRect(), big = r.width * r.height > innerWidth * 160;
+  flowPressed = { el, a: el.animate([{ scale: '1' }, { scale: big ? '.985' : '.95' }], { duration: 110, easing: 'ease-out', fill: 'forwards' }) };
+}, { passive: true, capture: true });
+const flowRelease = () => { const p = flowPressed; if (!p) return; flowPressed = null;
+  const from = getComputedStyle(p.el).scale; p.a.cancel();
+  if (p.el.isConnected) p.el.animate([{ scale: from === 'none' ? '1' : from }, { scale: '1' }], { duration: 420, easing: 'cubic-bezier(.3,1.6,.5,1)' }); };
+['pointerup', 'pointercancel', 'pointerleave', 'dragstart'].forEach(t => document.addEventListener(t, e => { if (t === 'pointerleave' && e.target !== document.documentElement) return; flowRelease(); }, { passive: true, capture: true }));
+window.addEventListener('blur', flowRelease);
 
 </script>
