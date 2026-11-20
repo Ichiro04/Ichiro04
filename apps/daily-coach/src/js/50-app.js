@@ -639,7 +639,7 @@ document.addEventListener('submit', e=>{
     if (!kg) return;
     const d = dayRec(dkey(), true); d.weight = kg;
     setTask(dkey(),'weigh',true); save();
-    renderView('progress'); updateChrome();
+    renderView(activeTab); updateChrome();   // the form is on Progress and in Today's quick log
     const ch = weightChangeWeek();
     toast(`Logged ${num(kg)} kg${ch!==null?` · ${ch>0?'+':''}${num(ch)} kg this week`:''}. Weekly trend beats daily noise.`,'ok',2800);
   }

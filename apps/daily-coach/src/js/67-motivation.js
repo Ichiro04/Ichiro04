@@ -101,7 +101,8 @@ function mvLetter(){
   const next = typeof upNext === 'function' ? upNext() : null;
   if (!total) lines.push('Today is a rest day. Rest properly. It is part of the plan.');
   else if (done >= total) lines.push('Every task is done today. Rest without guilt, because you earned it.');
-  else if (done === 0) lines.push(`The day is still wide open. Start with the first one${next ? `: ${next.name.toLowerCase()}` : ''}. Momentum does the rest.`);
+  else if (done === 0){ const n = next ? next.name.toLowerCase() : 'the first task';   // four openings in turn, so the first line is not the same every morning
+    lines.push([`The day is still wide open. Start with the first one: ${n}. Momentum does the rest.`, `First block, first win: ${n}. Everything after it gets easier.`, `Nothing ticked yet, and that is fine at this hour. ${n.charAt(0).toUpperCase() + n.slice(1)} first.`, `One thing before anything else today: ${n}. Then see how you feel.`][day % 4]); }
   else lines.push(`${done} done, ${total - done} to go${next ? `. Next up is ${next.name.toLowerCase()}` : ''}. ${done >= 4 ? 'The streak day is already safe.' : `${4 - done} more and today counts.`}`);
 
   // the rotating middle: two of these each day, in a different order
