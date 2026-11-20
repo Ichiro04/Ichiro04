@@ -117,7 +117,9 @@ async function syPush(){
 /* pull the cloud copy and merge it with this device's */
 async function syPull(fresh){
   const snap = await SY.db.collection('s').get(), remote = {}, m = syMeta(), newest = syNewest(fresh || []);
-  snap.docs.forEach(d => { if (d.exists) remote[d.id] = d.data(); });
+  // the database hands out frozen (read-only) objects: keep an editable copy, or every later edit to a
+  // pulled list or day is silently refused (20 Nov 2026: spending, ticks and past plan statuses were lost)
+  snap.docs.forEach(d => { if (d.exists) remote[d.id] = JSON.parse(JSON.stringify(d.data())); });
   const local = syParts(state), merged = {}, localNewer = (state._lastEdit || 0) > newest;
   new Set([...Object.keys(local), ...Object.keys(remote)]).forEach(id => {
     const L = local[id], R = remote[id], lj = L ? JSON.stringify(L) : '', rj = R ? JSON.stringify(R) : '', base = m.h[id];
@@ -236,7 +238,7 @@ function syInboxWatch(){
 function syInboxApply(docs){
   state.inboxDone = state.inboxDone || {}; const tot = { d: 0, e: 0 }, from = [];
   docs.forEach(d => {
-    if (state.inboxDone[d.id]) return; let p = null; try { p = d.data(); } catch(_){ }
+    if (state.inboxDone[d.id]) return; let p = null; try { p = JSON.parse(JSON.stringify(d.data())); } catch(_){ }
     if (!p || p.pack !== 'daily-coach-add') return;
     const r = packMerge(p); tot.d += r.d; tot.e += r.e; state.inboxDone[d.id] = Date.now(); from.push(p.from || d.id);
     SY.db.doc('inbox/' + d.id).delete().catch(() => {});

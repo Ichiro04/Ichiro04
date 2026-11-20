@@ -687,6 +687,7 @@ document.addEventListener('submit', e=>{
    Steps take the pack's number (it comes from the watch), a note is appended once, spending is added by id. */
 function packMerge(p){
   let d = 0, e = 0, skip = 0;
+  if (!Array.isArray(state.expenses) || Object.isFrozen(state.expenses)) state.expenses = [...(state.expenses || [])];
   Object.entries(p.days || {}).forEach(([k, v]) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(k) || !v) return; const r = dayRec(k, true);
     if (v.steps != null && isFinite(+v.steps)) r.steps = clamp(Math.round(+v.steps), 0, 100000);
